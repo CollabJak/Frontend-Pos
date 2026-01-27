@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { Toaster } from "react-hot-toast";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -22,6 +23,7 @@ import Home from "./pages/Dashboard/Home";
 export default function App() {
   return (
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
       <Router>
         <ScrollToTop />
         <Routes>
