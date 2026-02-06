@@ -195,7 +195,7 @@ layer(base);
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-white dark:bg-brand-500/[0.12] dark:text-brand-400;
 }
 
 @utility menu-item-inactive {
@@ -207,7 +207,7 @@ layer(base);
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-white dark:text-brand-400;
 }
 
 @utility menu-item-icon-size {
@@ -237,7 +237,7 @@ layer(base);
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-white dark:bg-brand-500/[0.12] dark:text-brand-400;
 }
 
 @utility menu-dropdown-item-inactive {
@@ -789,4 +789,11 @@ span.flatpickr-weekday,
 
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
+}
+
+.link-focus-info {
+  @apply focus:outline
+        focus:outline-2
+        focus:outline-blue-500
+        rounded-md;
 }

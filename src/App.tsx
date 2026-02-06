@@ -20,10 +20,16 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import CategoryList from "./pages/Categories/CategoryList";
+import AddCategory from "./pages/Categories/AddCategory";
+import EditCategory from "./pages/Categories/EditCategory";
+
+const queryClient = new QueryClient();
 
 export default function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Toaster position="bottom-right" reverseOrder={false} />
       <Router>
         <AuthProvider>
@@ -36,6 +42,9 @@ export default function App() {
             {/* Dashboard Layout */}
             <Route element={<AppLayout />}>
               <Route index path="/dashboard" element={<Home />} />
+              <Route path="/categories" element={<CategoryList />} />
+              <Route path="/categories/create" element={<AddCategory />} />
+              <Route path="/categories/edit/:id" element={<EditCategory />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />
@@ -66,6 +75,6 @@ export default function App() {
           </Routes>
         </AuthProvider>
       </Router>
-    </>
+    </QueryClientProvider>
   );
 }
