@@ -24,6 +24,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CategoryList from "./pages/Categories/CategoryList";
 import AddCategory from "./pages/Categories/AddCategory";
 import EditCategory from "./pages/Categories/EditCategory";
+import UnitList from "./pages/Units/UnitList";
+import AddUnit from "./pages/Units/AddUnit";
+import EditUnit from "./pages/Units/EditUnit";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,9 @@ export default function App() {
               <Route path="/categories" element={<CategoryList />} />
               <Route path="/categories/create" element={<AddCategory />} />
               <Route path="/categories/edit/:id" element={<EditCategory />} />
+              <Route path="/units" element={<UnitList />} />
+              <Route path="/units/create" element={<AddUnit />} />
+              <Route path="/units/edit/:id" element={<EditUnit />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />
