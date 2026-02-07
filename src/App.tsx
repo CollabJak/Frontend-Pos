@@ -27,6 +27,9 @@ import EditCategory from "./pages/Categories/EditCategory";
 import UnitList from "./pages/Units/UnitList";
 import AddUnit from "./pages/Units/AddUnit";
 import EditUnit from "./pages/Units/EditUnit";
+import SupplierList from "./pages/Suppliers/SupllierList";
+import AddSupplier from "./pages/Suppliers/AddSupplier";
+import EditSupplier from "./pages/Suppliers/EditSupplier";
 
 const queryClient = new QueryClient();
 
@@ -45,12 +48,18 @@ export default function App() {
             {/* Dashboard Layout */}
             <Route element={<AppLayout />}>
               <Route index path="/dashboard" element={<Home />} />
+
               <Route path="/categories" element={<CategoryList />} />
               <Route path="/categories/create" element={<AddCategory />} />
               <Route path="/categories/edit/:id" element={<EditCategory />} />
+
               <Route path="/units" element={<UnitList />} />
               <Route path="/units/create" element={<AddUnit />} />
               <Route path="/units/edit/:id" element={<EditUnit />} />
+
+              <Route path="/suppliers" element={<SupplierList />} />
+              <Route path="/suppliers/create" element={<AddSupplier />} />
+              <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />
