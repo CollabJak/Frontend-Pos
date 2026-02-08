@@ -21,7 +21,7 @@ export default function BrandList() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useFetchBrands({ page });
 
-  const { mutate: deleteUnit } = useDeleteBrand();
+  const { mutate: deleteBrand } = useDeleteBrand();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
 
@@ -32,7 +32,7 @@ export default function BrandList() {
 
   const handleConfirmDelete = () => {
     if (!pendingDelete) return;
-    deleteUnit(pendingDelete.id);
+    deleteBrand(pendingDelete.id);
     setPendingDelete(null);
     closeModal();
   };

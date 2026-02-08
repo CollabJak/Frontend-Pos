@@ -4,3 +4,4 @@ export * from "./api";
 export * from "./units";
 export * from "./suppliers";
 export * from "./brand";
+export * from "./product";

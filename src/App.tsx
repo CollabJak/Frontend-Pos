@@ -33,6 +33,9 @@ import EditSupplier from "./pages/Suppliers/EditSupplier";
 import BrandList from "./pages/Brands/BrandList";
 import AddBrand from "./pages/Brands/AddBrand";
 import EditBrand from "./pages/Brands/EditBrand";
+import ProductList from "./pages/Products/ProductList";
+import AddProduct from "./pages/Products/AddProduct";
+import EditProduct from "./pages/Products/EditProduct";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +70,10 @@ export default function App() {
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />
               <Route path="/brands/edit/:id" element={<EditBrand />} />
+
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/products/create" element={<AddProduct />} />
+              <Route path="/products/edit/:id" element={<EditProduct />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />
