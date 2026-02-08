@@ -72,19 +72,6 @@ export default function AddBrand() {
             </div>
 
             <div>
-              <Label htmlFor="brand-code">Brand code</Label>
-              <Input
-                {...register("code")}
-                type="text"
-                id="brand-code"
-                placeholder="Input brand code"
-              />
-              {errors.code && (
-                <p className="text-red-500">{errors.code.message}</p>
-              )}
-            </div>
-
-            <div>
               <Label htmlFor="brand-description">Brand Description</Label>
               <TextArea
                 value={watch("description") || ""}

@@ -1,9 +1,13 @@
-import { z } from "zod"; 
+import {z} from "zod";
 
-export const categorySchema = z.object({
-    name: z.string().min(1, "Name is required"), 
-    tagline: z.string().nullable().optional(), 
-    photo: z
+export const productSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  barcode: z.string().optional(),
+  category_id: z.number().int().min(1, 'Category is required'),
+  brand_id: z.number().int().min(1, 'Brand is required'),
+  base_unit_id: z.number().int().min(1, 'Unit is required'),
+  description: z.string().optional(),
+  thumbnail: z
     .instanceof(File)
     .optional()
     .nullable()
@@ -25,6 +29,6 @@ export const categorySchema = z.object({
         message: "Image size must be under 200KB.",
       }
     ),
-  });
+});
 
-export type CategoryFormData = z.infer<typeof categorySchema>;
+export type ProductFormData = z.infer<typeof productSchema>;
