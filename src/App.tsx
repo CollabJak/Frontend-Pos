@@ -39,6 +39,9 @@ import EditProduct from "./pages/Products/EditProduct";
 import UnitConversionList from "./pages/UnitConversions/UnitConversionList";
 import AddUnitConversion from "./pages/UnitConversions/AddUnitConversion";
 import EditUnitConversion from "./pages/UnitConversions/EditUnitConversion";
+import AtributeList from "./pages/Atributes/AtributeList";
+import AddAtribute from "./pages/Atributes/AddAtribute";
+import EditAtribute from "./pages/Atributes/EditAtribute";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +84,10 @@ export default function App() {
               <Route path="/unit-conversions" element={<UnitConversionList />} />
               <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
               <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />
+
+              <Route path="/atributes" element={<AtributeList />} />
+              <Route path="/atributes/create" element={<AddAtribute />} />
+              <Route path="/atributes/edit/:id" element={<EditAtribute />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />

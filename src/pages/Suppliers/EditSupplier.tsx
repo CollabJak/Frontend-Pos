@@ -147,7 +147,7 @@ export default function EditSupplier() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding Supplier..." : "Add Supplier"}
+                {isPending ? "Updating Supplier..." : "Update Supplier"}
               </Button>
             </div>
           </div>
