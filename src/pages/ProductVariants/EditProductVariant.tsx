@@ -34,7 +34,7 @@ export default function EditProductVariant() {
   });
 
   const fetchAtributeOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/atribute",
+    endpoint: "/options/atributes",
   });
 
   const {

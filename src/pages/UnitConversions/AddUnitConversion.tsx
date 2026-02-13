@@ -1,5 +1,5 @@
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
@@ -75,7 +75,7 @@ export default function AddUnitConversion() {
                 label=""
                 value={watch("product_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("product_id", selectedValue as number | null, {
+                  setValue("product_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -97,7 +97,7 @@ export default function AddUnitConversion() {
                 label=""
                 value={watch("from_unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("from_unit_id", selectedValue as number | null, {
+                  setValue("from_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -119,7 +119,7 @@ export default function AddUnitConversion() {
                 label=""
                 value={watch("to_unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("to_unit_id", selectedValue as number | null, {
+                  setValue("to_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}

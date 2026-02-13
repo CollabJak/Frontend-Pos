@@ -23,7 +23,7 @@ export const useFetchCategories = ({
 
       return response.data.data;
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 };
 

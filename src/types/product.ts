@@ -4,6 +4,7 @@ import { productSchema } from "../Schemas/productSchema";
 export interface Product {
   id: number;
   name: string;
+  sku?: string;
   barcode?: string;
   category_id?: number;
   brand_id?: number;

@@ -4,6 +4,7 @@ import { categorySchema } from "../Schemas/categorySchema";
 export interface Categories {
   id: number;
   name: string;
+  code?: string;
   tagline: string;
   photo: string;
 }

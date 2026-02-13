@@ -21,7 +21,7 @@ export const useFetchSuppliers = ({
 
       return response.data.data;
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import {Input} from "../../components/form/input/InputField";
@@ -22,7 +22,7 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 export default function AddCategory() {
   const { mutate: createCategory, isPending } = useCreateCategory();
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   
   const {
     register,
@@ -69,10 +69,10 @@ export default function AddCategory() {
       <ComponentCard title="Add Category Form">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
-            files={files}
-            onupdatefiles={(fileItems) => {
-              const file = fileItems[0]?.file;
-              setFiles(file ? [file] : []);
+            files={files as never[]}
+            onupdatefiles={(fileItems: any[]) => {
+              const file = fileItems[0]?.file as File | undefined;
+              setFiles(fileItems as unknown[]);
 
               if (file) {
                 setValue("photo", file, { shouldValidate: true });

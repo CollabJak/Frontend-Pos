@@ -39,6 +39,7 @@ const navItems: NavItem[] = [
       { name: "Units", path: "/units", pro: false },
       { name: "Unit Conversions", path: "/unit-conversions", pro: false },
       { name: "Suppliers", path: "/suppliers", pro: false },
+      { name: "Locations", path: "/locations", pro: false },
       { name: "Brands", path: "/brands", pro: false },
       { name: "Products", path: "/products", pro: false },
       { name: "Product Variants", path: "/product-variants", pro: false },

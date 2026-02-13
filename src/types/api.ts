@@ -11,17 +11,14 @@ export interface ApiErrorResponse {
 }
 
 export interface PaginationMeta {
-  curent_page: number;
+  current_page: number;
   last_page: number;
   per_page: number;
   total: number;
+  count?: number;
 }
 
 export interface PaginatedApiResponse<T = unknown> {
-  success: boolean;
-  message: string;
-  data: {
-    data: T[];
-    pagination: PaginationMeta;
-  }
+  data: T[];
+  meta: PaginationMeta;
 }

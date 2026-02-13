@@ -27,7 +27,7 @@ export default function AddProductVariant() {
   });
 
   const fetchAtributeOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/atribute",
+    endpoint: "/options/atributes",
   });
 
   const {
