@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
@@ -24,7 +24,7 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddProduct() {
   const { mutate: createProduct, isPending } = useCreateProduct();
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   
   const fetchCategoryOptions = createOptionsFetcher<OptionDto>({
     endpoint: "/options/categories",
@@ -82,10 +82,10 @@ export default function AddProduct() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <FilePond
-              files={files}
-              onupdatefiles={(fileItems) => {
-                const file = fileItems[0]?.file;
-                setFiles(file ? [file] : []);
+              files={files as never[]}
+              onupdatefiles={(fileItems: any[]) => {
+                const file = fileItems[0]?.file as File | undefined;
+                setFiles(fileItems as unknown[]);
   
                 if (file) {
                   setValue("thumbnail", file, { shouldValidate: true });
@@ -134,7 +134,7 @@ export default function AddProduct() {
                 label=""
                 value={watch("category_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("category_id", selectedValue as number | null, {
+                  setValue("category_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -156,7 +156,7 @@ export default function AddProduct() {
                 label=""
                 value={watch("brand_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("brand_id", selectedValue as number | null, {
+                  setValue("brand_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -178,7 +178,7 @@ export default function AddProduct() {
                 label=""
                 value={watch("base_unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("base_unit_id", selectedValue as number | null, {
+                  setValue("base_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}

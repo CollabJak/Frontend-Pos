@@ -4,6 +4,7 @@ import { ApiResponse } from "../types/api";
 export interface OptionDto {
   id: number;
   name: string;
+  [key: string]: unknown;
 }
 
 interface CreateOptionsFetcherParams {

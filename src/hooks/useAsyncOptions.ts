@@ -25,7 +25,7 @@ export function useAsyncOptions<TOption>({
     queryKey: ["async-options", search ?? "", limit],
     queryFn: ({ signal }) => fetchOptions({ limit, search, signal }),
     enabled,
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
     staleTime: 0,
   });
 }

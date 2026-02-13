@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-hot-toast";
-import { ApiResponse } from "../types/ApiResponse";
+import { ApiResponse } from "../types/api";
 
 export function handleSuccess<T>(
   response: AxiosResponse<ApiResponse<T>>
@@ -15,7 +15,7 @@ export function handleSuccess<T>(
 }
 
 export function handleError(
-  error: AxiosError<ApiResponse>
+  error: AxiosError<ApiResponse<unknown>>
 ): void {
   if (error.config?.silent) return;
 
@@ -24,7 +24,7 @@ export function handleError(
   if (data?.errors) {
     Object.values(data.errors)
       .flat()
-      .forEach((msg) => toast.error(msg));
+      .forEach((msg) => toast.error(String(msg)));
     return;
   }
 

@@ -8,3 +8,4 @@ export * from "./product";
 export * from "./productVariant";
 export * from "./unitConversions";
 export * from "./atributes";
+export * from "./location";

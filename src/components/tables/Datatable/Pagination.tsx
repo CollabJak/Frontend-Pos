@@ -37,34 +37,29 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-between mt-6 p-3">
-      {/* Info */}
+    <div className="mt-6 flex items-center justify-between p-3">
       <span className="text-sm text-gray-500">
         Page {currentPage} of {lastPage}
       </span>
 
-      {/* Controls */}
       <div className="flex items-center gap-1">
         <PageButton
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
-          ‹
+          {"<"}
         </PageButton>
 
         {getPages().map((page, index) =>
           page === "..." ? (
-            <span
-              key={index}
-              className="px-2 text-gray-400"
-            >
-              …
+            <span key={index} className="px-2 text-gray-400">
+              ...
             </span>
           ) : (
             <PageButton
               key={page}
               active={page === currentPage}
-              onClick={() => onPageChange(page)}
+              onClick={() => onPageChange(Number(page))}
             >
               {page}
             </PageButton>
@@ -75,7 +70,7 @@ export function Pagination({
           disabled={currentPage === lastPage}
           onClick={() => onPageChange(currentPage + 1)}
         >
-          ›
+          {">"}
         </PageButton>
       </div>
     </div>

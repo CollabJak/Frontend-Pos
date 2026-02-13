@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
@@ -23,15 +23,11 @@ import { useParams } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
-type FilePondFileItem =
-  | { file?: File }
-  | { source: string; options: { type: "local" } };
-
 export default function EditProduct() {
   const {id} = useParams<{id : string}>();
   const { data: product, isLoading } = useFetchProduct(Number(id));
   const { mutate: updateProduct, isPending } = useUpdateProduct();
-  const [files, setFiles] = useState<FilePondFileItem[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   
   const fetchCategoryOptions = useMemo(
     () =>
@@ -96,7 +92,6 @@ export default function EditProduct() {
 
   const onSubmit = (data: ProductFormData) => {
     setError("root", { type: "server", message: "" });
-    console.log(data)
     updateProduct({ id: Number(id), ...data }, {
       onError: (error: AxiosError<ApiErrorResponse>) => {
         if (error.response) {
@@ -132,10 +127,10 @@ export default function EditProduct() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <FilePond
-              files={files}
-              onupdatefiles={(fileItems: FilePondFileItem[]) => {
-              setFiles(fileItems);
-              const file = fileItems[0]?.file;
+              files={files as never[]}
+              onupdatefiles={(fileItems: any[]) => {
+              setFiles(fileItems as unknown[]);
+              const file = fileItems[0]?.file as File | undefined;
 
               if (file instanceof File) {
                 setValue("thumbnail", file, { shouldValidate: true });
@@ -210,7 +205,7 @@ export default function EditProduct() {
                 value={watch("category_id") ?? null}
                 displayValue={product?.category?.name}
                 onChange={(selectedValue) => {
-                  setValue("category_id", selectedValue as number | null, {
+                  setValue("category_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -233,7 +228,7 @@ export default function EditProduct() {
                 value={watch("brand_id") ?? null}
                 displayValue={product?.brand?.name}
                 onChange={(selectedValue) => {
-                  setValue("brand_id", selectedValue as number | null, {
+                  setValue("brand_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -256,7 +251,7 @@ export default function EditProduct() {
                 value={watch("base_unit_id") ?? null}
                 displayValue={product?.unit?.name}
                 onChange={(selectedValue) => {
-                  setValue("base_unit_id", selectedValue as number | null, {
+                  setValue("base_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}

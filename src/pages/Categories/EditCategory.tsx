@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import {Input} from "../../components/form/input/InputField";
@@ -20,16 +20,12 @@ import { useParams } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
-type FilePondFileItem =
-  | { file?: File }
-  | { source: string; options: { type: "local" } };
-
 export default function EditCategory() {
   const {id} =  useParams<{id : string}>();
   const {data: category, isLoading} = useFetchCategory(Number(id));
   const { mutate: updateCategory, isPending: isUpdating } = useUpdateCategory();
 
-  const [files, setFiles] = useState<FilePondFileItem[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   
   const {
     register,
@@ -100,10 +96,10 @@ export default function EditCategory() {
       <ComponentCard title="Edit Category Form">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
-            files={files}
-            onupdatefiles={(fileItems: FilePondFileItem[]) => {
-              setFiles(fileItems);
-              const file = fileItems[0]?.file;
+            files={files as never[]}
+            onupdatefiles={(fileItems: any[]) => {
+              setFiles(fileItems as unknown[]);
+              const file = fileItems[0]?.file as File | undefined;
 
               if (file instanceof File) {
                 setValue("photo", file, { shouldValidate: true });

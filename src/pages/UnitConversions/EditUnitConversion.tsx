@@ -1,5 +1,5 @@
 import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadcrumb";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
@@ -16,12 +16,11 @@ import { useParams } from "react-router";
 import { useEffect } from "react";
 
 export default function EditUnitConversion() {
-  const {id} = useParams<{id:string}>()
-    const { data: unitConversion, isLoading } = useFetchUnitConversion(Number(id));
-    console.log(unitConversion)
-  
+  const { id } = useParams<{ id: string }>();
+  const { data: unitConversion, isLoading } = useFetchUnitConversion(Number(id));
+
   const { mutate: updateUnitConversion, isPending } = useUpdateUnitConversion();
-  
+
   const fetchProductOptions = createOptionsFetcher<OptionDto>({
     endpoint: "/options/products",
   });
@@ -43,17 +42,17 @@ export default function EditUnitConversion() {
   });
 
   useEffect(() => {
-      if (unitConversion) {
-        setValue("product_id", unitConversion.product_id);
-        setValue("from_unit_id", unitConversion.from_unit_id);
-        setValue("to_unit_id", unitConversion.to_unit_id);
-        setValue("multiplier", unitConversion.multiplier);
-      }
-    }, [unitConversion, setValue]);
+    if (unitConversion) {
+      setValue("product_id", unitConversion.product_id);
+      setValue("from_unit_id", unitConversion.from_unit_id);
+      setValue("to_unit_id", unitConversion.to_unit_id);
+      setValue("multiplier", unitConversion.multiplier);
+    }
+  }, [unitConversion, setValue]);
 
   const onSubmit = (data: UnitConversionFormData) => {
     setError("root", { type: "server", message: "" });
-    updateUnitConversion({id : Number(id), ...data}, {
+    updateUnitConversion({ id: Number(id), ...data }, {
       onError: (error: AxiosError<ApiErrorResponse>) => {
         if (error.response) {
           const { message, errors: fieldErrors } = error.response.data;
@@ -75,6 +74,10 @@ export default function EditUnitConversion() {
     });
   };
 
+  if (isLoading) {
+    return <p className="p-3">Loading...</p>;
+  }
+
   return (
     <>
       <PageMeta title="Edit Unit Conversion" description="Edit new unit conversion product page" />
@@ -90,7 +93,7 @@ export default function EditUnitConversion() {
                 label=""
                 value={watch("product_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("product_id", selectedValue as number | null, {
+                  setValue("product_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -113,7 +116,7 @@ export default function EditUnitConversion() {
                 label=""
                 value={watch("from_unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("from_unit_id", selectedValue as number | null, {
+                  setValue("from_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -136,7 +139,7 @@ export default function EditUnitConversion() {
                 label=""
                 value={watch("to_unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("to_unit_id", selectedValue as number | null, {
+                  setValue("to_unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}

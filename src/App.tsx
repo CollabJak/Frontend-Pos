@@ -45,6 +45,9 @@ import EditAtribute from "./pages/Atributes/EditAtribute";
 import ProductVariantList from "./pages/ProductVariants/ProductVariantList";
 import AddProductVariant from "./pages/ProductVariants/AddProductVariant";
 import EditProductVariant from "./pages/ProductVariants/EditProductVariant";
+import LocationList from "./pages/Locations/LocationList";
+import AddLocation from "./pages/Locations/AddLocation";
+import EditLocation from "./pages/Locations/EditLocation";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +78,10 @@ export default function App() {
               <Route path="/suppliers" element={<SupplierList />} />
               <Route path="/suppliers/create" element={<AddSupplier />} />
               <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+
+              <Route path="/locations" element={<LocationList />} />
+              <Route path="/locations/create" element={<AddLocation />} />
+              <Route path="/locations/edit/:id" element={<EditLocation />} />
               
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />
