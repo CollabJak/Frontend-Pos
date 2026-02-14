@@ -45,6 +45,9 @@ import EditAtribute from "./pages/Atributes/EditAtribute";
 import ProductVariantList from "./pages/ProductVariants/ProductVariantList";
 import AddProductVariant from "./pages/ProductVariants/AddProductVariant";
 import EditProductVariant from "./pages/ProductVariants/EditProductVariant";
+import ProductPriceList from "./pages/ProductPrices/ProductPriceList";
+import AddProductPrice from "./pages/ProductPrices/AddProductPrice";
+import EditProductPrice from "./pages/ProductPrices/EditProductPrice";
 import LocationList from "./pages/Locations/LocationList";
 import AddLocation from "./pages/Locations/AddLocation";
 import EditLocation from "./pages/Locations/EditLocation";
@@ -93,6 +96,9 @@ export default function App() {
               <Route path="/product-variants" element={<ProductVariantList />} />
               <Route path="/product-variants/create" element={<AddProductVariant />} />
               <Route path="/product-variants/edit/:id" element={<EditProductVariant />} />
+              <Route path="/product-prices" element={<ProductPriceList />} />
+              <Route path="/product-prices/create" element={<AddProductPrice />} />
+              <Route path="/product-prices/edit/:id" element={<EditProductPrice />} />
 
               <Route path="/unit-conversions" element={<UnitConversionList />} />
               <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
