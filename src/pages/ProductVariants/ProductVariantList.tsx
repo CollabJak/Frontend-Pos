@@ -100,6 +100,18 @@ export default function ProductVariantList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
+                        Strategy
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        Active
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
                         Action
                       </TableCell>
                     </TableRow>
@@ -121,7 +133,13 @@ export default function ProductVariantList() {
                           {variant.barcode || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {variant.atribute?.map((item) => `${item.name ?? "Atribute"}: ${item.value}`).join(", ") || "-"}
+                          {variant.attributes_json?.map((item) => `${item.name ?? "Atribute"}: ${item.value}`).join(", ") || "-"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {variant.picking_strategy} / {variant.costing_method}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {variant.is_active ? "Yes" : "No"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
