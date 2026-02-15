@@ -49,10 +49,14 @@ export const useCreateProduct = () => {
       }
       formData.append("category_id", payload.category_id.toString());
       formData.append("brand_id", payload.brand_id.toString());
-      formData.append("base_unit_id", payload.base_unit_id.toString());
+      formData.append("unit_id", payload.unit_id.toString());
       if(payload.description) {
         formData.append("description", payload.description);
       }
+      formData.append("status", payload.status);
+      formData.append("is_sellable", payload.is_sellable ? "1" : "0");
+      formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");
+      formData.append("has_variant", payload.has_variant ? "1" : "0");
       if(payload.thumbnail) {
         formData.append("thumbnail", payload.thumbnail);
       }
@@ -87,10 +91,14 @@ export const useUpdateProduct = () => {
       }
       formData.append("category_id", payload.category_id.toString());
       formData.append("brand_id", payload.brand_id.toString());
-      formData.append("base_unit_id", payload.base_unit_id.toString());
+      formData.append("unit_id", payload.unit_id.toString());
       if(payload.description) {
         formData.append("description", payload.description);
       }
+      formData.append("status", payload.status);
+      formData.append("is_sellable", payload.is_sellable ? "1" : "0");
+      formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");
+      formData.append("has_variant", payload.has_variant ? "1" : "0");
       if(payload.thumbnail) {
         formData.append("thumbnail", payload.thumbnail);
       }

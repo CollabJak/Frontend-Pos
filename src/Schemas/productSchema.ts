@@ -1,12 +1,18 @@
 import {z} from "zod";
 
+export const productStatuses = ["active", "inactive", "discontinued"] as const;
+
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   barcode: z.string().optional(),
   category_id: z.number().int().min(1, 'Category is required'),
   brand_id: z.number().int().min(1, 'Brand is required'),
-  base_unit_id: z.number().int().min(1, 'Unit is required'),
+  unit_id: z.number().int().min(1, 'Unit is required'),
   description: z.string().optional(),
+  status: z.enum(productStatuses),
+  is_sellable: z.boolean(),
+  is_purchasable: z.boolean(),
+  has_variant: z.boolean(),
   thumbnail: z
     .instanceof(File)
     .optional()

@@ -105,6 +105,30 @@ export default function ProductList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
+                        Status
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        Sellable
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        Purchasable
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        Has Variant
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
                         Action
                       </TableCell>
                     </TableRow>
@@ -119,7 +143,7 @@ export default function ProductList() {
                               <img
                                 width={40}
                                 height={40}
-                                src={product.thumbnail}
+                                src={product.thumbnail || ""}
                                 alt={product.name}
                               />
                             </div>
@@ -147,6 +171,18 @@ export default function ProductList() {
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {product.description || "-"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {product.status}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {product.is_sellable ? "Yes" : "No"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {product.is_purchasable ? "Yes" : "No"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {product.has_variant ? "Yes" : "No"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -185,7 +221,7 @@ export default function ProductList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete supplier?"
+        title="Delete product?"
         description={
           pendingDelete
             ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
