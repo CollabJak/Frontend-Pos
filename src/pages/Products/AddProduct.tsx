@@ -4,6 +4,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
+import Checkbox from "../../components/form/input/Checkbox";
 import TextArea from "../../components/form/input/TextArea";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
@@ -12,7 +13,7 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ProductFormData, productSchema } from "../../Schemas/productSchema";
+import { ProductFormData, productSchema, productStatuses } from "../../Schemas/productSchema";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
@@ -25,6 +26,7 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 export default function AddProduct() {
   const { mutate: createProduct, isPending } = useCreateProduct();
   const [files, setFiles] = useState<unknown[]>([]);
+  type FilePondItem = { file?: File };
   
   const fetchCategoryOptions = createOptionsFetcher<OptionDto>({
     endpoint: "/options/categories",
@@ -47,6 +49,17 @@ export default function AddProduct() {
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      category_id: 0,
+      brand_id: 0,
+      unit_id: 0,
+      status: "active",
+      is_sellable: true,
+      is_purchasable: true,
+      has_variant: false,
+      description: "",
+      barcode: "",
+    },
   });
 
   const onSubmit = (data: ProductFormData) => {
@@ -83,8 +96,9 @@ export default function AddProduct() {
           <div className="space-y-6">
             <FilePond
               files={files as never[]}
-              onupdatefiles={(fileItems: any[]) => {
-                const file = fileItems[0]?.file as File | undefined;
+              onupdatefiles={(fileItems: unknown[]) => {
+                const firstItem = fileItems[0] as FilePondItem | undefined;
+                const file = firstItem?.file;
                 setFiles(fileItems as unknown[]);
   
                 if (file) {
@@ -176,9 +190,9 @@ export default function AddProduct() {
               <Label>Unit</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                value={watch("base_unit_id") ?? null}
+                value={watch("unit_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("base_unit_id", Number(selectedValue ?? 0), {
+                  setValue("unit_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
@@ -189,9 +203,64 @@ export default function AddProduct() {
                 debounceMs={400}
                 searchMinLength={3}
               />
-              {errors.base_unit_id && (
-                <p className="text-red-500">{errors.base_unit_id.message}</p>
+              {errors.unit_id && (
+                <p className="text-red-500">{errors.unit_id.message}</p>
               )}
+            </div>
+
+            <div>
+              <Label htmlFor="product-status">Status</Label>
+              <select
+                {...register("status")}
+                id="product-status"
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              >
+                {productStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              {errors.status && (
+                <p className="text-red-500">{errors.status.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label>Product Flags</Label>
+              <Checkbox
+                id="product-is-sellable"
+                checked={Boolean(watch("is_sellable"))}
+                onChange={(checked) =>
+                  setValue("is_sellable", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Is sellable"
+              />
+              <Checkbox
+                id="product-is-purchasable"
+                checked={Boolean(watch("is_purchasable"))}
+                onChange={(checked) =>
+                  setValue("is_purchasable", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Is purchasable"
+              />
+              <Checkbox
+                id="product-has-variant"
+                checked={Boolean(watch("has_variant"))}
+                onChange={(checked) =>
+                  setValue("has_variant", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Has variant"
+              />
             </div>
 
             <div>
