@@ -7,6 +7,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
+import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
@@ -296,26 +297,61 @@ export default function AddProductVariant() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("is_stock_item")} />
-              <span>Is Stock Item</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("allow_negative_stock")} />
-              <span>Allow Negative Stock</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("track_batch")} />
-              <span>Track Batch</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("track_expiry")} />
-              <span>Track Expiry</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("is_active")} />
-              <span>Is Active</span>
-            </label>
+            <Checkbox
+              id="variant-is-stock-item"
+              checked={Boolean(watch("is_stock_item"))}
+              onChange={(checked) =>
+                setValue("is_stock_item", checked, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              label="Is Stock Item"
+            />
+            <Checkbox
+              id="variant-allow-negative-stock"
+              checked={Boolean(watch("allow_negative_stock"))}
+              onChange={(checked) =>
+                setValue("allow_negative_stock", checked, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              label="Allow Negative Stock"
+            />
+            <Checkbox
+              id="variant-track-batch"
+              checked={Boolean(watch("track_batch"))}
+              onChange={(checked) =>
+                setValue("track_batch", checked, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              label="Track Batch"
+            />
+            <Checkbox
+              id="variant-track-expiry"
+              checked={Boolean(watch("track_expiry"))}
+              onChange={(checked) =>
+                setValue("track_expiry", checked, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              label="Track Expiry"
+            />
+            <Checkbox
+              id="variant-is-active"
+              checked={Boolean(watch("is_active"))}
+              onChange={(checked) =>
+                setValue("is_active", checked, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              label="Is Active"
+            />
           </div>
 
           <div className="space-y-4">

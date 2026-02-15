@@ -3,6 +3,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
+import Checkbox from "../../components/form/input/Checkbox";
 import TextArea from "../../components/form/input/TextArea";
 import Button from "../../components/ui/button/Button";
 import { roundingModeValues, UnitFormData, unitSchema } from "../../Schemas/unitSchema";
@@ -107,15 +108,17 @@ export default function AddUnit() {
 
             <div>
               <Label htmlFor="unit-is-base">Base Unit</Label>
-              <label className="flex items-center gap-2">
-                <input
-                  {...register("is_base_unit")}
-                  type="checkbox"
-                  id="unit-is-base"
-                  className="h-4 w-4"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Set as base inventory unit</span>
-              </label>
+              <Checkbox
+                id="unit-is-base"
+                checked={Boolean(watch("is_base_unit"))}
+                onChange={(checked) =>
+                  setValue("is_base_unit", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Set as base inventory unit"
+              />
               {errors.is_base_unit && (
                 <p className="text-red-500">{errors.is_base_unit.message}</p>
               )}

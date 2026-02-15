@@ -3,6 +3,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
+import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { useCreateUnitConversion } from "../../hooks/useUnitConversions";
@@ -196,22 +197,28 @@ export default function AddUnitConversion() {
 
             <div className="space-y-3">
               <Label>Conversion Usage</Label>
-              <label className="flex items-center gap-2">
-                <input
-                  {...register("is_purchase_conversion")}
-                  type="checkbox"
-                  className="h-4 w-4"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Use for purchase conversion</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  {...register("is_sales_conversion")}
-                  type="checkbox"
-                  className="h-4 w-4"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Use for sales conversion</span>
-              </label>
+              <Checkbox
+                id="unit-conversion-purchase"
+                checked={Boolean(watch("is_purchase_conversion"))}
+                onChange={(checked) =>
+                  setValue("is_purchase_conversion", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Use for purchase conversion"
+              />
+              <Checkbox
+                id="unit-conversion-sales"
+                checked={Boolean(watch("is_sales_conversion"))}
+                onChange={(checked) =>
+                  setValue("is_sales_conversion", checked, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                label="Use for sales conversion"
+              />
               {errors.is_purchase_conversion && (
                 <p className="text-red-500">{errors.is_purchase_conversion.message}</p>
               )}
