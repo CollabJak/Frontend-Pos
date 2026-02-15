@@ -67,7 +67,7 @@ export const useUpdateUnitConversion = () => {
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["unit-conversions"] });
-      queryClient.invalidateQueries({ queryKey: ["unit-conversion", id] });
+      queryClient.invalidateQueries({ queryKey: ["unit-conversions", id] });
       navigate("/unit-conversions");
     },
   });

@@ -10,14 +10,18 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { UnitConversionFormData, unitConversionSchema } from "../../Schemas/unitConversionSchema";
+import {
+  unitConversionRoundingModes,
+  UnitConversionFormData,
+  unitConversionSchema,
+} from "../../Schemas/unitConversionSchema";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
 
 export default function AddUnitConversion() {
   const { mutate: createUnitConversion, isPending } = useCreateUnitConversion();
   
-  const fetchProductOptions = createOptionsFetcher<OptionDto>({
-    endpoint: "/options/products",
+  const fetchProductVariantOptions = createOptionsFetcher<OptionDto>({
+    endpoint: "/options/product-variants",
   });
 
 
@@ -34,6 +38,16 @@ export default function AddUnitConversion() {
     formState: { errors },
   } = useForm<UnitConversionFormData>({
     resolver: zodResolver(unitConversionSchema),
+    defaultValues: {
+      product_variant_id: 0,
+      from_unit_id: 0,
+      to_unit_id: 0,
+      multiplier: 1,
+      precision: 0,
+      rounding_mode: "nearest",
+      is_purchase_conversion: true,
+      is_sales_conversion: false,
+    },
   });
 
   const onSubmit = (data: UnitConversionFormData) => {
@@ -70,24 +84,24 @@ export default function AddUnitConversion() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-name">Product</Label>
+              <Label htmlFor="product-variant-name">Product Variant</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                value={watch("product_id") ?? null}
+                value={watch("product_variant_id") ?? null}
                 onChange={(selectedValue) => {
-                  setValue("product_id", Number(selectedValue ?? 0), {
+                  setValue("product_variant_id", Number(selectedValue ?? 0), {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search product..."
-                fetchOptions={fetchProductOptions}
+                placeholder="Search product variant..."
+                fetchOptions={fetchProductVariantOptions}
                 optionLabel="name"
                 optionValue="id"
                 debounceMs={400}
                 searchMinLength={3}
               />
-              {errors.product_id && (
-                <p className="text-red-500">{errors.product_id.message}</p>
+              {errors.product_variant_id && (
+                <p className="text-red-500">{errors.product_variant_id.message}</p>
               )}
             </div>
 
@@ -139,12 +153,67 @@ export default function AddUnitConversion() {
               <Label htmlFor="unit-conversion-multiplier">Multiplier</Label>
               <Input
                 {...register("multiplier", { valueAsNumber: true })}
-                type="text"
+                type="number"
                 id="unit-conversion-multiplier"
                 placeholder="Input unit conversion multiplier"
               />
               {errors.multiplier && (
                 <p className="text-red-500">{errors.multiplier.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="unit-conversion-precision">Precision Override</Label>
+              <Input
+                {...register("precision", { valueAsNumber: true })}
+                type="number"
+                id="unit-conversion-precision"
+                min={0}
+                placeholder="Input precision override (e.g. 0, 2, 4)"
+              />
+              {errors.precision && (
+                <p className="text-red-500">{errors.precision.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="unit-conversion-rounding-mode">Rounding Mode</Label>
+              <select
+                {...register("rounding_mode")}
+                id="unit-conversion-rounding-mode"
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              >
+                {unitConversionRoundingModes.map((mode) => (
+                  <option key={mode} value={mode}>
+                    {mode}
+                  </option>
+                ))}
+              </select>
+              {errors.rounding_mode && (
+                <p className="text-red-500">{errors.rounding_mode.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label>Conversion Usage</Label>
+              <label className="flex items-center gap-2">
+                <input
+                  {...register("is_purchase_conversion")}
+                  type="checkbox"
+                  className="h-4 w-4"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Use for purchase conversion</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  {...register("is_sales_conversion")}
+                  type="checkbox"
+                  className="h-4 w-4"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Use for sales conversion</span>
+              </label>
+              {errors.is_purchase_conversion && (
+                <p className="text-red-500">{errors.is_purchase_conversion.message}</p>
               )}
             </div>
 
