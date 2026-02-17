@@ -30,6 +30,12 @@ import EditUnit from "./pages/Units/EditUnit";
 import SupplierList from "./pages/Suppliers/SupllierList";
 import AddSupplier from "./pages/Suppliers/AddSupplier";
 import EditSupplier from "./pages/Suppliers/EditSupplier";
+import CustomerGroupList from "./pages/CustomerGroups/CustomerGroupList";
+import AddCustomerGroup from "./pages/CustomerGroups/AddCustomerGroup";
+import EditCustomerGroup from "./pages/CustomerGroups/EditCustomerGroup";
+import CustomerGroupPriceList from "./pages/CustomerGroupPrices/CustomerGroupPriceList";
+import AddCustomerGroupPrice from "./pages/CustomerGroupPrices/AddCustomerGroupPrice";
+import EditCustomerGroupPrice from "./pages/CustomerGroupPrices/EditCustomerGroupPrice";
 import BrandList from "./pages/Brands/BrandList";
 import AddBrand from "./pages/Brands/AddBrand";
 import EditBrand from "./pages/Brands/EditBrand";
@@ -82,10 +88,18 @@ export default function App() {
               <Route path="/suppliers/create" element={<AddSupplier />} />
               <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
 
+              <Route path="/customer-groups" element={<CustomerGroupList />} />
+              <Route path="/customer-groups/create" element={<AddCustomerGroup />} />
+              <Route path="/customer-groups/edit/:id" element={<EditCustomerGroup />} />
+
+              <Route path="/customer-group-prices" element={<CustomerGroupPriceList />} />
+              <Route path="/customer-group-prices/create" element={<AddCustomerGroupPrice />} />
+              <Route path="/customer-group-prices/edit/:id" element={<EditCustomerGroupPrice />} />
+
               <Route path="/locations" element={<LocationList />} />
               <Route path="/locations/create" element={<AddLocation />} />
               <Route path="/locations/edit/:id" element={<EditLocation />} />
-              
+
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />
               <Route path="/brands/edit/:id" element={<EditBrand />} />
