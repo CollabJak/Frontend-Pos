@@ -54,6 +54,9 @@ import EditProductVariant from "./pages/ProductVariants/EditProductVariant";
 import ProductPriceList from "./pages/ProductPrices/ProductPriceList";
 import AddProductPrice from "./pages/ProductPrices/AddProductPrice";
 import EditProductPrice from "./pages/ProductPrices/EditProductPrice";
+import PriceTierList from "./pages/PriceTiers/PriceTierList";
+import AddPriceTier from "./pages/PriceTiers/AddPriceTier";
+import EditPriceTier from "./pages/PriceTiers/EditPriceTier";
 import LocationList from "./pages/Locations/LocationList";
 import AddLocation from "./pages/Locations/AddLocation";
 import EditLocation from "./pages/Locations/EditLocation";
@@ -113,7 +116,9 @@ export default function App() {
               <Route path="/product-prices" element={<ProductPriceList />} />
               <Route path="/product-prices/create" element={<AddProductPrice />} />
               <Route path="/product-prices/edit/:id" element={<EditProductPrice />} />
-
+              <Route path="/price-tiers" element={<PriceTierList />} />
+              <Route path="/price-tiers/create" element={<AddPriceTier />} />
+              <Route path="/price-tiers/edit/:id" element={<EditPriceTier />} />
               <Route path="/unit-conversions" element={<UnitConversionList />} />
               <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
               <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />

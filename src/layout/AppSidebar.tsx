@@ -41,6 +41,7 @@ const navItems: NavItem[] = [
       { name: "Suppliers", path: "/suppliers", pro: false },
       { name: "Customer Groups", path: "/customer-groups", pro: false },
       { name: "Customer Group Prices", path: "/customer-group-prices", pro: false },
+      { name: "Price Tiers", path: "/price-tiers", pro: false },
       { name: "Locations", path: "/locations", pro: false },
       { name: "Brands", path: "/brands", pro: false },
       { name: "Products", path: "/products", pro: false },

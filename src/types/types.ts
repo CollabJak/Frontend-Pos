@@ -12,4 +12,5 @@ export * from "./atributes";
 export * from "./location";
 export * from './customerGroups';
 export * from './customerGroupPrices';
+export * from './priceTier';
 
