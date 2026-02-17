@@ -139,7 +139,7 @@ export default function EditUnitConversion() {
                     shouldValidate: true,
                   });
                 }}
-                displayValue={unitConversion?.from_unit}
+                displayValue={unitConversion?.from_unit ?? undefined}
                 placeholder="Search from unit..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
@@ -162,7 +162,7 @@ export default function EditUnitConversion() {
                     shouldValidate: true,
                   });
                 }}
-                displayValue={unitConversion?.to_unit}
+                displayValue={unitConversion?.to_unit ?? undefined}
                 placeholder="Search to unit..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
@@ -260,3 +260,4 @@ export default function EditUnitConversion() {
     </>
   );
 }
+

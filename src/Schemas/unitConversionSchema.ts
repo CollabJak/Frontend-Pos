@@ -7,7 +7,7 @@ export const unitConversionSchema = z.object({
   from_unit_id: z.number().min(1, "From unit is required").max(255, "From unit is too long"),
   to_unit_id: z.number().min(1, "To unit is required").max(255, "To unit is too long"),
   multiplier: z.number().positive("Conversion multiplier must be a positive number"),
-  precision: z.coerce.number().int("Precision must be an integer").min(0, "Precision must be at least 0"),
+  precision: z.number().int("Precision must be an integer").min(0, "Precision must be at least 0"),
   rounding_mode: z.enum(unitConversionRoundingModes, {
     message: "Rounding mode is required",
   }),

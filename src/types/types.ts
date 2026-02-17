@@ -10,3 +10,6 @@ export * from "./productPrice";
 export * from "./unitConversions";
 export * from "./atributes";
 export * from "./location";
+export * from './customerGroups';
+export * from './customerGroupPrices';
+
