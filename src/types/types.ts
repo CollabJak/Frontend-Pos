@@ -13,4 +13,8 @@ export * from "./location";
 export * from './customerGroups';
 export * from './customerGroupPrices';
 export * from './priceTier';
+export * from './promotions';
+export * from './promotionConditions';
+export * from './promotionActions';
+export * from './promotionProducts';
 
