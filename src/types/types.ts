@@ -13,4 +13,5 @@ export * from "./location";
 export * from './customerGroups';
 export * from './customerGroupPrices';
 export * from './priceTier';
+export * from "./warehouses";
 
