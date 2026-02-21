@@ -75,6 +75,9 @@ import EditLocation from "./pages/Locations/EditLocation";
 import BusinessList from "./pages/Businesses/BusinessList";
 import AddBusiness from "./pages/Businesses/AddBusiness";
 import EditBusiness from "./pages/Businesses/EditBusiness";
+import WarehouseList from "./pages/Warehouses/WarehouseList";
+import AddWarehouse from "./pages/Warehouses/AddWarehouses";
+import EditWarehouse from "./pages/Warehouses/EditWarehouses";
 
 const queryClient = new QueryClient();
 
@@ -121,6 +124,10 @@ export default function App() {
               <Route path="/locations" element={<LocationList />} />
               <Route path="/locations/create" element={<AddLocation />} />
               <Route path="/locations/edit/:id" element={<EditLocation />} />
+
+              <Route path="/warehouses" element={<WarehouseList />} />
+              <Route path="/warehouses/create" element={<AddWarehouse />} />
+              <Route path="/warehouses/edit/:id" element={<EditWarehouse />} />
 
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />
