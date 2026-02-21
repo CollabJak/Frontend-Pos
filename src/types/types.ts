@@ -17,4 +17,5 @@ export * from './promotions';
 export * from './promotionConditions';
 export * from './promotionActions';
 export * from './promotionProducts';
+export * from "./businesses";
 

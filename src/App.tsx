@@ -72,6 +72,9 @@ import EditPromotionProduct from "./pages/PromotionProducts/EditPromotionProduct
 import LocationList from "./pages/Locations/LocationList";
 import AddLocation from "./pages/Locations/AddLocation";
 import EditLocation from "./pages/Locations/EditLocation";
+import BusinessList from "./pages/Businesses/BusinessList";
+import AddBusiness from "./pages/Businesses/AddBusiness";
+import EditBusiness from "./pages/Businesses/EditBusiness";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +97,10 @@ export default function App() {
               <Route path="/categories" element={<CategoryList />} />
               <Route path="/categories/create" element={<AddCategory />} />
               <Route path="/categories/edit/:id" element={<EditCategory />} />
+
+              <Route path="/businesses" element={<BusinessList />} />
+              <Route path="/businesses/create" element={<AddBusiness />} />
+              <Route path="/businesses/edit/:id" element={<EditBusiness />} />
 
               <Route path="/units" element={<UnitList />} />
               <Route path="/units/create" element={<AddUnit />} />
