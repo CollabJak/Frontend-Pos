@@ -57,6 +57,18 @@ import EditProductPrice from "./pages/ProductPrices/EditProductPrice";
 import PriceTierList from "./pages/PriceTiers/PriceTierList";
 import AddPriceTier from "./pages/PriceTiers/AddPriceTier";
 import EditPriceTier from "./pages/PriceTiers/EditPriceTier";
+import PromotionList from "./pages/Promotions/PromotionList";
+import AddPromotion from "./pages/Promotions/AddPromotion";
+import EditPromotion from "./pages/Promotions/EditPromotion";
+import PromotionConditionList from "./pages/PromotionConditions/PromotionConditionList";
+import AddPromotionCondition from "./pages/PromotionConditions/AddPromotionCondition";
+import EditPromotionCondition from "./pages/PromotionConditions/EditPromotionCondition";
+import PromotionActionList from "./pages/PromotionActions/PromotionActionList";
+import AddPromotionAction from "./pages/PromotionActions/AddPromotionAction";
+import EditPromotionAction from "./pages/PromotionActions/EditPromotionAction";
+import PromotionProductList from "./pages/PromotionProducts/PromotionProductList";
+import AddPromotionProduct from "./pages/PromotionProducts/AddPromotionProduct";
+import EditPromotionProduct from "./pages/PromotionProducts/EditPromotionProduct";
 import LocationList from "./pages/Locations/LocationList";
 import AddLocation from "./pages/Locations/AddLocation";
 import EditLocation from "./pages/Locations/EditLocation";
@@ -126,6 +138,18 @@ export default function App() {
               <Route path="/price-tiers" element={<PriceTierList />} />
               <Route path="/price-tiers/create" element={<AddPriceTier />} />
               <Route path="/price-tiers/edit/:id" element={<EditPriceTier />} />
+              <Route path="/promotions" element={<PromotionList />} />
+              <Route path="/promotions/create" element={<AddPromotion />} />
+              <Route path="/promotions/edit/:id" element={<EditPromotion />} />
+              <Route path="/promotion-conditions" element={<PromotionConditionList />} />
+              <Route path="/promotion-conditions/create" element={<AddPromotionCondition />} />
+              <Route path="/promotion-conditions/edit/:id" element={<EditPromotionCondition />} />
+              <Route path="/promotion-actions" element={<PromotionActionList />} />
+              <Route path="/promotion-actions/create" element={<AddPromotionAction />} />
+              <Route path="/promotion-actions/edit/:id" element={<EditPromotionAction />} />
+              <Route path="/promotion-products" element={<PromotionProductList />} />
+              <Route path="/promotion-products/create" element={<AddPromotionProduct />} />
+              <Route path="/promotion-products/edit/:id" element={<EditPromotionProduct />} />
               <Route path="/unit-conversions" element={<UnitConversionList />} />
               <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
               <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />

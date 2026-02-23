@@ -14,7 +14,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(async (config) => {
   if (config.url?.includes("/login") || config.url?.includes("/register")) {
-    const baseURLSanctum = import.meta.env.VITE_API_BASE_URL_SANCTUM || "http://localhost:8000";
+    const baseURLSanctum = import.meta.env.VITE_API_BASE_SANCTUM || "http://localhost:8000";
     await axios.get(`${baseURLSanctum}/sanctum/csrf-cookie`, {
         withCredentials: true,
         withXSRFToken: true,
