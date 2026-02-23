@@ -42,7 +42,18 @@ export const useCreateWarehouse = () => {
 
   return useMutation<Warehouse, AxiosError<ApiErrorResponse>, CreateWarehousePayload>({
     mutationFn: async (payload: CreateWarehousePayload) => {
-      const response = await apiClient.post("/warehouses", payload);
+      const formData = new FormData();
+      formData.append("name", payload.name);
+      formData.append("address", payload.address);
+      formData.append("phone", payload.phone);
+
+      if (payload.photo instanceof File) {
+        formData.append("photo", payload.photo);
+      }
+
+      const response = await apiClient.post("/warehouses", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data.data;
     },
     onSuccess: () => {
@@ -62,7 +73,19 @@ export const useUpdateWarehouse = () => {
     { id: number } & CreateWarehousePayload // payload
   >({
     mutationFn: async ({ id, ...payload }) => {
-      const response = await apiClient.put(`/warehouses/${id}`, payload);
+      const formData = new FormData();
+      formData.append("name", payload.name);
+      formData.append("address", payload.address);
+      formData.append("phone", payload.phone);
+      formData.append("_method", "PUT");
+
+      if (payload.photo instanceof File) {
+        formData.append("photo", payload.photo);
+      }
+
+      const response = await apiClient.post(`/warehouses/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
