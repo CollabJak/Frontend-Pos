@@ -16,9 +16,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const publicPaths = new Set([
+      "/",
+      "/login",
+      "/signin",
+      "/signup",
+      "/verify-email",
+      "/forgot-password",
+      "/reset-password",
+    ]);
 
     // ✅ Skip fetching the user if on login page
-    if (location.pathname === "/login" || location.pathname === "/") {
+    if (publicPaths.has(location.pathname)) {
       setLoading(false);
       return;
     }
@@ -61,7 +70,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const register = async (name: string, email: string, phone: string, photo: File | null, password: string, password_confirmation: string) => {
     try {
       await authService.register(name, email, phone, photo, password, password_confirmation);
-      navigate("/verify-email", { replace: true });
+      navigate("/verify-email", { 
+        replace: true,
+        state: { email }
+      });
     } catch (error) {
       console.error("Registration failed", error);
       throw error;

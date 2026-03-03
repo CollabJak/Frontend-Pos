@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
@@ -10,10 +10,14 @@ import { useRoleRedirect } from "../../hooks/useRoleRedirect";
 
 export default function SignInForm() {
   const { login } = useAuth();
-  const [ email, setEmail ] = useState("");
+  const [searchParams] = useSearchParams();
+  const [ email, setEmail ] = useState(searchParams.get("email") || "");
   const [ password, setPassword ] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const isEmailVerified = searchParams.get("verified") === "true";
+  const isPasswordReset = searchParams.get("reset") === "success";
+  const errorMessage = searchParams.get("error");
 
   useRoleRedirect();
 
@@ -101,6 +105,27 @@ export default function SignInForm() {
             </div>
             <form onSubmit={handleLogin}>
               <div className="space-y-6">
+                {isEmailVerified && (
+                  <div className="p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      ✓ Email verified successfully! Please login with your email and password.
+                    </p>
+                  </div>
+                )}
+                {isPasswordReset && (
+                  <div className="p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      Password reset successful. Please sign in with your new password.
+                    </p>
+                  </div>
+                )}
+                {errorMessage && (
+                  <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
+                    <p className="text-sm text-red-800 dark:text-red-200">
+                      ✗ {errorMessage === "invalid_verification_link" ? "Invalid verification link" : errorMessage}
+                    </p>
+                  </div>
+                )}
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
@@ -138,7 +163,7 @@ export default function SignInForm() {
                     </span>
                   </div>
                   <Link
-                    to="/reset-password"
+                    to="/forgot-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
                     Forgot password?

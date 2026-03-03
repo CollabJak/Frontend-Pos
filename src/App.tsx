@@ -3,6 +3,8 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./providers/AuthProvider";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
+import ForgotPassword from "./pages/AuthPages/ForgotPassword";
+import ResetPassword from "./pages/AuthPages/ResetPassword";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -78,6 +80,7 @@ import EditBusiness from "./pages/Businesses/EditBusiness";
 import WarehouseList from "./pages/Warehouses/WarehouseList";
 import AddWarehouse from "./pages/Warehouses/AddWarehouses";
 import EditWarehouse from "./pages/Warehouses/EditWarehouses";
+import VerifyEmail from "./pages/Auth/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -91,7 +94,12 @@ export default function App() {
           <Routes>
             {/* Auth Layout */}
             <Route path="/" element={<SignIn />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:token/:email" element={<ResetPassword />} />
 
             {/* Dashboard Layout */}
             <Route element={<AppLayout />}>

@@ -3,11 +3,74 @@ import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Checkbox from "../form/input/Checkbox";
+import { FilePond, registerPlugin } from "react-filepond";
+import "filepond/dist/filepond.min.css";
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "../../hooks/useAuth";
+
+registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+
+type FilePondItem = { file?: File };
+
+const signUpSchema = z
+  .object({
+    name: z.string().min(1, "Name is required").max(255),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(1, "Phone is required").max(20),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    passwordConfirmation: z.string().min(8, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords don't match",
+    path: ["passwordConfirmation"],
+  });
+
+type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
+  const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [files, setFiles] = useState<unknown[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data: SignUpFormData) => {
+    setIsSubmitting(true);
+    setServerError(null);
+    try {
+      const firstItem = files[0] as FilePondItem | undefined;
+      const file = firstItem?.file || null;
+
+      await registerUser(
+        data.name,
+        data.email,
+        data.phone,
+        file instanceof File ? file : null,
+        data.password,
+        data.passwordConfirmation
+      );
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Registration failed";
+      setServerError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
@@ -82,33 +145,27 @@ export default function SignUpForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-5">
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {/* <!-- First Name --> */}
-                  <div className="sm:col-span-1">
-                    <Label>
-                      First Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="fname"
-                      name="fname"
-                      placeholder="Enter your first name"
-                    />
+                {serverError && (
+                  <div className="p-3 text-sm text-error-500 bg-error-50 rounded-lg">
+                    {serverError}
                   </div>
-                  {/* <!-- Last Name --> */}
-                  <div className="sm:col-span-1">
-                    <Label>
-                      Last Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="lname"
-                      name="lname"
-                      placeholder="Enter your last name"
-                    />
-                  </div>
+                )}
+                {/* <!-- Name --> */}
+                <div>
+                  <Label>
+                    Name<span className="text-error-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    {...register("name")}
+                  />
+                  {errors.name && (
+                    <p className="mt-2 text-sm text-error-500">{errors.name.message}</p>
+                  )}
                 </div>
                 {/* <!-- Email --> */}
                 <div>
@@ -118,9 +175,51 @@ export default function SignUpForm() {
                   <Input
                     type="email"
                     id="email"
-                    name="email"
                     placeholder="Enter your email"
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="mt-2 text-sm text-error-500">{errors.email.message}</p>
+                  )}
+                </div>
+                {/* Phone */}
+                <div>
+                  <Label>
+                    Phone<span className="text-error-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    id="phone"
+                    placeholder="Enter your phone number"
+                    {...register("phone")}
+                  />
+                  {errors.phone && (
+                    <p className="mt-2 text-sm text-error-500">{errors.phone.message}</p>
+                  )}
+                </div>
+                {/* Photo */}
+                <div>
+                  <Label>
+                    Photo<span className="text-error-500"></span>
+                  </Label>
+                  <FilePond
+                    files={files as never[]}
+                    onupdatefiles={(fileItems: unknown[]) => {
+                      setFiles(fileItems as unknown[]);
+                      const firstItem = fileItems[0] as FilePondItem | undefined;
+                      const file = firstItem?.file;
+
+                      if (file instanceof File) {
+                        setPhotoError(null);
+                      } else if (fileItems.length > 0) {
+                        setPhotoError("Invalid file type");
+                      }
+                    }}
+                    acceptedFileTypes={["image/png", "image/jpeg", "image/jpg", "image/gif"]}
+                    name="photo"
+                    labelIdle='Drag & Drop atau <span class="filepond--label-action">Browse</span>'
+                  />
+                  {photoError && <p className="mt-2 text-sm text-error-500">{photoError}</p>}
                 </div>
                 {/* <!-- Password --> */}
                 <div>
@@ -131,6 +230,7 @@ export default function SignUpForm() {
                     <Input
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
+                      {...register("password")}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -143,29 +243,44 @@ export default function SignUpForm() {
                       )}
                     </span>
                   </div>
+                  {errors.password && (
+                    <p className="mt-2 text-sm text-error-500">{errors.password.message}</p>
+                  )}
                 </div>
-                {/* <!-- Checkbox --> */}
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    className="w-5 h-5"
-                    checked={isChecked}
-                    onChange={setIsChecked}
-                  />
-                  <p className="inline-block font-normal text-gray-500 dark:text-gray-400">
-                    By creating an account means you agree to the{" "}
-                    <span className="text-gray-800 dark:text-white/90">
-                      Terms and Conditions,
-                    </span>{" "}
-                    and our{" "}
-                    <span className="text-gray-800 dark:text-white">
-                      Privacy Policy
+                {/* <!-- Confirm Password --> */}
+                <div>
+                  <Label>
+                    Confirm Password<span className="text-error-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="Confirm your password"
+                      type={showPasswordConfirmation ? "text" : "password"}
+                      {...register("passwordConfirmation")}
+                    />
+                    <span
+                      onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    >
+                      {showPasswordConfirmation ? (
+                        <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      ) : (
+                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      )}
                     </span>
-                  </p>
+                  </div>
+                  {errors.passwordConfirmation && (
+                    <p className="mt-2 text-sm text-error-500">{errors.passwordConfirmation.message}</p>
+                  )}
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Sign Up
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? "Creating Account..." : "Sign Up"}
                   </button>
                 </div>
               </div>
