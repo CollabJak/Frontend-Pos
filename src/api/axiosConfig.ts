@@ -5,7 +5,7 @@ import { handleSuccess, handleError } from "../lib/toastHelper";
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api",
   withCredentials: true,
-  withXSRFToken: true,
+  withXSRFToken: false, // API routes dengan Sanctum tidak butuh CSRF protection
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
