@@ -26,20 +26,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       "/reset-password",
     ]);
 
-    // ✅ Skip fetching the user if on login page
-    if (publicPaths.has(location.pathname)) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const isGoogleLogin = searchParams.get("google_login") === "success";
+
+    // ✅ Skip fetching the user if on login page (unless Google OAuth callback)
+    if (publicPaths.has(location.pathname) && !isGoogleLogin) {
       setLoading(false);
       return;
     }
-    
-    const initializeUser = async () => { 
+
+    const initializeUser = async () => {
 
       try {
         const userData = await authService.fetchUser();
-        if (userData) { 
+        if (userData) {
           setUser(userData);
+
+          // If this was a Google login callback, clean up the URL and navigate
+          if (isGoogleLogin) {
+            window.history.replaceState({}, '', location.pathname);
+          }
         } else {
-          setUser(null); 
+          setUser(null);
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -70,7 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const register = async (name: string, email: string, phone: string, photo: File | null, password: string, password_confirmation: string) => {
     try {
       await authService.register(name, email, phone, photo, password, password_confirmation);
-      navigate("/verify-email", { 
+      navigate("/verify-email", {
         replace: true,
         state: { email }
       });
