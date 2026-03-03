@@ -41,7 +41,7 @@ export default function VerifyEmail() {
         return;
       }
       
-      const response = await apiClient.post("/email/verification-notification", { email });
+      await apiClient.post("/email/verification-notification", { email });
       setResendMessage("Verification email sent! Check your inbox.");
     } catch (error) {
       console.error("Resend error:", error);
