@@ -81,6 +81,10 @@ import WarehouseList from "./pages/Warehouses/WarehouseList";
 import AddWarehouse from "./pages/Warehouses/AddWarehouses";
 import EditWarehouse from "./pages/Warehouses/EditWarehouses";
 import VerifyEmail from "./pages/Auth/VerifyEmail";
+import InventoryList from "./pages/Inventory/InventoryList";
+import InventoryDetail from "./pages/Inventory/InventoryDetail";
+import InventoryMovements from "./pages/Inventory/InventoryMovements";
+import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
 
 const queryClient = new QueryClient();
 
@@ -136,6 +140,11 @@ export default function App() {
               <Route path="/warehouses" element={<WarehouseList />} />
               <Route path="/warehouses/create" element={<AddWarehouse />} />
               <Route path="/warehouses/edit/:id" element={<EditWarehouse />} />
+
+              <Route path="/inventory" element={<InventoryList />} />
+              <Route path="/inventory/movements" element={<InventoryMovements />} />
+              <Route path="/inventory/adjustment" element={<InventoryAdjustment />} />
+              <Route path="/inventory/:variantId" element={<InventoryDetail />} />
 
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />

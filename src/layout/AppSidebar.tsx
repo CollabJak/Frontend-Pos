@@ -60,6 +60,15 @@ const navItems: NavItem[] = [
     path: "/warehouses",
   },
   {
+    icon: <ListIcon />,
+    name: "Inventory",
+    subItems: [
+      { name: "Inventory List", path: "/inventory", pro: false },
+      { name: "Inventory Movements", path: "/inventory/movements", pro: false },
+      { name: "Stock Adjustment", path: "/inventory/adjustment", pro: false },
+    ],
+  },
+  {
     icon: <BoxIcon />,
     name: "Businesses",
     path: "/businesses",
