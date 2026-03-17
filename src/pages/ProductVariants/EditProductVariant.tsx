@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
@@ -21,6 +21,7 @@ import {
   ProductVariantFormData,
   productVariantSchema,
 } from "../../Schemas/productVariantSchema";
+import VariantLocationMapping from "../../components/product-variants/VariantLocationMapping";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -77,6 +78,7 @@ export default function EditProductVariant() {
     control,
     name: "attributes_json",
   });
+  const [activeTab, setActiveTab] = useState<"general" | "locations">("general");
 
   useEffect(() => {
     if (!productVariant) return;
@@ -149,32 +151,58 @@ export default function EditProductVariant() {
     <>
       <PageMeta title="Edit Product Variant" description="Edit product variant page" />
       <PageBreadcrumb pageTitle="Edit Product Variant" />
-      <ComponentCard title="Edit Product Variant Form">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {errors.root && <p className="text-red-500">{errors.root.message}</p>}
+      <div className="mb-6 inline-flex rounded-lg border border-gray-200 p-1 dark:border-gray-800">
+        <button
+          type="button"
+          onClick={() => setActiveTab("general")}
+          className={`rounded-md px-4 py-2 text-sm font-medium transition ${
+            activeTab === "general"
+              ? "bg-brand-500 text-white"
+              : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          }`}
+        >
+          General
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("locations")}
+          className={`rounded-md px-4 py-2 text-sm font-medium transition ${
+            activeTab === "locations"
+              ? "bg-brand-500 text-white"
+              : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          }`}
+        >
+          Locations
+        </button>
+      </div>
 
-          <div>
-            <Label>Product</Label>
-            <AsyncSearchSelect<SelectOption>
-              label=""
-              value={watch("product_id") || null}
-              displayValue={productVariant?.product?.name}
-              onChange={(selectedValue) => {
-                setValue("product_id", Number(selectedValue ?? 0), {
-                  shouldValidate: true,
-                });
-              }}
-              placeholder="Search product..."
-              fetchOptions={fetchProductOptions}
-              optionLabel="name"
-              optionValue="id"
-              debounceMs={400}
-              searchMinLength={3}
-            />
-            {errors.product_id && (
-              <p className="text-red-500">{errors.product_id.message}</p>
-            )}
-          </div>
+      {activeTab === "general" && (
+        <ComponentCard title="Edit Product Variant Form">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {errors.root && <p className="text-red-500">{errors.root.message}</p>}
+
+            <div>
+              <Label>Product</Label>
+              <AsyncSearchSelect<SelectOption>
+                label=""
+                value={watch("product_id") || null}
+                displayValue={productVariant?.product?.name}
+                onChange={(selectedValue) => {
+                  setValue("product_id", Number(selectedValue ?? 0), {
+                    shouldValidate: true,
+                  });
+                }}
+                placeholder="Search product..."
+                fetchOptions={fetchProductOptions}
+                optionLabel="name"
+                optionValue="id"
+                debounceMs={400}
+                searchMinLength={3}
+              />
+              {errors.product_id && (
+                <p className="text-red-500">{errors.product_id.message}</p>
+              )}
+            </div>
 
           <div>
             <Label htmlFor="variant-name">Variant Name</Label>
@@ -483,13 +511,22 @@ export default function EditProductVariant() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating product variant..." : "Update Product Variant"}
-            </Button>
-          </div>
-        </form>
-      </ComponentCard>
+            <div>
+              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+                {isPending ? "Updating product variant..." : "Update Product Variant"}
+              </Button>
+            </div>
+          </form>
+        </ComponentCard>
+      )}
+
+      {activeTab === "locations" && (
+        <ComponentCard
+          title={`Variant Locations${productVariant?.name ? ` - ${productVariant.name}` : ""}`}
+        >
+          <VariantLocationMapping variantId={variantId} />
+        </ComponentCard>
+      )}
     </>
   );
 }
