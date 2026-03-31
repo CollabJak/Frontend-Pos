@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import apiClient from "../api/axiosConfig";
+import { fetchInventoryMovements } from "../services/api/inventoryService";
 import { InventoryMovementItem, PaginatedApiResponse } from "../types/types";
 
 interface UseInventoryMovementsParams {
@@ -30,20 +30,15 @@ export const useInventoryMovements = ({
       dateTo ?? "",
       movementType ?? "",
     ],
-    queryFn: async () => {
-      const response = await apiClient.get("/inventory/movements", {
-        params: {
-          page,
-          ...(product ? { product } : {}),
-          ...(locationId ? { location_id: locationId } : {}),
-          ...(dateFrom ? { date_from: dateFrom } : {}),
-          ...(dateTo ? { date_to: dateTo } : {}),
-          ...(movementType ? { movement_type: movementType } : {}),
-        },
-      });
-
-      return response.data.data;
-    },
+    queryFn: () =>
+      fetchInventoryMovements({
+        page,
+        product,
+        locationId,
+        dateFrom,
+        dateTo,
+        movementType,
+      }),
     placeholderData: (previousData) => previousData,
   });
 };

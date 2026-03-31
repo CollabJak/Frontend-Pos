@@ -85,6 +85,7 @@ import InventoryList from "./pages/Inventory/InventoryList";
 import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
 import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
+import POSPage from "./pages/POS/POSPage";
 
 const queryClient = new QueryClient();
 
@@ -145,6 +146,7 @@ export default function App() {
               <Route path="/inventory/movements" element={<InventoryMovements />} />
               <Route path="/inventory/adjustment" element={<InventoryAdjustment />} />
               <Route path="/inventory/:variantId" element={<InventoryDetail />} />
+              <Route path="/pos" element={<POSPage />} />
 
               <Route path="/brands" element={<BrandList />} />
               <Route path="/brands/create" element={<AddBrand />} />

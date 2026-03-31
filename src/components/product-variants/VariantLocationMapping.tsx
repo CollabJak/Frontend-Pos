@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { z } from "zod";
 import Button from "../ui/button/Button";
 import apiClient from "../../api/axiosConfig";
 import { ApiErrorResponse } from "../../types/api";
+import { useZodForm } from "../../hooks/form/useZodForm";
 
 interface VariantLocationItem {
   location_id: number;
@@ -25,10 +27,27 @@ const normalizeEnabled = (value: boolean | number): boolean => {
 
 const sortNumbers = (values: number[]): number[] => [...values].sort((a, b) => a - b);
 
+const variantLocationSchema = z.object({
+  locations: z.array(z.number().int().positive()),
+});
+
 export default function VariantLocationMapping({ variantId }: VariantLocationMappingProps) {
   const queryClient = useQueryClient();
-  const [selectedLocationIds, setSelectedLocationIds] = useState<number[]>([]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useZodForm({
+    schema: variantLocationSchema,
+    defaultValues: {
+      locations: [],
+    },
+  });
+
+  const selectedLocationIds = watch("locations");
 
   const { data: locations = [], isLoading } = useQuery<
     VariantLocationItem[],
@@ -47,8 +66,8 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
       .filter((item) => normalizeEnabled(item.enabled))
       .map((item) => Number(item.location_id));
 
-    setSelectedLocationIds(enabledIds);
-  }, [locations]);
+    setValue("locations", enabledIds);
+  }, [locations, setValue]);
 
   const initialEnabledIds = useMemo(
     () =>
@@ -93,25 +112,30 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
   });
 
   const handleToggleLocation = (locationId: number) => {
-    setSelectedLocationIds((prev) => {
-      if (prev.includes(locationId)) {
-        return prev.filter((id) => id !== locationId);
+    setValue("locations", (() => {
+      if (selectedLocationIds.includes(locationId)) {
+        return selectedLocationIds.filter((id) => id !== locationId);
       }
 
-      return [...prev, locationId];
-    });
+      return [...selectedLocationIds, locationId];
+    })());
     setErrorMessage("");
   };
 
-  const handleSave = () => {
-    saveMutation.mutate({ locations: currentSelectedIds });
-  };
+  const handleSave = handleSubmit((values) => {
+    saveMutation.mutate({ locations: sortNumbers(values.locations) });
+  });
 
   return (
     <div className="space-y-5">
       {errorMessage && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/10 dark:text-red-400">
           {errorMessage}
+        </p>
+      )}
+      {errors.locations?.message && (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/10 dark:text-red-400">
+          {errors.locations.message}
         </p>
       )}
 
