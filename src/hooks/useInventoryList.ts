@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import apiClient from "../api/axiosConfig";
+import { fetchInventoryList } from "../services/api/inventoryService";
 import { InventoryListItem, PaginatedApiResponse } from "../types/types";
 
 interface UseInventoryListParams {
@@ -16,17 +16,7 @@ export const useInventoryList = ({
 }: UseInventoryListParams) => {
   return useQuery<PaginatedApiResponse<InventoryListItem>, AxiosError>({
     queryKey: ["inventory", page, search ?? "", locationId ?? null],
-    queryFn: async () => {
-      const response = await apiClient.get("/inventory", {
-        params: {
-          page,
-          ...(search ? { search } : {}),
-          ...(locationId ? { location_id: locationId } : {}),
-        },
-      });
-
-      return response.data.data;
-    },
+    queryFn: () => fetchInventoryList({ page, search, locationId }),
     placeholderData: (previousData) => previousData,
   });
 };

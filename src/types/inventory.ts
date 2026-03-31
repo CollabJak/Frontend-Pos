@@ -1,6 +1,3 @@
-import { z } from "zod";
-import { inventoryAdjustmentSchema } from "../Schemas/inventoryAdjustmentSchema";
-
 export interface InventoryProductRef {
   id: number;
   name: string;
@@ -70,4 +67,10 @@ export interface InventoryMovementItem {
   location?: InventoryLocationRef | null;
 }
 
-export type InventoryAdjustmentPayload = z.infer<typeof inventoryAdjustmentSchema>;
+export interface InventoryAdjustmentPayload {
+  product_variant_id: number;
+  location_id: number;
+  qty: number;
+  reason: string;
+  cost?: number;
+}

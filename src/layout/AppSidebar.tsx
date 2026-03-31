@@ -15,6 +15,7 @@ import {
   TableIcon,
   UserCircleIcon,
   BoxIcon,
+  DollarLineIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 
@@ -67,6 +68,11 @@ const navItems: NavItem[] = [
       { name: "Inventory Movements", path: "/inventory/movements", pro: false },
       { name: "Stock Adjustment", path: "/inventory/adjustment", pro: false },
     ],
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "POS",
+    path: "/pos",
   },
   {
     icon: <BoxIcon />,

@@ -1,177 +1,161 @@
-import { FormEvent, useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useEffect } from "react";
+import { Controller } from "react-hook-form";
 import ComponentCard from "../common/ComponentCard";
 import Label from "../form/Label";
 import { Input } from "../form/input/InputField";
 import TextArea from "../form/input/TextArea";
 import Button from "../ui/button/Button";
-import apiClient from "../../api/axiosConfig";
 import { useInventoryDetail } from "../../hooks/useInventoryDetail";
-import { ApiErrorResponse } from "../../types/api";
-import { InventoryLocationBalance } from "../../types/inventory";
+import { useInventoryAdjustment } from "../../hooks/useInventoryAdjustment";
+import { useInventoryStore } from "../../stores/inventoryStore";
 import LocationSelect from "./LocationSelect";
 import VariantSelect from "./VariantSelect";
 import StockInfoPanel from "./StockInfoPanel";
-
-interface InventoryAdjustmentPayload {
-  product_variant_id: number;
-  location_id: number;
-  qty: number;
-  reason: string;
-  cost?: number;
-}
-
-const toNumber = (value: unknown): number => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-};
+import { useZodForm } from "../../hooks/form/useZodForm";
+import {
+  stockAdjustmentSchema,
+  type StockAdjustmentFormValues,
+} from "../../Schemas/stock.schema";
+import { toInventoryAdjustmentPayload } from "../../forms/stock/stockAdjustmentForm";
 
 export default function StockAdjustmentForm() {
-  const queryClient = useQueryClient();
-  const [locationId, setLocationId] = useState<number | null>(null);
-  const [variantId, setVariantId] = useState<number | null>(null);
-  const [qtyInput, setQtyInput] = useState("");
-  const [costInput, setCostInput] = useState("");
-  const [reason, setReason] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    selectedLocationId,
+    selectedVariantId,
+    stockData,
+    changeLocation,
+    changeVariant,
+    updateFromInventoryDetail,
+  } = useInventoryStore();
+
+  const {
+    control,
+    register,
+    watch,
+    handleSubmit,
+    reset,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors, isValid },
+  } = useZodForm({
+    schema: stockAdjustmentSchema,
+    mode: "onChange",
+    defaultValues: {
+      location_id: selectedLocationId ?? undefined,
+      variant_id: selectedVariantId ?? undefined,
+      qty: undefined,
+      cost: undefined,
+      reason: "",
+    },
+  });
+
+  const locationId = watch("location_id") ?? null;
+  const variantId = watch("variant_id") ?? null;
+  const qtyValue = watch("qty");
+
+  const mutation = useInventoryAdjustment();
 
   const { data: inventoryDetail, isFetching: isFetchingStock } = useInventoryDetail(
     variantId ?? 0
   );
 
-  const selectedBalance = useMemo<InventoryLocationBalance | null>(() => {
-    if (!locationId) {
-      return null;
-    }
+  useEffect(() => {
+    updateFromInventoryDetail(inventoryDetail);
+  }, [inventoryDetail, updateFromInventoryDetail]);
 
-    const balances = inventoryDetail?.balances ?? [];
+  const currentStock = stockData.currentStock;
+  const reservedStock = stockData.reservedStock;
+  const availableStock = stockData.availableStock;
 
-    return (
-      balances.find((balance) => Number(balance.location_id) === locationId) ?? null
-    );
-  }, [inventoryDetail, locationId]);
-
-  const currentStock = toNumber(selectedBalance?.qty_on_hand);
-  const reservedStock = toNumber(selectedBalance?.qty_reserved);
-  const availableStock =
-    selectedBalance?.available !== undefined
-      ? toNumber(selectedBalance.available)
-      : currentStock - reservedStock;
-
-  const qtyValue = Number(qtyInput);
-  const hasValidQty = Number.isFinite(qtyValue) && qtyValue !== 0;
-  const newStockPreview = hasValidQty ? currentStock + qtyValue : currentStock;
+  const parsedQty = Number(qtyValue);
+  const hasValidQty = Number.isFinite(parsedQty) && parsedQty !== 0;
+  const newStockPreview = hasValidQty ? currentStock + parsedQty : currentStock;
   const isInvalidPreview = hasValidQty && newStockPreview < 0;
 
-  const mutation = useMutation<
-    unknown,
-    AxiosError<ApiErrorResponse>,
-    InventoryAdjustmentPayload
-  >({
-    mutationFn: async (payload) => {
-      const response = await apiClient.post("/inventory/adjustment", payload);
-      return response.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inventory"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-detail"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-batches"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-movements"] });
-      setQtyInput("");
-      setCostInput("");
-      setReason("");
-      setErrorMessage("");
-    },
-    onError: (error) => {
-      const fallbackMessage = "Failed to submit stock adjustment.";
-      setErrorMessage(error.response?.data?.message ?? fallbackMessage);
-    },
-  });
+  const onSubmit = (values: StockAdjustmentFormValues) => {
+    clearErrors("root");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage("");
-
-    if (!locationId) {
-      setErrorMessage("Please select a location first.");
+    const stockPreview = currentStock + values.qty;
+    if (stockPreview < 0) {
+      setError("qty", {
+        type: "manual",
+        message: "New stock preview cannot be below zero.",
+      });
       return;
     }
 
-    if (!variantId) {
-      setErrorMessage("Please select a product variant.");
-      return;
-    }
-
-    if (!hasValidQty) {
-      setErrorMessage("Adjustment quantity must be a non-zero number.");
-      return;
-    }
-
-    if (isInvalidPreview) {
-      setErrorMessage("New stock preview cannot be below zero.");
-      return;
-    }
-
-    if (!reason.trim()) {
-      setErrorMessage("Reason is required.");
-      return;
-    }
-
-    const payload: InventoryAdjustmentPayload = {
-      product_variant_id: variantId,
-      location_id: locationId,
-      qty: qtyValue,
-      reason: reason.trim(),
-    };
-
-    if (costInput.trim() !== "") {
-      const costValue = Number(costInput);
-
-      if (!Number.isFinite(costValue) || costValue <= 0) {
-        setErrorMessage("Cost must be greater than zero.");
-        return;
-      }
-
-      payload.cost = costValue;
-    }
-
-    mutation.mutate(payload);
+    mutation.mutate(toInventoryAdjustmentPayload(values), {
+      onSuccess: () => {
+        reset({
+          location_id: values.location_id,
+          variant_id: values.variant_id,
+          qty: undefined,
+          cost: undefined,
+          reason: "",
+        });
+      },
+      onError: (error) => {
+        setError("root", {
+          type: "server",
+          message: error.response?.data?.message ?? "Failed to submit stock adjustment.",
+        });
+      },
+    });
   };
 
   const isSubmitDisabled =
-    mutation.isPending ||
-    !locationId ||
-    !variantId ||
-    !hasValidQty ||
-    isInvalidPreview ||
-    !reason.trim();
+    mutation.isPending || !locationId || !variantId || !hasValidQty || isInvalidPreview || !isValid;
 
   return (
     <ComponentCard title="Stock Adjustment">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {errorMessage && (
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {errors.root?.message && (
           <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/10 dark:text-red-400">
-            {errorMessage}
+            {errors.root.message}
           </p>
         )}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <LocationSelect
-            value={locationId}
-            onChange={(value) => {
-              setLocationId(value);
-              setVariantId(null);
-              setErrorMessage("");
-            }}
+          <Controller
+            name="location_id"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <LocationSelect
+                  value={field.value ?? null}
+                  onChange={(value) => {
+                    field.onChange(value ?? undefined);
+                    changeLocation(value);
+                    setValue("variant_id", undefined, { shouldValidate: true });
+                    clearErrors(["location_id", "variant_id", "root"]);
+                  }}
+                />
+                {errors.location_id?.message && (
+                  <p className="mt-1 text-xs text-error-500">{errors.location_id.message}</p>
+                )}
+              </div>
+            )}
           />
-          <VariantSelect
-            value={variantId}
-            onChange={(value) => {
-              setVariantId(value);
-              setErrorMessage("");
-            }}
-            disabled={!locationId}
+          <Controller
+            name="variant_id"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <VariantSelect
+                  value={field.value ?? null}
+                  onChange={(value) => {
+                    field.onChange(value ?? undefined);
+                    changeVariant(value);
+                    clearErrors(["variant_id", "root"]);
+                  }}
+                  disabled={!locationId}
+                />
+                {errors.variant_id?.message && (
+                  <p className="mt-1 text-xs text-error-500">{errors.variant_id.message}</p>
+                )}
+              </div>
+            )}
           />
         </div>
 
@@ -200,12 +184,10 @@ export default function StockAdjustmentForm() {
               id="adjustment-qty"
               type="number"
               step="0.000001"
-              value={qtyInput}
-              onChange={(event) => {
-                setQtyInput(event.target.value);
-                setErrorMessage("");
-              }}
               placeholder="e.g. -3 or 5"
+              error={Boolean(errors.qty)}
+              hint={errors.qty?.message}
+              {...register("qty", { valueAsNumber: true })}
             />
           </div>
 
@@ -216,26 +198,34 @@ export default function StockAdjustmentForm() {
               type="number"
               min="0"
               step="0.000001"
-              value={costInput}
-              onChange={(event) => {
-                setCostInput(event.target.value);
-                setErrorMessage("");
-              }}
               placeholder="Input cost if needed"
+              error={Boolean(errors.cost)}
+              hint={errors.cost?.message}
+              {...register("cost", {
+                setValueAs: (value) => (value === "" ? undefined : Number(value)),
+              })}
             />
           </div>
         </div>
 
         <div>
           <Label htmlFor="adjustment-reason">Reason</Label>
-          <TextArea
-            value={reason}
-            onChange={(value) => {
-              setReason(value);
-              setErrorMessage("");
-            }}
-            rows={4}
-            placeholder="Write adjustment reason"
+          <Controller
+            name="reason"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                value={field.value}
+                onChange={(value) => {
+                  field.onChange(value);
+                  clearErrors("root");
+                }}
+                rows={4}
+                placeholder="Write adjustment reason"
+                error={Boolean(errors.reason)}
+                hint={errors.reason?.message}
+              />
+            )}
           />
         </div>
 

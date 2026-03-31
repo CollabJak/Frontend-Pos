@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import apiClient from "../api/axiosConfig";
+import { fetchInventoryBatches } from "../services/api/inventoryService";
 import { InventoryBatch, PaginatedApiResponse } from "../types/types";
 
 interface UseInventoryBatchesParams {
@@ -16,13 +16,7 @@ export const useInventoryBatches = ({
 }: UseInventoryBatchesParams) => {
   return useQuery<PaginatedApiResponse<InventoryBatch>, AxiosError>({
     queryKey: ["inventory-batches", variantId, page],
-    queryFn: async () => {
-      const response = await apiClient.get(`/inventory/${variantId}/batches`, {
-        params: { page },
-      });
-
-      return response.data.data;
-    },
+    queryFn: () => fetchInventoryBatches({ variantId, page }),
     enabled: enabled && variantId > 0,
     placeholderData: (previousData) => previousData,
   });
