@@ -1,3 +1,5 @@
+import type { ReceiptItem, ReceiptPayload } from "./receipt";
+
 export interface PosProduct {
   variantId: number;
   productName: string;
@@ -22,27 +24,11 @@ export interface PosCheckoutPayload {
   device_id?: string;
 }
 
-export interface PosCheckoutReceiptItem {
-  variant_id: number;
-  qty: number;
-  unit_price: number;
-  discount: number;
-  line_total: number;
-}
-
 export interface PosCheckoutResult {
   order_id: number;
   total: number;
   paid: number;
   change: number;
-  items: PosCheckoutReceiptItem[];
-  receipt: {
-    order_number?: string;
-    order_status?: string;
-    payment_status?: string;
-    payment_method?: string;
-    paid_at?: string | null;
-    location_id?: number;
-    cashier_id?: number;
-  };
+  items: ReceiptItem[];
+  receipt: ReceiptPayload;
 }
