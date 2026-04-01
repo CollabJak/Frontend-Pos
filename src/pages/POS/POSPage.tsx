@@ -14,10 +14,12 @@ import { useAuth } from "../../hooks/useAuth";
 import { useStockRealtime } from "../../hooks/useStockRealtime";
 import { checkoutPos, fetchPosProductsByLocation } from "../../services/api/posService";
 import { usePosStore } from "../../stores/pos.store";
-import type { ApiErrorResponse } from "../../types/types";
+import type { ApiErrorResponse, PosCheckoutResult } from "../../types/types";
 import { useZodForm } from "../../hooks/form/useZodForm";
 import { posCheckoutSchema } from "../../Schemas/pos.schema";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
+
+const POS_TAX_RATE = 0.11;
 
 const resolveErrorMessage = (error: unknown, fallback: string): string => {
   if (isAxiosError<ApiErrorResponse>(error)) {
@@ -43,6 +45,7 @@ export default function POSPage() {
   const [cartError, setCartError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState("");
+  const [checkoutResult, setCheckoutResult] = useState<PosCheckoutResult | null>(null);
 
   const {
     selectedLocation,
@@ -62,6 +65,7 @@ export default function POSPage() {
     control,
     handleSubmit,
     setValue,
+    watch,
     clearErrors,
     setError,
     formState: { errors },
@@ -73,6 +77,10 @@ export default function POSPage() {
         variant_id: item.variantId,
         qty: item.qty,
       })),
+      payment: {
+        method: "cash",
+        amount_paid: undefined,
+      },
       device_id: deviceId,
     },
   });
@@ -114,11 +122,17 @@ export default function POSPage() {
     setValue("device_id", deviceId);
   }, [deviceId, setValue]);
 
+  const amountPaidValue = watch("payment.amount_paid");
+
   const filteredProducts = toGridItems(search);
 
-  const total = useMemo(() => {
+  const subTotal = useMemo(() => {
     return cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   }, [cartItems]);
+
+  const total = useMemo(() => {
+    return subTotal * (1 + POS_TAX_RATE);
+  }, [subTotal]);
 
   const handleLocationChange = useCallback(
     (locationId: number | null) => {
@@ -126,6 +140,7 @@ export default function POSPage() {
       setProducts([]);
       setSearch("");
       setCartError(null);
+      setCheckoutResult(null);
       clearErrors(["location_id", "items", "root"]);
     },
     [clearErrors, setProducts, setSelectedLocation]
@@ -135,6 +150,7 @@ export default function POSPage() {
     (product: ProductGridItem) => {
       const error = addToCart(product.variantId);
       setCartError(error);
+      setCheckoutResult(null);
       clearErrors(["items", "root"]);
     },
     [addToCart, clearErrors]
@@ -144,6 +160,7 @@ export default function POSPage() {
     (variantId: number) => {
       const error = increaseQty(variantId);
       setCartError(error);
+      setCheckoutResult(null);
       clearErrors(["items", "root"]);
     },
     [clearErrors, increaseQty]
@@ -153,6 +170,7 @@ export default function POSPage() {
     (variantId: number) => {
       decreaseQty(variantId);
       setCartError(null);
+      setCheckoutResult(null);
       clearErrors(["items", "root"]);
     },
     [clearErrors, decreaseQty]
@@ -162,9 +180,26 @@ export default function POSPage() {
     (variantId: number) => {
       removeItem(variantId);
       setCartError(null);
+      setCheckoutResult(null);
       clearErrors(["items", "root"]);
     },
     [clearErrors, removeItem]
+  );
+
+  const handleAmountPaidChange = useCallback(
+    (nextValue: number | "") => {
+      setCheckoutResult(null);
+      const normalizedValue = nextValue === "" ? undefined : nextValue;
+      setValue("payment.amount_paid", normalizedValue, {
+        shouldValidate: normalizedValue !== undefined,
+        shouldDirty: true,
+      });
+      if (normalizedValue === undefined) {
+        clearErrors("payment.amount_paid");
+      }
+      clearErrors("root");
+    },
+    [clearErrors, setValue]
   );
 
   const handleCheckout = useCallback(
@@ -213,7 +248,10 @@ export default function POSPage() {
 
         while (true) {
           try {
-            await checkoutPos(checkoutPayload, { idempotencyKey: currentKey });
+            const response = await checkoutPos(checkoutPayload, { idempotencyKey: currentKey });
+            if (response.data) {
+              setCheckoutResult(response.data);
+            }
             break;
           } catch (error: unknown) {
             if (isAxiosError(error) && error.response?.status === 409 && attempts < maxRetries) {
@@ -228,6 +266,11 @@ export default function POSPage() {
 
         clearCart();
         clearErrors();
+        setValue("payment.amount_paid", undefined, {
+          shouldValidate: false,
+          shouldDirty: false,
+        });
+        clearErrors("payment.amount_paid");
         setIdempotencyKey("");
         await productsQuery.refetch();
       } catch (error: unknown) {
@@ -262,6 +305,7 @@ export default function POSPage() {
       idempotencyKey,
       isProcessing,
       productsQuery,
+      setValue,
       setError,
     ]
   );
@@ -271,7 +315,11 @@ export default function POSPage() {
     : null;
 
   const checkoutErrorMessage =
-    errors.root?.message ?? errors.items?.message ?? errors.location_id?.message ?? null;
+    errors.root?.message ??
+    errors.payment?.amount_paid?.message ??
+    errors.items?.message ??
+    errors.location_id?.message ??
+    null;
 
   return (
     <>
@@ -329,9 +377,18 @@ export default function POSPage() {
         paymentSection={
           <ComponentCard title="Payment Section">
             <PaymentPanel
-              total={total}
+              estimatedTotal={total}
+              authoritativeTotal={checkoutResult?.total ?? null}
+              paid={checkoutResult?.paid ?? null}
+              change={checkoutResult?.change ?? null}
+              amountPaid={typeof amountPaidValue === "number" ? amountPaidValue : ""}
+              onAmountPaidChange={handleAmountPaidChange}
               isPaying={isProcessing}
-              disabled={cartItems.length === 0 || selectedLocation === null}
+              disabled={
+                cartItems.length === 0 ||
+                selectedLocation === null ||
+                !(typeof amountPaidValue === "number" && Number.isFinite(amountPaidValue) && amountPaidValue > 0)
+              }
               errorMessage={checkoutErrorMessage}
               onPayNow={handleCheckout}
             />
