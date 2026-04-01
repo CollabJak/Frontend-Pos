@@ -1,5 +1,5 @@
 import apiClient from "../../api/axiosConfig";
-import type { ApiResponse, PosCheckoutPayload, PosProduct } from "../../types/types";
+import type { ApiResponse, PosCheckoutPayload, PosCheckoutResult, PosProduct } from "../../types/types";
 
 interface RawPosProduct {
   variant_id?: number | string;
@@ -88,12 +88,12 @@ interface CheckoutPosOptions {
 export const checkoutPos = async (
   payload: PosCheckoutPayload,
   options: CheckoutPosOptions = {}
-): Promise<ApiResponse<unknown>> => {
+): Promise<ApiResponse<PosCheckoutResult>> => {
   const headers: Record<string, string> = {};
   if (typeof options.idempotencyKey === "string" && options.idempotencyKey.trim().length > 0) {
     headers["X-Idempotency-Key"] = options.idempotencyKey.trim();
   }
 
-  const response = await apiClient.post<ApiResponse<unknown>>("/pos/checkout", payload, { headers });
+  const response = await apiClient.post<ApiResponse<PosCheckoutResult>>("/pos/checkout", payload, { headers });
   return response.data;
 };
