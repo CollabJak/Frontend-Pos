@@ -14,6 +14,8 @@ interface PaymentPanelProps {
   disabled: boolean;
   errorMessage: string | null;
   onPayNow: () => void;
+  onReprintReceipt?: () => void;
+  reprintDisabled?: boolean;
 }
 
 export default function PaymentPanel({
@@ -27,6 +29,8 @@ export default function PaymentPanel({
   disabled,
   errorMessage,
   onPayNow,
+  onReprintReceipt,
+  reprintDisabled = false,
 }: PaymentPanelProps) {
   return (
     <div className="space-y-4">
@@ -87,6 +91,12 @@ export default function PaymentPanel({
       <Button className="w-full" onClick={onPayNow} disabled={disabled || isPaying}>
         {isPaying ? "Processing..." : "Pay Now"}
       </Button>
+
+      {onReprintReceipt ? (
+        <Button className="w-full" variant="outline" onClick={onReprintReceipt} disabled={reprintDisabled}>
+          Reprint Receipt
+        </Button>
+      ) : null}
     </div>
   );
 }

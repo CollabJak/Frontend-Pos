@@ -1,5 +1,5 @@
 import apiClient from "../../api/axiosConfig";
-import type { ApiResponse, PosCheckoutPayload, PosCheckoutResult, PosProduct } from "../../types/types";
+import type { ApiResponse, PosCheckoutPayload, PosCheckoutResult, PosProduct, ReceiptPayload } from "../../types/types";
 
 interface RawPosProduct {
   variant_id?: number | string;
@@ -96,4 +96,13 @@ export const checkoutPos = async (
 
   const response = await apiClient.post<ApiResponse<PosCheckoutResult>>("/pos/checkout", payload, { headers });
   return response.data;
+};
+
+export const fetchReceiptByOrderId = async (orderId: number): Promise<ReceiptPayload> => {
+  const response = await apiClient.get<ApiResponse<ReceiptPayload>>(`/receipt/${orderId}`);
+  if (!response.data.data) {
+    throw new Error("Receipt payload is empty");
+  }
+
+  return response.data.data;
 };
