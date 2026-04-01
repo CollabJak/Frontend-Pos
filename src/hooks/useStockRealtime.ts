@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import socket from "../lib/socket";
+import socket, { connectSocketWithToken, refreshSocketTokenAndReconnect } from "../lib/socket";
 import { usePosStore } from "../stores/pos.store";
 
 interface StockUpdatedPayload {
+  business_id?: number | string;
   variant_id?: number | string;
   location_id?: number | string;
   qty?: number | string;
@@ -24,24 +25,34 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
   const updateStock = usePosStore((state) => state.updateStock);
   const debounceTimersRef = useRef<Map<string, number>>(new Map());
   const bufferedPayloadRef = useRef<Map<string, { variantId: number; locationId: number; qty: number }>>(new Map());
+  const refreshingTokenRef = useRef(false);
 
   useEffect(() => {
     if (!businessId) {
       return;
     }
 
-    const onConnect = () => {
-      socket.emit("join_business", businessId);
-    };
+    const onConnect = () => undefined;
 
     const onStockUpdated = (payload: StockUpdatedPayload) => {
+      const eventBusinessId = toPositiveInt(payload.business_id);
       const variantId = toPositiveInt(payload.variant_id);
       const locationId = toPositiveInt(payload.location_id);
       const rawQty = toNumber(payload.qty);
       const eventDeviceId = typeof payload.device_id === "string" ? payload.device_id : "";
 
       // Strict payload validation to protect client state from malformed events.
-      if (variantId === null || locationId === null || !Number.isFinite(rawQty) || rawQty < 0) {
+      if (
+        eventBusinessId === null ||
+        variantId === null ||
+        locationId === null ||
+        !Number.isFinite(rawQty) ||
+        rawQty < 0
+      ) {
+        return;
+      }
+
+      if (eventBusinessId !== businessId) {
         return;
       }
 
@@ -76,20 +87,42 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
     };
 
     const onConnectError = (error: Error) => {
-      // Keep lightweight logging; socket handles auto-reconnect.
-      // eslint-disable-next-line no-console
-      console.error("socket connect_error:", error.message);
+      const message = (error.message || "").toLowerCase();
+      const isAuthError =
+        message.includes("unauthorized") ||
+        message.includes("jwt") ||
+        message.includes("token") ||
+        message.includes("expired");
+
+      if (!isAuthError) {
+        // eslint-disable-next-line no-console
+        console.error("socket connect_error:", error.message);
+        return;
+      }
+
+      if (refreshingTokenRef.current) {
+        return;
+      }
+
+      refreshingTokenRef.current = true;
+      void refreshSocketTokenAndReconnect(deviceId)
+        .catch((refreshError: unknown) => {
+          // eslint-disable-next-line no-console
+          console.error("socket token refresh failed:", refreshError);
+        })
+        .finally(() => {
+          refreshingTokenRef.current = false;
+        });
     };
 
     socket.on("connect", onConnect);
     socket.on("stock.updated", onStockUpdated);
     socket.on("connect_error", onConnectError);
 
-    if (!socket.connected) {
-      socket.connect();
-    } else {
-      onConnect();
-    }
+    void connectSocketWithToken(deviceId).catch((error: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error("socket connect failed:", error);
+    });
 
     return () => {
       socket.off("connect", onConnect);
@@ -101,6 +134,10 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
       });
       debounceTimersRef.current.clear();
       bufferedPayloadRef.current.clear();
+
+      if (socket.connected) {
+        socket.disconnect();
+      }
     };
   }, [businessId, selectedLocation, deviceId, updateStock]);
 };
