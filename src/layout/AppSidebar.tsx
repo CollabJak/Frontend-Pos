@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
@@ -18,12 +18,16 @@ import {
   DollarLineIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { useAuth } from "../hooks/useAuth";
+import { hasAccess } from "../utils/rbac";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  roles?: string[];
+  permissions?: string[];
+  subItems?: { name: string; path: string; pro?: boolean; new?: boolean; roles?: string[]; permissions?: string[] }[];
 };
 
 const navItems: NavItem[] = [
@@ -35,49 +39,54 @@ const navItems: NavItem[] = [
   {
     icon: <BoxIcon />,
     name: "Products",
+    permissions: ["product.view"],
     subItems: [
-      { name: "Categories", path: "/categories", pro: false },
-      { name: "Units", path: "/units", pro: false },
-      { name: "Unit Conversions", path: "/unit-conversions", pro: false },
-      { name: "Suppliers", path: "/suppliers", pro: false },
-      { name: "Customer Groups", path: "/customer-groups", pro: false },
-      { name: "Customer Group Prices", path: "/customer-group-prices", pro: false },
-      { name: "Price Tiers", path: "/price-tiers", pro: false },
-      { name: "Promotions", path: "/promotions", pro: false },
-      { name: "Promotion Conditions", path: "/promotion-conditions", pro: false },
-      { name: "Promotion Actions", path: "/promotion-actions", pro: false },
-      { name: "Promotion Products", path: "/promotion-products", pro: false },
-      { name: "Locations", path: "/locations", pro: false },
-      { name: "Brands", path: "/brands", pro: false },
-      { name: "Products", path: "/products", pro: false },
-      { name: "Product Variants", path: "/product-variants", pro: false },
-      { name: "Product Prices", path: "/product-prices", pro: false },
-      { name: "Atributes", path: "/atributes", pro: false }
+      { name: "Categories", path: "/categories", pro: false, permissions: ["category.view"] },
+      { name: "Units", path: "/units", pro: false, permissions: ["unit.view"] },
+      { name: "Unit Conversions", path: "/unit-conversions", pro: false, permissions: ["unit_conversion.view"] },
+      { name: "Suppliers", path: "/suppliers", pro: false, permissions: ["supplier.view"] },
+      { name: "Customer Groups", path: "/customer-groups", pro: false, permissions: ["customer_group.view"] },
+      { name: "Customer Group Prices", path: "/customer-group-prices", pro: false, permissions: ["customer_group_price.view"] },
+      { name: "Price Tiers", path: "/price-tiers", pro: false, permissions: ["price_tier.view"] },
+      { name: "Promotions", path: "/promotions", pro: false, permissions: ["promotion.view"] },
+      { name: "Promotion Conditions", path: "/promotion-conditions", pro: false, permissions: ["promotion_condition.view"] },
+      { name: "Promotion Actions", path: "/promotion-actions", pro: false, permissions: ["promotion_action.view"] },
+      { name: "Promotion Products", path: "/promotion-products", pro: false, permissions: ["promotion_product.view"] },
+      { name: "Locations", path: "/locations", pro: false, permissions: ["location.view"] },
+      { name: "Brands", path: "/brands", pro: false, permissions: ["brand.view"] },
+      { name: "Products", path: "/products", pro: false, permissions: ["product.view"] },
+      { name: "Product Variants", path: "/product-variants", pro: false, permissions: ["product_variant.view"] },
+      { name: "Product Prices", path: "/product-prices", pro: false, permissions: ["product_price.view"] },
+      { name: "Atributes", path: "/atributes", pro: false, permissions: ["atribute.view"] }
     ],
   },
   {
     icon: <ListIcon />,
     name: "Warehouse",
     path: "/warehouses",
+    permissions: ["warehouse.view"],
   },
   {
     icon: <ListIcon />,
     name: "Inventory",
+    permissions: ["inventory.view"],
     subItems: [
-      { name: "Inventory List", path: "/inventory", pro: false },
-      { name: "Inventory Movements", path: "/inventory/movements", pro: false },
-      { name: "Stock Adjustment", path: "/inventory/adjustment", pro: false },
+      { name: "Inventory List", path: "/inventory", pro: false, permissions: ["inventory.view"] },
+      { name: "Inventory Movements", path: "/inventory/movements", pro: false, permissions: ["inventory.movements"] },
+      { name: "Stock Adjustment", path: "/inventory/adjustment", pro: false, permissions: ["inventory.adjustment"] },
     ],
   },
   {
     icon: <DollarLineIcon />,
     name: "POS",
     path: "/pos",
+    permissions: ["pos.view"],
   },
   {
     icon: <BoxIcon />,
     name: "Businesses",
     path: "/businesses",
+    roles: [],
   },
   {
     icon: <CalenderIcon />,
@@ -90,13 +99,24 @@ const navItems: NavItem[] = [
     path: "/profile",
   },
   {
+    name: "Settings",
+    icon: <PlugInIcon />,
+    permissions: ["business.view"],
+    subItems: [
+      { name: "Roles", path: "/roles", pro: false, permissions: ["business.view"] },
+      { name: "Permissions", path: "/permissions", pro: false, permissions: ["business.view"] },
+    ],
+  },
+  {
     name: "Forms",
     icon: <ListIcon />,
+    roles: [],
     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
   },
   {
     name: "Tables",
     icon: <TableIcon />,
+    roles: [],
     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
   },
   {
@@ -113,6 +133,7 @@ const othersItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Charts",
+    roles: [],
     subItems: [
       { name: "Line Chart", path: "/line-chart", pro: false },
       { name: "Bar Chart", path: "/bar-chart", pro: false },
@@ -121,6 +142,7 @@ const othersItems: NavItem[] = [
   {
     icon: <BoxCubeIcon />,
     name: "UI Elements",
+    roles: [],
     subItems: [
       { name: "Alerts", path: "/alerts", pro: false },
       { name: "Avatar", path: "/avatars", pro: false },
@@ -142,7 +164,25 @@ const othersItems: NavItem[] = [
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { user } = useAuth();
   const location = useLocation();
+
+  const userRoles = user?.roles || [];
+  const userPermissions = user?.permissions || [];
+
+  const filteredNavItems = useMemo(() => navItems
+    .filter((item) => hasAccess(userRoles, userPermissions, item.roles, item.permissions))
+    .map((item) => ({
+      ...item,
+      subItems: item.subItems?.filter((sub) => hasAccess(userRoles, userPermissions, sub.roles, sub.permissions)),
+    })), [userRoles, userPermissions]);
+
+  const filteredOthersItems = useMemo(() => othersItems
+    .filter((item) => hasAccess(userRoles, userPermissions, item.roles, item.permissions))
+    .map((item) => ({
+      ...item,
+      subItems: item.subItems?.filter((sub) => hasAccess(userRoles, userPermissions, sub.roles, sub.permissions)),
+    })), [userRoles, userPermissions]);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -162,7 +202,7 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+      const items = menuType === "main" ? filteredNavItems : filteredOthersItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -181,7 +221,7 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [location, isActive]);
+  }, [location, isActive, filteredNavItems, filteredOthersItems]);
 
   useEffect(() => {
     if (openSubmenu !== null) {
@@ -212,7 +252,7 @@ const AppSidebar: React.FC = () => {
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (
         <li key={nav.name}>
-          {nav.subItems ? (
+          {nav.subItems && nav.subItems.length > 0 ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
@@ -265,7 +305,7 @@ const AppSidebar: React.FC = () => {
               </Link>
             )
           )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {nav.subItems && nav.subItems.length > 0 && (isExpanded || isHovered || isMobileOpen) && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -384,7 +424,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(filteredNavItems, "main")}
             </div>
             <div className="">
               <h2
@@ -399,7 +439,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(othersItems, "others")}
+              {renderMenuItems(filteredOthersItems, "others")}
             </div>
           </div>
         </nav>

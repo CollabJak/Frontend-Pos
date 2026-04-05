@@ -1,7 +1,8 @@
 import { io } from "socket.io-client";
 import { fetchSocketToken } from "../services/api/socketService";
+import { runtimeConfig } from "../utils/runtimeConfig";
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL ?? "http://localhost:3001";
+const SOCKET_SERVER_URL = runtimeConfig.socketServerUrl;
 
 const socket = io(SOCKET_SERVER_URL, {
   autoConnect: false,
@@ -17,20 +18,20 @@ const socket = io(SOCKET_SERVER_URL, {
 
 let pendingTokenRequest: Promise<string> | null = null;
 
-const getFreshToken = async (deviceId: string): Promise<string> => {
+const getFreshToken = async (): Promise<string> => {
   if (pendingTokenRequest) {
     return pendingTokenRequest;
   }
 
-  pendingTokenRequest = fetchSocketToken(deviceId).finally(() => {
+  pendingTokenRequest = fetchSocketToken().finally(() => {
     pendingTokenRequest = null;
   });
 
   return pendingTokenRequest;
 };
 
-export const connectSocketWithToken = async (deviceId: string): Promise<void> => {
-  const token = await getFreshToken(deviceId);
+export const connectSocketWithToken = async (): Promise<void> => {
+  const token = await getFreshToken();
   socket.auth = { token };
 
   if (!socket.connected) {
@@ -38,8 +39,8 @@ export const connectSocketWithToken = async (deviceId: string): Promise<void> =>
   }
 };
 
-export const refreshSocketTokenAndReconnect = async (deviceId: string): Promise<void> => {
-  const token = await getFreshToken(deviceId);
+export const refreshSocketTokenAndReconnect = async (): Promise<void> => {
+  const token = await getFreshToken();
   socket.auth = { token };
 
   if (socket.connected) {

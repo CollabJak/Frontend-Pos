@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./providers/AuthProvider";
 import SignIn from "./pages/AuthPages/SignIn";
@@ -81,11 +81,14 @@ import WarehouseList from "./pages/Warehouses/WarehouseList";
 import AddWarehouse from "./pages/Warehouses/AddWarehouses";
 import EditWarehouse from "./pages/Warehouses/EditWarehouses";
 import VerifyEmail from "./pages/Auth/VerifyEmail";
+import RoleList from "./pages/Roles/RoleList";
+import PermissionList from "./pages/Roles/PermissionList";
 import InventoryList from "./pages/Inventory/InventoryList";
 import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
 import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
 import POSPage from "./pages/POS/POSPage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -107,105 +110,168 @@ export default function App() {
             <Route path="/reset-password/:token/:email" element={<ResetPassword />} />
 
             {/* Dashboard Layout */}
-            <Route element={<AppLayout />}>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index path="/dashboard" element={<Home />} />
 
-              <Route path="/categories" element={<CategoryList />} />
-              <Route path="/categories/create" element={<AddCategory />} />
-              <Route path="/categories/edit/:id" element={<EditCategory />} />
+              {/* Master Data Permissions */}
+              <Route element={<ProtectedRoute allowedPermissions={["category.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/categories" element={<CategoryList />} />
+                <Route path="/categories/create" element={<AddCategory />} />
+                <Route path="/categories/edit/:id" element={<EditCategory />} />
+              </Route>
 
-              <Route path="/businesses" element={<BusinessList />} />
-              <Route path="/businesses/create" element={<AddBusiness />} />
-              <Route path="/businesses/edit/:id" element={<EditBusiness />} />
+              <Route element={<ProtectedRoute allowedPermissions={["unit.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/units" element={<UnitList />} />
+                <Route path="/units/create" element={<AddUnit />} />
+                <Route path="/units/edit/:id" element={<EditUnit />} />
+              </Route>
 
-              <Route path="/units" element={<UnitList />} />
-              <Route path="/units/create" element={<AddUnit />} />
-              <Route path="/units/edit/:id" element={<EditUnit />} />
+              <Route element={<ProtectedRoute allowedPermissions={["unit_conversion.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/unit-conversions" element={<UnitConversionList />} />
+                <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
+                <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />
+              </Route>
 
-              <Route path="/suppliers" element={<SupplierList />} />
-              <Route path="/suppliers/create" element={<AddSupplier />} />
-              <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+              <Route element={<ProtectedRoute allowedPermissions={["supplier.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/suppliers" element={<SupplierList />} />
+                <Route path="/suppliers/create" element={<AddSupplier />} />
+                <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+              </Route>
 
-              <Route path="/customer-groups" element={<CustomerGroupList />} />
-              <Route path="/customer-groups/create" element={<AddCustomerGroup />} />
-              <Route path="/customer-groups/edit/:id" element={<EditCustomerGroup />} />
+              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/customer-groups" element={<CustomerGroupList />} />
+                <Route path="/customer-groups/create" element={<AddCustomerGroup />} />
+                <Route path="/customer-groups/edit/:id" element={<EditCustomerGroup />} />
+              </Route>
 
-              <Route path="/customer-group-prices" element={<CustomerGroupPriceList />} />
-              <Route path="/customer-group-prices/create" element={<AddCustomerGroupPrice />} />
-              <Route path="/customer-group-prices/edit/:id" element={<EditCustomerGroupPrice />} />
+              <Route element={<ProtectedRoute allowedPermissions={["customer_group_price.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/customer-group-prices" element={<CustomerGroupPriceList />} />
+                <Route path="/customer-group-prices/create" element={<AddCustomerGroupPrice />} />
+                <Route path="/customer-group-prices/edit/:id" element={<EditCustomerGroupPrice />} />
+              </Route>
 
-              <Route path="/locations" element={<LocationList />} />
-              <Route path="/locations/create" element={<AddLocation />} />
-              <Route path="/locations/edit/:id" element={<EditLocation />} />
+              <Route element={<ProtectedRoute allowedPermissions={["location.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/locations" element={<LocationList />} />
+                <Route path="/locations/create" element={<AddLocation />} />
+                <Route path="/locations/edit/:id" element={<EditLocation />} />
+              </Route>
 
-              <Route path="/warehouses" element={<WarehouseList />} />
-              <Route path="/warehouses/create" element={<AddWarehouse />} />
-              <Route path="/warehouses/edit/:id" element={<EditWarehouse />} />
+              <Route element={<ProtectedRoute allowedPermissions={["warehouse.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/warehouses" element={<WarehouseList />} />
+                <Route path="/warehouses/create" element={<AddWarehouse />} />
+                <Route path="/warehouses/edit/:id" element={<EditWarehouse />} />
+              </Route>
 
-              <Route path="/inventory" element={<InventoryList />} />
-              <Route path="/inventory/movements" element={<InventoryMovements />} />
-              <Route path="/inventory/adjustment" element={<InventoryAdjustment />} />
-              <Route path="/inventory/:variantId" element={<InventoryDetail />} />
-              <Route path="/pos" element={<POSPage />} />
+              <Route element={<ProtectedRoute allowedPermissions={["inventory.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/inventory" element={<InventoryList />} />
+                <Route path="/inventory/movements" element={<InventoryMovements />} />
+                <Route path="/inventory/adjustment" element={<InventoryAdjustment />} />
+                <Route path="/inventory/:variantId" element={<InventoryDetail />} />
+              </Route>
 
-              <Route path="/brands" element={<BrandList />} />
-              <Route path="/brands/create" element={<AddBrand />} />
-              <Route path="/brands/edit/:id" element={<EditBrand />} />
+              <Route element={<ProtectedRoute allowedPermissions={["brand.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/brands" element={<BrandList />} />
+                <Route path="/brands/create" element={<AddBrand />} />
+                <Route path="/brands/edit/:id" element={<EditBrand />} />
+              </Route>
 
-              <Route path="/products" element={<ProductList />} />
-              <Route path="/products/create" element={<AddProduct />} />
-              <Route path="/products/edit/:id" element={<EditProduct />} />
-              <Route path="/product-variants" element={<ProductVariantList />} />
-              <Route path="/product-variants/create" element={<AddProductVariant />} />
-              <Route path="/product-variants/edit/:id" element={<EditProductVariant />} />
-              <Route path="/product-prices" element={<ProductPriceList />} />
-              <Route path="/product-prices/create" element={<AddProductPrice />} />
-              <Route path="/product-prices/edit/:id" element={<EditProductPrice />} />
-              <Route path="/price-tiers" element={<PriceTierList />} />
-              <Route path="/price-tiers/create" element={<AddPriceTier />} />
-              <Route path="/price-tiers/edit/:id" element={<EditPriceTier />} />
-              <Route path="/promotions" element={<PromotionList />} />
-              <Route path="/promotions/create" element={<AddPromotion />} />
-              <Route path="/promotions/edit/:id" element={<EditPromotion />} />
-              <Route path="/promotion-conditions" element={<PromotionConditionList />} />
-              <Route path="/promotion-conditions/create" element={<AddPromotionCondition />} />
-              <Route path="/promotion-conditions/edit/:id" element={<EditPromotionCondition />} />
-              <Route path="/promotion-actions" element={<PromotionActionList />} />
-              <Route path="/promotion-actions/create" element={<AddPromotionAction />} />
-              <Route path="/promotion-actions/edit/:id" element={<EditPromotionAction />} />
-              <Route path="/promotion-products" element={<PromotionProductList />} />
-              <Route path="/promotion-products/create" element={<AddPromotionProduct />} />
-              <Route path="/promotion-products/edit/:id" element={<EditPromotionProduct />} />
-              <Route path="/unit-conversions" element={<UnitConversionList />} />
-              <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
-              <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />
+              <Route element={<ProtectedRoute allowedPermissions={["product.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/products" element={<ProductList />} />
+                <Route path="/products/create" element={<AddProduct />} />
+                <Route path="/products/edit/:id" element={<EditProduct />} />
+              </Route>
 
-              <Route path="/atributes" element={<AtributeList />} />
-              <Route path="/atributes/create" element={<AddAtribute />} />
-              <Route path="/atributes/edit/:id" element={<EditAtribute />} />
+              <Route element={<ProtectedRoute allowedPermissions={["product_variant.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/product-variants" element={<ProductVariantList />} />
+                <Route path="/product-variants/create" element={<AddProductVariant />} />
+                <Route path="/product-variants/edit/:id" element={<EditProductVariant />} />
+              </Route>
 
-              {/* Others Page */}
+              <Route element={<ProtectedRoute allowedPermissions={["product_price.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/product-prices" element={<ProductPriceList />} />
+                <Route path="/product-prices/create" element={<AddProductPrice />} />
+                <Route path="/product-prices/edit/:id" element={<EditProductPrice />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["price_tier.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/price-tiers" element={<PriceTierList />} />
+                <Route path="/price-tiers/create" element={<AddPriceTier />} />
+                <Route path="/price-tiers/edit/:id" element={<EditPriceTier />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["promotion.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/promotions" element={<PromotionList />} />
+                <Route path="/promotions/create" element={<AddPromotion />} />
+                <Route path="/promotions/edit/:id" element={<EditPromotion />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["promotion_condition.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/promotion-conditions" element={<PromotionConditionList />} />
+                <Route path="/promotion-conditions/create" element={<AddPromotionCondition />} />
+                <Route path="/promotion-conditions/edit/:id" element={<EditPromotionCondition />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["promotion_action.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/promotion-actions" element={<PromotionActionList />} />
+                <Route path="/promotion-actions/create" element={<AddPromotionAction />} />
+                <Route path="/promotion-actions/edit/:id" element={<EditPromotionAction />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["promotion_product.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/promotion-products" element={<PromotionProductList />} />
+                <Route path="/promotion-products/create" element={<AddPromotionProduct />} />
+                <Route path="/promotion-products/edit/:id" element={<EditPromotionProduct />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["atribute.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/atributes" element={<AtributeList />} />
+                <Route path="/atributes/create" element={<AddAtribute />} />
+                <Route path="/atributes/edit/:id" element={<EditAtribute />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["pos.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/pos" element={<POSPage />} />
+              </Route>
+
+              {/* Roles: Admin, Manager Only (Superuser bypass via rbac.ts) */}
+              <Route element={<ProtectedRoute allowedPermissions={["business.view"]}><Outlet /></ProtectedRoute>}>
+                <Route path="/roles" element={<RoleList />} />
+                <Route path="/permissions" element={<PermissionList />} />
+                <Route path="/businesses" element={<BusinessList />} />
+                <Route path="/businesses/create" element={<AddBusiness />} />
+                <Route path="/businesses/edit/:id" element={<EditBusiness />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedRoles={[]}><Outlet /></ProtectedRoute>}>
+                {/* Forms */}
+                <Route path="/form-elements" element={<FormElements />} />
+
+                {/* Tables */}
+                <Route path="/basic-tables" element={<BasicTables />} />
+
+                {/* Ui Elements */}
+                <Route path="/alerts" element={<Alerts />} />
+                <Route path="/avatars" element={<Avatars />} />
+                <Route path="/badge" element={<Badges />} />
+                <Route path="/buttons" element={<Buttons />} />
+                <Route path="/images" element={<Images />} />
+                <Route path="/videos" element={<Videos />} />
+
+                {/* Charts */}
+                <Route path="/line-chart" element={<LineChart />} />
+                <Route path="/bar-chart" element={<BarChart />} />
+              </Route>
+
+              {/* Others Page (All Auth Users) */}
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
-
-              {/* Forms */}
-              <Route path="/form-elements" element={<FormElements />} />
-
-              {/* Tables */}
-              <Route path="/basic-tables" element={<BasicTables />} />
-
-              {/* Ui Elements */}
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-
-              {/* Charts */}
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
             </Route>
 
             {/* Fallback Route */}

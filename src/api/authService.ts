@@ -1,13 +1,31 @@
+import axios, { AxiosError } from "axios";
 import apiClient from "./axiosConfig";
 import { User } from "../types/types";
-import { AxiosError } from "axios";
-// import Cookies from "js-cookie"; // ✅ Import js-cookie
+import { runtimeConfig } from "../utils/runtimeConfig";
+
+const SANCTUM_BASE_URL = runtimeConfig.apiBaseSanctum;
+let csrfCookieRequest: Promise<void> | null = null;
+
+const ensureCsrfCookie = async (): Promise<void> => {
+  if (csrfCookieRequest) {
+    return csrfCookieRequest;
+  }
+
+  csrfCookieRequest = axios
+    .get(`${SANCTUM_BASE_URL}/sanctum/csrf-cookie`, { withCredentials: true })
+    .then(() => undefined)
+    .finally(() => {
+      csrfCookieRequest = null;
+    });
+
+  return csrfCookieRequest;
+};
 
 export const authService = {
   fetchUser: async (): Promise<User | null> => {
     try {
-      const { data } = await apiClient.get("/user");
-      return { ...data.data, roles: data.data.roles ?? [] }; // ✅ Access the data property and ensure roles exist
+      const { data } = await apiClient.get("/me");
+      return { ...data.data, roles: data.data.roles ?? [] };
     } catch (error) {
       if (error instanceof AxiosError) {
         throw new Error(error.response?.data?.message || "Error fetching user.");
@@ -16,21 +34,29 @@ export const authService = {
     }
   },
 
-  register: async (name: string, email: string, phone: string, photo: File | null, password: string, password_confirmation: string): Promise<{ message: string; user: User }> => {
+  register: async (
+    name: string,
+    email: string,
+    phone: string,
+    photo: File | null,
+    password: string,
+    password_confirmation: string
+  ): Promise<{ message: string; user: User }> => {
     try {
+      await ensureCsrfCookie();
       const formData = new FormData();
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('phone', phone);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("phone", phone);
       if (photo) {
-        formData.append('photo', photo);
+        formData.append("photo", photo);
       }
-      formData.append('password', password);
-      formData.append('password_confirmation', password_confirmation);
+      formData.append("password", password);
+      formData.append("password_confirmation", password_confirmation);
 
       const { data } = await apiClient.post("/register", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return data;
@@ -44,11 +70,9 @@ export const authService = {
 
   login: async (email: string, password: string): Promise<User> => {
     try {
-      const { data } = await apiClient.post(
-        "/login",
-        { email, password },
-      );
-      return { ...data.data, token: data.data.token, roles: data.data.roles ?? [] };
+      await ensureCsrfCookie();
+      const { data } = await apiClient.post("/login", { email, password });
+      return { ...data.data, roles: data.data.roles ?? [] };
     } catch (error) {
       if (error instanceof AxiosError) {
         throw new Error(error.response?.data?.message || "Invalid credentials.");
@@ -59,16 +83,20 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     try {
+      await ensureCsrfCookie();
       await apiClient.post("/logout");
     } catch (error) {
+      // Keep logout UX resilient even when session is already invalidated.
       console.error("Logout failed", error);
     }
   },
 
-  resendVerificationEmail: async (): Promise<{ message: string }> => {
+  resendVerificationEmail: async (email?: string): Promise<{ message: string }> => {
     try {
-      const { data } = await apiClient.post("/email/verification-notification");
-      return { message: data.message }; // ✅ Access the message property from the new response structure
+      await ensureCsrfCookie();
+      const payload = email && email.trim().length > 0 ? { email } : {};
+      const { data } = await apiClient.post("/email/verification-notification", payload);
+      return { message: data.message };
     } catch (error) {
       if (error instanceof AxiosError) {
         throw new Error(error.response?.data?.message || "Failed to resend verification email.");
@@ -76,8 +104,15 @@ export const authService = {
       throw new Error("Unexpected error. Please try again.");
     }
   },
-  resetPassword: async (payload: { email: string; token: string; password: string; password_confirmation: string; }): Promise<{ message: string }> => {
+
+  resetPassword: async (payload: {
+    email: string;
+    token: string;
+    password: string;
+    password_confirmation: string;
+  }): Promise<{ message: string }> => {
     try {
+      await ensureCsrfCookie();
       const { data } = await apiClient.post("/reset-password", payload);
       return { message: data.message };
     } catch (error) {
@@ -87,9 +122,10 @@ export const authService = {
       throw new Error("Unexpected error. Please try again.");
     }
   },
-  
-  forgotPassword : async (payload: { email: string; }): Promise<{ message: string }> => {
+
+  forgotPassword: async (payload: { email: string }): Promise<{ message: string }> => {
     try {
+      await ensureCsrfCookie();
       const { data } = await apiClient.post("/forgot-password", payload);
       return { message: data.message };
     } catch (error) {
@@ -98,5 +134,5 @@ export const authService = {
       }
       throw new Error("Unexpected error. Please try again.");
     }
-  }
+  },
 };

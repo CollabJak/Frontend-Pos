@@ -22,4 +22,5 @@ export * from "./businesses";
 export * from "./inventory";
 export * from "./pos";
 export * from "./receipt";
+export * from "./rbac";
 

@@ -1,71 +1,76 @@
-import { useState, useEffect, ReactNode } from "react";
+import { ReactNode, useCallback, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "../types/types";
 import { authService } from "../api/authService";
 import { AuthContext } from "../context/AuthContext";
-// import Cookies from "js-cookie"; // ✅ Import js-cookie
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+const AUTH_ME_QUERY_KEY = ["auth", "me"] as const;
+const AUTH_ME_STALE_TIME_MS = 10 * 60 * 1000;
+const AUTH_ME_GC_TIME_MS = 30 * 60 * 1000;
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/login",
+  "/signin",
+  "/signup",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+]);
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const location = useLocation(); // ✅ Get current route
+  const queryClient = useQueryClient();
+  const location = useLocation();
   const navigate = useNavigate();
 
+  const searchParams = new URLSearchParams(location.search);
+  const isGoogleLogin = searchParams.get("google_login") === "success";
+  const shouldBootstrapSession = !PUBLIC_PATHS.has(location.pathname) || isGoogleLogin;
+
+  const meQuery = useQuery<User | null>({
+    queryKey: AUTH_ME_QUERY_KEY,
+    queryFn: () => authService.fetchUser(),
+    enabled: shouldBootstrapSession,
+    staleTime: AUTH_ME_STALE_TIME_MS,
+    gcTime: AUTH_ME_GC_TIME_MS,
+    retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const user = meQuery.data ?? null;
+  const loading = shouldBootstrapSession ? meQuery.isPending : false;
+
   useEffect(() => {
-    const publicPaths = new Set([
-      "/",
-      "/login",
-      "/signin",
-      "/signup",
-      "/verify-email",
-      "/forgot-password",
-      "/reset-password",
-    ]);
-
-    const searchParams = new URLSearchParams(window.location.search);
-    const isGoogleLogin = searchParams.get("google_login") === "success";
-
-    // ✅ Skip fetching the user if on login page (unless Google OAuth callback)
-    if (publicPaths.has(location.pathname) && !isGoogleLogin) {
-      setLoading(false);
+    if (!isGoogleLogin || !user) {
       return;
     }
 
-    const initializeUser = async () => {
+    const nextParams = new URLSearchParams(location.search);
+    nextParams.delete("google_login");
 
-      try {
-        const userData = await authService.fetchUser();
-        if (userData) {
-          setUser(userData);
+    const nextSearch = nextParams.toString();
+    const nextUrl = nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname;
+    window.history.replaceState({}, "", nextUrl);
+  }, [isGoogleLogin, user, location.pathname, location.search]);
 
-          // If this was a Google login callback, clean up the URL and navigate
-          if (isGoogleLogin) {
-            window.history.replaceState({}, '', location.pathname);
-          }
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null); // ✅ Ensure user state resets on error
-      }
-      finally {
-        setLoading(false);
-      }
-
-    };
-
-    initializeUser();
-  }, [location]);
+  const setUser = useCallback(
+    (nextUser: User | null) => {
+      queryClient.setQueryData(AUTH_ME_QUERY_KEY, nextUser);
+    },
+    [queryClient]
+  );
 
   const login = async (email: string, password: string) => {
     try {
       const userData = await authService.login(email, password);
       setUser(userData);
+
       if (!userData.email_verified_at) {
         navigate("/verify-email", { replace: true });
       }
@@ -75,12 +80,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (name: string, email: string, phone: string, photo: File | null, password: string, password_confirmation: string) => {
+  const register = async (
+    name: string,
+    email: string,
+    phone: string,
+    photo: File | null,
+    password: string,
+    password_confirmation: string
+  ) => {
     try {
       await authService.register(name, email, phone, photo, password, password_confirmation);
       navigate("/verify-email", {
         replace: true,
-        state: { email }
+        state: { email },
       });
     } catch (error) {
       console.error("Registration failed", error);
@@ -92,7 +104,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await authService.logout();
       setUser(null);
-
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout failed", error);

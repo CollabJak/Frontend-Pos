@@ -1,21 +1,15 @@
 import axios from "axios";
 import { handleSuccess, handleError } from "../lib/toastHelper";
-// import Cookies from "js-cookie"; // ✅ Import js-cookie
+import { runtimeConfig } from "../utils/runtimeConfig";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api",
+  baseURL: runtimeConfig.apiBaseUrl,
   withCredentials: true,
-  withXSRFToken: false, // API routes dengan Sanctum tidak butuh CSRF protection
+  withXSRFToken: true,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
   },
-});
-
-apiClient.interceptors.request.use((config) => {
-  // API routes dengan Sanctum tidak butuh CSRF
-  // CSRF hanya untuk web routes dengan session/cookies
-  return config;
 });
 
 apiClient.interceptors.response.use(
