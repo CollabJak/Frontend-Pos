@@ -4,14 +4,10 @@ import type { ApiResponse } from "../../types/types";
 interface SocketTokenPayload {
   token: string;
   expires_at: number;
-  device_id: string;
 }
 
-export const fetchSocketToken = async (deviceId: string): Promise<string> => {
-  const response = await apiClient.get<ApiResponse<SocketTokenPayload>>("/socket/token", {
-    headers: {
-      "X-Device-Id": deviceId,
-    },
+export const fetchSocketToken = async (): Promise<string> => {
+  const response = await apiClient.get<ApiResponse<SocketTokenPayload>>("/socket-token", {
     silent: true,
   });
 

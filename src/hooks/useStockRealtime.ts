@@ -105,7 +105,7 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
       }
 
       refreshingTokenRef.current = true;
-      void refreshSocketTokenAndReconnect(deviceId)
+      void refreshSocketTokenAndReconnect()
         .catch((refreshError: unknown) => {
           // eslint-disable-next-line no-console
           console.error("socket token refresh failed:", refreshError);
@@ -119,7 +119,7 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
     socket.on("stock.updated", onStockUpdated);
     socket.on("connect_error", onConnectError);
 
-    void connectSocketWithToken(deviceId).catch((error: unknown) => {
+    void connectSocketWithToken().catch((error: unknown) => {
       // eslint-disable-next-line no-console
       console.error("socket connect failed:", error);
     });

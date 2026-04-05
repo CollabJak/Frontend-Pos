@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../../hooks/useAuth";
+import { runtimeConfig } from "../../utils/runtimeConfig";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -71,6 +72,12 @@ export default function SignUpForm() {
       setIsSubmitting(false);
     }
   };
+
+  const handleGoogleSignUp = (): void => {
+    const baseUrl = runtimeConfig.apiBaseUrl;
+    window.location.href = `${baseUrl}/auth/google`;
+  };
+
   return (
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
@@ -95,10 +102,8 @@ export default function SignUpForm() {
           <div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
             <button
-              onClick={() => {
-                const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
-                window.location.href = `${baseUrl}/auth/google`;
-              }}
+              type="button"
+              onClick={handleGoogleSignUp}
                 className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
               >                <svg
                 width="20"

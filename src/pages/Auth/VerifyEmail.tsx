@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { CheckCircleIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
-import apiClient from "../../api/axiosConfig";
+import { authService } from "../../api/authService";
 
 export default function VerifyEmail() {
   const location = useLocation();
@@ -41,8 +41,8 @@ export default function VerifyEmail() {
         return;
       }
       
-      await apiClient.post("/email/verification-notification", { email });
-      setResendMessage("Verification email sent! Check your inbox.");
+      const response = await authService.resendVerificationEmail(email);
+      setResendMessage(response.message || "Verification email sent! Check your inbox.");
     } catch (error) {
       console.error("Resend error:", error);
       if (error instanceof Error) {
