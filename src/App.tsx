@@ -83,6 +83,7 @@ import EditWarehouse from "./pages/Warehouses/EditWarehouses";
 import VerifyEmail from "./pages/Auth/VerifyEmail";
 import RoleList from "./pages/Roles/RoleList";
 import PermissionList from "./pages/Roles/PermissionList";
+import SubscriptionPlanForm from "./pages/SubscriptionPlans/SubscriptionPlanForm";
 import InventoryList from "./pages/Inventory/InventoryList";
 import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
@@ -243,6 +244,7 @@ export default function App() {
               <Route element={<ProtectedRoute allowedPermissions={["business.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/roles" element={<RoleList />} />
                 <Route path="/permissions" element={<PermissionList />} />
+                <Route path="/subscriptions-plans" element={<SubscriptionPlanForm />} />
                 <Route path="/businesses" element={<BusinessList />} />
                 <Route path="/businesses/create" element={<AddBusiness />} />
                 <Route path="/businesses/edit/:id" element={<EditBusiness />} />
