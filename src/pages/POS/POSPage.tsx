@@ -2,14 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Controller } from "react-hook-form";
-import ComponentCard from "../../components/common/ComponentCard";
 import PageBreadCrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import POSLayout from "../../components/pos/POSLayout";
-import ProductGrid, { ProductGridItem } from "../../components/pos/ProductGrid";
+import ProductGrid from "../../components/pos/ProductGrid";
 import CartPanel from "../../components/pos/CartPanel";
 import PaymentPanel from "../../components/pos/PaymentPanel";
 import LocationSelect from "../../components/inventory/LocationSelect";
+import CategoryTabs, { Category } from "../../components/pos/CategoryTabs";
 import { Modal } from "../../components/ui/modal";
 import Button from "../../components/ui/button/Button";
 import ReceiptPrint from "../../components/receipt/ReceiptPrint";
@@ -22,8 +22,12 @@ import type { ApiErrorResponse, PosCheckoutResult, ReceiptPayload } from "../../
 import { useZodForm } from "../../hooks/form/useZodForm";
 import { posCheckoutSchema } from "../../Schemas/pos.schema";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
+import { fetchCategoryOptions } from "../../api/options";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const POS_TAX_RATE = 0.11;
+
+// REMOVED MOCK_CATEGORIES as we now use backend options
 
 const resolveErrorMessage = (error: unknown, fallback: string): string => {
   if (isAxiosError<ApiErrorResponse>(error)) {
@@ -53,7 +57,9 @@ const waitForPaint = async (): Promise<void> => {
 
 export default function POSPage() {
   const { user } = useAuth();
-  const [search, setSearch] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebouncedValue(searchQuery, 400);
   const [cartError, setCartError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState("");
@@ -70,6 +76,7 @@ export default function POSPage() {
   const {
     selectedLocation,
     cartItems,
+    products,
     deviceId,
     setSelectedLocation,
     setProducts,
@@ -107,9 +114,19 @@ export default function POSPage() {
 
   useStockRealtime(user?.business_id ?? null, selectedLocation);
 
+  const categoriesQuery = useQuery({
+    queryKey: ["options", "categories"],
+    queryFn: () => fetchCategoryOptions({ limit: 100 }),
+  });
+
   const productsQuery = useQuery({
-    queryKey: ["pos", "products", selectedLocation],
-    queryFn: () => fetchPosProductsByLocation(selectedLocation as number),
+    queryKey: ["pos", "products", selectedLocation, selectedCategoryId, debouncedSearch],
+    queryFn: () =>
+      fetchPosProductsByLocation(
+        selectedLocation as number,
+        selectedCategoryId,
+        debouncedSearch
+      ),
     enabled: selectedLocation !== null,
   });
 
@@ -144,21 +161,16 @@ export default function POSPage() {
 
   const amountPaidValue = watch("payment.amount_paid");
 
-  const filteredProducts = toGridItems(search);
-
-  const subTotal = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
-  }, [cartItems]);
-
-  const total = useMemo(() => {
-    return subTotal * (1 + POS_TAX_RATE);
-  }, [subTotal]);
+  const filteredProducts = useMemo(() => {
+    // Note: Backend handles Search and Category filtering.
+    // toGridItems("") transforms the already-filtered PosProduct[] from the store.
+    return toGridItems("");
+  }, [toGridItems, products]);
 
   const handleLocationChange = useCallback(
     (locationId: number | null) => {
       setSelectedLocation(locationId);
       setProducts([]);
-      setSearch("");
       setCartError(null);
       setCheckoutResult(null);
       setReceiptData(null);
@@ -170,7 +182,7 @@ export default function POSPage() {
   );
 
   const handleAddToCart = useCallback(
-    (product: ProductGridItem) => {
+    (product: any) => {
       const error = addToCart(product.variantId);
       setCartError(error);
       setCheckoutResult(null);
@@ -414,6 +426,14 @@ export default function POSPage() {
     errors.location_id?.message ??
     null;
 
+  const subTotal = useMemo(() => {
+    return cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+  }, [cartItems]);
+
+  const total = useMemo(() => {
+    return subTotal * (1 + POS_TAX_RATE);
+  }, [subTotal]);
+
   return (
     <>
       <PageMeta title="POS" description="Point of sale page" />
@@ -421,73 +441,73 @@ export default function POSPage() {
 
       <POSLayout
         locationSection={
-          <ComponentCard title="Location">
-            <Controller
-              name="location_id"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <LocationSelect
-                    value={field.value ?? selectedLocation}
-                    onChange={(value) => {
-                      field.onChange(value ?? undefined);
-                      handleLocationChange(value);
-                    }}
-                    label="Location"
-                    placeholder="Search location..."
-                  />
-                  {errors.location_id?.message && (
-                    <p className="mt-1 text-xs text-error-500">{errors.location_id.message}</p>
-                  )}
-                </div>
-              )}
-            />
-          </ComponentCard>
+          <CategoryTabs
+            categories={categoriesQuery.data ?? []}
+            isCategoriesLoading={categoriesQuery.isLoading}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategory={setSelectedCategoryId}
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            locationSelector={
+              <Controller
+                name="location_id"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative">
+                    <LocationSelect
+                      value={field.value ?? selectedLocation}
+                      onChange={(value) => {
+                        field.onChange(value ?? undefined);
+                        handleLocationChange(value);
+                      }}
+                      label=""
+                      placeholder="Switch Store..."
+                    />
+                    {errors.location_id?.message && (
+                      <p className="absolute -bottom-5 left-0 text-[10px] text-error-500">{errors.location_id.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+            }
+          />
         }
         productSection={
-          <ComponentCard title="Product Section">
-            <ProductGrid
-              search={search}
-              onSearchChange={setSearch}
-              products={filteredProducts}
-              isLoading={productsQuery.isLoading || productsQuery.isFetching}
-              errorMessage={productsError}
-              onAddToCart={handleAddToCart}
-            />
-          </ComponentCard>
+          <ProductGrid
+            products={filteredProducts}
+            isLoading={productsQuery.isLoading || productsQuery.isFetching}
+            errorMessage={productsError}
+            onAddToCart={handleAddToCart}
+          />
         }
         cartSection={
-          <ComponentCard title="Cart Items">
-            <CartPanel
-              items={cartItems}
-              errorMessage={cartError}
-              onIncrease={handleIncreaseQty}
-              onDecrease={handleDecreaseQty}
-              onRemove={handleRemoveItem}
-            />
-          </ComponentCard>
+          <CartPanel
+            items={cartItems}
+            errorMessage={cartError}
+            onIncrease={handleIncreaseQty}
+            onDecrease={handleDecreaseQty}
+            onRemove={handleRemoveItem}
+            onClear={clearCart}
+          />
         }
         paymentSection={
-          <ComponentCard title="Payment Section">
-            <PaymentPanel
-              estimatedTotal={total}
-              authoritativeTotal={checkoutResult?.total ?? null}
-              paid={checkoutResult?.paid ?? null}
-              change={checkoutResult?.change ?? null}
-              amountPaid={typeof amountPaidValue === "number" ? amountPaidValue : ""}
-              onAmountPaidChange={handleAmountPaidChange}
-              isPaying={isProcessing}
-              disabled={
-                cartItems.length === 0 ||
-                selectedLocation === null ||
-                !(typeof amountPaidValue === "number" && Number.isFinite(amountPaidValue) && amountPaidValue > 0)
-              }
-              errorMessage={checkoutErrorMessage}
-              onPayNow={handleCheckout}
-              onReprintReceipt={lastReceiptOrderId ? handleManualReprint : undefined}
-              reprintDisabled={!lastReceiptOrderId}
-            />
-          </ComponentCard>
+          <PaymentPanel
+            estimatedTotal={total}
+            authoritativeTotal={checkoutResult?.total ?? null}
+            paid={checkoutResult?.paid ?? null}
+            change={checkoutResult?.change ?? null}
+            amountPaid={typeof amountPaidValue === "number" ? amountPaidValue : ""}
+            onAmountPaidChange={handleAmountPaidChange}
+            isPaying={isProcessing}
+            disabled={
+              cartItems.length === 0 ||
+              selectedLocation === null
+            }
+            errorMessage={checkoutErrorMessage}
+            onPayNow={handleCheckout}
+            onReprintReceipt={lastReceiptOrderId ? handleManualReprint : undefined}
+            reprintDisabled={!lastReceiptOrderId}
+          />
         }
       />
 

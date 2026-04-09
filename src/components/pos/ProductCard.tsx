@@ -1,47 +1,71 @@
-import Button from "../ui/button/Button";
+import Badge from "../ui/badge/Badge";
+import { PosGridItem } from "../../stores/pos.store";
 
-const formatAmount = (value: number): string => new Intl.NumberFormat("id-ID").format(value);
+const formatCurrency = (value: number): string =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value).replace("Rp", "Rp.");
 
 interface ProductCardProps {
-  name: string;
-  price: number;
-  stock: number;
+  product: PosGridItem;
   disabled: boolean;
   onAdd: () => void;
 }
 
 export default function ProductCard({
-  name,
-  price,
-  stock,
+  product,
   disabled,
   onAdd,
 }: ProductCardProps) {
-  const stockBadgeClass =
-    stock > 0
-      ? "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300"
-      : "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300";
-
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-white/90">{name}</h4>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Price: {formatAmount(price)}</p>
-      <div className="mt-3">
-        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${stockBadgeClass}`}>
-          Stock: {stock}
-        </span>
+    <div
+      onClick={!disabled ? onAdd : undefined}
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:shadow-lg dark:border-gray-800 dark:bg-white/[0.03] ${disabled ? "opacity-60 grayscale cursor-not-allowed" : "cursor-pointer active:scale-[0.98]"
+        }`}
+    >
+      {/* Product Image */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+        <img
+          src={product.imageUrl || "https://images.unsplash.com/photo-1541167760496-1628856ab752?q=80&w=1000&auto=format&fit=crop"}
+          alt={product.variantName}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
       </div>
-      <div className="mt-4">
-        <Button
-          size="sm"
-          variant={disabled ? "outline" : "primary"}
-          className="w-full"
-          onClick={onAdd}
-          disabled={disabled}
-        >
-          Add
-        </Button>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-4">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="text-lg font-bold text-gray-800 dark:text-white/90 line-clamp-2">
+            {product.name}
+          </h4>
+          <span className="text-lg font-bold text-brand-600 dark:text-brand-400">
+            {formatCurrency(product.price)}
+          </span>
+        </div>
+
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+          {product.description || "Premium quality product crafted with care."}
+        </p>
+
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+          {product.isBestSeller && (
+            <Badge color="success" size="sm" variant="light" className="uppercase tracking-wider font-bold">
+              Best Seller
+            </Badge>
+          )}
+          <Badge color="info" size="sm" variant="light" className="uppercase tracking-wider font-bold">
+            12OZ
+          </Badge>
+        </div>
       </div>
+
+      {disabled && (
+        <div className="absolute inset-x-0 bottom-0 bg-red-500 py-1 text-center text-[10px] font-bold uppercase text-white">
+          Out of Stock
+        </div>
+      )}
     </div>
   );
 }

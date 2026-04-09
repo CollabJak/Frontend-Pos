@@ -1,7 +1,11 @@
 import Button from "../ui/button/Button";
-import { Input } from "../form/input/InputField";
 
-const formatAmount = (value: number): string => new Intl.NumberFormat("id-ID").format(value);
+const formatCurrency = (value: number): string =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value).replace("Rp", "Rp.");
 
 interface PaymentPanelProps {
   estimatedTotal: number;
@@ -29,74 +33,63 @@ export default function PaymentPanel({
   disabled,
   errorMessage,
   onPayNow,
-  onReprintReceipt,
-  reprintDisabled = false,
 }: PaymentPanelProps) {
+  const subtotal = estimatedTotal / 1.11; // Reverse 11% tax for demo
+  const tax = estimatedTotal - subtotal;
+
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border border-gray-200 bg-white px-4 py-4 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+      {/* Totals */}
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600 dark:text-gray-300">Estimated Total (incl. tax)</span>
-          <span className="text-lg font-semibold text-gray-800 dark:text-white/90">{formatAmount(estimatedTotal)}</span>
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Subtotal</span>
+          <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(subtotal)}</span>
         </div>
-
-        {authoritativeTotal !== null && authoritativeTotal !== undefined ? (
-          <div className="mt-3 space-y-1 border-t border-gray-100 pt-3 text-sm dark:border-gray-800">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Final Total</span>
-              <span className="font-semibold text-gray-800 dark:text-white/90">{formatAmount(authoritativeTotal)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Paid</span>
-              <span className="font-semibold text-gray-800 dark:text-white/90">{formatAmount(paid ?? 0)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">Change</span>
-              <span className="font-semibold text-gray-800 dark:text-white/90">{formatAmount(change ?? 0)}</span>
-            </div>
-          </div>
-        ) : null}
-      </div>
-
-      <div>
-        <label htmlFor="amount-paid" className="mb-1 block text-sm text-gray-600 dark:text-gray-300">
-          Cash Received
-        </label>
-        <Input
-          id="amount-paid"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="Enter paid amount"
-          value={amountPaid}
-          onChange={(event) => {
-            const raw = event.target.value;
-            if (raw.trim() === "") {
-              onAmountPaidChange("");
-              return;
-            }
-
-            const parsed = Number(raw);
-            onAmountPaidChange(Number.isFinite(parsed) ? parsed : "");
-          }}
-        />
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Tax (11%)</span>
+          <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(tax)}</span>
+        </div>
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-lg font-black tracking-tight text-gray-800 dark:text-white">Total</span>
+          <span className="text-2xl font-black text-brand-600 dark:text-brand-400">
+            {formatCurrency(authoritativeTotal ?? estimatedTotal)}
+          </span>
+        </div>
       </div>
 
       {errorMessage && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
+        <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
           {errorMessage}
         </div>
       )}
 
-      <Button className="w-full" onClick={onPayNow} disabled={disabled || isPaying}>
-        {isPaying ? "Processing..." : "Pay Now"}
-      </Button>
+      {/* Payment Methods */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { id: "card", label: "CARD", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" },
+          { id: "cash", label: "CASH", icon: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+          { id: "scan", label: "SCAN", icon: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" },
+        ].map((method) => (
+          <button
+            key={method.id}
+            className="flex flex-col items-center justify-center gap-2 rounded-xl bg-brand-50/50 py-4 text-brand-600 transition-all hover:bg-brand-50 active:scale-95 dark:bg-brand-500/5 dark:text-brand-400 dark:hover:bg-brand-500/10"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={method.icon} />
+            </svg>
+            <span className="text-[10px] font-black uppercase tracking-widest">{method.label}</span>
+          </button>
+        ))}
+      </div>
 
-      {onReprintReceipt ? (
-        <Button className="w-full" variant="outline" onClick={onReprintReceipt} disabled={reprintDisabled}>
-          Reprint Receipt
-        </Button>
-      ) : null}
+      {/* Pay Button */}
+      <Button
+        className="h-16 w-full rounded-xl text-lg font-black uppercase tracking-widest shadow-lg transition-all active:scale-[0.98]"
+        onClick={onPayNow}
+        disabled={disabled || isPaying}
+      >
+        {isPaying ? "Processing..." : `Pay ${formatCurrency(authoritativeTotal ?? estimatedTotal)}`}
+      </Button>
     </div>
   );
 }

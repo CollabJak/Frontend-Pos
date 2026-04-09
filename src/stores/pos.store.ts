@@ -4,9 +4,11 @@ import type { PosProduct } from "../types/types";
 export interface PosCartItem {
   variantId: number;
   name: string;
+  variantName?: string;
   qty: number;
   unitPrice: number;
   maxQty: number;
+  imageUrl?: string;
 }
 
 export interface PosGridItem {
@@ -14,6 +16,10 @@ export interface PosGridItem {
   name: string;
   price: number;
   stock: number;
+  categoryId?: number;
+  imageUrl?: string;
+  description?: string;
+  isBestSeller?: boolean;
 }
 
 interface PosStoreState {
@@ -36,16 +42,25 @@ const syncCartItems = (items: PosCartItem[], productsMap: Map<number, PosProduct
   return items
     .map((item) => {
       const latest = productsMap.get(item.variantId);
-      if (!latest || latest.stock <= 0) {
+      
+      // If not in current products list (filtered out), keep it as is
+      if (!latest) {
+        return item;
+      }
+
+      // If in list but out of stock, remove it
+      if (latest.stock <= 0) {
         return null;
       }
 
       return {
         ...item,
-        name: latest.displayName,
+        name: latest.productName,
+        variantName: latest.variantName,
         unitPrice: latest.price,
         maxQty: latest.stock,
         qty: Math.min(item.qty, latest.stock),
+        imageUrl: latest.imageUrl,
       };
     })
     .filter((item): item is PosCartItem => item !== null);
@@ -147,9 +162,11 @@ export const usePosStore = create<PosStoreState>((set, get) => ({
               ? {
                   ...item,
                   qty: nextQty,
-                  name: product.displayName,
+                  name: product.productName,
+                  variantName: product.variantName,
                   unitPrice: product.price,
                   maxQty: product.stock,
+                  imageUrl: product.imageUrl,
                 }
               : item
           ),
@@ -161,10 +178,12 @@ export const usePosStore = create<PosStoreState>((set, get) => ({
           ...state.cartItems,
           {
             variantId: product.variantId,
-            name: product.displayName,
+            name: product.productName,
+            variantName: product.variantName,
             qty: 1,
             unitPrice: product.price,
             maxQty: product.stock,
+            imageUrl: product.imageUrl,
           },
         ],
       };
@@ -195,8 +214,10 @@ export const usePosStore = create<PosStoreState>((set, get) => ({
             ...item,
             qty: item.qty + 1,
             maxQty,
-            name: latest?.displayName ?? item.name,
+            name: latest?.productName ?? item.name,
+            variantName: latest?.variantName ?? item.variantName,
             unitPrice: latest?.price ?? item.unitPrice,
+            imageUrl: latest?.imageUrl ?? item.imageUrl,
           };
         }),
       };
@@ -237,9 +258,13 @@ export const usePosStore = create<PosStoreState>((set, get) => ({
       .filter((product) => (keyword ? product.displayName.toLowerCase().includes(keyword) : true))
       .map((product) => ({
         variantId: product.variantId,
-        name: product.displayName,
+        name: product.variantName,
         price: product.price,
         stock: Math.max(0, product.stock - (cartQtyMap.get(product.variantId) ?? 0)),
+        categoryId: product.categoryId,
+        imageUrl: product.imageUrl,
+        description: product.description,
+        isBestSeller: product.isBestSeller,
       }));
   },
 }));

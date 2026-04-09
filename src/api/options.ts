@@ -55,3 +55,5 @@ export function createOptionsFetcher<TOption = OptionDto>({
     return [];
   };
 }
+
+export const fetchCategoryOptions = createOptionsFetcher({ endpoint: "/options/categories" });

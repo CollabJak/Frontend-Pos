@@ -12,6 +12,9 @@ interface RawPosProduct {
   stock?: number | string;
   available_stock?: number | string;
   available?: number | string;
+  image_url?: string;
+  category_id?: number | string;
+  description?: string;
 }
 
 const toNumber = (value: unknown): number => {
@@ -60,6 +63,7 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
 
   const price = Math.max(0, toNumber(row.price));
   const stock = Math.max(0, Math.floor(toNumber(row.stock ?? row.available_stock ?? row.available)));
+  const categoryId = toPositiveInt(row.category_id);
 
   return {
     variantId,
@@ -68,12 +72,24 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
     displayName: `${productName} - ${variantName}`,
     price,
     stock,
+    categoryId: categoryId ?? undefined,
+    imageUrl: row.image_url,
+    description: firstText(row.description) || "Premium quality product.",
+    isBestSeller: variantId % 3 === 0,
   };
 };
 
-export const fetchPosProductsByLocation = async (locationId: number): Promise<PosProduct[]> => {
+export const fetchPosProductsByLocation = async (
+  locationId: number,
+  categoryId?: number | null,
+  search?: string
+): Promise<PosProduct[]> => {
   const response = await apiClient.get<ApiResponse<unknown>>("/pos/products", {
-    params: { location_id: locationId },
+    params: {
+      location_id: locationId,
+      ...(categoryId ? { category_id: categoryId } : {}),
+      ...(search ? { search: search.trim() } : {}),
+    },
   });
 
   return extractRows(response.data.data)

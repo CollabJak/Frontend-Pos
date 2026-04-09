@@ -7,6 +7,10 @@ export interface PosProduct {
   displayName: string;
   price: number;
   stock: number;
+  categoryId?: number;
+  imageUrl?: string;
+  description?: string;
+  isBestSeller?: boolean;
 }
 
 export interface PosCheckoutItemPayload {
