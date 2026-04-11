@@ -13,7 +13,9 @@ interface RawPosProduct {
   available_stock?: number | string;
   available?: number | string;
   image_url?: string;
+  imageUrl?: string;
   category_id?: number | string;
+  categoryId?: number | string;
   description?: string;
 }
 
@@ -63,7 +65,7 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
 
   const price = Math.max(0, toNumber(row.price));
   const stock = Math.max(0, Math.floor(toNumber(row.stock ?? row.available_stock ?? row.available)));
-  const categoryId = toPositiveInt(row.category_id);
+  const categoryId = toPositiveInt(row.categoryId ?? row.category_id);
 
   return {
     variantId,
@@ -73,7 +75,7 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
     price,
     stock,
     categoryId: categoryId ?? undefined,
-    imageUrl: row.image_url,
+    imageUrl: row.imageUrl ?? row.image_url,
     description: firstText(row.description) || "Premium quality product.",
     isBestSeller: variantId % 3 === 0,
   };

@@ -89,6 +89,7 @@ import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
 import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
 import POSPage from "./pages/POS/POSPage";
+import POSPaymentPage from "./pages/POS/POSPaymentPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -238,6 +239,7 @@ export default function App() {
 
               <Route element={<ProtectedRoute allowedPermissions={["pos.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/pos" element={<POSPage />} />
+                <Route path="/pos/payment" element={<POSPaymentPage />} />
               </Route>
 
               {/* Roles: Admin, Manager Only (Superuser bypass via rbac.ts) */}
