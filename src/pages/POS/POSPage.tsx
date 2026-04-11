@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Controller } from "react-hook-form";
@@ -16,7 +17,7 @@ import ReceiptPrint from "../../components/receipt/ReceiptPrint";
 import { useAuth } from "../../hooks/useAuth";
 import { useStockRealtime } from "../../hooks/useStockRealtime";
 import { useReceiptPrint } from "../../hooks/useReceiptPrint";
-import { checkoutPos, fetchPosProductsByLocation, fetchReceiptByOrderId } from "../../services/api/posService";
+import { useFetchPosProducts, usePosCheckout, useFetchReceipt } from "../../hooks/usePos";
 import { usePosStore } from "../../stores/pos.store";
 import type { ApiErrorResponse, PosCheckoutResult, ReceiptPayload } from "../../types/types";
 import { useZodForm } from "../../hooks/form/useZodForm";
@@ -56,6 +57,7 @@ const waitForPaint = async (): Promise<void> => {
 };
 
 export default function POSPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,16 +121,11 @@ export default function POSPage() {
     queryFn: () => fetchCategoryOptions({ limit: 100 }),
   });
 
-  const productsQuery = useQuery({
-    queryKey: ["pos", "products", selectedLocation, selectedCategoryId, debouncedSearch],
-    queryFn: () =>
-      fetchPosProductsByLocation(
-        selectedLocation as number,
-        selectedCategoryId,
-        debouncedSearch
-      ),
-    enabled: selectedLocation !== null,
-  });
+  const productsQuery = useFetchPosProducts(
+    selectedLocation as number,
+    selectedCategoryId,
+    debouncedSearch
+  );
 
   useEffect(() => {
     if (selectedLocation === null) {
@@ -276,7 +273,12 @@ export default function POSPage() {
     }
   }, [clearPrintError, lastReceiptOrderId, printReceipt, setError]);
 
-  const handleCheckout = useCallback(
+  const handleCheckout = useCallback(() => {
+    navigate("/pos/payment");
+  }, [navigate]);
+
+  /* 
+  const handleCheckoutOriginal = useCallback(
     handleSubmit(async (formValues) => {
       if (isProcessing) {
         return;
@@ -411,9 +413,11 @@ export default function POSPage() {
       printReceipt,
       productsQuery,
       setError,
+      userId, // Wait, I need to check if userId is available or if I should use user
       setValue,
     ]
   );
+  */
 
   const productsError = productsQuery.error
     ? resolveErrorMessage(productsQuery.error, "Failed to load products.")
