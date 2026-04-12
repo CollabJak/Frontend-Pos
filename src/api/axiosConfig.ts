@@ -18,7 +18,12 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    handleError(error);
+    // Handle Session Expiry (Unauthorized or Authentication Timeout)
+    if (error.response?.status === 401 || error.response?.status === 419) {
+      window.dispatchEvent(new Event("auth:unauthorized"));
+    } else {
+      handleError(error);
+    }
     return Promise.reject(error);
   }
 );
