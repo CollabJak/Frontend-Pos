@@ -46,6 +46,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const user = meQuery.data ?? null;
   const loading = shouldBootstrapSession ? meQuery.isPending : false;
 
+  // Global listener for session expiry signals
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      // Clear local session state
+      queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
+
+      // Force push to login page
+      navigate("/login", { replace: true });
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
+  }, [navigate, queryClient]);
+
   useEffect(() => {
     if (!isGoogleLogin || !user) {
       return;
