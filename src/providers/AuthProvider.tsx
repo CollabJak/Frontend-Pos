@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
 
       // Force push to login page
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     };
 
     window.addEventListener("auth:unauthorized", handleUnauthorized);
