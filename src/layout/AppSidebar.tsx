@@ -16,6 +16,7 @@ import {
   UserCircleIcon,
   BoxIcon,
   DollarLineIcon,
+  TaskIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../hooks/useAuth";
@@ -81,6 +82,16 @@ const navItems: NavItem[] = [
     name: "POS",
     path: "/pos",
     permissions: ["pos.view"],
+  },
+  {
+    icon: <TaskIcon />,
+    name: "Absensi",
+    permissions: ["absensi.view"],
+    subItems: [
+      { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"] },
+      { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"] },
+      { name: "Riwayat Kehadiran", path: "/absensi/history", pro: false, permissions: ["absensi.view"] },
+    ],
   },
   {
     icon: <BoxIcon />,
