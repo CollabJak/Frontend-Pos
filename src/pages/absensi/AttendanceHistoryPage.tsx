@@ -10,7 +10,6 @@ import {
   DownloadIcon, 
   ChevronLeftIcon, 
   AngleRightIcon,
-  AlertIcon,
   CalenderIcon,
   PlusIcon,
   CheckCircleIcon

@@ -1,5 +1,10 @@
 import React from "react";
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 interface CategoryTabsProps {
   categories: Category[];
   selectedCategoryId: number | null;

@@ -6,12 +6,12 @@ import {
   faceRegistrationSchema,
   FaceRegistrationFormValues,
 } from "../../Schemas/absensiSchema";
-import { useEnrollFace, useGetAttendanceHistory } from "../../hooks/api/useAbsensi";
+import { useEnrollFace } from "../../hooks/api/useAbsensi";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "../../components/ui/button/Button";
 import InputField from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
-import { UserCircleIcon, PlusIcon, InfoIcon, CheckCircleIcon } from "../../icons";
+import { UserCircleIcon, PlusIcon, InfoIcon } from "../../icons";
 
 const FaceRegistrationPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,8 +21,6 @@ const FaceRegistrationPage: React.FC = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const { mutateAsync: enrollFace, isPending } = useEnrollFace();
   
-  // Get history just to show "Pendaftaran Terkini" logic if possible
-  const { data: recentHistory } = useGetAttendanceHistory();
 
   const {
     register,

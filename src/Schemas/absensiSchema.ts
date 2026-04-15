@@ -16,7 +16,7 @@ export const faceRegistrationSchema = z.object({
   fullName: z.string().min(1, "Nama lengkap harus diisi"),
   email: z.string().email("Email tidak valid").min(1, "Email wajib diisi"),
   face_image: imageFileSchema,
-  isActive: z.boolean().optional().default(true),
+  isActive: z.boolean(),
 });
 
 export const attendanceActionSchema = z.object({

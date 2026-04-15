@@ -10,10 +10,6 @@ const formatCurrency = (value: number): string =>
 interface PaymentPanelProps {
   estimatedTotal: number;
   authoritativeTotal?: number | null;
-  paid?: number | null;
-  change?: number | null;
-  amountPaid: number | "";
-  onAmountPaidChange: (value: number | "") => void;
   isPaying: boolean;
   disabled: boolean;
   errorMessage: string | null;
@@ -25,10 +21,6 @@ interface PaymentPanelProps {
 export default function PaymentPanel({
   estimatedTotal,
   authoritativeTotal,
-  paid,
-  change,
-  amountPaid,
-  onAmountPaidChange,
   isPaying,
   disabled,
   errorMessage,

@@ -14,7 +14,6 @@ import {
   useFetchRoles,
   useUpsertRole,
   useDeleteRole,
-  useFetchPermissions,
   useFetchPermissionOptions,
   useSyncPermissions
 } from "../../hooks/useRbac";

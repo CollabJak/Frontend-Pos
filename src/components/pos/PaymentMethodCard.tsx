@@ -7,7 +7,6 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface PaymentMethodCardProps {
-  id: string;
   label: string;
   icon: React.ReactNode;
   selected: boolean;
@@ -15,7 +14,6 @@ interface PaymentMethodCardProps {
 }
 
 const PaymentMethodCard: React.FC<PaymentMethodCardProps> = ({
-  id,
   label,
   icon,
   selected,
