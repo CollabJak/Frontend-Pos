@@ -88,7 +88,7 @@ export const useSyncPermissions = () => {
     mutationFn: async ({ roleId, payload }) => {
       await apiClient.put(`/roles/${roleId}/permissions`, payload);
     },
-    onSuccess: (_, { roleId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
     },
   });

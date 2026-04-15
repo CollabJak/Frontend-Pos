@@ -79,7 +79,8 @@ const PermissionFormModal: React.FC<PermissionFormModalProps> = ({
                 <Input
                   {...field}
                   placeholder="e.g. user.view"
-                  error={errors.name?.message}
+                  error={Boolean(errors.name)}
+                  hint={errors.name?.message}
                 />
               )}
             />
@@ -94,10 +95,13 @@ const PermissionFormModal: React.FC<PermissionFormModalProps> = ({
             </Button>
             <Button
               type="submit"
-              isLoading={upsertPermission.isPending}
               disabled={upsertPermission.isPending}
             >
-              {permission ? "Update Permission" : "Create Permission"}
+              {upsertPermission.isPending
+                ? "Saving..."
+                : permission
+                  ? "Update Permission"
+                  : "Create Permission"}
             </Button>
           </div>
         </form>

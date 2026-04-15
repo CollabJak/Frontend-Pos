@@ -34,7 +34,7 @@ export default function StockAdjustmentForm() {
     watch,
     handleSubmit,
     reset,
-    setValue,
+    resetField,
     setError,
     clearErrors,
     formState: { errors, isValid },
@@ -42,16 +42,16 @@ export default function StockAdjustmentForm() {
     schema: stockAdjustmentSchema,
     mode: "onChange",
     defaultValues: {
-      location_id: selectedLocationId ?? undefined,
-      variant_id: selectedVariantId ?? undefined,
+      location_id: selectedLocationId ?? 0,
+      variant_id: selectedVariantId ?? 0,
       qty: undefined,
       cost: undefined,
       reason: "",
     },
   });
 
-  const locationId = watch("location_id") ?? null;
-  const variantId = watch("variant_id") ?? null;
+  const locationId = watch("location_id") || null;
+  const variantId = watch("variant_id") || null;
   const qtyValue = watch("qty");
 
   const mutation = useInventoryAdjustment();
@@ -74,7 +74,7 @@ export default function StockAdjustmentForm() {
   const isInvalidPreview = hasValidQty && newStockPreview < 0;
 
   const onSubmit = (values: StockAdjustmentFormValues) => {
-    clearErrors("root");
+    (clearErrors as (name: string) => void)("root");
 
     const stockPreview = currentStock + values.qty;
     if (stockPreview < 0) {
@@ -123,12 +123,13 @@ export default function StockAdjustmentForm() {
             render={({ field }) => (
               <div>
                 <LocationSelect
-                  value={field.value ?? null}
+                  value={field.value > 0 ? field.value : null}
                   onChange={(value) => {
-                    field.onChange(value ?? undefined);
+                    field.onChange(value ?? 0);
                     changeLocation(value);
-                    setValue("variant_id", undefined, { shouldValidate: true });
-                    clearErrors(["location_id", "variant_id", "root"]);
+                    resetField("variant_id", { defaultValue: 0 });
+                    clearErrors(["location_id", "variant_id"]);
+                    (clearErrors as (name: string) => void)("root");
                   }}
                 />
                 {errors.location_id?.message && (
@@ -143,11 +144,12 @@ export default function StockAdjustmentForm() {
             render={({ field }) => (
               <div>
                 <VariantSelect
-                  value={field.value ?? null}
+                  value={field.value > 0 ? field.value : null}
                   onChange={(value) => {
-                    field.onChange(value ?? undefined);
+                    field.onChange(value ?? 0);
                     changeVariant(value);
-                    clearErrors(["variant_id", "root"]);
+                    clearErrors("variant_id");
+                    (clearErrors as (name: string) => void)("root");
                   }}
                   disabled={!locationId}
                 />
@@ -218,7 +220,7 @@ export default function StockAdjustmentForm() {
                 value={field.value}
                 onChange={(value) => {
                   field.onChange(value);
-                  clearErrors("root");
+                  (clearErrors as (name: string) => void)("root");
                 }}
                 rows={4}
                 placeholder="Write adjustment reason"

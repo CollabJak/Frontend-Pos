@@ -29,7 +29,7 @@ export default function ProductCard({
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
         <img
           src={product.imageUrl || "https://images.unsplash.com/photo-1541167760496-1628856ab752?q=80&w=1000&auto=format&fit=crop"}
-          alt={product.variantName}
+          alt={product.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
@@ -51,11 +51,11 @@ export default function ProductCard({
 
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
           {product.isBestSeller && (
-            <Badge color="success" size="sm" variant="light" className="uppercase tracking-wider font-bold">
+            <Badge color="success" size="sm" variant="light">
               Best Seller
             </Badge>
           )}
-          <Badge color="info" size="sm" variant="light" className="uppercase tracking-wider font-bold">
+          <Badge color="info" size="sm" variant="light">
             12OZ
           </Badge>
         </div>

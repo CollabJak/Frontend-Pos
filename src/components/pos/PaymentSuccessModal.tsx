@@ -1,4 +1,3 @@
-import React from "react";
 import { Modal } from "../ui/modal";
 
 interface PaymentSuccessModalProps {
@@ -23,7 +22,7 @@ export default function PaymentSuccessModal({
       isOpen={isOpen}
       onClose={onDone}
       className="max-w-md w-full mx-4 overflow-hidden rounded-3xl p-0 bg-transparent shadow-none"
-      hideCloseButton={true}
+      showCloseButton={false}
     >
       <div className="bg-white rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden shadow-2xl">
         {/* Background Decorative Rings */}

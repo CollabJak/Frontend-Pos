@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import { usePosStore } from "../../stores/pos.store";
 import Keypad from "../../components/pos/Keypad";
@@ -36,7 +36,6 @@ export default function POSPaymentPage() {
     setValue,
     watch,
     setError,
-    clearErrors,
     formState: { errors },
   } = useZodForm({
     schema: posCheckoutSchema,
@@ -321,7 +320,6 @@ export default function POSPaymentPage() {
                 ].map((method) => (
                   <div key={method.id} className={method.disabled ? "w-full opacity-40 grayscale cursor-not-allowed" : "w-full"}>
                     <PaymentMethodCard
-                      id={method.id}
                       label={method.label}
                       selected={paymentMethod === method.id}
                       onClick={() => {

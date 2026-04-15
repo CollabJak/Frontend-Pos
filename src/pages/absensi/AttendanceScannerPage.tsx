@@ -1,21 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import {
   useAttendanceMutation,
   useGetTodayAttendance
 } from "../../hooks/api/useAbsensi";
 import {
-  attendanceActionSchema,
-  AttendanceActionFormValues
-} from "../../Schemas/absensiSchema";
-import {
   UserCircleIcon,
-  CheckCircleIcon,
   ArrowRightIcon,
   InfoIcon,
-  AngleRightIcon
 } from "../../icons";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -27,16 +19,8 @@ const AttendanceScannerPage: React.FC = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
 
   const { data: todayAttendance } = useGetTodayAttendance();
-  const { mutateAsync: performAttendance, isPending } = useAttendanceMutation("checkin"); // Initial, will change dynamically
   const { mutateAsync: checkIn, isPending: isCheckingIn } = useAttendanceMutation("checkin");
   const { mutateAsync: checkOut, isPending: isCheckingOut } = useAttendanceMutation("checkout");
-
-  const {
-    handleSubmit,
-    setValue,
-  } = useForm<AttendanceActionFormValues>({
-    resolver: zodResolver(attendanceActionSchema),
-  });
 
   const captureFrame = useCallback((): File | null => {
     if (videoRef.current && canvasRef.current) {
@@ -226,7 +210,7 @@ const AttendanceScannerPage: React.FC = () => {
             <div className="bg-success-50 dark:bg-success-500/10 p-4 rounded-2xl border border-success-100 dark:border-success-500/20 flex items-center gap-4">
               <div className="size-10 rounded-full bg-success-500/10 flex items-center justify-center overflow-hidden">
                 <img
-                  src={(todayAttendance.check_out_time ? todayAttendance.check_out_image : todayAttendance.check_in_image) || user?.avatar || "/images/user/user-01.png"}
+                  src={(todayAttendance.check_out_time ? todayAttendance.check_out_image : todayAttendance.check_in_image) || user?.photo || "/images/user/user-01.png"}
                   alt="User"
                   className="size-full object-cover"
                 />

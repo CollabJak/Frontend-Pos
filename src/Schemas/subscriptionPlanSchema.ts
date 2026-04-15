@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const numberField = (requiredMessage: string, invalidMessage: string) =>
+const numberField = (_requiredMessage: string, invalidMessage: string) =>
   z.preprocess(
     (value) => {
       if (value === "" || value === null || value === undefined) {

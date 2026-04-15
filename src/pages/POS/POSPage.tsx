@@ -10,19 +10,19 @@ import ProductGrid from "../../components/pos/ProductGrid";
 import CartPanel from "../../components/pos/CartPanel";
 import PaymentPanel from "../../components/pos/PaymentPanel";
 import LocationSelect from "../../components/inventory/LocationSelect";
-import CategoryTabs, { Category } from "../../components/pos/CategoryTabs";
+import CategoryTabs from "../../components/pos/CategoryTabs";
 import { Modal } from "../../components/ui/modal";
 import Button from "../../components/ui/button/Button";
 import ReceiptPrint from "../../components/receipt/ReceiptPrint";
 import { useAuth } from "../../hooks/useAuth";
 import { useStockRealtime } from "../../hooks/useStockRealtime";
 import { useReceiptPrint } from "../../hooks/useReceiptPrint";
-import { useFetchPosProducts, usePosCheckout, useFetchReceipt } from "../../hooks/usePos";
+import { useFetchPosProducts } from "../../hooks/usePos";
 import { usePosStore } from "../../stores/pos.store";
 import type { ApiErrorResponse, PosCheckoutResult, ReceiptPayload } from "../../types/types";
 import { useZodForm } from "../../hooks/form/useZodForm";
 import { posCheckoutSchema } from "../../Schemas/pos.schema";
-import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
+import { fetchReceiptByOrderId } from "../../services/api/posService";
 import { fetchCategoryOptions } from "../../api/options";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
@@ -63,11 +63,10 @@ export default function POSPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebouncedValue(searchQuery, 400);
   const [cartError, setCartError] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [idempotencyKey, setIdempotencyKey] = useState("");
+  const [isProcessing] = useState(false);
   const [checkoutResult, setCheckoutResult] = useState<PosCheckoutResult | null>(null);
   const [receiptData, setReceiptData] = useState<ReceiptPayload | null>(null);
-  const [lastReceiptOrderId, setLastReceiptOrderId] = useState<number | null>(null);
+  const [lastReceiptOrderId] = useState<number | null>(null);
   const [isReceiptPreviewOpen, setIsReceiptPreviewOpen] = useState(false);
   const receiptPrintRef = useRef<HTMLDivElement | null>(null);
 
@@ -92,9 +91,7 @@ export default function POSPage() {
 
   const {
     control,
-    handleSubmit,
     setValue,
-    watch,
     clearErrors,
     setError,
     formState: { errors },
@@ -108,7 +105,7 @@ export default function POSPage() {
       })),
       payment: {
         method: "cash",
-        amount_paid: undefined,
+        amount_paid: 0,
       },
       device_id: deviceId,
     },
@@ -139,7 +136,9 @@ export default function POSPage() {
   }, [selectedLocation, productsQuery.data, setProducts]);
 
   useEffect(() => {
-    setValue("location_id", selectedLocation ?? undefined);
+    if (selectedLocation !== null) {
+      setValue("location_id", selectedLocation);
+    }
   }, [selectedLocation, setValue]);
 
   useEffect(() => {
@@ -156,8 +155,6 @@ export default function POSPage() {
     setValue("device_id", deviceId);
   }, [deviceId, setValue]);
 
-  const amountPaidValue = watch("payment.amount_paid");
-
   const filteredProducts = useMemo(() => {
     // Note: Backend handles Search and Category filtering.
     // toGridItems("") transforms the already-filtered PosProduct[] from the store.
@@ -173,7 +170,8 @@ export default function POSPage() {
       setReceiptData(null);
       setIsReceiptPreviewOpen(false);
       clearPrintError();
-      clearErrors(["location_id", "items", "root"]);
+      clearErrors(["location_id", "items"]);
+      (clearErrors as (name: string) => void)("root");
     },
     [clearErrors, clearPrintError, setProducts, setSelectedLocation]
   );
@@ -184,7 +182,8 @@ export default function POSPage() {
       setCartError(error);
       setCheckoutResult(null);
       clearPrintError();
-      clearErrors(["items", "root"]);
+      clearErrors(["items"]);
+      (clearErrors as (name: string) => void)("root");
     },
     [addToCart, clearErrors, clearPrintError]
   );
@@ -195,7 +194,8 @@ export default function POSPage() {
       setCartError(error);
       setCheckoutResult(null);
       clearPrintError();
-      clearErrors(["items", "root"]);
+      clearErrors(["items"]);
+      (clearErrors as (name: string) => void)("root");
     },
     [clearErrors, clearPrintError, increaseQty]
   );
@@ -206,7 +206,8 @@ export default function POSPage() {
       setCartError(null);
       setCheckoutResult(null);
       clearPrintError();
-      clearErrors(["items", "root"]);
+      clearErrors(["items"]);
+      (clearErrors as (name: string) => void)("root");
     },
     [clearErrors, clearPrintError, decreaseQty]
   );
@@ -217,26 +218,10 @@ export default function POSPage() {
       setCartError(null);
       setCheckoutResult(null);
       clearPrintError();
-      clearErrors(["items", "root"]);
+      clearErrors(["items"]);
+      (clearErrors as (name: string) => void)("root");
     },
     [clearErrors, clearPrintError, removeItem]
-  );
-
-  const handleAmountPaidChange = useCallback(
-    (nextValue: number | "") => {
-      setCheckoutResult(null);
-      clearPrintError();
-      const normalizedValue = nextValue === "" ? undefined : nextValue;
-      setValue("payment.amount_paid", normalizedValue, {
-        shouldValidate: normalizedValue !== undefined,
-        shouldDirty: true,
-      });
-      if (normalizedValue === undefined) {
-        clearErrors("payment.amount_paid");
-      }
-      clearErrors("root");
-    },
-    [clearErrors, clearPrintError, setValue]
   );
 
   const handleCloseReceiptPreview = useCallback(() => {
@@ -498,10 +483,6 @@ export default function POSPage() {
           <PaymentPanel
             estimatedTotal={total}
             authoritativeTotal={checkoutResult?.total ?? null}
-            paid={checkoutResult?.paid ?? null}
-            change={checkoutResult?.change ?? null}
-            amountPaid={typeof amountPaidValue === "number" ? amountPaidValue : ""}
-            onAmountPaidChange={handleAmountPaidChange}
             isPaying={isProcessing}
             disabled={
               cartItems.length === 0 ||
