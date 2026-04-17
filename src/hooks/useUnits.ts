@@ -7,17 +7,22 @@ import { ApiErrorResponse, PaginatedApiResponse, CreateUnitPayload } from "../ty
 
 interface fetchUnitsParams {
   page?: number;
+  search?: string;
 }
 
 // Fetch All Units
 export const useFetchUnits = ({
   page = 1,
+  search,
 }: fetchUnitsParams) => {
   return useQuery<PaginatedApiResponse<Units>, AxiosError>({
-    queryKey: ["units", page],
+    queryKey: ["units", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/units", {
-        params: { page },
+        params: {
+          page,
+          ...(search ? { search } : {}),
+        },
       });
 
       return response.data.data;
