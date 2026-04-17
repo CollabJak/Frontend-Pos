@@ -6,14 +6,18 @@ import { ApiErrorResponse, CreateCustomerGroupPayload, CustomerGroup, PaginatedA
 
 interface FetchCustomerGroupsParams {
   page?: number;
+  search?: string;
 }
 
-export const useFetchCustomerGroups = ({ page = 1 }: FetchCustomerGroupsParams) => {
+export const useFetchCustomerGroups = ({ page = 1, search }: FetchCustomerGroupsParams) => {
   return useQuery<PaginatedApiResponse<CustomerGroup>, AxiosError>({
-    queryKey: ["customer-groups", page],
+    queryKey: ["customer-groups", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/customer-groups", {
-        params: { page },
+        params: {
+          page,
+          ...(search ? { search } : {}),
+        },
       });
 
       return response.data.data;

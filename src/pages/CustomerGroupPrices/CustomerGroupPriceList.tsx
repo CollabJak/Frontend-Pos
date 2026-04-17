@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -19,6 +19,8 @@ import {
   useDeleteCustomerGroupPrice,
   useFetchCustomerGroupPrices,
 } from "../../hooks/useCustomerGroupPrices";
+import { Input } from "../../components/form/input/InputField";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 const formatDate = (value?: string | null) => {
   if (!value) {
@@ -43,7 +45,12 @@ const formatDate = (value?: string | null) => {
 
 export default function CustomerGroupPriceList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchCustomerGroupPrices({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchCustomerGroupPrices({
+    page,
+    search: debouncedSearch || undefined,
+  });
   const { mutate: deleteCustomerGroupPrice } = useDeleteCustomerGroupPrice();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
@@ -68,6 +75,10 @@ export default function CustomerGroupPriceList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta title="Customer Group Prices" description="Customer group pricing list page" />
@@ -79,6 +90,15 @@ export default function CustomerGroupPriceList() {
           linkLabel="Add Customer Group Price"
           linkTo="/customer-group-prices/create"
         >
+          <div>
+            <Input
+              id="customer-group-price-search"
+              type="text"
+              placeholder="Search variant, sku, customer group, location, or price..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}
