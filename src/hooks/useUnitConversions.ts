@@ -7,16 +7,21 @@ import { useNavigate } from "react-router";
 
 interface fetchUnitConversionParams {
   page?: number;
+  search?: string;
 }
 
 export const useFetchUnitConversions = ({
   page = 1,
+  search,
 }: fetchUnitConversionParams) => {
   return useQuery<PaginatedApiResponse<UnitConversions>, AxiosError>({
-    queryKey: ["unit-conversions", page],
+    queryKey: ["unit-conversions", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/unit-conversions", {
-        params: { page },
+        params: {
+          page,
+          ...(search ? { search } : {}),
+        },
       });
 
       return response.data.data;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,10 +16,17 @@ import { Link } from "react-router-dom";
 import { PencilIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
+import { Input } from "../../components/form/input/InputField";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 export default function UnitConversionList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchUnitConversions({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchUnitConversions({
+    page,
+    search: debouncedSearch || undefined,
+  });
 
   const { mutate: deleteUnitConversion } = useDeleteUnitConversion();
   const { isOpen, openModal, closeModal } = useModal();
@@ -42,6 +49,10 @@ export default function UnitConversionList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta
@@ -51,6 +62,15 @@ export default function UnitConversionList() {
       <PageBreadcrumb pageTitle="Unit Conversions Product" />
       <div className="space-y-6">
         <ComponentCard title="Unit Conversions Product List" linkLabel="Add Unit Conversion" linkTo="/unit-conversions/create">
+          <div>
+            <Input
+              id="unit-conversion-search"
+              type="text"
+              placeholder="Search variant, from unit, to unit, or rounding..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}
