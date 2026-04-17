@@ -8,17 +8,22 @@ import { ApiErrorResponse, PaginatedApiResponse, CreateCategoryPayload } from ".
 
 interface FetchCategoriesParams {
   page?: number;
+  search?: string;
 }
 
 // Fetch All Categories
 export const useFetchCategories = ({
   page = 1,
+  search,
 }: FetchCategoriesParams) => {
   return useQuery<PaginatedApiResponse<Categories>, AxiosError>({
-    queryKey: ["categories", page],
+    queryKey: ["categories", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/categories", {
-        params: { page },
+        params: {
+          page,
+          ...(search ? { search } : {}),
+        },
       });
 
       return response.data.data;
