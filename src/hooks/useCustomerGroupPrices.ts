@@ -11,6 +11,7 @@ import {
 
 interface FetchCustomerGroupPricesParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: CustomerGroupPriceFormData) => ({
@@ -18,12 +19,15 @@ const normalizePayload = (payload: CustomerGroupPriceFormData) => ({
   end_date: payload.end_date && payload.end_date.trim() !== "" ? payload.end_date : null,
 });
 
-export const useFetchCustomerGroupPrices = ({ page = 1 }: FetchCustomerGroupPricesParams) => {
+export const useFetchCustomerGroupPrices = ({ page = 1, search }: FetchCustomerGroupPricesParams) => {
   return useQuery<PaginatedApiResponse<CustomerGroupPrice>, AxiosError>({
-    queryKey: ["customer-group-prices", page],
+    queryKey: ["customer-group-prices", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/customer-group-prices", {
-        params: { page },
+        params: {
+          page,
+          ...(search ? { search } : {}),
+        },
       });
 
       return response.data.data;

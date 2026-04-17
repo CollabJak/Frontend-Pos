@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,10 +16,17 @@ import { Link } from "react-router-dom";
 import { PencilIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
+import { Input } from "../../components/form/input/InputField";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 export default function SupplierList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchSuppliers({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchSuppliers({
+    page,
+    search: debouncedSearch || undefined,
+  });
 
   const { mutate: deleteSupplier } = useDeleteSupplier();
   const { isOpen, openModal, closeModal } = useModal();
@@ -42,6 +49,10 @@ export default function SupplierList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta
@@ -51,6 +62,15 @@ export default function SupplierList() {
       <PageBreadcrumb pageTitle="Suppliers Product" />
       <div className="space-y-6">
         <ComponentCard title="Suppliers Product List" linkLabel="Add Supplier" linkTo="/suppliers/create">
+          <div>
+            <Input
+              id="supplier-search"
+              type="text"
+              placeholder="Search supplier by name, contact, phone, email, or address..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

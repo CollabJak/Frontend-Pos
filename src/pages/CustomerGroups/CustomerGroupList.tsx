@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -16,10 +16,17 @@ import Button from "../../components/ui/button/Button";
 import { PencilIcon } from "../../icons";
 import { useModal } from "../../hooks/useModal";
 import { useDeleteCustomerGroup, useFetchCustomerGroups } from "../../hooks/useCustomerGroups";
+import { Input } from "../../components/form/input/InputField";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
 export default function CustomerGroupList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchCustomerGroups({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchCustomerGroups({
+    page,
+    search: debouncedSearch || undefined,
+  });
   const { mutate: deleteCustomerGroup } = useDeleteCustomerGroup();
 
   const { isOpen, openModal, closeModal } = useModal();
@@ -45,6 +52,10 @@ export default function CustomerGroupList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta title="Customer Groups" description="Customer groups list page" />
@@ -52,6 +63,15 @@ export default function CustomerGroupList() {
 
       <div className="space-y-6">
         <ComponentCard title="Customer Groups List" linkLabel="Add Customer Group" linkTo="/customer-groups/create">
+          <div>
+            <Input
+              id="customer-group-search"
+              type="text"
+              placeholder="Search customer group by code, name, or description..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}
