@@ -11,6 +11,7 @@ import {
 
 interface FetchPriceTiersParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: PriceTierFormData) => ({
@@ -18,12 +19,12 @@ const normalizePayload = (payload: PriceTierFormData) => ({
   end_date: payload.end_date && payload.end_date.trim() !== "" ? payload.end_date : null,
 });
 
-export const useFetchPriceTiers = ({ page = 1 }: FetchPriceTiersParams) => {
+export const useFetchPriceTiers = ({ page = 1, search }: FetchPriceTiersParams) => {
   return useQuery<PaginatedApiResponse<PriceTier>, AxiosError>({
-    queryKey: ["price-tiers", page],
+    queryKey: ["price-tiers", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/price-tiers", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,10 +16,14 @@ import { Link } from "react-router-dom";
 import { PencilIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 export default function AtributeList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchAtributes({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+  const { data, isLoading } = useFetchAtributes({ page, search: debouncedSearch || undefined });
 
   const { mutate: deleteAtribute } = useDeleteAtribute();
   const { isOpen, openModal, closeModal } = useModal();
@@ -42,6 +46,10 @@ export default function AtributeList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta
@@ -51,6 +59,14 @@ export default function AtributeList() {
       <PageBreadcrumb pageTitle="Atributes Product" />
       <div className="space-y-6">
         <ComponentCard title="Atributes Product List" linkLabel="Add Atribute" linkTo="/atributes/create">
+          <div>
+            <Input
+              id="atribute-search"
+              placeholder="Search atributes by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

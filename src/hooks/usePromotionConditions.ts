@@ -11,16 +11,17 @@ import {
 
 interface FetchPromotionConditionsParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: PromotionConditionFormData) => payload;
 
-export const useFetchPromotionConditions = ({ page = 1 }: FetchPromotionConditionsParams) => {
+export const useFetchPromotionConditions = ({ page = 1, search }: FetchPromotionConditionsParams) => {
   return useQuery<PaginatedApiResponse<PromotionCondition>, AxiosError>({
-    queryKey: ["promotion-conditions", page],
+    queryKey: ["promotion-conditions", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-conditions", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

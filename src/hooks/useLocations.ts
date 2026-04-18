@@ -11,14 +11,15 @@ import {
 
 interface FetchLocationsParams {
   page?: number;
+  search?: string;
 }
 
-export const useFetchLocations = ({ page = 1 }: FetchLocationsParams) => {
+export const useFetchLocations = ({ page = 1, search }: FetchLocationsParams) => {
   return useQuery<PaginatedApiResponse<Location>, AxiosError>({
-    queryKey: ["locations", page],
+    queryKey: ["locations", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/locations", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

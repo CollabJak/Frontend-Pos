@@ -11,16 +11,17 @@ import {
 
 interface FetchPromotionActionsParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: PromotionActionFormData) => payload;
 
-export const useFetchPromotionActions = ({ page = 1 }: FetchPromotionActionsParams) => {
+export const useFetchPromotionActions = ({ page = 1, search }: FetchPromotionActionsParams) => {
   return useQuery<PaginatedApiResponse<PromotionAction>, AxiosError>({
-    queryKey: ["promotion-actions", page],
+    queryKey: ["promotion-actions", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-actions", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

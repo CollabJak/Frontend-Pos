@@ -7,16 +7,17 @@ import { useNavigate } from "react-router";
 
 interface fetchProductsParams {
   page?: number;
+  search?: string;
 }
 
 export const useFetchProducts = ({
-  page = 1,
+  page = 1, search
 }: fetchProductsParams) => {
   return useQuery<PaginatedApiResponse<Product>, AxiosError>({
-    queryKey: ["products", page],
+    queryKey: ["products", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/products", {
-        params: { page },
+        params: { page, ...(search) ? {search} : {} },
       });
 
       return response.data.data;

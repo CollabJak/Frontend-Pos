@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -19,10 +19,14 @@ import Button from "../../components/ui/button/Button";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import { PencilIcon } from "../../icons";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 export default function ProductVariantList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchProductVariants({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchProductVariants({ page, search: debouncedSearch || undefined });
   const { mutate: deleteProductVariant } = useDeleteProductVariant();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{
@@ -46,6 +50,10 @@ export default function ProductVariantList() {
     setPendingDelete(null);
     closeModal();
   };
+  
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   return (
     <>
@@ -58,6 +66,13 @@ export default function ProductVariantList() {
           linkLabel="Add Product Variant"
           linkTo="/product-variants/create"
         >
+          <div>
+            <Input
+              placeholder="Search product variants by name, SKU, or barcode..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

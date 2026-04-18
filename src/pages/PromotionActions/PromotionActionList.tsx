@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -19,10 +19,14 @@ import {
   useDeletePromotionAction,
   useFetchPromotionActions,
 } from "../../hooks/usePromotionActions";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 export default function PromotionActionList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchPromotionActions({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+  const { data, isLoading } = useFetchPromotionActions({ page, search: debouncedSearch });
   const { mutate: deletePromotionAction } = useDeletePromotionAction();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
@@ -47,6 +51,10 @@ export default function PromotionActionList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta title="Promotion Actions" description="Promotion actions list page" />
@@ -58,6 +66,14 @@ export default function PromotionActionList() {
           linkLabel="Add Promotion Action"
           linkTo="/promotion-actions/create"
         >
+          <div>
+            <Input
+              id="promotion-action-search"
+              placeholder="Search promotion actions..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

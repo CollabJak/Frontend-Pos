@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -16,6 +16,8 @@ import Button from "../../components/ui/button/Button";
 import { PencilIcon } from "../../icons";
 import { useModal } from "../../hooks/useModal";
 import { useDeletePromotion, useFetchPromotions } from "../../hooks/usePromotions";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 const formatDate = (value?: string | null) => {
   if (!value) {
@@ -40,10 +42,12 @@ const formatDate = (value?: string | null) => {
 
 export default function PromotionList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchPromotions({ page });
   const { mutate: deletePromotion } = useDeletePromotion();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
+  const [search, setSearch] = useState("");
+  const deboucedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchPromotions({ page, search: deboucedSearch || undefined });
 
   const handleDeleteClick = (id: number, name: string) => () => {
     setPendingDelete({ id, name });
@@ -65,6 +69,10 @@ export default function PromotionList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [deboucedSearch]);
+
   return (
     <>
       <PageMeta title="Promotions" description="Promotions list page" />
@@ -72,6 +80,15 @@ export default function PromotionList() {
 
       <div className="space-y-6">
         <ComponentCard title="Promotions List" linkLabel="Add Promotion" linkTo="/promotions/create">
+          <div>
+            <Input
+              id="promotion-search"
+              type="text"
+              placeholder="Search promotion by code, name, or type..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}
