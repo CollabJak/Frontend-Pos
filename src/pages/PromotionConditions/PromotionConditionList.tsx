@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -19,10 +19,14 @@ import {
   useDeletePromotionCondition,
   useFetchPromotionConditions,
 } from "../../hooks/usePromotionConditions";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 export default function PromotionConditionList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchPromotionConditions({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+  const { data, isLoading } = useFetchPromotionConditions({ page, search: debouncedSearch });
   const { mutate: deletePromotionCondition } = useDeletePromotionCondition();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
@@ -47,6 +51,10 @@ export default function PromotionConditionList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta title="Promotion Conditions" description="Promotion conditions list page" />
@@ -58,6 +66,14 @@ export default function PromotionConditionList() {
           linkLabel="Add Promotion Condition"
           linkTo="/promotion-conditions/create"
         >
+          <div>
+            <Input
+              id="promotion-condition-search"
+              placeholder="Search promotion conditions..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

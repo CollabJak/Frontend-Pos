@@ -11,16 +11,17 @@ import {
 
 interface FetchProductVariantsParams {
   page?: number;
+  search?: string;
 }
 
 export const useFetchProductVariants = ({
-  page = 1,
+  page = 1, search
 }: FetchProductVariantsParams) => {
   return useQuery<PaginatedApiResponse<ProductVariant>, AxiosError>({
-    queryKey: ["product-variants", page],
+    queryKey: ["product-variants", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/product-variants", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

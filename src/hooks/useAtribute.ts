@@ -7,16 +7,17 @@ import { useNavigate } from "react-router";
 
 interface fetchAtributesParams {
   page?: number;
+  search?: string;
 }
 
 export const useFetchAtributes = ({
-  page = 1,
+  page = 1, search
 }: fetchAtributesParams) => {
   return useQuery<PaginatedApiResponse<Atribute>, AxiosError>({
-    queryKey: ["atributes", page],
+    queryKey: ["atributes", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/atribute", {
-        params: { page },
+        params: { page, ...(search) ? {search} : {} },
       });
 
       return response.data.data;

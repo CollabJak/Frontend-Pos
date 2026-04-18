@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -16,6 +16,8 @@ import Button from "../../components/ui/button/Button";
 import { PencilIcon } from "../../icons";
 import { useModal } from "../../hooks/useModal";
 import { useDeletePriceTier, useFetchPriceTiers } from "../../hooks/usePriceTiers";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 const formatDate = (value?: string | null) => {
   if (!value) {
@@ -40,10 +42,12 @@ const formatDate = (value?: string | null) => {
 
 export default function PriceTierList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchPriceTiers({ page });
   const { mutate: deletePriceTier } = useDeletePriceTier();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchPriceTiers({ page, search: debouncedSearch || undefined });
 
   const handleDeleteClick = (id: number, name: string) => () => {
     setPendingDelete({ id, name });
@@ -65,6 +69,10 @@ export default function PriceTierList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta title="Price Tiers" description="Price tiers list page" />
@@ -72,6 +80,15 @@ export default function PriceTierList() {
 
       <div className="space-y-6">
         <ComponentCard title="Price Tiers List" linkLabel="Add Price Tier" linkTo="/price-tiers/create">
+        <div>
+          <Input
+            id="price-tier-search"
+            type="text"
+            placeholder="Search price by variant, customer group, location..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}

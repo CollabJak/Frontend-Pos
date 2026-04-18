@@ -11,6 +11,7 @@ import {
 
 interface FetchProductPricesParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: ProductPriceFormData) => ({
@@ -18,12 +19,12 @@ const normalizePayload = (payload: ProductPriceFormData) => ({
   end_date: payload.end_date && payload.end_date.trim() !== "" ? payload.end_date : null,
 });
 
-export const useFetchProductPrices = ({ page = 1 }: FetchProductPricesParams) => {
+export const useFetchProductPrices = ({ page = 1, search }: FetchProductPricesParams) => {
   return useQuery<PaginatedApiResponse<ProductPrice>, AxiosError>({
-    queryKey: ["product-prices", page],
+    queryKey: ["product-prices", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/product-prices", {
-        params: { page },
+        params: { page, ...(search) ? {search} : {} },
       });
 
       return response.data.data;

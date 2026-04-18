@@ -11,14 +11,15 @@ import {
 
 interface FetchPromotionProductsParams {
   page?: number;
+  search?: string;
 }
 
-export const useFetchPromotionProducts = ({ page = 1 }: FetchPromotionProductsParams) => {
+export const useFetchPromotionProducts = ({ page = 1, search }: FetchPromotionProductsParams) => {
   return useQuery<PaginatedApiResponse<PromotionProduct>, AxiosError>({
-    queryKey: ["promotion-products", page],
+    queryKey: ["promotion-products", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-products", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

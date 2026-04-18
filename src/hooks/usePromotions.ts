@@ -11,6 +11,7 @@ import {
 
 interface FetchPromotionsParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: CreatePromotionPayload) => ({
@@ -18,12 +19,12 @@ const normalizePayload = (payload: CreatePromotionPayload) => ({
   end_date: payload.end_date && payload.end_date.trim() !== "" ? payload.end_date : null,
 });
 
-export const useFetchPromotions = ({ page = 1 }: FetchPromotionsParams) => {
+export const useFetchPromotions = ({ page = 1, search }: FetchPromotionsParams) => {
   return useQuery<PaginatedApiResponse<Promotion>, AxiosError>({
-    queryKey: ["promotions", page],
+    queryKey: ["promotions", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotions", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

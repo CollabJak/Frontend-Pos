@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,10 +16,14 @@ import { Link } from "react-router-dom";
 import { PencilIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { Input } from "../../components/form/input/InputField";
 
 export default function ProductList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useFetchProducts({ page });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 400);
+  const { data, isLoading } = useFetchProducts({ page, search: debouncedSearch || undefined });
 
   const { mutate: deleteProduct } = useDeleteProduct();
   const { isOpen, openModal, closeModal } = useModal();
@@ -42,6 +46,10 @@ export default function ProductList() {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   return (
     <>
       <PageMeta
@@ -51,6 +59,13 @@ export default function ProductList() {
       <PageBreadcrumb pageTitle="Products" />
       <div className="space-y-6">
         <ComponentCard title="Products List" linkLabel="Add Product" linkTo="/products/create">
+          <div>
+            <Input
+              placeholder="Search products by name, sku, barcode..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Loading...</p>}
