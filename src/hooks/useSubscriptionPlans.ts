@@ -11,6 +11,7 @@ import {
 
 interface FetchSubscriptionPlansParams {
   page?: number;
+  search?: string;
 }
 
 const normalizePayload = (payload: SubscriptionPlanFormData) => ({
@@ -22,13 +23,13 @@ const normalizePayload = (payload: SubscriptionPlanFormData) => ({
 });
 
 export const useFetchSubscriptionPlans = ({
-  page = 1,
+  page = 1, search
 }: FetchSubscriptionPlansParams) => {
   return useQuery<PaginatedApiResponse<SubscriptionPlan>, AxiosError>({
-    queryKey: ["subscription-plans", page],
+    queryKey: ["subscription-plans", page, search ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/subscription-plans", {
-        params: { page },
+        params: { page, ...(search ? {search} : {}) },
       });
 
       return response.data.data;

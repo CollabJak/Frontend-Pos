@@ -22,7 +22,7 @@ import RoleFormModal from "../../components/roles/RoleFormModal";
 import PermissionSyncModal from "../../components/roles/PermissionSyncModal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
-import { PencilIcon, TrashBinIcon, LockIcon, PlusIcon } from "../../icons";
+import { PencilIcon, TrashBinIcon, LockIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
 
 export default function RoleList() {
@@ -111,7 +111,6 @@ export default function RoleList() {
           <div className="flex justify-end mb-4">
             <Button
               size="sm"
-              startIcon={<PlusIcon className="size-5" />}
               onClick={handleCreate}
             >
               Add Role

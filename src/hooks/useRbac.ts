@@ -57,11 +57,11 @@ export const useDeleteRole = () => {
 
 // --- Permissions ---
 
-export const useFetchPermissions = ({ page = 1 }: { page?: number } = {}) => {
+export const useFetchPermissions = ({ page = 1, search }: { page?: number, search?: string } = {}) => {
   return useQuery<PaginatedApiResponse<Permission>, AxiosError>({
-    queryKey: ["permissions", page],
+    queryKey: ["permissions", page, search ?? ""],
     queryFn: async () => {
-      const response = await apiClient.get(`/permissions?page=${page}`);
+      const response = await apiClient.get(`/permissions?page=${page}&search=${search}`);
       return response.data.data;
     },
   });
