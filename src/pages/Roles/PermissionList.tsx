@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,12 +16,13 @@ import PermissionFormModal from "../../components/roles/PermissionFormModal";
 import { PencilIcon, TrashBinIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
-
+import { Input } from "../../components/form/input/InputField";
 import { Pagination } from "../../components/tables/Datatable";
 
 const PermissionList: React.FC = () => {
   const [page, setPage] = useState(1);
-  const { data: response, isLoading } = useFetchPermissions({ page });
+  const [search, setSearch] = useState("");
+  const { data: response, isLoading } = useFetchPermissions({ page, search: search.trim() || '' });
   const permissions = response?.data;
   const meta = response?.meta;
   const deletePermission = useDeletePermission();
@@ -61,6 +62,10 @@ const PermissionList: React.FC = () => {
     closeModal();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   return (
     <>
       <PageMeta
@@ -76,7 +81,13 @@ const PermissionList: React.FC = () => {
               Add New Permission
             </Button>
           </div>
-
+          <div>
+            <Input
+              placeholder="Search permissions by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3 text-sm text-gray-500">Loading...</p>}
@@ -117,7 +128,7 @@ const PermissionList: React.FC = () => {
                             <div className="flex items-center gap-3">
                               <button
                                 onClick={() => handleEdit(permission)}
-                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500 bg-white px-3 py-1.5 text-sm font-medium text-blue-500 shadow-sm transition-colors hover:border-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                               >
                                 <PencilIcon className="size-4" />
                                 Edit

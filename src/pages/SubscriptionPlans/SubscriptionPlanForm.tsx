@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -11,7 +11,7 @@ import {
 } from "../../components/ui/table";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
-import { PencilIcon, TrashBinIcon, PlusIcon } from "../../icons";
+import { PencilIcon, TrashBinIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
 import SubscriptionPlanFormModal from "../../components/subscriptionPlans/SubscriptionPlanFormModal";
 import {
@@ -21,12 +21,16 @@ import {
 } from "../../hooks/useSubscriptionPlans";
 import { SubscriptionPlan, SubscriptionPlanFormData } from "../../types/types";
 import { Pagination } from "../../components/tables/Datatable";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import Input from "../../components/form/input/InputField";
 
 const formatPrice = (price: number) => Number(price).toLocaleString();
 
 export default function SubscriptionPlanForm() {
     const [page, setPage] = useState(1);
-    const { data, isLoading } = useFetchSubscriptionPlans({ page });
+    const [search, setSearch] = useState("");
+    const debpouncedSearch = useDebouncedValue(search.trim(), 400);
+    const { data, isLoading } = useFetchSubscriptionPlans({ page, search: debpouncedSearch || undefined });
     const { mutate: upsertSubscriptionPlan, isPending: isUpserting } =
         useUpsertSubscriptionPlan();
     const { mutate: deleteSubscriptionPlan, isPending: isDeleting } =
@@ -83,6 +87,10 @@ export default function SubscriptionPlanForm() {
         });
     };
 
+    useEffect(() => {
+        setPage(1);
+    }, [debpouncedSearch]);
+
     return (
         <>
             <PageMeta
@@ -96,11 +104,17 @@ export default function SubscriptionPlanForm() {
                     <div className="flex justify-end mb-4">
                         <Button
                             size="sm"
-                            startIcon={<PlusIcon className="size-5" />}
                             onClick={handleCreate}
                         >
                             Add Subscription Plan
                         </Button>
+                    </div>
+                    <div>
+                        <Input
+                            placeholder="Search subscription plans by name..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
 
                     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">

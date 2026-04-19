@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     path: "/dashboard",
+    permissions: ["dashboard.view"],
   },
   {
     icon: <BoxIcon />,
@@ -91,16 +92,16 @@ const navItems: NavItem[] = [
     icon: <BoxIcon />,
     name: "Businesses",
     path: "/businesses",
-    roles: [],
+    permissions: ["business.view"],
   },
   {
     name: "Settings",
     icon: <PlugInIcon />,
-    permissions: ["business.view"],
+    permissions: ["settings.view"],
     subItems: [
-      { name: "Roles", path: "/roles", pro: false, permissions: ["business.view"] },
-      { name: "Permissions", path: "/permissions", pro: false, permissions: ["business.view"] },
-      { name: "Subscription Plans", path: "/subscriptions-plans", pro: false, permissions: ["business.view"] },
+      { name: "Roles", path: "/roles", pro: false, permissions: ["role.view"] },
+      { name: "Permissions", path: "/permissions", pro: false, permissions: ["permission.view"] },
+      { name: "Subscription Plans", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
     ],
   },
 ];
