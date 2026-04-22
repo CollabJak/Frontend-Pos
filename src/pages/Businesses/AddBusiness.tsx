@@ -12,9 +12,15 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../hooks/useAuth";
+import { Navigate } from "react-router-dom";
 
 export default function AddBusiness() {
+  const { user } = useAuth();
   const { mutate: createBusiness, isPending } = useCreateBusiness();
+
+  const isManager = user?.roles?.includes("manager");
+  const alreadyHasBusiness = isManager && user?.business_id != null;
 
   const {
     register,
@@ -35,29 +41,38 @@ export default function AddBusiness() {
     },
   });
 
+  if (alreadyHasBusiness) {
+    return <Navigate to="/businesses" replace />;
+  }
+
   const onSubmit = (data: BusinessFormData) => {
     setError("root", { type: "server", message: "" });
 
-    createBusiness(data, {
-      onError: (error: AxiosError<ApiErrorResponse>) => {
-        if (error.response) {
-          const { message, errors: fieldErrors } = error.response.data;
+    const isFirstSetup = isManager && !user?.business_id;
 
-          if (message) {
-            setError("root", { type: "server", message });
-          }
+    createBusiness(
+      { ...data, isFirstSetup },
+      {
+        onError: (error: AxiosError<ApiErrorResponse>) => {
+          if (error.response) {
+            const { message, errors: fieldErrors } = error.response.data;
 
-          if (fieldErrors) {
-            Object.entries(fieldErrors).forEach(([key, messages]) => {
-              setError(key as keyof BusinessFormData, {
-                type: "server",
-                message: messages[0],
+            if (message) {
+              setError("root", { type: "server", message });
+            }
+
+            if (fieldErrors) {
+              Object.entries(fieldErrors).forEach(([key, messages]) => {
+                setError(key as keyof BusinessFormData, {
+                  type: "server",
+                  message: messages[0],
+                });
               });
-            });
+            }
           }
-        }
-      },
-    });
+        },
+      }
+    );
   };
 
   return (

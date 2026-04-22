@@ -18,9 +18,15 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    const status = error.response?.status;
+    const errorCode = error.response?.data?.code;
+
     // Handle Session Expiry (Unauthorized or Authentication Timeout)
-    if (error.response?.status === 401 || error.response?.status === 419) {
+    if (status === 401 || status === 419) {
       window.dispatchEvent(new Event("auth:unauthorized"));
+    } else if (status === 403 && errorCode === "BUSINESS_SETUP_REQUIRED") {
+      // Redirect to business setup page
+      window.dispatchEvent(new CustomEvent("auth:business-setup-required"));
     } else {
       handleError(error);
     }

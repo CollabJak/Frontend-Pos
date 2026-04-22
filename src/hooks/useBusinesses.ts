@@ -43,14 +43,20 @@ export const useCreateBusiness = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  return useMutation<Business, AxiosError<ApiErrorResponse>, CreateBusinessPayload>({
-    mutationFn: async (payload: CreateBusinessPayload) => {
-      const response = await apiClient.post("/businesses", normalizePayload(payload));
+  return useMutation<Business, AxiosError<ApiErrorResponse>, CreateBusinessPayload & { isFirstSetup?: boolean }>({
+    mutationFn: async ({ isFirstSetup: _flag, ...payload }) => {
+      const response = await apiClient.post("/businesses", normalizePayload(payload as CreateBusinessPayload));
       return response.data.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
-      navigate("/businesses");
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+
+      if (variables.isFirstSetup) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/businesses");
+      }
     },
   });
 };

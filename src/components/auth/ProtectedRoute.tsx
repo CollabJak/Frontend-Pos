@@ -30,5 +30,13 @@ export default function ProtectedRoute({ children, allowedRoles, allowedPermissi
     return <Navigate to="/dashboard" replace />;
   }
 
+  // Guard: Manager without business_id redirected to setup business
+  const isManager = user.roles?.includes("manager");
+  const isSetupPage = window.location.pathname === "/businesses/create";
+
+  if (isManager && !user.business_id && !isSetupPage) {
+    return <Navigate to="/businesses/create" replace />;
+  }
+
   return <>{children}</>;
 }

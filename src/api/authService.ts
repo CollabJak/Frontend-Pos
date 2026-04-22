@@ -88,6 +88,9 @@ export const authService = {
     } catch (error) {
       // Keep logout UX resilient even when session is already invalidated.
       console.error("Logout failed", error);
+    } finally {
+      // Reset CSRF cache
+      csrfCookieRequest = null;
     }
   },
 
