@@ -58,8 +58,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     window.addEventListener("auth:unauthorized", handleUnauthorized);
 
+    const handleBusinessSetupRequired = () => {
+      navigate("/businesses/create", { replace: true });
+    };
+
+    window.addEventListener("auth:business-setup-required", handleBusinessSetupRequired);
+
     return () => {
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
+      window.removeEventListener("auth:business-setup-required", handleBusinessSetupRequired);
     };
   }, [navigate, queryClient]);
 
@@ -90,6 +97,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (!userData.email_verified_at) {
         navigate("/verify-email", { replace: true });
+        return;
+      }
+
+      // Redirect logic based on role and business_id
+      if (userData.roles?.includes("admin")) {
+        navigate("/dashboard", { replace: true });
+      } else if (userData.roles?.includes("manager")) {
+        if (!userData.business_id) {
+          navigate("/businesses/create", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
+      } else {
+        // Keeper/Employee - backend already validates business_id during login
+        navigate("/dashboard", { replace: true });
       }
     } catch (error) {
       console.error("Login error:", error);
