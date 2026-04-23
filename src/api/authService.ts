@@ -138,4 +138,17 @@ export const authService = {
       throw new Error("Unexpected error. Please try again.");
     }
   },
+
+  getGoogleAuthUrl: async (): Promise<string> => {
+    try {
+      await ensureCsrfCookie();
+      const { data } = await apiClient.get("/auth/google");
+      return data.data.url;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw new Error("Failed to get Google sign in url.");
+      }
+      throw new Error("Unexpected error. Please try again.");
+    }
+  },
 };
