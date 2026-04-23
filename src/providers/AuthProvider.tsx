@@ -28,7 +28,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   const searchParams = new URLSearchParams(location.search);
-  const isGoogleLogin = searchParams.get("google_login") === "success";
+  const googleLoginStatus = searchParams.get("google_login");
+  const isGoogleLogin = googleLoginStatus === "success" || googleLoginStatus === "setup";
   const shouldBootstrapSession = !PUBLIC_PATHS.has(location.pathname) || isGoogleLogin;
 
   const meQuery = useQuery<User | null>({
@@ -45,6 +46,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const user = meQuery.data ?? null;
   const loading = shouldBootstrapSession ? meQuery.isPending : false;
+
+  // Force refetch if returning from Google Oauth explicitly marking success
+  useEffect(() => {
+    if (isGoogleLogin) {
+      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+    }
+  }, [isGoogleLogin, queryClient]);
+
+  // Handle Google Login Redirection based on role and business status
+  useEffect(() => {
+    if (!isGoogleLogin || !user || meQuery.isFetching) {
+      return;
+    }
+
+    if (user.roles?.includes("admin")) {
+      navigate("/dashboard", { replace: true });
+    } else if (user.roles?.includes("manager")) {
+      if (!user.business_id) {
+        navigate("/businesses/create", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    } else {
+      // For roles not allowed, we might have been logged out by backend already
+      // but let's ensure we stay on signin
+      navigate("/signin", { replace: true });
+    }
+
+    // Cleanup URL
+    const nextParams = new URLSearchParams(location.search);
+    nextParams.delete("google_login");
+    const nextSearch = nextParams.toString();
+    const nextUrl = nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname;
+    window.history.replaceState({}, "", nextUrl);
+  }, [isGoogleLogin, user, meQuery.isFetching, navigate, location.pathname, location.search]);
 
   // Global listener for session expiry signals
   useEffect(() => {
@@ -69,19 +105,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       window.removeEventListener("auth:business-setup-required", handleBusinessSetupRequired);
     };
   }, [navigate, queryClient]);
-
-  useEffect(() => {
-    if (!isGoogleLogin || !user) {
-      return;
-    }
-
-    const nextParams = new URLSearchParams(location.search);
-    nextParams.delete("google_login");
-
-    const nextSearch = nextParams.toString();
-    const nextUrl = nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname;
-    window.history.replaceState({}, "", nextUrl);
-  }, [isGoogleLogin, user, location.pathname, location.search]);
 
   const setUser = useCallback(
     (nextUser: User | null) => {

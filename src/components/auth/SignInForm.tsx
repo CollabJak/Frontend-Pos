@@ -7,7 +7,7 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { useRoleRedirect } from "../../hooks/useRoleRedirect";
-import { runtimeConfig } from "../../utils/runtimeConfig";
+import { authService } from "../../api/authService";
 
 export default function SignInForm() {
   const { login } = useAuth();
@@ -31,9 +31,13 @@ export default function SignInForm() {
     }
   };
 
-  const handleGoogleSignIn = (): void => {
-    const baseUrl = runtimeConfig.apiBaseUrl;
-    window.location.href = `${baseUrl}/auth/google`;
+  const handleGoogleSignIn = async (): Promise<void> => {
+    try {
+      const url = await authService.getGoogleAuthUrl();
+      window.location.href = url;
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
   };
 
   return (
