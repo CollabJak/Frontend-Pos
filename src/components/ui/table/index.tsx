@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 interface TableProps {
   children: ReactNode; // Table content (thead, tbody, etc.)
   className?: string; // Optional className for styling
+  scrollable?: boolean; // If true, enables horizontal scroll
 }
 
 // Props for TableHeader
@@ -33,8 +34,22 @@ interface TableCellProps {
 }
 
 // Table Component
-const Table: React.FC<TableProps> = ({ children, className }) => {
-  return <table className={`min-w-full  ${className}`}>{children}</table>;
+const Table: React.FC<TableProps> = ({ children, className, scrollable = false }) => {
+  const tableContent = (
+    <table className={`min-w-full border-collapse ${className}`}>
+      {children}
+    </table>
+  );
+
+  if (scrollable) {
+    return (
+      <div className="max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+        {tableContent}
+      </div>
+    );
+  }
+
+  return tableContent;
 };
 
 // TableHeader Component

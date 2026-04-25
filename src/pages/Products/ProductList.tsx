@@ -71,7 +71,7 @@ export default function ProductList() {
               {isLoading && <p className="p-3">Loading...</p>}
 
               {!isLoading && (
-                <Table className="table-auto">
+                <Table scrollable className="min-w-[1500px]">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell
