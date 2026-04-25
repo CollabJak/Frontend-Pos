@@ -22,6 +22,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import RecentTransactionsPage from "./pages/Dashboard/RecentTransactionsPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CategoryList from "./pages/Categories/CategoryList";
 import AddCategory from "./pages/Categories/AddCategory";
@@ -123,6 +124,15 @@ export default function App() {
               }
             >
               <Route index path="/dashboard" element={<Home />} />
+              <Route
+                element={
+                  <ProtectedRoute allowedPermissions={["dashboard.view"]}>
+                    <Outlet />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/dashboard/recent-transactions" element={<RecentTransactionsPage />} />
+              </Route>
 
               {/* Master Data Permissions */}
               <Route element={<ProtectedRoute allowedPermissions={["category.view"]}><Outlet /></ProtectedRoute>}>

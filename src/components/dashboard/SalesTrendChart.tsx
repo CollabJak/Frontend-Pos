@@ -1,18 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { useSalesTrend } from "../../hooks/useSalesTrend";
 
 const SalesTrendChart: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("weekly");
+  const [activeTab, setActiveTab] = useState<"weekly" | "monthly">("weekly");
+
+  const params = useMemo(() => {
+    const to = new Date();
+    const from = new Date();
+    if (activeTab === 'weekly') {
+      from.setDate(to.getDate() - 7);
+    } else {
+      from.setDate(to.getDate() - 30);
+    }
+    return {
+      from: from.toISOString().split('T')[0],
+      to: to.toISOString().split('T')[0],
+      granularity: 'daily',
+      timezone: 'Asia/Jakarta'
+    };
+  }, [activeTab]);
+
+  const { data: trendResponse, isLoading, isError } = useSalesTrend(params);
+  const trendData = trendResponse?.data;
 
   const options: ApexOptions = {
-    colors: ["#465fff"],
+    colors: ["#465fff", "#f97316"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "line",
       height: 300,
       toolbar: {
-        show: true,
+        show: false,
       },
       zoom: {
         enabled: true,
@@ -44,7 +64,7 @@ const SalesTrendChart: React.FC = () => {
       borderColor: "#f1f1f1",
     },
     xaxis: {
-      categories: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+      categories: trendData?.labels || [],
       axisBorder: {
         show: false,
       },
@@ -56,29 +76,67 @@ const SalesTrendChart: React.FC = () => {
           colors: "#6B7280",
           fontSize: "12px",
         },
+        rotate: -45,
+        rotateAlways: false,
       },
     },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#6B7280",
-          fontSize: "12px",
+    yaxis: [
+      {
+        title: {
+          text: "Revenue (IDR)",
+          style: {
+            color: "#465fff",
+            fontSize: "12px",
+          },
+        },
+        labels: {
+          formatter: (val) => {
+            if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)}M`;
+            if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)}K`;
+            return `Rp ${val}`;
+          },
+          style: {
+            colors: "#6B7280",
+            fontSize: "12px",
+          },
         },
       },
-    },
+      {
+        opposite: true,
+        title: {
+          text: "Orders",
+          style: {
+            color: "#f97316",
+            fontSize: "12px",
+          },
+        },
+        labels: {
+          style: {
+            colors: "#6B7280",
+            fontSize: "12px",
+          },
+        },
+      }
+    ],
     tooltip: {
-      x: {
-        show: false,
-      },
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: (val, { seriesIndex }) => {
+          if (seriesIndex === 0) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
+          }
+          return `${val} orders`;
+        }
+      }
     },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'right',
+    }
   };
 
-  const series = [
-    {
-      name: "Sales",
-      data: [30, 70, 45, 90, 50, 110, 80],
-    },
-  ];
+  const series = trendData?.series || [];
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -88,7 +146,7 @@ const SalesTrendChart: React.FC = () => {
             Sales Trend
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Revenue movement over the last 7 days
+            {activeTab === 'weekly' ? 'Revenue movement over the last 7 days' : 'Revenue movement over the last 30 days'}
           </p>
         </div>
         <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg dark:bg-gray-800">
@@ -114,7 +172,13 @@ const SalesTrendChart: React.FC = () => {
       </div>
 
       <div className="w-full">
-        <Chart options={options} series={series} type="line" height={300} />
+        {isLoading ? (
+          <div className="h-[300px] flex items-center justify-center text-sm text-gray-500">Loading chart data...</div>
+        ) : isError ? (
+          <div className="h-[300px] flex items-center justify-center text-sm text-red-500">Failed to load chart data</div>
+        ) : (
+          <Chart options={options} series={series} type="line" height={300} />
+        )}
       </div>
     </div>
   );

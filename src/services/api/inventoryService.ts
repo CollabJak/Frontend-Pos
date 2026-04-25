@@ -5,6 +5,7 @@ import type {
   InventoryDetail,
   InventoryListItem,
   InventoryMovementItem,
+  InventorySummary,
   PaginatedApiResponse,
 } from "../../types/types";
 
@@ -84,5 +85,10 @@ export const fetchInventoryMovements = async ({
 
 export const submitInventoryAdjustment = async (payload: InventoryAdjustmentPayload): Promise<unknown> => {
   const response = await apiClient.post("/inventory/adjustment", payload);
+  return response.data.data;
+};
+
+export const fetchInventorySummary = async (): Promise<InventorySummary> => {
+  const response = await apiClient.get("/inventory/summary");
   return response.data.data;
 };
