@@ -74,3 +74,9 @@ export interface InventoryAdjustmentPayload {
   reason: string;
   cost?: number;
 }
+
+export interface InventorySummary {
+  total_products: number;
+  total_stock_value: string;
+  low_stock_products: number;
+}

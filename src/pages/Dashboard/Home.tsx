@@ -1,5 +1,7 @@
 import PageMeta from "../../components/common/PageMeta";
 import MetricCards from "../../components/dashboard/MetricCards";
+import TransactionStatusDetails from "../../components/dashboard/TransactionStatusDetails";
+import GrossProfitDetails from "../../components/dashboard/GrossProfitDetails";
 import SalesTrendChart from "../../components/dashboard/SalesTrendChart";
 import TopProducts from "../../components/dashboard/TopProducts";
 import RecentTransactions from "../../components/dashboard/RecentTransactions";
@@ -23,6 +25,8 @@ export default function Home() {
             </h1>
           </div>
           <MetricCards />
+          <GrossProfitDetails />
+          <TransactionStatusDetails />
         </section>
 
         {/* Charts Row */}
