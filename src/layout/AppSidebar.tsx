@@ -89,10 +89,26 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    icon: <DollarLineIcon />,
+    name: "Payment Methods",
+    path: "/payment-methods",
+    permissions: ["payment_method.view"],
+  },
+  {
     icon: <BoxIcon />,
     name: "Businesses",
     path: "/businesses",
     permissions: ["business.view"],
+  },
+  {
+    name: "Subscription",
+    icon: <DollarLineIcon />,
+    permissions: ["subscription_plan.view"],
+    subItems: [
+      { name: "Pricing Plans", path: "/pricing", pro: false, permissions: ["business.view"] },
+      { name: "Billing History", path: "/billing", pro: false, permissions: ["business.view"] },
+      { name: "Verification", path: "/subscriptions/verification", pro: false, roles: ["admin"] },
+    ],
   },
   {
     name: "Settings",
@@ -101,7 +117,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Roles", path: "/roles", pro: false, permissions: ["role.view"] },
       { name: "Permissions", path: "/permissions", pro: false, permissions: ["permission.view"] },
-      { name: "Subscription Plans", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
+      { name: "Plan Management", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
     ],
   },
 ];

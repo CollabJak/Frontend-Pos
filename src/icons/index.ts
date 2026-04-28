@@ -33,7 +33,9 @@ import { ReactComponent as PaperPlaneIcon } from "./paper-plane.svg?react";
 import { ReactComponent as LockIcon } from "./lock.svg?react";
 import { ReactComponent as EnvelopeIcon } from "./envelope.svg?react";
 import { ReactComponent as UserIcon } from "./user-line.svg?react";
-import { ReactComponent as CalenderIcon } from "./calender-line.svg?react";
+import { ReactComponent as CalendarIcon } from "./calendar.svg?react";
+import { ReactComponent as CalenderIcon } from "./calendar.svg?react";
+import { ReactComponent as CreditCardIcon } from "./dollar-line.svg?react";
 import { ReactComponent as EyeIcon } from "./eye.svg?react";
 import { ReactComponent as EyeCloseIcon } from "./eye-close.svg?react";
 import { ReactComponent as TimeIcon } from "./time.svg?react";
@@ -91,7 +93,9 @@ export {
   EnvelopeIcon,
   LockIcon,
   UserIcon,
+  CalendarIcon,
   CalenderIcon,
+  CreditCardIcon,
   EyeIcon,
   EyeCloseIcon,
   TimeIcon,
