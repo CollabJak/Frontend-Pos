@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
       // Redirect to business setup page
       window.dispatchEvent(new CustomEvent("auth:business-setup-required"));
     } else {
-      handleError(error);
+      void handleError(error);
     }
     return Promise.reject(error);
   }

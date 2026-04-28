@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import { SubscriptionPlan, SubscriptionPlanFormData } from "../../types/types";
+import { SubscriptionPlan } from "../../types/types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubscriptionPlanSchema, SubscriptionPlanFormValues } from "../../Schemas/subscriptionPlanSchema";
+import Input from "../form/input/InputField";
+import Label from "../form/Label";
+import Select from "../form/Select";
 
 interface SubscriptionPlanFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: SubscriptionPlanFormData) => void;
+  onSubmit: (data: any) => void;
   initialData?: SubscriptionPlan | null;
   loading?: boolean;
 }
@@ -18,126 +24,222 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
   initialData,
   loading,
 }) => {
-  const [name, setName] = useState("");
-  const [duration, setDuration] = useState("1");
-  const [price, setPrice] = useState("0");
-  const [description, setDescription] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<any>({
+    resolver: zodResolver(SubscriptionPlanSchema),
+    defaultValues: {
+      name: "",
+      duration: 30,
+      price: 0,
+      description: "",
+      is_popular: false,
+      billing_cycle: "monthly",
+      features: {},
+    },
+  });
+
+  // Local state for dynamic feature inputs (key-value pairs)
+  const [featureRows, setFeatureRows] = useState<{ key: string; value: string }[]>([]);
 
   useEffect(() => {
-    if (initialData) {
-      setName(initialData.name);
-      setDuration(String(initialData.duration));
-      setPrice(String(initialData.price));
-      setDescription(initialData.description || "");
-      return;
+    if (isOpen) {
+      if (initialData) {
+        reset({
+          name: initialData.name,
+          duration: initialData.duration,
+          price: initialData.price,
+          description: initialData.description || "",
+          is_popular: !!initialData.is_popular,
+          billing_cycle: initialData.billing_cycle as any || "monthly",
+          features: initialData.features || {},
+        });
+
+        // Convert record to array for the UI
+        const rows = Object.entries(initialData.features || {}).map(([k, v]) => ({
+          key: k,
+          value: typeof v === 'object' ? JSON.stringify(v) : String(v)
+        }));
+        setFeatureRows(rows.length > 0 ? rows : [{ key: "", value: "" }]);
+      } else {
+        reset({
+          name: "",
+          duration: 30,
+          price: 0,
+          description: "",
+          is_popular: false,
+          billing_cycle: "monthly",
+          features: {},
+        });
+        setFeatureRows([{ key: "", value: "" }]);
+      }
     }
+  }, [initialData, isOpen, reset]);
 
-    setName("");
-    setDuration("1");
-    setPrice("0");
-    setDescription("");
-  }, [initialData, isOpen]);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    onSubmit({
-      name: name.trim(),
-      duration: Number(duration),
-      price: Number(price),
-      description: description.trim(),
-    });
+  const handleAddFeature = () => {
+    setFeatureRows([...featureRows, { key: "", value: "" }]);
   };
 
-  const isSubmitDisabled =
-    loading ||
-    !name.trim() ||
-    Number(duration) < 1 ||
-    Number.isNaN(Number(duration)) ||
-    Number(price) < 0 ||
-    Number.isNaN(Number(price));
+  const handleRemoveFeature = (index: number) => {
+    setFeatureRows(featureRows.filter((_, i) => i !== index));
+  };
+
+  const handleFeatureChange = (index: number, field: "key" | "value", val: string) => {
+    const updated = [...featureRows];
+    updated[index][field] = val;
+    setFeatureRows(updated);
+  };
+
+  const onLocalSubmit = (data: SubscriptionPlanFormValues) => {
+    // Convert array back to record
+    const finalFeatures: Record<string, any> = {};
+    featureRows.forEach(row => {
+      if (row.key.trim()) {
+        // Try to parse as number or boolean if looks like one
+        let val: any = row.value;
+        if (val === 'true') val = true;
+        else if (val === 'false') val = false;
+        else if (!isNaN(Number(val)) && val.trim() !== '') val = Number(val);
+        
+        finalFeatures[row.key.trim()] = val;
+      }
+    });
+
+    onSubmit({ ...data, features: finalFeatures });
+  };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[600px] p-6 lg:p-10">
-      <div className="flex flex-col">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-6 lg:p-10">
+      <div className="flex flex-col max-h-[85vh] overflow-y-auto pr-2 custom-scrollbar">
         <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
           {initialData ? "Edit Subscription Plan" : "Add New Subscription Plan"}
         </h4>
         <p className="mb-7 text-sm text-gray-500 dark:text-gray-400">
-          {initialData
-            ? "Update the subscription plan details."
-            : "Enter the details for the new subscription plan."}
+          Set up advanced plan details, billing, and feature limits.
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Plan Name
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Premium Monthly"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+
+        <form onSubmit={handleSubmit(onLocalSubmit as any)} className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Plan Name</Label>
+              <Input
+                placeholder="e.g. Pro Monthly"
+                {...register("name")}
+                error={!!errors.name}
+                hint={errors.name?.message as any}
+              />
+            </div>
+
+            <Select
+              label="Billing Cycle"
+              options={[
+                { value: "monthly", label: "Monthly" },
+                { value: "yearly", label: "Yearly" },
+              ]}
+              value={watch("billing_cycle")}
+              onChange={(val) => setValue("billing_cycle", val as any)}
             />
           </div>
 
-          <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Duration
-            </label>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              placeholder="e.g. 30"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Duration (Days)</Label>
+              <Input
+                type="number"
+                {...register("duration", { valueAsNumber: true })}
+                error={!!errors.duration}
+                hint={errors.duration?.message as any}
+              />
+            </div>
+
+            <div>
+              <Label>Price</Label>
+              <Input
+                type="number"
+                {...register("price", { valueAsNumber: true })}
+                error={!!errors.price}
+                hint={errors.price?.message as any}
+              />
+            </div>
           </div>
 
           <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Price
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="w-5 h-5 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                {...register("is_popular")} 
+              />
+              <span className="font-medium text-gray-800 dark:text-white/90">Mark as Popular Plan</span>
             </label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="e.g. 150000"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            />
           </div>
 
           <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Description
-            </label>
-            <textarea
-              rows={4}
-              placeholder="Optional description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-transparent px-5 py-3 outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            <Label>Description</Label>
+            <Input
+              placeholder="Brief description about the plan"
+              {...register("description")}
+              error={!!errors.description}
+              hint={errors.description?.message as any}
             />
           </div>
 
-          <div className="flex items-center justify-end gap-4">
-            <Button variant="outline" onClick={onClose} disabled={loading}>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="font-medium text-gray-800 dark:text-white/90">Plan Features & Limits (JSON)</label>
+              <Button type="button" size="sm" variant="outline" onClick={handleAddFeature}>
+                + Add Feature
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              {featureRows.map((row, index) => (
+                <div key={index} className="flex flex-col gap-1 p-3 rounded-xl border border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01]">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Feature #{index + 1}</span>
+                    <button 
+                      type="button" 
+                      onClick={() => handleRemoveFeature(index)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Key (e.g. max_locations)"
+                        value={row.key}
+                        onChange={(e) => handleFeatureChange(index, "key", e.target.value)}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Value (e.g. 5 or true)"
+                        value={row.value}
+                        onChange={(e) => handleFeatureChange(index, "value", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {featureRows.length === 0 && (
+                <p className="text-xs text-gray-400 italic">No features defined. Click add to start.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-4 mt-4 sticky bottom-0 bg-white dark:bg-gray-900 py-2">
+            <Button variant="outline" onClick={onClose} disabled={loading} type="button">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitDisabled}>
-              {loading
-                ? "Saving..."
-                : initialData
-                  ? "Update Subscription Plan"
-                  : "Create Subscription Plan"}
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : initialData ? "Update Plan" : "Create Plan"}
             </Button>
           </div>
         </form>

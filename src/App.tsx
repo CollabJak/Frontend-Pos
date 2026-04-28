@@ -94,6 +94,12 @@ import POSPaymentPage from "./pages/POS/POSPaymentPage";
 import FaceRegistrationPage from "./pages/absensi/FaceRegistrationPage";
 import AttendanceScannerPage from "./pages/absensi/AttendanceScannerPage";
 import AttendanceHistoryPage from "./pages/absensi/AttendanceHistoryPage";
+import PricingPage from "./pages/Subscription/PricingPage";
+import BillingHistoryPage from "./pages/Subscription/BillingHistoryPage";
+import CheckoutPlanPage from "./pages/Subscription/CheckoutPlanPage";
+import PaymentMethodListPage from "./pages/PaymentMethod/PaymentMethodListPage";
+import PaymentMethodFormPage from "./pages/PaymentMethod/PaymentMethodFormPage";
+import AdminSubscriptionVerificationPage from "./pages/Subscription/AdminSubscriptionVerificationPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -266,9 +272,20 @@ export default function App() {
                 <Route path="/roles" element={<RoleList />} />
                 <Route path="/permissions" element={<PermissionList />} />
                 <Route path="/subscriptions-plans" element={<SubscriptionPlanForm />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/pricing/checkout/:planId" element={<CheckoutPlanPage />} />
+                <Route path="/billing" element={<BillingHistoryPage />} />
                 <Route path="/businesses" element={<BusinessList />} />
                 <Route path="/businesses/create" element={<AddBusiness />} />
                 <Route path="/businesses/edit/:id" element={<EditBusiness />} />
+                <Route element={<ProtectedRoute allowedPermissions={["payment_method.view"]}><Outlet /></ProtectedRoute>}>
+                  <Route path="/payment-methods" element={<PaymentMethodListPage />} />
+                  <Route path="/payment-methods/create" element={<PaymentMethodFormPage />} />
+                  <Route path="/payment-methods/edit/:id" element={<PaymentMethodFormPage />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={["admin"]}><Outlet /></ProtectedRoute>}>
+                  <Route path="/subscriptions/verification" element={<AdminSubscriptionVerificationPage />} />
+                </Route>
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={[]}><Outlet /></ProtectedRoute>}>

@@ -19,7 +19,7 @@ import {
     useFetchSubscriptionPlans,
     useUpsertSubscriptionPlan,
 } from "../../hooks/useSubscriptionPlans";
-import { SubscriptionPlan, SubscriptionPlanFormData } from "../../types/types";
+import { SubscriptionPlan } from "../../types/types";
 import { Pagination } from "../../components/tables/Datatable";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import Input from "../../components/form/input/InputField";
@@ -63,7 +63,7 @@ export default function SubscriptionPlanForm() {
         openConfirm();
     };
 
-    const onFormSubmit = (formData: SubscriptionPlanFormData) => {
+    const onFormSubmit = (formData: any) => {
         upsertSubscriptionPlan(
             { id: selectedPlan?.id, data: formData },
             {
@@ -149,7 +149,7 @@ export default function SubscriptionPlanForm() {
                                         </TableHeader>
 
                                         <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                                            {data.data.map((plan) => (
+                                            {data?.data?.map((plan) => (
                                                 <TableRow key={plan.id}>
                                                     <TableCell className="px-5 py-4 text-start font-medium text-gray-800 dark:text-white/90">
                                                         {plan.name}
