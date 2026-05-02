@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import { useFetchBillingHistory, useFetchMySubscription } from "../../hooks/useSubscriptionPlans";
+import { useFetchBillingHistory, useFetchMySubscription, useCancelSubscriptionPayment } from "../../hooks/useSubscriptionPlans";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { Pagination } from "../../components/tables/Datatable";
 import Badge from "../../components/ui/badge/Badge";
@@ -11,6 +11,7 @@ import Button from "../../components/ui/button/Button";
 import { CalendarIcon, CreditCardIcon } from "../../icons";
 
 import UploadProofModal from "../../components/subscription/UploadProofModal";
+import { Modal } from "../../components/ui/modal";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -18,7 +19,8 @@ const getStatusColor = (status: string) => {
         case 'pending': return 'warning';
         case 'confirmation': return 'info';
         case 'failed':
-        case 'expired': return 'error';
+        case 'expired':
+        case 'cancelled': return 'error';
         default: return 'light';
     }
 };
@@ -31,6 +33,12 @@ export default function BillingHistoryPage() {
         paymentId: 0,
         invoiceNumber: ""
     });
+    const [confirmCancelModal, setConfirmCancelModal] = useState<{ isOpen: boolean, paymentId: number }>({
+        isOpen: false,
+        paymentId: 0
+    });
+
+    const { mutate: cancelSubscription, isPending: isCancelling } = useCancelSubscriptionPayment();
 
     const { data: currentSub, isLoading: isSubLoading } = useFetchMySubscription();
     const { data: history, isLoading: isHistoryLoading } = useFetchBillingHistory(page);
@@ -39,7 +47,7 @@ export default function BillingHistoryPage() {
         <>
             <PageMeta title="Billing History" description="Manage your invoices and subscription status." />
             <PageBreadcrumb pageTitle="Billing & Usage" />
-            
+
             {/* ... rest of widgets ... */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Active Plan Widget */}
@@ -52,12 +60,12 @@ export default function BillingHistoryPage() {
                                 <h3 className="text-white dark:text-brand-400 font-bold text-lg">{currentSub.subscription_plan?.name}</h3>
                                 <p className="text-sm text-white">Aktif hingga {new Date(currentSub.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                             </div>
-                            
+
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-500">Status:</span>
                                 <Badge color="success">AKTIF</Badge>
                             </div>
-                            
+
                             <Button fullWidth variant="outline" size="sm" onClick={() => navigate('/pricing')}>
                                 Perbarui / Upgrade Paket
                             </Button>
@@ -82,13 +90,13 @@ export default function BillingHistoryPage() {
                             <div>
                                 <p className="text-xs text-gray-500 uppercase tracking-wider">Tagihan Berikutnya</p>
                                 <p className="text-lg font-bold text-gray-800 dark:text-white">
-                                    {currentSub?.next_billing_date 
+                                    {currentSub?.next_billing_date
                                         ? new Date(currentSub.next_billing_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
                                         : '-'}
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-4">
                             <div className="p-3 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600">
                                 <CreditCardIcon className="size-6" />
@@ -112,10 +120,10 @@ export default function BillingHistoryPage() {
                                 </span>
                             </div>
                             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div 
-                                    className="bg-brand-500 h-2 rounded-full transition-all duration-500" 
-                                    style={{ 
-                                        width: `${Math.min(100, ((currentSub.current_usage?.locations || 0) / (currentSub.subscription_plan?.features?.max_locations || 1)) * 100)}%` 
+                                <div
+                                    className="bg-brand-500 h-2 rounded-full transition-all duration-500"
+                                    style={{
+                                        width: `${Math.min(100, ((currentSub.current_usage?.locations || 0) / (currentSub.subscription_plan?.features?.max_locations || 1)) * 100)}%`
                                     }}
                                 ></div>
                             </div>
@@ -174,19 +182,45 @@ export default function BillingHistoryPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
-                                        {item.payment_status === 'pending' ? (
-                                            <Button 
-                                                size="sm" 
-                                                variant="primary"
-                                                onClick={() => setUploadModal({ isOpen: true, paymentId: item.id, invoiceNumber: item.invoice_number })}
-                                            >
-                                                Upload Bukti
-                                            </Button>
-                                        ) : item.payment_status === 'confirmation' ? (
-                                            <Badge color="light">SEDANG DITINJAU</Badge>
-                                        ) : (
-                                            <Badge color="success">AKTIF</Badge>
-                                        )}
+                                        <div className="flex items-center gap-2">
+                                            {item.payment_status === 'pending' ? (
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="primary"
+                                                        onClick={() => setUploadModal({ isOpen: true, paymentId: item.id, invoiceNumber: item.invoice_number })}
+                                                    >
+                                                        Upload Bukti
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="danger"
+                                                        className="text-error-500 border-error-500 hover:bg-error-50"
+                                                        onClick={() => setConfirmCancelModal({ isOpen: true, paymentId: item.id })}
+                                                        disabled={isCancelling}
+                                                    >
+                                                        Batal
+                                                    </Button>
+                                                </>
+                                            ) : item.payment_status === 'confirmation' ? (
+                                                <>
+                                                    <Badge color="light">SEDANG DITINJAU</Badge>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="danger"
+                                                        className="text-error-500 border-error-500 hover:bg-error-50"
+                                                        onClick={() => setConfirmCancelModal({ isOpen: true, paymentId: item.id })}
+                                                        disabled={isCancelling}
+                                                    >
+                                                        Batal
+                                                    </Button>
+                                                </>
+                                            ) : item.payment_status === 'cancelled' ? (
+                                                <Badge color="error">DIBATALKAN</Badge>
+                                            ) : (
+                                                <Badge color="success">AKTIF</Badge>
+                                            )}
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -211,6 +245,46 @@ export default function BillingHistoryPage() {
                 paymentId={uploadModal.paymentId}
                 invoiceNumber={uploadModal.invoiceNumber}
             />
+
+            <Modal
+                isOpen={confirmCancelModal.isOpen}
+                onClose={() => setConfirmCancelModal({ ...confirmCancelModal, isOpen: false })}
+                className="max-w-[400px]"
+            >
+                <div className="p-6 text-center">
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error-50 mb-4">
+                        <svg className="h-6 w-6 text-error-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Konfirmasi Pembatalan</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                        Apakah Anda yakin ingin membatalkan tagihan langganan ini? Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                    <div className="flex gap-3">
+                        <Button
+                            fullWidth
+                            variant="outline"
+                            onClick={() => setConfirmCancelModal({ ...confirmCancelModal, isOpen: false })}
+                        >
+                            Kembali
+                        </Button>
+                        <Button
+                            fullWidth
+                            variant="primary"
+                            className="bg-error-600 hover:bg-error-700 border-error-600"
+                            onClick={() => {
+                                cancelSubscription(confirmCancelModal.paymentId, {
+                                    onSuccess: () => setConfirmCancelModal({ ...confirmCancelModal, isOpen: false })
+                                });
+                            }}
+                            isLoading={isCancelling}
+                        >
+                            Ya, Batal
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </>
     );
 }
