@@ -226,3 +226,18 @@ export const useFetchProofImage = () => {
         },
     });
 };
+
+export const useCancelSubscriptionPayment = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<any, AxiosError<ApiErrorResponse>, number>({
+        mutationFn: async (id: number) => {
+            const response = await apiClient.post(`/subscription-payments/${id}/cancel`);
+            return response.data.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["billing-history"] });
+            queryClient.invalidateQueries({ queryKey: ["my-subscription"] });
+        },
+    });
+};
