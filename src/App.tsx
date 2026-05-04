@@ -100,6 +100,9 @@ import CheckoutPlanPage from "./pages/Subscription/CheckoutPlanPage";
 import PaymentMethodListPage from "./pages/PaymentMethod/PaymentMethodListPage";
 import PaymentMethodFormPage from "./pages/PaymentMethod/PaymentMethodFormPage";
 import AdminSubscriptionVerificationPage from "./pages/Subscription/AdminSubscriptionVerificationPage";
+import UserList from "./pages/Users/UserList";
+import AddUser from "./pages/Users/AddUser";
+import EditUser from "./pages/Users/EditUser";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -282,6 +285,11 @@ export default function App() {
                   <Route path="/payment-methods" element={<PaymentMethodListPage />} />
                   <Route path="/payment-methods/create" element={<PaymentMethodFormPage />} />
                   <Route path="/payment-methods/edit/:id" element={<PaymentMethodFormPage />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedPermissions={["user.view"]}><Outlet /></ProtectedRoute>}>
+                  <Route path="/users" element={<UserList />} />
+                  <Route path="/users/create" element={<AddUser />} />
+                  <Route path="/users/edit/:id" element={<EditUser />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={["admin"]}><Outlet /></ProtectedRoute>}>
                   <Route path="/subscriptions/verification" element={<AdminSubscriptionVerificationPage />} />

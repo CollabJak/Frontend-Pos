@@ -117,6 +117,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Roles", path: "/roles", pro: false, permissions: ["role.view"] },
       { name: "Permissions", path: "/permissions", pro: false, permissions: ["permission.view"] },
+      { name: "Users", path: "/users", pro: false, permissions: ["user.view"] },
       { name: "Plan Management", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
     ],
   },
