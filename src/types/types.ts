@@ -24,4 +24,5 @@ export * from "./pos";
 export * from "./receipt";
 export * from "./rbac";
 export * from "./subscriptionPlan";
+export * from "./user";
 
