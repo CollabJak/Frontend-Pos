@@ -18,6 +18,8 @@ import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import AssignRoleModal from "../../components/users/AssignRoleModal";
+import { User } from "../../types/types";
 
 export default function UserList() {
   const [page, setPage] = useState(1);
@@ -31,6 +33,14 @@ export default function UserList() {
   const { mutate: deleteUser } = useDeleteUser();
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
+  
+  const [isAssignRoleOpen, setIsAssignRoleOpen] = useState(false);
+  const [selectedUserForRole, setSelectedUserForRole] = useState<User | null>(null);
+
+  const handleAssignRoleClick = (user: User) => {
+    setSelectedUserForRole(user);
+    setIsAssignRoleOpen(true);
+  };
 
   const handleDeleteClick = (id: number, name: string) => () => {
     setPendingDelete({ id, name });
@@ -148,6 +158,13 @@ export default function UserList() {
                             </Link>
                             <Button
                               size="sm"
+                              variant="outline"
+                              onClick={() => handleAssignRoleClick(user)}
+                            >
+                              Assign Role
+                            </Button>
+                            <Button
+                              size="sm"
                               variant="danger"
                               onClick={handleDeleteClick(user.id, user.name)}
                             >
@@ -185,6 +202,11 @@ export default function UserList() {
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+      <AssignRoleModal
+        isOpen={isAssignRoleOpen}
+        onClose={() => setIsAssignRoleOpen(false)}
+        user={selectedUserForRole}
       />
     </>
   );
