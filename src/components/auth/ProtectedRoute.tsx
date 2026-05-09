@@ -2,14 +2,16 @@ import { Navigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { hasAccess } from "../../utils/rbac";
+import { SubscriptionGuard } from "./SubscriptionGuard";
 
 interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: string[];
   allowedPermissions?: string[];
+  requireActiveSubscription?: boolean;
 }
 
-export default function ProtectedRoute({ children, allowedRoles, allowedPermissions }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, allowedRoles, allowedPermissions, requireActiveSubscription }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -38,5 +40,12 @@ export default function ProtectedRoute({ children, allowedRoles, allowedPermissi
     return <Navigate to="/businesses/create" replace />;
   }
 
+  // Guard: Subscription Check (Delegated to SubscriptionGuard)
+  if (requireActiveSubscription) {
+    return <SubscriptionGuard>{children}</SubscriptionGuard>;
+  }
+
   return <>{children}</>;
 }
+
+

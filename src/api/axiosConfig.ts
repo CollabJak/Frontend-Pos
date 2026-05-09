@@ -24,12 +24,16 @@ apiClient.interceptors.response.use(
     // Handle Session Expiry (Unauthorized or Authentication Timeout)
     if (status === 401 || status === 419) {
       window.dispatchEvent(new Event("auth:unauthorized"));
+    } else if (status === 402) {
+      // Handle Subscription Required
+      window.dispatchEvent(new CustomEvent("subscription:required"));
     } else if (status === 403 && errorCode === "BUSINESS_SETUP_REQUIRED") {
       // Redirect to business setup page
       window.dispatchEvent(new CustomEvent("auth:business-setup-required"));
     } else {
       void handleError(error);
     }
+
     return Promise.reject(error);
   }
 );
