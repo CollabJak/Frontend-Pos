@@ -100,10 +100,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     window.addEventListener("auth:business-setup-required", handleBusinessSetupRequired);
 
+    const handleSubscriptionRequired = () => {
+      navigate("/pricing", { replace: true, state: { reason: "no_subscription" } });
+    };
+
+    window.addEventListener("subscription:required", handleSubscriptionRequired);
+
     return () => {
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
       window.removeEventListener("auth:business-setup-required", handleBusinessSetupRequired);
+      window.removeEventListener("subscription:required", handleSubscriptionRequired);
     };
+
   }, [navigate, queryClient]);
 
   const setUser = useCallback(

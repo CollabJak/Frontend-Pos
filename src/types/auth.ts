@@ -17,4 +17,7 @@ export interface User {
   roles?: string[];
   permissions?: string[];
   merchant?: MerchantProfile | null;
+  has_active_subscription?: boolean;
+  subscription_status?: string | null;
+  subscription_ends_at?: string | null;
 }

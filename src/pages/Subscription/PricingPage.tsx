@@ -1,30 +1,48 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import { useFetchSubscriptionPlanOptions } from "../../hooks/useSubscriptionPlans";
 
 import Button from "../../components/ui/button/Button";
-import { CheckCircleIcon } from "../../icons";
+import { CheckCircleIcon, InfoIcon } from "../../icons";
 import Badge from "../../components/ui/badge/Badge";
+
 
 export default function PricingPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
     const { data: plansData, isLoading } = useFetchSubscriptionPlanOptions();
     
     // Filter plans by billing cycle
     const plans = plansData?.filter(plan => plan.billing_cycle === billingCycle) || [];
 
+    const isNoSubscription = location.state?.reason === 'no_subscription';
 
     const handleSubscribe = (planId: number) => {
         navigate(`/pricing/checkout/${planId}`);
     };
 
+
     return (
         <>
             <PageMeta title="Pricing Plans" description="Choose the best plan for your business." />
             <PageBreadcrumb pageTitle="Subscription Pricing" />
+
+            {isNoSubscription && (
+                <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex items-start gap-3">
+                    <InfoIcon className="size-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+                    <div>
+                        <h4 className="text-sm font-bold text-amber-800 dark:text-amber-300">Berlangganan Diperlukan</h4>
+                        <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+                            Anda perlu memiliki paket langganan yang aktif untuk mengakses fitur transaksional. Silakan pilih salah satu paket di bawah ini.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+
 
             <div className="flex flex-col items-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4 text-center">
