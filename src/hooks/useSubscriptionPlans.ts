@@ -241,3 +241,13 @@ export const useCancelSubscriptionPayment = () => {
         },
     });
 };
+
+export const useFetchSubscriptionPlanOptions = () => {
+  return useQuery<SubscriptionPlan[], AxiosError>({
+    queryKey: ["subscription-plan-options"],
+    queryFn: async () => {
+      const response = await apiClient.get("/options/subscription-plans");
+      return response.data.data;
+    },
+  });
+};
