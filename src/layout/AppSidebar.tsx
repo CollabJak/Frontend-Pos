@@ -103,9 +103,9 @@ const navItems: NavItem[] = [
   {
     name: "Subscription",
     icon: <DollarLineIcon />,
-    permissions: ["subscription_plan.view"],
+    permissions: ["view_subscription_plans"],
     subItems: [
-      { name: "Pricing Plans", path: "/pricing", pro: false, permissions: ["business.view"] },
+      { name: "Pricing Plans", path: "/pricing", pro: false, permissions: ["view_subscription_plans"] },
       { name: "Billing History", path: "/billing", pro: false, permissions: ["business.view"] },
       { name: "Verification", path: "/subscriptions/verification", pro: false, roles: ["admin"] },
     ],

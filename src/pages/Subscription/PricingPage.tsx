@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import { useFetchSubscriptionPlans } from "../../hooks/useSubscriptionPlans";
+import { useFetchSubscriptionPlanOptions } from "../../hooks/useSubscriptionPlans";
+
 import Button from "../../components/ui/button/Button";
 import { CheckCircleIcon } from "../../icons";
 import Badge from "../../components/ui/badge/Badge";
@@ -10,10 +11,11 @@ import Badge from "../../components/ui/badge/Badge";
 export default function PricingPage() {
     const navigate = useNavigate();
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
-    const { data, isLoading } = useFetchSubscriptionPlans({ page: 1 });
-
+    const { data: plansData, isLoading } = useFetchSubscriptionPlanOptions();
+    
     // Filter plans by billing cycle
-    const plans = data?.data.filter(plan => plan.billing_cycle === billingCycle) || [];
+    const plans = plansData?.filter(plan => plan.billing_cycle === billingCycle) || [];
+
 
     const handleSubscribe = (planId: number) => {
         navigate(`/pricing/checkout/${planId}`);
