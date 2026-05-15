@@ -11,6 +11,7 @@ import {
   BoxIcon,
   DollarLineIcon,
   TaskIcon,
+  CalendarIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../hooks/useAuth";
@@ -86,6 +87,18 @@ const navItems: NavItem[] = [
       { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"] },
       { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"] },
       { name: "Riwayat Kehadiran", path: "/absensi/history", pro: false, permissions: ["absensi.view"] },
+    ],
+  },
+  {
+    icon: <CalendarIcon />,
+    name: "Jadwal Kerja",
+    permissions: ["shift.view", "holiday.view", "rotation.view"],
+    subItems: [
+      { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"] },
+      { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"] },
+      { name: "Master Shift", path: "/scheduling/shifts", pro: false, permissions: ["shift.view"] },
+      { name: "Pola Rotasi", path: "/scheduling/rotation-patterns", pro: false, permissions: ["rotation.view"] },
+      { name: "Kalender Libur", path: "/scheduling/holidays", pro: false, permissions: ["holiday.view"] },
     ],
   },
   {

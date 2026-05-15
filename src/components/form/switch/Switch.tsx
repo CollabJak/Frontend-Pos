@@ -1,26 +1,37 @@
 import { useState } from "react";
 
 interface SwitchProps {
-  label: string;
+  label?: string;
+  checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
   onChange?: (checked: boolean) => void;
-  color?: "blue" | "gray"; // Added prop to toggle color theme
+  color?: "blue" | "gray";
 }
 
 const Switch: React.FC<SwitchProps> = ({
   label,
+  checked,
   defaultChecked = false,
   disabled = false,
   onChange,
-  color = "blue", // Default to blue color
+  color = "blue",
 }) => {
-  const [isChecked, setIsChecked] = useState(defaultChecked);
+  const [internalChecked, setInternalChecked] = useState(defaultChecked);
 
-  const handleToggle = () => {
+  // Use the checked prop if provided (controlled), otherwise use internal state (uncontrolled)
+  const isChecked = checked !== undefined ? checked : internalChecked;
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent double toggling if inside a label
     if (disabled) return;
+    
     const newCheckedState = !isChecked;
-    setIsChecked(newCheckedState);
+    
+    if (checked === undefined) {
+      setInternalChecked(newCheckedState);
+    }
+    
     if (onChange) {
       onChange(newCheckedState);
     }

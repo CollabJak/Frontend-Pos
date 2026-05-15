@@ -103,6 +103,12 @@ import AdminSubscriptionVerificationPage from "./pages/Subscription/AdminSubscri
 import UserList from "./pages/Users/UserList";
 import AddUser from "./pages/Users/AddUser";
 import EditUser from "./pages/Users/EditUser";
+import ShiftMasterPage from "./pages/scheduling/ShiftMasterPage";
+import HolidayCalendarPage from "./pages/scheduling/HolidayCalendarPage";
+import RotationPatternPage from "./pages/scheduling/RotationPatternPage";
+import ScheduleCalendarPage from "./pages/scheduling/ScheduleCalendarPage";
+import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
+import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -276,6 +282,16 @@ export default function App() {
                 <Route path="/atributes" element={<AtributeList />} />
                 <Route path="/atributes/create" element={<AddAtribute />} />
                 <Route path="/atributes/edit/:id" element={<EditAtribute />} />
+              </Route>
+
+              {/* Work Scheduling */}
+              <Route element={<ProtectedRoute allowedPermissions={["shift.view", "holiday.view", "rotation.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/scheduling" element={<ScheduleCalendarPage />} />
+                <Route path="/scheduling/shifts" element={<ShiftMasterPage />} />
+                <Route path="/scheduling/holidays" element={<HolidayCalendarPage />} />
+                <Route path="/scheduling/rotation-patterns" element={<RotationPatternPage />} />
+                <Route path="/scheduling/generate" element={<ScheduleGeneratePage />} />
+                <Route path="/scheduling/batches/:id" element={<ScheduleBatchDetailPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["pos.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>

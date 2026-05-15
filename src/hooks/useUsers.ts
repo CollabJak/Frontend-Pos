@@ -69,6 +69,7 @@ export const useCreateUser = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
       navigate("/users");
     },
   });
@@ -109,6 +110,7 @@ export const useUpdateUser = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["user", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
       navigate("/users");
     },
   });
@@ -123,6 +125,7 @@ export const useDeleteUser = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
     },
   });
 };

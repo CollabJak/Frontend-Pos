@@ -50,6 +50,7 @@ export const useCreateLocation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
       navigate("/locations");
     },
   });
@@ -71,6 +72,7 @@ export const useUpdateLocation = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       queryClient.invalidateQueries({ queryKey: ["location", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
       navigate("/locations");
     },
   });
@@ -85,6 +87,7 @@ export const useDeleteLocation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
     },
   });
 };

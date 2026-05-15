@@ -21,20 +21,22 @@ export function createOptionsFetcher<TOption = OptionDto>({
   searchParam = "search",
 }: CreateOptionsFetcherParams) {
   return async (params: {
-    limit: number;
+    limit?: number;
     search?: string;
     signal?: AbortSignal;
   }): Promise<TOption[]> => {
-    const normalizedLimit = Math.min(
-      MAX_OPTIONS_LIMIT,
-      Math.max(1, Math.floor(params.limit))
-    );
+    const queryParams: Record<string, any> = {};
+
+    if (params.limit && params.limit > 0) {
+      queryParams[limitParam] = Math.min(MAX_OPTIONS_LIMIT, Math.floor(params.limit));
+    }
+
+    if (params.search) {
+      queryParams[searchParam] = params.search;
+    }
 
     const response = await apiClient.get<ApiResponse<unknown>>(endpoint, {
-      params: {
-        [limitParam]: normalizedLimit,
-        ...(params.search ? { [searchParam]: params.search } : {}),
-      },
+      params: queryParams,
       signal: params.signal,
     });
 
@@ -57,3 +59,12 @@ export function createOptionsFetcher<TOption = OptionDto>({
 }
 
 export const fetchCategoryOptions = createOptionsFetcher({ endpoint: "/options/categories" });
+export const fetchBrandOptions = createOptionsFetcher({ endpoint: "/options/brands" });
+export const fetchUnitOptions = createOptionsFetcher({ endpoint: "/options/units" });
+export const fetchProductOptions = createOptionsFetcher({ endpoint: "/options/products" });
+export const fetchProductVariantOptions = createOptionsFetcher({ endpoint: "/options/product-variants" });
+export const fetchAtributeOptions = createOptionsFetcher({ endpoint: "/options/atributes" });
+export const fetchLocationOptions = createOptionsFetcher({ endpoint: "/options/locations" });
+export const fetchShiftOptions = createOptionsFetcher({ endpoint: "/options/shifts" });
+export const fetchUserOptions = createOptionsFetcher({ endpoint: "/options/users" });
+export const fetchRotationPatternOptions = createOptionsFetcher({ endpoint: "/options/rotation-patterns" });
