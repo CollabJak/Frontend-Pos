@@ -1,0 +1,134 @@
+import { User } from "./user";
+import { Location } from "./location";
+
+export interface Shift {
+  id: number;
+  business_id: number;
+  name: string;
+  color: string;
+  check_in_time: string;
+  check_out_time: string;
+  is_cross_day: boolean;
+  duration_minutes: number;
+  tolerance_late_minutes: number;
+  tolerance_early_out_minutes: number;
+  auto_checkout: boolean;
+  auto_checkout_offset_minutes: number;
+  is_active: boolean;
+  description: string | null;
+  break_times: ShiftBreakTime[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShiftBreakTime {
+  id: number;
+  shift_id: number;
+  name: string | null;
+  break_start: string;
+  break_end: string;
+  duration_minutes: number;
+}
+
+export type HolidayType = 'national' | 'company' | 'location';
+
+export interface HolidayCalendar {
+  id: number;
+  business_id: number;
+  location_id: number | null;
+  name: string;
+  holiday_date: string;
+  type: HolidayType;
+  is_recurring: boolean;
+  description: string | null;
+  location?: Location;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RotationPattern {
+  id: number;
+  business_id: number;
+  name: string;
+  cycle_days: number;
+  description: string | null;
+  items_count?: number;
+  items?: RotationPatternItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RotationPatternItem {
+  id: number;
+  rotation_pattern_id: number;
+  shift_id: number | null;
+  day_index: number;
+  is_day_off: boolean;
+  shift?: Shift;
+}
+
+export type ScheduleStatus = 'draft' | 'published' | 'archived';
+export type OverrideType = 'original' | 'swap' | 'emergency' | 'overtime' | 'reschedule';
+
+export interface EmployeeSchedule {
+  id: number;
+  business_id: number;
+  user_id: number;
+  shift_id: number | null;
+  publish_batch_id: number | null;
+  schedule_date: string;
+  status: ScheduleStatus;
+  is_day_off: boolean;
+  day_off_note: string | null;
+  override_type: OverrideType;
+  published_at: string | null;
+  user?: User;
+  shift?: Shift;
+  snapshot?: ScheduleSnapshot;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScheduleSnapshot {
+  shift_name: string;
+  check_in_time: string;
+  check_out_time: string;
+  is_cross_day: boolean;
+  tolerance_late: number;
+  tolerance_early_out: number;
+  color: string;
+}
+
+export interface SchedulePublishBatch {
+  id: number;
+  business_id: number;
+  location_id: number | null;
+  name: string;
+  period_start: string;
+  period_end: string;
+  status: ScheduleStatus;
+  total_schedules: number;
+  published_at: string | null;
+  published_by: number | null;
+  location?: Location;
+  publisher?: User;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CalendarViewData {
+  users: Array<{ id: number; name: string; photo: string | null }>;
+  schedules: Record<string, Record<number, CalendarCell>>;
+  // Key format: "2026-06-01" → { [userId]: CalendarCell }
+}
+
+export interface CalendarCell {
+  schedule_id: number;
+  shift_name: string | null;
+  shift_color: string | null;
+  status: ScheduleStatus;
+  is_day_off: boolean;
+  day_off_note: string | null;
+  override_type: OverrideType;
+}
+
