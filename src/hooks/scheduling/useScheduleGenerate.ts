@@ -7,8 +7,9 @@ export const useGenerateRotationSchedule = () => {
 
   return useMutation({
     mutationFn: (data: any) => schedulingService.generateRotation(data),
-    onSuccess: (data: SchedulePublishBatch) => {
+    onSuccess: (_data: SchedulePublishBatch) => {
       queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
     },
   });
 };
@@ -18,8 +19,9 @@ export const useGenerateBulkSchedule = () => {
 
   return useMutation({
     mutationFn: (data: any) => schedulingService.generateBulk(data),
-    onSuccess: (data: SchedulePublishBatch) => {
+    onSuccess: (_data: SchedulePublishBatch) => {
       queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
     },
   });
 };

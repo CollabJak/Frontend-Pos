@@ -10,12 +10,10 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { Pagination } from "../../components/tables/Datatable";
-import { 
-  useShifts, 
-  useCreateShift, 
-  useUpdateShift, 
+import {
+  useShifts,
   useDeleteShift,
-  useToggleShiftActive 
+  useToggleShiftActive
 } from "../../hooks/scheduling/useShifts";
 import Button from "../../components/ui/button/Button";
 import { PencilIcon, TrashBinIcon } from "../../icons";
@@ -42,7 +40,7 @@ export default function ShiftMasterPage() {
 
   const { isOpen: isFormOpen, openModal: openForm, closeModal: closeForm } = useModal();
   const { isOpen: isDeleteOpen, openModal: openDelete, closeModal: closeDelete } = useModal();
-  
+
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Shift | null>(null);
 
@@ -132,8 +130,8 @@ export default function ShiftMasterPage() {
                       <TableRow key={shift.id}>
                         <TableCell className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div 
-                              className="w-3 h-8 rounded-full" 
+                            <div
+                              className="w-3 h-8 rounded-full"
                               style={{ backgroundColor: shift.color }}
                             />
                             <div>
@@ -159,8 +157,8 @@ export default function ShiftMasterPage() {
                         </TableCell>
                         <TableCell className="px-5 py-4 text-center">
                           <div className="flex justify-center">
-                            <Switch 
-                              checked={shift.is_active} 
+                            <Switch
+                              checked={shift.is_active}
                               onChange={() => toggleActive(shift.id)}
                             />
                           </div>

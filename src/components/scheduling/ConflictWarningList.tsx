@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertIcon, CloseIcon as XIcon } from "../../icons";
+import { AlertIcon } from "../../icons";
 import Button from "../ui/button/Button";
 
 export interface ConflictItem {
@@ -13,8 +13,9 @@ export interface ConflictItem {
 interface ConflictWarningListProps {
   conflicts: ConflictItem[];
   onCancel: () => void;
-  onConfirmForce: () => void;
+  onConfirmForce?: () => void;
   isPending: boolean;
+  confirmText?: string;
 }
 
 const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
@@ -22,6 +23,7 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
   onCancel,
   onConfirmForce,
   isPending,
+  confirmText = "Tetap Lanjutkan (Paksa)",
 }) => {
   return (
     <div className="p-5 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl space-y-4">
@@ -70,15 +72,17 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
         >
           Batalkan
         </Button>
-        <Button
-          variant="primary"
-          size="sm"
-          className="w-full bg-red-600 hover:bg-red-700 text-white border-transparent"
-          onClick={onConfirmForce}
-          disabled={isPending}
-        >
-          {isPending ? "Memproses..." : "Tetap Lanjutkan (Paksa)"}
-        </Button>
+        {onConfirmForce && (
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full bg-red-600 hover:bg-red-700 text-white border-transparent"
+            onClick={onConfirmForce}
+            disabled={isPending}
+          >
+            {isPending ? "Memproses..." : confirmText}
+          </Button>
+        )}
       </div>
     </div>
   );

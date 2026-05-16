@@ -23,7 +23,7 @@ export const usePublishBatch = () => {
     mutationFn: (id: number) => schedulingService.publishBatch(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
-      queryClient.invalidateQueries({ queryKey: ["schedule-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
     },
   });
 };
@@ -35,7 +35,7 @@ export const useArchiveBatch = () => {
     mutationFn: (id: number) => schedulingService.archiveBatch(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
-      queryClient.invalidateQueries({ queryKey: ["schedule-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
     },
   });
 };
@@ -44,6 +44,14 @@ export const useBatchSchedules = (batchId: number, params?: any) => {
   return useQuery({
     queryKey: ["schedule-batches", batchId, "schedules", params],
     queryFn: () => schedulingService.getSchedules({ ...params, publish_batch_id: batchId }),
+    enabled: !!batchId,
+  });
+};
+
+export const useBatchAuditLogs = (batchId: number) => {
+  return useQuery({
+    queryKey: ["schedule-batches", batchId, "audit-logs"],
+    queryFn: () => schedulingService.getBatchAuditLogs(batchId),
     enabled: !!batchId,
   });
 };

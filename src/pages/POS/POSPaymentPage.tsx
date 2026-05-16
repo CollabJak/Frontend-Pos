@@ -11,7 +11,6 @@ import { useReceiptPrint } from "../../hooks/useReceiptPrint";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
 import { useZodForm } from "../../hooks/form/useZodForm";
 import { posCheckoutSchema } from "../../Schemas/pos.schema";
-import toast from "react-hot-toast";
 import type { PosCheckoutResult } from "../../types/types";
 
 // Fallback currency formatter if util not found or different
@@ -60,7 +59,7 @@ export default function POSPaymentPage() {
   const [receivedAmountStr, setReceivedAmountStr] = useState("0");
 
   const receiptPrintRef = useRef<HTMLDivElement | null>(null);
-  const { printReceipt, printError, clearPrintError } = useReceiptPrint({
+  const { printReceipt, clearPrintError } = useReceiptPrint({
     contentRef: receiptPrintRef,
   });
 
@@ -133,7 +132,10 @@ export default function POSPaymentPage() {
     }
 
     if (!selectedLocation) {
-      toast.error("Please select a location first.");
+      setError("location_id", {
+        type: "manual",
+        message: "Please select a location first.",
+      });
       return;
     }
 
@@ -147,21 +149,18 @@ export default function POSPaymentPage() {
       }
     } catch (error) {
       console.error("Checkout failed:", error);
-      toast.error("Failed to complete order. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   });
 
   const handleSuccessDone = () => {
-    toast.success("Order completed successfully!");
     clearCart();
     navigate("/pos");
   };
 
   const handleSuccessPrint = async () => {
     if (!successData?.receipt) {
-      toast.error("Receipt data not found.");
       return;
     }
 
@@ -169,10 +168,7 @@ export default function POSPaymentPage() {
 
     // We give it a tiny delay to ensure the hidden component has rendered the new receipt data
     setTimeout(async () => {
-      const printed = await printReceipt();
-      if (!printed) {
-        toast.error(printError || "Failed to print receipt");
-      }
+      await printReceipt();
     }, 100);
   };
 

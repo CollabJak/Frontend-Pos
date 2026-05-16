@@ -132,3 +132,14 @@ export interface CalendarCell {
   override_type: OverrideType;
 }
 
+export interface ScheduleAuditLog {
+  id: number;
+  event: string;
+  auditable_type: string;
+  auditable_id: number;
+  changed_by?: User;
+  reason: string | null;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  created_at: string;
+}
