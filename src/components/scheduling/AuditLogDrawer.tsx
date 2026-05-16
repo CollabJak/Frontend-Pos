@@ -10,6 +10,24 @@ interface AuditLogDrawerProps {
   onClose: () => void;
 }
 
+const eventLabels: Record<string, string> = {
+  published: "Dipublish",
+  archived: "Diarsipkan",
+  overridden: "Diganti",
+  rescheduled: "Reschedule",
+  emergency_replaced: "Emergency Replacement",
+  swapped: "Swap Shift",
+  overtime_added: "Overtime",
+};
+
+const auditableLabels: Record<string, string> = {
+  EmployeeSchedule: "Jadwal",
+  SchedulePublishBatch: "Batch",
+};
+
+const formatEvent = (event: string) => eventLabels[event] ?? event.replace(/_/g, " ");
+const formatAuditable = (type: string) => auditableLabels[type] ?? type;
+
 export default function AuditLogDrawer({
   isOpen,
   title,
@@ -38,14 +56,14 @@ export default function AuditLogDrawer({
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold text-gray-800 dark:text-white/90">
-                    {log.event.replace(/_/g, " ").toUpperCase()}
+                    {formatEvent(log.event)}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
-                    {log.changed_by?.name || "System"} · {new Date(log.created_at).toLocaleString("id-ID")}
+                    {log.changed_by?.name || "System"} - {new Date(log.created_at).toLocaleString("id-ID")}
                   </p>
                 </div>
                 <span className="rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-500 dark:bg-gray-800">
-                  {log.auditable_type}
+                  {formatAuditable(log.auditable_type)}
                 </span>
               </div>
 

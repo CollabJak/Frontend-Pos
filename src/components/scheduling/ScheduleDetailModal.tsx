@@ -4,6 +4,7 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import ConfirmDialog from "../common/ConfirmDialog";
 import AuditLogDrawer from "./AuditLogDrawer";
+import OverrideModal from "./OverrideModal";
 import { CalendarCell } from "../../types/scheduling";
 import {
   useDeleteSchedule,
@@ -29,6 +30,7 @@ export default function ScheduleDetailModal({
   const navigate = useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
+  const [showOverride, setShowOverride] = useState(false);
   const scheduleId = cell?.schedule_id;
 
   const { data: schedule, isLoading } = useScheduleDetail(scheduleId);
@@ -119,8 +121,8 @@ export default function ScheduleDetailModal({
                   </Button>
                 )}
                 {cell.status === "published" && (
-                  <Button size="sm" variant="outline" onClick={onClose}>
-                    Override belum aktif
+                  <Button size="sm" variant="primary" onClick={() => setShowOverride(true)}>
+                    Override
                   </Button>
                 )}
               </div>
@@ -148,6 +150,21 @@ export default function ScheduleDetailModal({
         isLoading={isLoadingAudit}
         onClose={() => setShowAudit(false)}
       />
+
+      {cell && cell.status === "published" && (
+        <OverrideModal
+          isOpen={showOverride}
+          userId={userId}
+          date={date}
+          cell={cell}
+          schedule={schedule}
+          onClose={() => setShowOverride(false)}
+          onSuccess={() => {
+            setShowOverride(false);
+            onClose();
+          }}
+        />
+      )}
     </>
   );
 }

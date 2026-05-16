@@ -21,7 +21,7 @@ const ScheduleCalendarPage: React.FC = () => {
     new Date().toISOString().slice(0, 7) // "YYYY-MM"
   );
   const [locationId, setLocationId] = useState<number | undefined>(undefined);
-  const [status, setStatus] = useState<string>("draft");
+  const [status, setStatus] = useState<string>("all");
   const [selectedCell, setSelectedCell] = useState<{
     userId: number;
     date: string;
@@ -99,8 +99,17 @@ const ScheduleCalendarPage: React.FC = () => {
               <PlusIcon className="w-4 h-4 mr-2" />
               Generate Jadwal
             </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/scheduling/batches")}>
+              Batch Jadwal
+            </Button>
           </div>
         </div>
+
+        {status === "draft" && (
+          <div className="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-orange-300">
+            Jadwal draft perlu dipublish dari halaman Batch Jadwal sebelum bisa digunakan karyawan.
+          </div>
+        )}
 
         <ComponentCard>
           <ScheduleCalendar

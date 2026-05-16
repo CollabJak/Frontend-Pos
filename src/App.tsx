@@ -109,6 +109,7 @@ import RotationPatternPage from "./pages/scheduling/RotationPatternPage";
 import ScheduleCalendarPage from "./pages/scheduling/ScheduleCalendarPage";
 import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
+import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -285,12 +286,13 @@ export default function App() {
               </Route>
 
               {/* Work Scheduling */}
-              <Route element={<ProtectedRoute allowedPermissions={["shift.view", "holiday.view", "rotation.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/scheduling" element={<ScheduleCalendarPage />} />
                 <Route path="/scheduling/shifts" element={<ShiftMasterPage />} />
                 <Route path="/scheduling/holidays" element={<HolidayCalendarPage />} />
                 <Route path="/scheduling/rotation-patterns" element={<RotationPatternPage />} />
                 <Route path="/scheduling/generate" element={<ScheduleGeneratePage />} />
+                <Route path="/scheduling/batches" element={<ScheduleBatchListPage />} />
                 <Route path="/scheduling/batches/:id" element={<ScheduleBatchDetailPage />} />
               </Route>
 

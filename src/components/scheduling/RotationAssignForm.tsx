@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,6 +20,7 @@ import ConflictWarningList, { ConflictItem } from "./ConflictWarningList";
 import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 
 const RotationAssignForm: React.FC = () => {
+  const navigate = useNavigate();
   const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
   
   const { mutate: generateRotation, isPending } = useGenerateRotationSchedule();
@@ -51,6 +53,9 @@ const RotationAssignForm: React.FC = () => {
           setConflicts(result.conflicts);
         } else {
           setConflicts(null);
+          if (result?.id) {
+            navigate(`/scheduling/batches/${result.id}`);
+          }
         }
       },
       onError: (error: any) => {

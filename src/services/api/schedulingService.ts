@@ -6,7 +6,11 @@ import {
   RotationPattern, 
   EmployeeSchedule,
   SchedulePublishBatch,
-  ScheduleAuditLog
+  ScheduleAuditLog,
+  EmergencyOverridePayload,
+  OvertimeOverridePayload,
+  RescheduleOverridePayload,
+  SwapOverridePayload
 } from "../../types/scheduling";
 
 const schedulingService = {
@@ -131,6 +135,22 @@ const schedulingService = {
   },
   getBatchAuditLogs: async (batchId: number) => {
     const response = await apiClient.get<ApiResponse<ScheduleAuditLog[]>>(`/schedules/batches/${batchId}/audit-logs`);
+    return response.data.data;
+  },
+  rescheduleOverride: async (data: RescheduleOverridePayload) => {
+    const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules/override/reschedule", data);
+    return response.data.data;
+  },
+  emergencyOverride: async (data: EmergencyOverridePayload) => {
+    const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules/override/emergency", data);
+    return response.data.data;
+  },
+  swapOverride: async (data: SwapOverridePayload) => {
+    const response = await apiClient.post<ApiResponse<EmployeeSchedule[]>>("/schedules/override/swap", data);
+    return response.data.data;
+  },
+  overtimeOverride: async (data: OvertimeOverridePayload) => {
+    const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules/override/overtime", data);
     return response.data.data;
   },
 };
