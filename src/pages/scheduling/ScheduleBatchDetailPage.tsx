@@ -4,6 +4,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
 import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useBatchAuditLogs } from "../../hooks/scheduling/useScheduleBatches";
+import { Pagination } from "../../components/tables/Datatable";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
 import {
@@ -23,7 +24,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const batchId = Number(id);
 
-  const page = 1;
+  const [page, setPage] = useState(1);
   const [confirmAction, setConfirmAction] = useState<"publish" | "archive" | null>(null);
   const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
   const [showAudit, setShowAudit] = useState(false);
@@ -62,7 +63,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
     });
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusColor = (status: string): "success" | "warning" | "light" => {
     switch (status) {
       case "published": return "success";
       case "draft": return "warning";
@@ -90,7 +91,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white/90">
                   {batch.name}
                 </h2>
-                <Badge variant={getStatusVariant(batch.status)}>
+                <Badge color={getStatusColor(batch.status)}>
                   {batch.status.toUpperCase()}
                 </Badge>
               </div>
@@ -115,9 +116,6 @@ const ScheduleBatchDetailPage: React.FC = () => {
             <div className="flex gap-3">
               {batch.status === "draft" && (
                 <>
-                  <Button variant="outline" size="sm" onClick={() => navigate("/scheduling/generate")}>
-                    Edit / Regenerate
-                  </Button>
                   <Button 
                     variant="primary" 
                     size="sm" 
@@ -227,6 +225,13 @@ const ScheduleBatchDetailPage: React.FC = () => {
                 </Table>
               )}
             </div>
+            {schedulesData?.meta && (
+              <Pagination
+                currentPage={schedulesData.meta.current_page}
+                lastPage={schedulesData.meta.last_page}
+                onPageChange={setPage}
+              />
+            )}
           </div>
         </ComponentCard>
       </div>

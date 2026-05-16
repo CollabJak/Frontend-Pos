@@ -92,10 +92,11 @@ const navItems: NavItem[] = [
   {
     icon: <CalendarIcon />,
     name: "Jadwal Kerja",
-    permissions: ["shift.view", "holiday.view", "rotation.view"],
+    permissions: ["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"],
     subItems: [
       { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"] },
       { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"] },
+      { name: "Batch Jadwal", path: "/scheduling/batches", pro: false, permissions: ["jadwal.view"] },
       { name: "Master Shift", path: "/scheduling/shifts", pro: false, permissions: ["shift.view"] },
       { name: "Pola Rotasi", path: "/scheduling/rotation-patterns", pro: false, permissions: ["rotation.view"] },
       { name: "Kalender Libur", path: "/scheduling/holidays", pro: false, permissions: ["holiday.view"] },

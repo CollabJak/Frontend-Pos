@@ -143,3 +143,29 @@ export interface ScheduleAuditLog {
   new_values: Record<string, unknown> | null;
   created_at: string;
 }
+
+export interface RescheduleOverridePayload {
+  schedule_id: number;
+  new_shift_id?: number | null;
+  new_schedule_date?: string | null;
+  reason: string;
+}
+
+export interface EmergencyOverridePayload {
+  schedule_id: number;
+  replacement_user_id: number;
+  reason: string;
+}
+
+export interface SwapOverridePayload {
+  schedule_id_1: number;
+  schedule_id_2: number;
+  reason: string;
+}
+
+export interface OvertimeOverridePayload {
+  user_id: number;
+  shift_id: number;
+  schedule_date: string;
+  reason: string;
+}
