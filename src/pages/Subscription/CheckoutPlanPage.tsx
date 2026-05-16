@@ -14,7 +14,6 @@ import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Badge from "../../components/ui/badge/Badge";
 import { CheckCircleIcon, CreditCardIcon } from "../../icons";
-import toast from "react-hot-toast";
 import { Modal } from "../../components/ui/modal";
 
 export default function CheckoutPlanPage() {
@@ -66,12 +65,7 @@ export default function CheckoutPlanPage() {
             onSuccess: (res) => {
                 setCheckoutResult(res);
                 setIsSuccessModalOpen(true);
-                toast.success("Checkout berhasil!");
             },
-            onError: (err: any) => {
-                const message = err.response?.data?.message || "Terjadi kesalahan saat checkout.";
-                toast.error(message);
-            }
         });
     };
 
@@ -288,7 +282,7 @@ export default function CheckoutPlanPage() {
                                             variant="outline"
                                             size="sm"
                                             className="h-9 px-4"
-                                            onClick={() => toast.success("Promo code belum tersedia")}
+                                            disabled
                                         >
                                             Apply
                                         </Button>

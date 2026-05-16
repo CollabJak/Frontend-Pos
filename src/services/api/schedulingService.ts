@@ -5,7 +5,8 @@ import {
   HolidayCalendar, 
   RotationPattern, 
   EmployeeSchedule,
-  SchedulePublishBatch
+  SchedulePublishBatch,
+  ScheduleAuditLog
 } from "../../types/scheduling";
 
 const schedulingService = {
@@ -114,6 +115,22 @@ const schedulingService = {
   },
   getSchedules: async (params?: any) => {
     const response = await apiClient.get<ApiResponse<PaginatedApiResponse<EmployeeSchedule>>>("/schedules", { params });
+    return response.data.data;
+  },
+  getSchedule: async (id: number) => {
+    const response = await apiClient.get<ApiResponse<EmployeeSchedule>>(`/schedules/${id}`);
+    return response.data.data;
+  },
+  deleteSchedule: async (id: number) => {
+    const response = await apiClient.delete<ApiResponse<void>>(`/schedules/${id}`);
+    return response.data.data;
+  },
+  getScheduleAuditLogs: async (scheduleId: number) => {
+    const response = await apiClient.get<ApiResponse<ScheduleAuditLog[]>>(`/schedules/${scheduleId}/audit-logs`);
+    return response.data.data;
+  },
+  getBatchAuditLogs: async (batchId: number) => {
+    const response = await apiClient.get<ApiResponse<ScheduleAuditLog[]>>(`/schedules/batches/${batchId}/audit-logs`);
     return response.data.data;
   },
 };

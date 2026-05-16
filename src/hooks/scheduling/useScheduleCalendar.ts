@@ -36,8 +36,8 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
 
         schedulesMap[dateKey][schedule.user_id] = {
           schedule_id: schedule.id,
-          shift_name: schedule.shift?.name || schedule.snapshot?.shift_name || (schedule.is_day_off ? 'OFF' : '-'),
-          shift_color: schedule.shift?.color || schedule.snapshot?.color || '#cbd5e1',
+          shift_name: schedule.snapshot?.shift_name || schedule.shift?.name || (schedule.is_day_off ? 'OFF' : '-'),
+          shift_color: schedule.snapshot?.color || schedule.shift?.color || '#cbd5e1',
           status: schedule.status,
           is_day_off: schedule.is_day_off,
           day_off_note: schedule.day_off_note,

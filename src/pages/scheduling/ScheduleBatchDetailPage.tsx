@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
-import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch } from "../../hooks/scheduling/useScheduleBatches";
+import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useBatchAuditLogs } from "../../hooks/scheduling/useScheduleBatches";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
 import {
@@ -14,39 +14,52 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { CalendarIcon, UserIcon, CheckLineIcon as CheckIcon, TrashBinIcon as ArchiveIcon, GridIcon } from "../../icons";
-import toast from "react-hot-toast";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import ConflictWarningList, { ConflictItem } from "../../components/scheduling/ConflictWarningList";
+import AuditLogDrawer from "../../components/scheduling/AuditLogDrawer";
 
 const ScheduleBatchDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const batchId = Number(id);
 
-  const [page, setPage] = useState(1);
+  const page = 1;
+  const [confirmAction, setConfirmAction] = useState<"publish" | "archive" | null>(null);
+  const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
+  const [showAudit, setShowAudit] = useState(false);
 
   const { data: batch, isLoading: isLoadingBatch } = useScheduleBatch(batchId);
   const { data: schedulesData, isLoading: isLoadingSchedules } = useBatchSchedules(batchId, { page });
+  const { data: auditLogs = [], isLoading: isLoadingAudit } = useBatchAuditLogs(batchId);
   
   const publishMutation = usePublishBatch();
   const archiveMutation = useArchiveBatch();
 
   const handlePublish = () => {
-    if (window.confirm("Apakah Anda yakin ingin mempublikasikan batch ini? Jadwal akan aktif dan tidak dapat diubah secara massal lagi.")) {
-      publishMutation.mutate(batchId, {
-        onSuccess: () => {
-          toast.success("Batch berhasil dipublikasikan");
-        },
-      });
-    }
+    publishMutation.mutate(batchId, {
+      onSuccess: () => {
+        setConflicts(null);
+        setConfirmAction(null);
+      },
+      onError: (error: any) => {
+        setConfirmAction(null);
+        const nextConflicts = error.response?.data?.errors?.conflicts;
+        if (nextConflicts) {
+          setConflicts(nextConflicts);
+        }
+      },
+    });
   };
 
   const handleArchive = () => {
-    if (window.confirm("Arsipkan batch ini? Jadwal tidak akan terlihat lagi di kalender aktif.")) {
-      archiveMutation.mutate(batchId, {
-        onSuccess: () => {
-          toast.success("Batch berhasil diarsipkan");
-        },
-      });
-    }
+    archiveMutation.mutate(batchId, {
+      onSuccess: () => {
+        setConfirmAction(null);
+      },
+      onError: () => {
+        setConfirmAction(null);
+      },
+    });
   };
 
   const getStatusVariant = (status: string) => {
@@ -108,7 +121,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
                   <Button 
                     variant="primary" 
                     size="sm" 
-                    onClick={handlePublish}
+                    onClick={() => setConfirmAction("publish")}
                     disabled={publishMutation.isPending}
                   >
                     <CheckIcon className="w-4 h-4 mr-2" />
@@ -120,7 +133,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={handleArchive}
+                  onClick={() => setConfirmAction("archive")}
                   disabled={archiveMutation.isPending}
                   className="text-red-600 border-red-200 hover:bg-red-50"
                 >
@@ -131,6 +144,20 @@ const ScheduleBatchDetailPage: React.FC = () => {
             </div>
           </div>
         </ComponentCard>
+
+        {conflicts && (
+          <ConflictWarningList
+            conflicts={conflicts}
+            onCancel={() => setConflicts(null)}
+            isPending={publishMutation.isPending}
+          />
+        )}
+
+        <div className="flex justify-end">
+          <Button size="sm" variant="outline" onClick={() => setShowAudit(true)}>
+            Lihat Histori Batch
+          </Button>
+        </div>
 
         <ComponentCard title="Daftar Jadwal dalam Batch">
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -184,15 +211,15 @@ const ScheduleBatchDetailPage: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <div 
                               className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: row.shift?.color || row.snapshot?.color || '#cbd5e1' }}
+                              style={{ backgroundColor: row.snapshot?.color || row.shift?.color || '#cbd5e1' }}
                             />
                             <span className="text-theme-sm text-gray-800 dark:text-white/90">
-                              {row.shift?.name || row.snapshot?.shift_name || (row.is_day_off ? 'OFF' : '-')}
+                              {row.snapshot?.shift_name || row.shift?.name || (row.is_day_off ? 'OFF' : '-')}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-theme-sm text-gray-500">
-                          {row.is_day_off ? 'Hari Libur' : `${row.shift?.check_in_time || row.snapshot?.check_in_time} - ${row.shift?.check_out_time || row.snapshot?.check_out_time}`}
+                          {row.is_day_off ? 'Hari Libur' : `${row.snapshot?.check_in_time || row.shift?.check_in_time} - ${row.snapshot?.check_out_time || row.shift?.check_out_time}`}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -203,6 +230,38 @@ const ScheduleBatchDetailPage: React.FC = () => {
           </div>
         </ComponentCard>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmAction === "publish"}
+        title="Publikasikan jadwal?"
+        description={`Batch "${batch.name}" akan menjadi aktif. Setelah publish, perubahan dilakukan melalui flow override.`}
+        confirmText="Publish"
+        cancelText="Batal"
+        tone="warning"
+        onConfirm={handlePublish}
+        onCancel={() => setConfirmAction(null)}
+        confirmLoading={publishMutation.isPending}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmAction === "archive"}
+        title="Arsipkan batch?"
+        description={`Batch "${batch.name}" dan seluruh jadwal di dalamnya akan dipindahkan ke status archived.`}
+        confirmText="Arsipkan"
+        cancelText="Batal"
+        tone="danger"
+        onConfirm={handleArchive}
+        onCancel={() => setConfirmAction(null)}
+        confirmLoading={archiveMutation.isPending}
+      />
+
+      <AuditLogDrawer
+        isOpen={showAudit}
+        title="Histori Batch"
+        logs={auditLogs}
+        isLoading={isLoadingAudit}
+        onClose={() => setShowAudit(false)}
+      />
     </>
   );
 };

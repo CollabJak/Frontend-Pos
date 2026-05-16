@@ -1,6 +1,5 @@
 import { useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import toast from "react-hot-toast";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import {
@@ -106,7 +105,6 @@ export default function RotationPatternPage() {
 
     const options = {
       onSuccess: () => {
-        toast.success(selectedPattern ? "Pola rotasi berhasil diperbarui" : "Pola rotasi berhasil dibuat");
         closeForm();
       },
       onError: (error: any) => {
@@ -118,8 +116,6 @@ export default function RotationPatternPage() {
               message: serverErrors[key][0],
             });
           });
-        } else {
-          toast.error(error.response?.data?.message || "Terjadi kesalahan pada server");
         }
       },
     };

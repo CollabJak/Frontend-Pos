@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { CalendarCell } from "../../types/scheduling";
 import DatePicker from "../../components/form/date-picker";
 import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import ScheduleDetailModal from "../../components/scheduling/ScheduleDetailModal";
 
 const ScheduleCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +22,11 @@ const ScheduleCalendarPage: React.FC = () => {
   );
   const [locationId, setLocationId] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string>("draft");
+  const [selectedCell, setSelectedCell] = useState<{
+    userId: number;
+    date: string;
+    cell?: CalendarCell;
+  } | null>(null);
 
   const { data: calendarData, isLoading } = useScheduleCalendar({
     month: viewMonth,
@@ -32,8 +38,7 @@ const ScheduleCalendarPage: React.FC = () => {
 
 
   const handleCellClick = (userId: number, date: string, cell?: CalendarCell) => {
-    console.log("Cell clicked:", { userId, date, cell });
-    // Future: Open detail/edit modal
+    setSelectedCell({ userId, date, cell });
   };
 
   const locationOptions = [
@@ -124,6 +129,16 @@ const ScheduleCalendarPage: React.FC = () => {
             <span>Published</span>
           </div>
         </div>
+
+        {selectedCell && (
+          <ScheduleDetailModal
+            isOpen={!!selectedCell}
+            userId={selectedCell.userId}
+            date={selectedCell.date}
+            cell={selectedCell.cell}
+            onClose={() => setSelectedCell(null)}
+          />
+        )}
       </div>
     </>
   );
