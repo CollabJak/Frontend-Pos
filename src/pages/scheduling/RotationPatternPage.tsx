@@ -202,7 +202,7 @@ export default function RotationPatternPage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
               <Label htmlFor="p-name">Nama Pola</Label>
-              <Input id="p-name" {...register("name")} error={errors.name?.message} placeholder="Contoh: 5 Hari Kerja 2 Hari Libur" />
+              <Input id="p-name" {...register("name")} error={!!errors.name?.message} placeholder="Contoh: 5 Hari Kerja 2 Hari Libur" />
             </div>
             <div>
               <Label htmlFor="p-desc">Deskripsi</Label>

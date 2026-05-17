@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "./auth";
 import { Location } from "./location";
 
 export interface Shift {
@@ -46,6 +46,19 @@ export interface HolidayCalendar {
   updated_at: string;
 }
 
+export interface HolidayCalendarPayload {
+  name: string;
+  holiday_date: string;
+  type: HolidayType;
+  location_id?: number | null;
+  is_recurring?: boolean;
+  description?: string | null;
+}
+
+export interface HolidayBatchCreatePayload {
+  holidays: HolidayCalendarPayload[];
+}
+
 export interface RotationPattern {
   id: number;
   business_id: number;
@@ -69,6 +82,8 @@ export interface RotationPatternItem {
 
 export type ScheduleStatus = 'draft' | 'published' | 'archived';
 export type OverrideType = 'original' | 'swap' | 'emergency' | 'overtime' | 'reschedule';
+export type ScheduleGenerationStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type ScheduleGenerationType = 'bulk' | 'rotation';
 
 export interface EmployeeSchedule {
   id: number;
@@ -76,6 +91,7 @@ export interface EmployeeSchedule {
   user_id: number;
   shift_id: number | null;
   publish_batch_id: number | null;
+  location_id: number | null;
   schedule_date: string;
   status: ScheduleStatus;
   is_day_off: boolean;
@@ -107,6 +123,12 @@ export interface SchedulePublishBatch {
   period_start: string;
   period_end: string;
   status: ScheduleStatus;
+  generation_status?: ScheduleGenerationStatus;
+  generation_type?: ScheduleGenerationType | null;
+  generation_estimated_records?: number;
+  generation_error?: string | null;
+  generation_started_at?: string | null;
+  generation_finished_at?: string | null;
   total_schedules: number;
   published_at: string | null;
   published_by: number | null;
@@ -119,6 +141,7 @@ export interface SchedulePublishBatch {
 export interface CalendarViewData {
   users: Array<{ id: number; name: string; photo: string | null }>;
   schedules: Record<string, Record<number, CalendarCell>>;
+  holidays: Record<string, HolidayCalendar[]>;
   // Key format: "2026-06-01" → { [userId]: CalendarCell }
 }
 
@@ -168,4 +191,20 @@ export interface OvertimeOverridePayload {
   shift_id: number;
   schedule_date: string;
   reason: string;
+}
+
+export interface CreateSchedulePayload {
+  user_id: number;
+  shift_id?: number | null;
+  schedule_date: string;
+  is_day_off?: boolean;
+  location_id?: number | null;
+  day_off_note?: string | null;
+}
+
+export interface UpdateSchedulePayload {
+  shift_id?: number | null;
+  is_day_off?: boolean;
+  location_id?: number | null;
+  day_off_note?: string | null;
 }

@@ -7,10 +7,11 @@ import {
   RescheduleOverridePayload,
   SwapOverridePayload,
 } from "../../types/scheduling";
+import { schedulingKeys } from "./queryKeys";
 
 const invalidateScheduling = (queryClient: QueryClient) => {
-  queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
-  queryClient.invalidateQueries({ queryKey: ["scheduling", "batches"] });
+  queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar });
+  queryClient.invalidateQueries({ queryKey: schedulingKeys.batches });
   queryClient.invalidateQueries({ queryKey: ["schedule"] });
   queryClient.invalidateQueries({ queryKey: ["schedule-audit"] });
 };
@@ -57,7 +58,7 @@ export const usePublishedScheduleLookup = (
   enabled: boolean
 ) => {
   return useQuery({
-    queryKey: ["scheduling", "published-schedule-lookup", userId, date],
+    queryKey: schedulingKeys.publishedLookup(userId, date),
     enabled: enabled && !!userId && !!date,
     queryFn: async () => {
       const response = await schedulingService.getSchedules({
@@ -68,7 +69,7 @@ export const usePublishedScheduleLookup = (
         per_page: 1,
       });
 
-      return response.data?.[0] ?? null;
+      return response?.data?.[0] ?? null;
     },
   });
 };

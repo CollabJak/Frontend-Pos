@@ -12,6 +12,8 @@ import {
   RescheduleOverridePayload,
   SwapOverridePayload
 } from "../../types/scheduling";
+import type { CreateSchedulePayload, UpdateSchedulePayload } from "../../types/scheduling";
+import type { HolidayBatchCreatePayload, HolidayCalendarPayload } from "../../types/scheduling";
 
 const schedulingService = {
   // Shifts
@@ -49,11 +51,11 @@ const schedulingService = {
     const response = await apiClient.get<ApiResponse<PaginatedApiResponse<HolidayCalendar>>>("/holiday-calendars", { params });
     return response.data.data;
   },
-  createHoliday: async (data: any) => {
+  createHoliday: async (data: HolidayCalendarPayload) => {
     const response = await apiClient.post<ApiResponse<HolidayCalendar>>("/holiday-calendars", data);
     return response.data.data;
   },
-  updateHoliday: async (id: number, data: any) => {
+  updateHoliday: async (id: number, data: HolidayCalendarPayload) => {
     const response = await apiClient.put<ApiResponse<HolidayCalendar>>(`/holiday-calendars/${id}`, data);
     return response.data.data;
   },
@@ -61,7 +63,7 @@ const schedulingService = {
     const response = await apiClient.delete<ApiResponse<void>>(`/holiday-calendars/${id}`);
     return response.data.data;
   },
-  batchCreateHolidays: async (data: any) => {
+  batchCreateHolidays: async (data: HolidayBatchCreatePayload) => {
     const response = await apiClient.post<ApiResponse<HolidayCalendar[]>>("/holiday-calendars/batch", data);
     return response.data.data;
   },
@@ -109,6 +111,10 @@ const schedulingService = {
     const response = await apiClient.get<ApiResponse<SchedulePublishBatch>>(`/schedules/batches/${id}`);
     return response.data.data;
   },
+  getGenerationStatus: async (batchId: number) => {
+    const response = await apiClient.get<ApiResponse<SchedulePublishBatch>>(`/schedules/generate/jobs/${batchId}/status`);
+    return response.data.data;
+  },
   publishBatch: async (id: number) => {
     const response = await apiClient.post<ApiResponse<void>>(`/schedules/batches/${id}/publish`);
     return response.data.data;
@@ -123,6 +129,14 @@ const schedulingService = {
   },
   getSchedule: async (id: number) => {
     const response = await apiClient.get<ApiResponse<EmployeeSchedule>>(`/schedules/${id}`);
+    return response.data.data;
+  },
+  createSchedule: async (data: CreateSchedulePayload) => {
+    const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules", data);
+    return response.data.data;
+  },
+  updateSchedule: async (id: number, data: UpdateSchedulePayload) => {
+    const response = await apiClient.put<ApiResponse<EmployeeSchedule>>(`/schedules/${id}`, data);
     return response.data.data;
   },
   deleteSchedule: async (id: number) => {

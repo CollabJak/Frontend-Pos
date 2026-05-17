@@ -3,7 +3,7 @@ import { z } from "zod";
 export const rotationPatternItemSchema = z.object({
   day_index: z.number().min(0),
   shift_id: z.number().nullable().optional(),
-  is_day_off: z.boolean().default(false),
+  is_day_off: z.boolean(),
 }).refine((data) => {
   if (!data.is_day_off && !data.shift_id) {
     return false;

@@ -6,7 +6,8 @@ export interface ConflictItem {
   user_id: number;
   user_name?: string;
   date: string;
-  type: string;
+  type?: string;
+  conflict_type?: string;
   message: string;
 }
 
@@ -25,6 +26,9 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
   isPending,
   confirmText = "Tetap Lanjutkan (Paksa)",
 }) => {
+  const getConflictType = (conflict: ConflictItem) =>
+    conflict.conflict_type || conflict.type || "conflict";
+
   return (
     <div className="p-5 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl space-y-4">
       <div className="flex items-start gap-3">
@@ -36,7 +40,7 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
             Ditemukan {conflicts.length} Konflik Jadwal
           </h4>
           <p className="text-xs text-red-700 dark:text-red-400 mt-1">
-            Sistem mendeteksi jadwal ganda atau bentrok untuk karyawan berikut. Anda bisa membatalkan atau tetap melanjutkan (mengabaikan konflik).
+            Sistem mendeteksi jadwal ganda, overlap lintas hari, atau kondisi lain yang perlu diperbaiki sebelum jadwal dipublish.
           </p>
         </div>
       </div>
@@ -47,13 +51,18 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
             key={index}
             className="p-3 bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/50 rounded-lg"
           >
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between gap-2">
               <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                 {conflict.user_name || `User ID: ${conflict.user_id}`}
               </span>
-              <span className="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-500">
-                {conflict.date}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 rounded">
+                  {getConflictType(conflict).replace(/_/g, " ")}
+                </span>
+                <span className="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-500">
+                  {conflict.date}
+                </span>
+              </div>
             </div>
             <p className="text-xs text-red-600 dark:text-red-400 mt-1">
               {conflict.message}

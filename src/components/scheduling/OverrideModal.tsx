@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { fetchShiftOptions, fetchUserOptions, OptionDto } from "../../api/options";
+import { fetchShiftOptions, fetchUserOptions } from "../../api/options";
+import type { OptionDto } from "../../api/options";
 import AsyncSearchSelect from "../form/AsyncSearchSelect";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
-import { CalendarCell, EmployeeSchedule, OverrideType } from "../../types/scheduling";
+import type { CalendarCell, EmployeeSchedule, OverrideType } from "../../types/scheduling";
 import {
   useEmergencyOverride,
   useOvertimeOverride,
@@ -13,6 +14,12 @@ import {
   useRescheduleOverride,
   useSwapOverride,
 } from "../../hooks/scheduling/useScheduleOverride";
+import {
+  emergencyOverrideSchema,
+  overtimeOverrideSchema,
+  rescheduleOverrideSchema,
+  swapOverrideSchema,
+} from "../../Schemas/scheduling/overrideSchema";
 
 type OverrideTab = Extract<OverrideType, "reschedule" | "emergency" | "swap" | "overtime">;
 
@@ -70,20 +77,14 @@ export default function OverrideModal({
   const scheduleId = schedule?.id ?? cell.schedule_id;
   const scheduleTitle = useMemo(() => {
     const shift = cell.is_day_off ? "Libur" : cell.shift_name || "Tanpa shift";
-    return `${shift} · ${date}`;
+    return `${shift} - ${date}`;
   }, [cell.is_day_off, cell.shift_name, date]);
 
   const isPending =
     reschedule.isPending || emergency.isPending || swap.isPending || overtime.isPending;
 
-  const validateReason = () => {
-    if (reason.trim().length < 10) {
-      setClientError("Alasan minimal 10 karakter.");
-      return false;
-    }
-
-    setClientError("");
-    return true;
+  const setSchemaError = (result: { success: false; error: { issues: Array<{ message: string }> } }) => {
+    setClientError(result.error.issues[0]?.message || "Data override tidak valid.");
   };
 
   const finishSuccess = () => {
@@ -93,72 +94,75 @@ export default function OverrideModal({
   };
 
   const handleSubmit = () => {
-    if (!validateReason()) return;
-
     if (activeTab === "reschedule") {
-      if (!newShiftId && newScheduleDate === date) {
-        setClientError("Pilih shift baru atau tanggal baru.");
+      const payload = {
+        schedule_id: scheduleId,
+        new_shift_id: newShiftId,
+        new_schedule_date: newScheduleDate === date ? null : newScheduleDate,
+        reason: reason.trim(),
+      };
+      const result = rescheduleOverrideSchema.safeParse(payload);
+      if (!result.success) {
+        setSchemaError(result);
         return;
       }
 
       reschedule.mutate(
-        {
-          schedule_id: scheduleId,
-          new_shift_id: newShiftId,
-          new_schedule_date: newScheduleDate,
-          reason: reason.trim(),
-        },
+        result.data,
         { onSuccess: finishSuccess }
       );
       return;
     }
 
     if (activeTab === "emergency") {
-      if (!replacementUserId) {
-        setClientError("Pilih karyawan pengganti.");
+      const result = emergencyOverrideSchema.safeParse({
+        schedule_id: scheduleId,
+        replacement_user_id: replacementUserId,
+        reason: reason.trim(),
+      });
+      if (!result.success) {
+        setSchemaError(result);
         return;
       }
 
       emergency.mutate(
-        {
-          schedule_id: scheduleId,
-          replacement_user_id: replacementUserId,
-          reason: reason.trim(),
-        },
+        result.data,
         { onSuccess: finishSuccess }
       );
       return;
     }
 
     if (activeTab === "swap") {
-      if (!swapTargetSchedule?.id) {
-        setClientError("Pilih karyawan yang memiliki jadwal published pada tanggal ini.");
+      const result = swapOverrideSchema.safeParse({
+        schedule_id_1: scheduleId,
+        schedule_id_2: swapTargetSchedule?.id,
+        reason: reason.trim(),
+      });
+      if (!result.success) {
+        setSchemaError(result);
         return;
       }
 
       swap.mutate(
-        {
-          schedule_id_1: scheduleId,
-          schedule_id_2: swapTargetSchedule.id,
-          reason: reason.trim(),
-        },
+        result.data,
         { onSuccess: finishSuccess }
       );
       return;
     }
 
-    if (!overtimeShiftId) {
-      setClientError("Pilih shift lembur.");
+    const result = overtimeOverrideSchema.safeParse({
+      user_id: userId,
+      shift_id: overtimeShiftId,
+      schedule_date: overtimeDate,
+      reason: reason.trim(),
+    });
+    if (!result.success) {
+      setSchemaError(result);
       return;
     }
 
     overtime.mutate(
-      {
-        user_id: userId,
-        shift_id: overtimeShiftId,
-        schedule_date: overtimeDate,
-        reason: reason.trim(),
-      },
+      result.data,
       { onSuccess: finishSuccess }
     );
   };
@@ -241,6 +245,14 @@ export default function OverrideModal({
 
           {activeTab === "swap" && (
             <div className="space-y-3">
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-gray-500">Jadwal asal</span>
+                  <span className="font-medium text-gray-800 dark:text-white/90">
+                    {cell.shift_name || "Published"} - {date}
+                  </span>
+                </div>
+              </div>
               <AsyncSearchSelect<OptionDto>
                 label="Karyawan untuk Ditukar"
                 value={swapUserId}
@@ -260,13 +272,18 @@ export default function OverrideModal({
                   {isFetchingSwapTarget ? (
                     <p className="text-gray-500">Memuat jadwal target...</p>
                   ) : swapTargetSchedule ? (
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-gray-500">Jadwal target</span>
-                      <span className="font-medium text-gray-800 dark:text-white/90">
-                        {swapTargetSchedule.snapshot?.shift_name ||
-                          swapTargetSchedule.shift?.name ||
-                          "Published"}
-                      </span>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-gray-500">Jadwal target</span>
+                        <span className="font-medium text-gray-800 dark:text-white/90">
+                          {swapTargetSchedule.snapshot?.shift_name ||
+                            swapTargetSchedule.shift?.name ||
+                            "Published"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Shift asal akan diberikan ke karyawan target, dan shift target akan diberikan ke karyawan asal.
+                      </p>
                     </div>
                   ) : (
                     <p className="text-gray-500">

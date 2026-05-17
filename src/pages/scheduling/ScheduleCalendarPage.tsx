@@ -111,10 +111,10 @@ const ScheduleCalendarPage: React.FC = () => {
           </div>
         )}
 
-        <ComponentCard>
+        <ComponentCard title="Kalender Jadwal">
           <ScheduleCalendar
             month={viewMonth}
-            data={calendarData || { users: [], schedules: {} }}
+            data={calendarData || { users: [], schedules: {}, holidays: {} }}
             onCellClick={handleCellClick}
             isLoading={isLoading}
           />
@@ -128,6 +128,10 @@ const ScheduleCalendarPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-gray-200 text-gray-400" />
             <span>Hari Off (Libur)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-rose-50 border border-rose-200" />
+            <span>Kalender Libur</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-yellow-400" />
@@ -145,6 +149,8 @@ const ScheduleCalendarPage: React.FC = () => {
             userId={selectedCell.userId}
             date={selectedCell.date}
             cell={selectedCell.cell}
+            holidays={calendarData?.holidays[selectedCell.date] || []}
+            locationId={locationId}
             onClose={() => setSelectedCell(null)}
           />
         )}

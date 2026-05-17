@@ -11,6 +11,7 @@ export interface AsyncSearchSelectProps<TOption extends Record<string, unknown>>
   placeholder?: string;
   label?: string;
   displayValue?: string;
+  keyName?: string;
   fetchOptions: (params: {
     limit: number;
     search?: string;
@@ -30,6 +31,7 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
   placeholder = "Select an option",
   label,
   displayValue,
+  keyName,
   fetchOptions,
   optionLabel,
   optionValue,
@@ -57,10 +59,16 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
     isLoading,
     isFetching,
   } = useAsyncOptions<TOption>({
+    key: keyName || "default",
     enabled: shouldFetch,
     limit,
     search: debouncedSearch.length >= searchMinLength ? debouncedSearch : undefined,
-    fetchOptions,
+    fetchOptions: (params) =>
+      fetchOptions({
+        limit: params.limit ?? limit,
+        search: params.search,
+        signal: params.signal,
+      }),
   });
 
   const displayOptions = useMemo(
