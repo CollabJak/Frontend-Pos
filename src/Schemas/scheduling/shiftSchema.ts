@@ -8,7 +8,10 @@ export const shiftBreakTimeSchema = z.object({
 
 export const shiftSchema = z.object({
   name: z.string().min(1, "Nama shift wajib diisi"),
-  color: z.string().min(1, "Warna shift wajib diisi"),
+  color: z
+    .string()
+    .min(1, "Warna shift wajib diisi")
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Format warna harus berupa hex, contoh #3B82F6"),
   check_in_time: z.string().min(1, "Jam masuk wajib diisi"),
   check_out_time: z.string().min(1, "Jam keluar wajib diisi"),
   is_cross_day: z.boolean(),

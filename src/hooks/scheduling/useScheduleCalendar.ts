@@ -4,11 +4,17 @@ import { EmployeeSchedule, CalendarViewData, CalendarCell, HolidayCalendar } fro
 import { schedulingKeys } from "./useShifts";
 
 type CalendarApiResponse = EmployeeSchedule[] | {
-  schedules: EmployeeSchedule[];
-  holidays?: HolidayCalendar[];
+  users?: CalendarViewData["users"];
+  schedules: EmployeeSchedule[] | CalendarViewData["schedules"];
+  holidays?: HolidayCalendar[] | CalendarViewData["holidays"];
+  meta?: CalendarViewData["meta"];
 };
 
-export const useScheduleCalendar = (params: { month: string; location_id?: number; status?: string }) => {
+const isCompactCalendarResponse = (value: CalendarApiResponse): value is Exclude<CalendarApiResponse, EmployeeSchedule[]> => {
+  return !Array.isArray(value) && value.schedules !== undefined && !Array.isArray(value.schedules);
+};
+
+export const useScheduleCalendar = (params: { month: string; location_id?: number; status?: string; page?: number; per_page?: number }) => {
   return useQuery({
     queryKey: schedulingKeys.calendar(params),
     queryFn: async () => {
@@ -17,7 +23,26 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
         Object.entries(params).filter(([_, v]) => v !== "" && v !== "all" && v !== null && v !== undefined)
       );
 
-      const calendarResponse = await schedulingService.getCalendar(cleanParams as any) as CalendarApiResponse;
+      const rawCalendarResponse = await schedulingService.getCalendar({
+        ...cleanParams,
+        format: "compact",
+      } as any) as CalendarApiResponse;
+      const calendarResponse = (rawCalendarResponse as any)?.data || rawCalendarResponse;
+
+      if (isCompactCalendarResponse(calendarResponse)) {
+        return {
+          users: calendarResponse.users || [],
+          schedules: Object.fromEntries(
+            Object.entries(calendarResponse.schedules || {}).map(([date, cells]) => [
+              date,
+              Object.fromEntries(Object.entries(cells || {}).map(([userId, cell]) => [String(userId), cell])),
+            ])
+          ),
+          holidays: (calendarResponse.holidays || {}) as CalendarViewData["holidays"],
+          meta: calendarResponse.meta,
+        } as CalendarViewData;
+      }
+
       const rawSchedules = Array.isArray(calendarResponse) ? calendarResponse : calendarResponse.schedules;
       const rawHolidays = Array.isArray(calendarResponse) ? [] : calendarResponse.holidays || [];
 
@@ -26,7 +51,7 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
       const schedulesMap: Record<string, Record<number, CalendarCell>> = {};
       const holidaysMap: Record<string, HolidayCalendar[]> = {};
 
-      rawSchedules.forEach((schedule) => {
+      (rawSchedules as EmployeeSchedule[]).forEach((schedule) => {
         // Collect distinct users
         if (!usersMap.has(schedule.user_id)) {
           usersMap.set(schedule.user_id, {
@@ -53,7 +78,7 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
         };
       });
 
-      rawHolidays.forEach((holiday) => {
+      (rawHolidays as HolidayCalendar[]).forEach((holiday) => {
         if (!holidaysMap[holiday.holiday_date]) {
           holidaysMap[holiday.holiday_date] = [];
         }

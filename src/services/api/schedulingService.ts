@@ -91,7 +91,7 @@ const schedulingService = {
   },
 
   // Schedules (Engine & Management)
-  getCalendar: async (params: { month: string; location_id?: number; status?: string }) => {
+  getCalendar: async (params: { month: string; location_id?: number; status?: string; format?: string; page?: number; per_page?: number }) => {
     const response = await apiClient.get<ApiResponse<any>>("/schedules/calendar", { params });
     return response.data.data;
   },
