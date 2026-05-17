@@ -1,7 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
-import { EmployeeSchedule, CalendarViewData, CalendarCell } from "../../types/scheduling";
+import { EmployeeSchedule, CalendarViewData, CalendarCell, HolidayCalendar } from "../../types/scheduling";
 import { schedulingKeys } from "./useShifts";
+
+type CalendarApiResponse = EmployeeSchedule[] | {
+  schedules: EmployeeSchedule[];
+  holidays?: HolidayCalendar[];
+};
 
 export const useScheduleCalendar = (params: { month: string; location_id?: number; status?: string }) => {
   return useQuery({
@@ -12,11 +17,14 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
         Object.entries(params).filter(([_, v]) => v !== "" && v !== "all" && v !== null && v !== undefined)
       );
 
-      const rawSchedules = await schedulingService.getCalendar(cleanParams) as EmployeeSchedule[];
+      const calendarResponse = await schedulingService.getCalendar(cleanParams as any) as CalendarApiResponse;
+      const rawSchedules = Array.isArray(calendarResponse) ? calendarResponse : calendarResponse.schedules;
+      const rawHolidays = Array.isArray(calendarResponse) ? [] : calendarResponse.holidays || [];
 
       // Transform raw list into CalendarViewData structure
       const usersMap = new Map<number, { id: number; name: string; photo: string | null }>();
       const schedulesMap: Record<string, Record<number, CalendarCell>> = {};
+      const holidaysMap: Record<string, HolidayCalendar[]> = {};
 
       rawSchedules.forEach((schedule) => {
         // Collect distinct users
@@ -45,9 +53,18 @@ export const useScheduleCalendar = (params: { month: string; location_id?: numbe
         };
       });
 
+      rawHolidays.forEach((holiday) => {
+        if (!holidaysMap[holiday.holiday_date]) {
+          holidaysMap[holiday.holiday_date] = [];
+        }
+
+        holidaysMap[holiday.holiday_date].push(holiday);
+      });
+
       return {
         users: Array.from(usersMap.values()),
         schedules: schedulesMap,
+        holidays: holidaysMap,
       } as CalendarViewData;
     },
     enabled: !!params.month,

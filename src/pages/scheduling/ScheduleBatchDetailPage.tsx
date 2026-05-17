@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
-import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useBatchAuditLogs } from "../../hooks/scheduling/useScheduleBatches";
+import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useBatchAuditLogs, useGenerationStatus } from "../../hooks/scheduling/useScheduleBatches";
 import { Pagination } from "../../components/tables/Datatable";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
@@ -18,10 +19,11 @@ import { CalendarIcon, UserIcon, CheckLineIcon as CheckIcon, TrashBinIcon as Arc
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import ConflictWarningList, { ConflictItem } from "../../components/scheduling/ConflictWarningList";
 import AuditLogDrawer from "../../components/scheduling/AuditLogDrawer";
+import { schedulingKeys } from "../../hooks/scheduling/queryKeys";
 
 const ScheduleBatchDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const batchId = Number(id);
 
   const [page, setPage] = useState(1);
@@ -29,12 +31,26 @@ const ScheduleBatchDetailPage: React.FC = () => {
   const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
   const [showAudit, setShowAudit] = useState(false);
 
-  const { data: batch, isLoading: isLoadingBatch } = useScheduleBatch(batchId);
+  const { data: initialBatch, isLoading: isLoadingBatch } = useScheduleBatch(batchId);
+  const shouldPollGeneration = initialBatch?.generation_status === "pending" || initialBatch?.generation_status === "processing";
+  const { data: polledBatch } = useGenerationStatus(batchId, shouldPollGeneration);
+  const batch = polledBatch || initialBatch;
+  const isGenerationBusy = batch?.generation_status === "pending" || batch?.generation_status === "processing";
   const { data: schedulesData, isLoading: isLoadingSchedules } = useBatchSchedules(batchId, { page });
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useBatchAuditLogs(batchId);
   
   const publishMutation = usePublishBatch();
   const archiveMutation = useArchiveBatch();
+
+  useEffect(() => {
+    if (polledBatch?.generation_status !== "completed") {
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: schedulingKeys.batch(batchId) });
+    queryClient.invalidateQueries({ queryKey: schedulingKeys.batchSchedules(batchId) });
+    queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar });
+  }, [batchId, polledBatch?.generation_status, queryClient]);
 
   const handlePublish = () => {
     publishMutation.mutate(batchId, {
@@ -84,7 +100,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
       <PageBreadcrumb pageTitle="Review Batch Jadwal" />
 
       <div className="space-y-6">
-        <ComponentCard>
+        <ComponentCard title="Detail Batch">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -110,11 +126,21 @@ const ScheduleBatchDetailPage: React.FC = () => {
                     <span>{batch.location.name}</span>
                   </div>
                 )}
+                {batch.generation_status && (
+                  <div className="flex items-center gap-2">
+                    <span>Generate: {batch.generation_status}</span>
+                  </div>
+                )}
               </div>
+              {batch.generation_error && (
+                <p className="mt-3 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/10 dark:text-red-300">
+                  {batch.generation_error}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-3">
-              {batch.status === "draft" && (
+              {batch.status === "draft" && !isGenerationBusy && batch.generation_status !== "failed" && (
                 <>
                   <Button 
                     variant="primary" 
@@ -149,6 +175,12 @@ const ScheduleBatchDetailPage: React.FC = () => {
             onCancel={() => setConflicts(null)}
             isPending={publishMutation.isPending}
           />
+        )}
+
+        {isGenerationBusy && (
+          <div className="rounded-lg border border-brand-200 bg-brand-500/5 px-4 py-3 text-sm text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+            Generate jadwal sedang diproses di background. Halaman ini akan memperbarui status otomatis.
+          </div>
         )}
 
         <div className="flex justify-end">
@@ -239,7 +271,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
       <ConfirmDialog
         isOpen={confirmAction === "publish"}
         title="Publikasikan jadwal?"
-        description={`Batch "${batch.name}" akan menjadi aktif. Setelah publish, perubahan dilakukan melalui flow override.`}
+        description={`Batch "${batch.name}" akan menjadi aktif untuk karyawan. Sistem akan melakukan final conflict check; setelah publish, perubahan hanya bisa dilakukan melalui override.`}
         confirmText="Publish"
         cancelText="Batal"
         tone="warning"
@@ -251,7 +283,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
       <ConfirmDialog
         isOpen={confirmAction === "archive"}
         title="Arsipkan batch?"
-        description={`Batch "${batch.name}" dan seluruh jadwal di dalamnya akan dipindahkan ke status archived.`}
+        description={`Batch "${batch.name}" dan seluruh jadwal published di dalamnya akan dipindahkan ke status archived sehingga tidak dipakai attendance lagi.`}
         confirmText="Arsipkan"
         cancelText="Batal"
         tone="danger"
@@ -263,7 +295,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
       <AuditLogDrawer
         isOpen={showAudit}
         title="Histori Batch"
-        logs={auditLogs}
+        logs={auditLogs || []}
         isLoading={isLoadingAudit}
         onClose={() => setShowAudit(false)}
       />

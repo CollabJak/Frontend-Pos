@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
-import { HolidayCalendarFormValues } from "../../Schemas/scheduling/holidayCalendarSchema";
+import { HolidayBatchCreateFormValues, HolidayCalendarFormValues } from "../../Schemas/scheduling/holidayCalendarSchema";
 import { schedulingKeys } from "./useShifts";
 
 export const useHolidays = (params?: any) => {
@@ -16,6 +16,7 @@ export const useCreateHoliday = () => {
     mutationFn: (data: HolidayCalendarFormValues) => schedulingService.createHoliday(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.holidays() });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar() });
     },
   });
 };
@@ -27,6 +28,7 @@ export const useUpdateHoliday = () => {
       schedulingService.updateHoliday(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.holidays() });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar() });
     },
   });
 };
@@ -37,6 +39,7 @@ export const useDeleteHoliday = () => {
     mutationFn: (id: number) => schedulingService.deleteHoliday(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.holidays() });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar() });
     },
   });
 };
@@ -44,9 +47,10 @@ export const useDeleteHoliday = () => {
 export const useBatchCreateHolidays = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: any) => schedulingService.batchCreateHolidays(data),
+    mutationFn: (data: HolidayBatchCreateFormValues) => schedulingService.batchCreateHolidays(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.holidays() });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar() });
     },
   });
 };

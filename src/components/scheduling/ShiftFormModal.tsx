@@ -138,7 +138,7 @@ export default function ShiftFormModal({
             <Input
               id="name"
               {...register("name")}
-              error={errors.name?.message}
+              error={!!errors.name?.message}
               placeholder="Contoh: Shift Pagi"
             />
           </div>
@@ -233,7 +233,7 @@ export default function ShiftFormModal({
               id="tolerance_late_minutes"
               type="number"
               {...register("tolerance_late_minutes", { valueAsNumber: true })}
-              error={errors.tolerance_late_minutes?.message}
+              error={!!errors.tolerance_late_minutes?.message}
             />
           </div>
 
@@ -243,7 +243,7 @@ export default function ShiftFormModal({
               id="tolerance_early_out_minutes"
               type="number"
               {...register("tolerance_early_out_minutes", { valueAsNumber: true })}
-              error={errors.tolerance_early_out_minutes?.message}
+              error={!!errors.tolerance_early_out_minutes?.message}
             />
           </div>
         </div>

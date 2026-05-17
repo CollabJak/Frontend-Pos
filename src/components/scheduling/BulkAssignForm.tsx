@@ -33,7 +33,6 @@ const BulkAssignForm: React.FC = () => {
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<BulkGenerateValues>({
     resolver: zodResolver(bulkGenerateSchema),
@@ -135,19 +134,23 @@ const BulkAssignForm: React.FC = () => {
           )}
         </div>
 
-        <Controller
-          name="shift_id"
-          control={control}
-          render={({ field }) => (
-            <Select
-              label="Pilih Shift"
-              options={shiftSelectOptions}
-              value={field.value?.toString() || ""}
-              onChange={(val) => field.onChange(Number(val))}
-              error={errors.shift_id?.message}
-            />
+        <div>
+          <Controller
+            name="shift_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                label="Pilih Shift"
+                options={shiftSelectOptions}
+                value={field.value?.toString() || ""}
+                onChange={(val) => field.onChange(Number(val))}
+              />
+            )}
+          />
+          {errors.shift_id && (
+            <p className="mt-1 text-xs text-red-500">{errors.shift_id.message}</p>
           )}
-        />
+        </div>
 
         <Controller
           name="location_id"

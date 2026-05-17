@@ -8,17 +8,17 @@ export const shiftBreakTimeSchema = z.object({
 
 export const shiftSchema = z.object({
   name: z.string().min(1, "Nama shift wajib diisi"),
-  color: z.string().min(1, "Warna shift wajib diisi").default("#3b82f6"),
+  color: z.string().min(1, "Warna shift wajib diisi"),
   check_in_time: z.string().min(1, "Jam masuk wajib diisi"),
   check_out_time: z.string().min(1, "Jam keluar wajib diisi"),
-  is_cross_day: z.boolean().default(false),
-  tolerance_late_minutes: z.number().min(0).default(0),
-  tolerance_early_out_minutes: z.number().min(0).default(0),
-  auto_checkout: z.boolean().default(false),
-  auto_checkout_offset_minutes: z.number().min(0).default(0),
-  is_active: z.boolean().default(true),
+  is_cross_day: z.boolean(),
+  tolerance_late_minutes: z.number().min(0),
+  tolerance_early_out_minutes: z.number().min(0),
+  auto_checkout: z.boolean(),
+  auto_checkout_offset_minutes: z.number().min(0),
+  is_active: z.boolean(),
   description: z.string().nullable().optional(),
-  break_times: z.array(shiftBreakTimeSchema).default([]),
+  break_times: z.array(shiftBreakTimeSchema),
 });
 
 export type ShiftFormValues = z.infer<typeof shiftSchema>;

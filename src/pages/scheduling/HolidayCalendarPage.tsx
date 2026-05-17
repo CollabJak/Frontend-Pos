@@ -14,11 +14,11 @@ import {
   useHolidays,
   useCreateHoliday,
   useUpdateHoliday,
-  useDeleteHoliday
+  useDeleteHoliday,
+  useBatchCreateHolidays
 } from "../../hooks/scheduling/useHolidayCalendar";
 import { useFetchLocations } from "../../hooks/useLocations";
 import Button from "../../components/ui/button/Button";
-import { PencilIcon, TrashBinIcon } from "../../icons";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
@@ -27,10 +27,25 @@ import Label from "../../components/form/Label";
 import Select from "../../components/form/Select";
 import Switch from "../../components/form/switch/Switch";
 import DatePicker from "../../components/form/date-picker";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { holidayCalendarSchema, HolidayCalendarFormValues } from "../../Schemas/scheduling/holidayCalendarSchema";
-import { HolidayCalendar } from "../../types/scheduling";
+import {
+  holidayBatchCreateSchema,
+  HolidayBatchCreateFormValues,
+  holidayCalendarSchema,
+  HolidayCalendarFormValues,
+} from "../../Schemas/scheduling/holidayCalendarSchema";
+import { HolidayCalendar, HolidayType } from "../../types/scheduling";
+import { CopyIcon, PlusIcon, TrashBinIcon, PencilIcon } from "../../icons";
+
+const createEmptyHolidayRow = (date: string): HolidayCalendarFormValues => ({
+  name: "",
+  holiday_date: date,
+  type: "national",
+  location_id: null,
+  is_recurring: false,
+  description: "",
+});
 
 export default function HolidayCalendarPage() {
   const [page, setPage] = useState(1);
@@ -41,8 +56,10 @@ export default function HolidayCalendarPage() {
   const { mutate: createHoliday, isPending: isCreating } = useCreateHoliday();
   const { mutate: updateHoliday, isPending: isUpdating } = useUpdateHoliday();
   const { mutate: deleteHoliday } = useDeleteHoliday();
+  const { mutate: batchCreateHolidays, isPending: isBatchCreating } = useBatchCreateHolidays();
 
   const { isOpen: isFormOpen, openModal: openForm, closeModal: closeForm } = useModal();
+  const { isOpen: isBatchOpen, openModal: openBatch, closeModal: closeBatch } = useModal();
   const { isOpen: isDeleteOpen, openModal: openDelete, closeModal: closeDelete } = useModal();
 
   const [selectedHoliday, setSelectedHoliday] = useState<HolidayCalendar | null>(null);
@@ -67,6 +84,27 @@ export default function HolidayCalendarPage() {
 
   const holidayType = watch("type");
 
+  const {
+    control: batchControl,
+    register: registerBatch,
+    handleSubmit: handleBatchSubmit,
+    reset: resetBatch,
+    watch: watchBatch,
+    setValue: setBatchValue,
+    setError: setBatchError,
+    formState: { errors: batchErrors },
+  } = useForm<HolidayBatchCreateFormValues>({
+    resolver: zodResolver(holidayBatchCreateSchema),
+    defaultValues: {
+      holidays: [createEmptyHolidayRow(today)],
+    },
+  });
+
+  const { fields: batchHolidayFields, append: appendBatchHoliday, remove: removeBatchHoliday } = useFieldArray({
+    control: batchControl,
+    name: "holidays",
+  });
+
   const handleAddClick = () => {
     setSelectedHoliday(null);
     reset({
@@ -78,6 +116,13 @@ export default function HolidayCalendarPage() {
       location_id: null,
     });
     openForm();
+  };
+
+  const handleBatchAddClick = () => {
+    resetBatch({
+      holidays: [createEmptyHolidayRow(today)],
+    });
+    openBatch();
   };
 
   const handleEditClick = (holiday: HolidayCalendar) => {
@@ -118,6 +163,39 @@ export default function HolidayCalendarPage() {
     }
   };
 
+  const handleBatchFormSubmit = (formData: HolidayBatchCreateFormValues) => {
+    batchCreateHolidays(formData, {
+      onSuccess: () => {
+        closeBatch();
+      },
+      onError: (error: any) => {
+        if (error.response?.status === 422) {
+          const serverErrors = error.response.data.errors;
+          Object.keys(serverErrors).forEach((key) => {
+            setBatchError(key as any, {
+              type: "server",
+              message: serverErrors[key][0],
+            });
+          });
+        }
+      },
+    });
+  };
+
+  const handleAppendBatchRow = () => {
+    appendBatchHoliday(createEmptyHolidayRow(today));
+  };
+
+  const handleDuplicateBatchRow = (index: number) => {
+    appendBatchHoliday({ ...watchBatch(`holidays.${index}`) });
+  };
+
+  const getLocationIdValue = (index: number) => {
+    return watchBatch(`holidays.${index}.location_id`)?.toString() || "";
+  };
+
+  const batchHolidayListError = (batchErrors.holidays as any)?.message as string | undefined;
+
   const handleDeleteClick = (holiday: HolidayCalendar) => {
     setPendingDelete(holiday);
     openDelete();
@@ -136,7 +214,10 @@ export default function HolidayCalendarPage() {
 
       <div className="space-y-6">
         <ComponentCard title="Hari Libur">
-          <div className="flex justify-end mb-4">
+          <div className="flex flex-wrap justify-end gap-3 mb-4">
+            <Button variant="outline" onClick={handleBatchAddClick} startIcon={<PlusIcon className="size-4" />}>
+              Tambah Batch
+            </Button>
             <Button onClick={handleAddClick}>Tambah Hari Libur</Button>
           </div>
 
@@ -200,7 +281,7 @@ export default function HolidayCalendarPage() {
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <Label htmlFor="h-name">Nama Libur</Label>
-            <Input id="h-name" {...register("name")} error={errors.name?.message} placeholder="Contoh: Idul Fitri" />
+            <Input id="h-name" {...register("name")} error={!!errors.name?.message} hint={errors.name?.message} placeholder="Contoh: Idul Fitri" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -215,7 +296,6 @@ export default function HolidayCalendarPage() {
             <div>
               <Label htmlFor="h-type">Tipe</Label>
               <Select
-                id="h-type"
                 value={holidayType}
                 onChange={(value) => setValue("type", value as any)}
                 options={[
@@ -230,12 +310,11 @@ export default function HolidayCalendarPage() {
             <div>
               <Label htmlFor="h-loc">Lokasi</Label>
               <Select
-                id="h-loc"
                 value={watch("location_id")?.toString() || ""}
                 onChange={(value) => setValue("location_id", parseInt(value))}
                 options={locations?.data.map((l: any) => ({ value: l.id.toString(), label: l.name })) || []}
-                error={errors.location_id?.message}
               />
+              {errors.location_id?.message && <p className="mt-1.5 text-xs text-error-500">{errors.location_id.message}</p>}
             </div>
           )}
           <div className="flex items-center justify-between p-3 border rounded-lg dark:border-white/[0.05]">
@@ -252,6 +331,147 @@ export default function HolidayCalendarPage() {
           <div className="flex justify-end gap-3 pt-4 border-t dark:border-white/[0.05]">
             <Button type="button" variant="outline" onClick={closeForm}>Batal</Button>
             <Button type="submit" isLoading={isCreating || isUpdating}>Simpan</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isBatchOpen} onClose={closeBatch} className="max-w-[980px] p-6">
+        <div className="mb-5 pr-12">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white/90">Tambah Batch Hari Libur</h3>
+        </div>
+
+        <div className="mb-4 flex justify-end">
+          <Button type="button" variant="outline" size="sm" onClick={handleAppendBatchRow} startIcon={<PlusIcon className="size-4" />}>
+            Tambah Baris
+          </Button>
+        </div>
+
+        <form onSubmit={handleBatchSubmit(handleBatchFormSubmit)} className="space-y-4">
+          {batchHolidayListError && (
+            <p className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
+              {batchHolidayListError}
+            </p>
+          )}
+
+          <div className="max-h-[64vh] space-y-4 overflow-y-auto pr-1">
+            {batchHolidayFields.map((field, index) => {
+              const rowType = watchBatch(`holidays.${index}.type`) as HolidayType;
+              const rowErrors = (batchErrors.holidays as any)?.[index];
+
+              return (
+                <div key={field.id} className="rounded-lg border border-gray-200 p-4 dark:border-white/[0.08]">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Baris {index + 1}</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicateBatchRow(index)}
+                        className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/[0.05] dark:hover:text-gray-200"
+                        aria-label={`Duplikat baris ${index + 1}`}
+                      >
+                        <CopyIcon className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeBatchHoliday(index)}
+                        disabled={batchHolidayFields.length === 1}
+                        className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-red-400 dark:hover:bg-red-900/20"
+                        aria-label={`Hapus baris ${index + 1}`}
+                      >
+                        <TrashBinIcon className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-12">
+                    <div className="lg:col-span-4">
+                      <Label htmlFor={`batch-name-${field.id}`}>Nama Libur</Label>
+                      <Input
+                        id={`batch-name-${field.id}`}
+                        {...registerBatch(`holidays.${index}.name`)}
+                        error={!!rowErrors?.name?.message}
+                        hint={rowErrors?.name?.message}
+                        placeholder="Contoh: Hari Natal"
+                      />
+                    </div>
+                    <div className="lg:col-span-3">
+                      <DatePicker
+                        id={`batch-date-${field.id}`}
+                        label="Tanggal"
+                        defaultDate={watchBatch(`holidays.${index}.holiday_date`)}
+                        onChange={(_, dateStr) => setBatchValue(`holidays.${index}.holiday_date`, dateStr, { shouldValidate: true })}
+                        error={rowErrors?.holiday_date?.message}
+                      />
+                    </div>
+                    <div className="lg:col-span-3">
+                      <Label htmlFor={`batch-type-${field.id}`}>Tipe</Label>
+                      <Select
+                        value={rowType}
+                        onChange={(value) => {
+                          setBatchValue(`holidays.${index}.type`, value as HolidayType, { shouldValidate: true });
+                          if (value !== "location") {
+                            setBatchValue(`holidays.${index}.location_id`, null, { shouldValidate: true });
+                          }
+                        }}
+                        options={[
+                          { value: "national", label: "Nasional" },
+                          { value: "company", label: "Perusahaan" },
+                          { value: "location", label: "Lokasi Spesifik" },
+                        ]}
+                      />
+                      {rowErrors?.type?.message && <p className="mt-1.5 text-xs text-error-500">{rowErrors.type.message}</p>}
+                    </div>
+                    <div className="lg:col-span-2">
+                      <div className="flex h-full items-end">
+                        <div className="flex min-h-11 w-full items-center justify-between rounded-lg border border-gray-200 px-3 dark:border-white/[0.08]">
+                          <Label className="mb-0 text-xs">Tahunan</Label>
+                          <Switch
+                            checked={watchBatch(`holidays.${index}.is_recurring`)}
+                            onChange={(checked) => setBatchValue(`holidays.${index}.is_recurring`, checked, { shouldValidate: true })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {rowType === "location" && (
+                    <div className="mt-4">
+                      <Label htmlFor={`batch-location-${field.id}`}>Lokasi</Label>
+                      <Select
+                        value={getLocationIdValue(index)}
+                        placeholder="Pilih lokasi"
+                        onChange={(value) => setBatchValue(`holidays.${index}.location_id`, Number(value), { shouldValidate: true })}
+                        options={locations?.data.map((l: any) => ({ value: l.id.toString(), label: l.name })) || []}
+                      />
+                      {rowErrors?.location_id?.message && <p className="mt-1.5 text-xs text-error-500">{rowErrors.location_id.message}</p>}
+                    </div>
+                  )}
+
+                  <div className="mt-4">
+                    <Label htmlFor={`batch-description-${field.id}`}>Deskripsi</Label>
+                    <Input
+                      id={`batch-description-${field.id}`}
+                      {...registerBatch(`holidays.${index}.description`)}
+                      error={!!rowErrors?.description?.message}
+                      hint={rowErrors?.description?.message}
+                      placeholder="Keterangan opsional"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-end gap-3 border-t pt-4 dark:border-white/[0.05]">
+            <Button type="button" variant="outline" onClick={() => resetBatch({ holidays: [createEmptyHolidayRow(today)] })}>
+              Reset
+            </Button>
+            <Button type="button" variant="outline" onClick={closeBatch}>
+              Batal
+            </Button>
+            <Button type="submit" isLoading={isBatchCreating}>
+              Simpan Batch
+            </Button>
           </div>
         </form>
       </Modal>

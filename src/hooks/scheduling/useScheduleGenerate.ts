@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
-import { SchedulePublishBatch } from "../../types/scheduling";
+import { schedulingKeys } from "./queryKeys";
 
 export const useGenerateRotationSchedule = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: any) => schedulingService.generateRotation(data),
-    onSuccess: (_data: SchedulePublishBatch) => {
-      queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
-      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.batches });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar });
     },
   });
 };
@@ -19,9 +19,9 @@ export const useGenerateBulkSchedule = () => {
 
   return useMutation({
     mutationFn: (data: any) => schedulingService.generateBulk(data),
-    onSuccess: (_data: SchedulePublishBatch) => {
-      queryClient.invalidateQueries({ queryKey: ["schedule-batches"] });
-      queryClient.invalidateQueries({ queryKey: ["scheduling", "calendar"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.batches });
+      queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar });
     },
   });
 };

@@ -66,20 +66,12 @@ export default function ScheduleBatchListPage() {
       />
       <PageBreadcrumb pageTitle="Batch Jadwal" />
 
-      <ComponentCard>
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Batch Jadwal
-            </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Review batch hasil generate sebelum dipublish ke karyawan.
-            </p>
-          </div>
-          <Button size="sm" variant="primary" onClick={() => navigate("/scheduling/generate")}>
-            Generate Jadwal
-          </Button>
-        </div>
+      <ComponentCard
+        title="Batch Jadwal"
+        desc="Review batch hasil generate sebelum dipublish ke karyawan."
+        linkLabel="Generate Jadwal"
+        linkTo="/scheduling/generate"
+      >
 
         {conflicts && (
           <div className="mb-5">
@@ -104,6 +96,9 @@ export default function ScheduleBatchListPage() {
                 Status
               </TableCell>
               <TableCell isHeader className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                Generate
+              </TableCell>
+              <TableCell isHeader className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
                 Total
               </TableCell>
               <TableCell isHeader className="px-5 py-3 text-right text-xs font-medium uppercase text-gray-500">
@@ -114,7 +109,7 @@ export default function ScheduleBatchListPage() {
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={5} className="px-5 py-8 text-center text-sm text-gray-500">
+                <TableCell colSpan={6} className="px-5 py-8 text-center text-sm text-gray-500">
                   Memuat batch jadwal...
                 </TableCell>
               </TableRow>
@@ -122,7 +117,7 @@ export default function ScheduleBatchListPage() {
 
             {!isLoading && batches.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="px-5 py-8 text-center text-sm text-gray-500">
+                <TableCell colSpan={6} className="px-5 py-8 text-center text-sm text-gray-500">
                   Belum ada batch jadwal.
                 </TableCell>
               </TableRow>
@@ -141,11 +136,14 @@ export default function ScheduleBatchListPage() {
                     <Badge color={getStatusColor(batch.status)}>{batch.status}</Badge>
                   </TableCell>
                   <TableCell className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    {batch.generation_status || "completed"}
+                  </TableCell>
+                  <TableCell className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
                     {batch.total_schedules}
                   </TableCell>
                   <TableCell className="px-5 py-4">
                     <div className="flex justify-end gap-2">
-                      {batch.status === "draft" && (
+                      {batch.status === "draft" && batch.generation_status !== "pending" && batch.generation_status !== "processing" && batch.generation_status !== "failed" && (
                         <Button
                           size="sm"
                           variant="primary"
@@ -183,7 +181,7 @@ export default function ScheduleBatchListPage() {
         title="Publikasikan jadwal?"
         description={
           pendingPublish
-            ? `Batch "${pendingPublish.name}" akan menjadi aktif dan dapat digunakan karyawan.`
+            ? `Batch "${pendingPublish.name}" akan menjadi aktif untuk karyawan. Sistem akan melakukan final conflict check; setelah publish, perubahan hanya bisa melalui override.`
             : ""
         }
         confirmText="Publish"
