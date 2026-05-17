@@ -145,19 +145,28 @@ export default function ShiftFormModal({
 
           <div>
             <Label htmlFor="color">Warna Label</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                id="color"
-                type="color"
-                {...register("color")}
-                className="w-16 h-11 p-1"
-              />
-              <Input
-                type="text"
-                {...register("color")}
-                placeholder="#000000"
-              />
-            </div>
+            <Controller
+              control={control}
+              name="color"
+              render={({ field }) => (
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="color"
+                    type="color"
+                    value={field.value}
+                    onChange={(event) => field.onChange(event.target.value)}
+                    className="w-16 h-11 p-1"
+                  />
+                  <Input
+                    type="text"
+                    value={field.value}
+                    onChange={(event) => field.onChange(event.target.value)}
+                    onBlur={field.onBlur}
+                    placeholder="#000000"
+                  />
+                </div>
+              )}
+            />
             {errors.color && (
               <p className="mt-1 text-xs text-red-500">{errors.color.message}</p>
             )}

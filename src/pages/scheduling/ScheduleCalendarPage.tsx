@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -13,6 +13,9 @@ import { CalendarCell } from "../../types/scheduling";
 import DatePicker from "../../components/form/date-picker";
 import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 import ScheduleDetailModal from "../../components/scheduling/ScheduleDetailModal";
+import { Pagination } from "../../components/tables/Datatable";
+import ShiftLegend from "../../components/scheduling/ShiftLegend";
+import { useShifts } from "../../hooks/scheduling/useShifts";
 
 const ScheduleCalendarPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +25,7 @@ const ScheduleCalendarPage: React.FC = () => {
   );
   const [locationId, setLocationId] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string>("all");
+  const [page, setPage] = useState(1);
   const [selectedCell, setSelectedCell] = useState<{
     userId: number;
     date: string;
@@ -32,10 +36,19 @@ const ScheduleCalendarPage: React.FC = () => {
     month: viewMonth,
     location_id: locationId,
     status: status,
+    page,
+    per_page: 100,
   });
 
   const { data: locationOptionsData = [] } = useLocationOptions();
+  const { data: shiftsData, isLoading: isLoadingShifts } = useShifts({
+    per_page: 100,
+    is_active: true,
+  });
 
+  useEffect(() => {
+    setPage(1);
+  }, [viewMonth, locationId, status]);
 
   const handleCellClick = (userId: number, date: string, cell?: CalendarCell) => {
     setSelectedCell({ userId, date, cell });
@@ -118,7 +131,16 @@ const ScheduleCalendarPage: React.FC = () => {
             onCellClick={handleCellClick}
             isLoading={isLoading}
           />
+          {calendarData?.meta && (
+            <Pagination
+              currentPage={calendarData.meta.current_page}
+              lastPage={calendarData.meta.last_page}
+              onPageChange={setPage}
+            />
+          )}
         </ComponentCard>
+
+        <ShiftLegend shifts={shiftsData?.data || []} isLoading={isLoadingShifts} />
 
         <div className="flex items-center gap-6 text-xs text-gray-500 bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">

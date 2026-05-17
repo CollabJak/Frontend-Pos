@@ -51,16 +51,21 @@ const RotationAssignForm: React.FC = () => {
       onSuccess: (result: any) => {
         if (!result.success && result.conflicts) {
           setConflicts(result.conflicts);
+          setValue("force", false);
         } else {
           setConflicts(null);
-          if (result?.id) {
-            navigate(`/scheduling/batches/${result.id}`);
+          setValue("force", false);
+
+          const batchId = result?.id || result?.batch?.id;
+          if (batchId) {
+            navigate(`/scheduling/batches/${batchId}`);
           }
         }
       },
       onError: (error: any) => {
         if (error.response?.status === 422 && error.response.data.errors?.conflicts) {
           setConflicts(error.response.data.errors.conflicts);
+          setValue("force", false);
         }
       },
     });
@@ -97,7 +102,10 @@ const RotationAssignForm: React.FC = () => {
       {conflicts && (
         <ConflictWarningList
           conflicts={conflicts}
-          onCancel={() => setConflicts(null)}
+          onCancel={() => {
+            setConflicts(null);
+            setValue("force", false);
+          }}
           onConfirmForce={handleConfirmForce}
           isPending={isPending}
         />

@@ -142,7 +142,15 @@ export interface CalendarViewData {
   users: Array<{ id: number; name: string; photo: string | null }>;
   schedules: Record<string, Record<number, CalendarCell>>;
   holidays: Record<string, HolidayCalendar[]>;
+  meta?: CalendarMeta;
   // Key format: "2026-06-01" → { [userId]: CalendarCell }
+}
+
+export interface CalendarMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total_users: number;
 }
 
 export interface CalendarCell {
