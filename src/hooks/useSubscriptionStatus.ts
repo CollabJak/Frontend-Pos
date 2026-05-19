@@ -7,6 +7,7 @@ export const useSubscriptionStatus = () => {
   const { user } = useAuth();
   
   const isAdmin = user?.roles?.includes("admin");
+  const canCheckSubscription = !!user && !isAdmin && !!user.business_id;
 
   const query = useQuery<SubscriptionStatusData>({
     queryKey: ["subscription-status"],
@@ -14,7 +15,7 @@ export const useSubscriptionStatus = () => {
       const response = await apiClient.get("/billing/subscription-status");
       return response.data.data;
     },
-    enabled: !!user && !isAdmin,
+    enabled: canCheckSubscription,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 

@@ -302,7 +302,7 @@ export default function App() {
                 <Route path="/pos/payment" element={<POSPaymentPage />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["absensi.view"]}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["absensi.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/absensi/register" element={<FaceRegistrationPage />} />
                 <Route path="/absensi/scanner" element={<AttendanceScannerPage />} />
                 <Route path="/absensi/history" element={<AttendanceHistoryPage />} />
