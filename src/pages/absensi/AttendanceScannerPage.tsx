@@ -17,10 +17,19 @@ const AttendanceScannerPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   const { data: todayAttendance } = useGetTodayAttendance();
   const { mutateAsync: checkIn, isPending: isCheckingIn } = useAttendanceMutation("checkin");
   const { mutateAsync: checkOut, isPending: isCheckingOut } = useAttendanceMutation("checkout");
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   const captureFrame = useCallback((): File | null => {
     if (videoRef.current && canvasRef.current) {
@@ -49,6 +58,7 @@ const AttendanceScannerPage: React.FC = () => {
   }, []);
 
   const handleAction = async (type: "checkin" | "checkout") => {
+    if (cooldown > 0) return;
     const file = captureFrame();
     if (!file) {
       console.error("Failed to capture image");
@@ -67,6 +77,7 @@ const AttendanceScannerPage: React.FC = () => {
       navigate("/absensi/history");
     } catch (error) {
       console.error(`Error during ${type}:`, error);
+      setCooldown(5); // 5 seconds cooldown
     }
   };
 
@@ -169,7 +180,7 @@ const AttendanceScannerPage: React.FC = () => {
             {/* Check In Button */}
             <button
               onClick={() => handleAction("checkin")}
-              disabled={isLoading || !!todayAttendance?.check_in_time}
+              disabled={isLoading || cooldown > 0 || !!todayAttendance?.check_in_time}
               className="group relative flex items-center justify-between p-6 bg-brand-500 hover:bg-brand-600 rounded-2xl transition-all duration-300 shadow-lg shadow-brand-500/25 active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:grayscale"
             >
               <div className="flex items-center gap-6">
@@ -179,7 +190,7 @@ const AttendanceScannerPage: React.FC = () => {
                 <div className="text-left">
                   <h3 className="text-xl font-bold text-white">Check In</h3>
                   <p className="text-white/70 text-sm italic font-medium">
-                    {todayAttendance?.check_in_time ? `Masuk: ${todayAttendance.check_in_time}` : 'Mulai bekerja sekarang'}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_in_time ? `Masuk: ${todayAttendance.check_in_time}` : 'Mulai bekerja sekarang')}
                   </p>
                 </div>
               </div>
@@ -188,7 +199,7 @@ const AttendanceScannerPage: React.FC = () => {
             {/* Check Out Button */}
             <button
               onClick={() => handleAction("checkout")}
-              disabled={isLoading || !todayAttendance?.check_in_time || !!todayAttendance?.check_out_time}
+              disabled={isLoading || cooldown > 0 || !todayAttendance?.check_in_time || !!todayAttendance?.check_out_time}
               className="group relative flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 active:scale-95 disabled:opacity-50"
             >
               <div className="flex items-center gap-6">
@@ -198,7 +209,7 @@ const AttendanceScannerPage: React.FC = () => {
                 <div className="text-left">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Check Out</h3>
                   <p className="text-gray-400 text-sm italic font-medium">
-                    {todayAttendance?.check_out_time ? `Keluar: ${todayAttendance.check_out_time}` : 'Selesai waktu kerja'}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_out_time ? `Keluar: ${todayAttendance.check_out_time}` : 'Selesai waktu kerja')}
                   </p>
                 </div>
               </div>
