@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { fetchShiftOptions, fetchUserOptions } from "../../api/options";
 import type { OptionDto } from "../../api/options";
 import AsyncSearchSelect from "../form/AsyncSearchSelect";
@@ -33,6 +34,16 @@ interface OverrideModalProps {
   onSuccess: () => void;
 }
 
+interface OverrideFormValues {
+  reason: string;
+  new_shift_id: number | null;
+  new_schedule_date: string;
+  replacement_user_id: number | null;
+  swap_user_id: number | null;
+  overtime_shift_id: number | null;
+  overtime_date: string;
+}
+
 const tabOptions: Array<{ value: OverrideTab; label: string }> = [
   { value: "reschedule", label: "Ganti Shift" },
   { value: "emergency", label: "Ganti Karyawan" },
@@ -53,18 +64,26 @@ export default function OverrideModal({
   onSuccess,
 }: OverrideModalProps) {
   const [activeTab, setActiveTab] = useState<OverrideTab>("reschedule");
-  const [reason, setReason] = useState("");
-  const [newShiftId, setNewShiftId] = useState<number | null>(null);
+  
+  // Custom display labels for AsyncSearchSelect
   const [newShiftLabel, setNewShiftLabel] = useState("");
-  const [newScheduleDate, setNewScheduleDate] = useState(date);
-  const [replacementUserId, setReplacementUserId] = useState<number | null>(null);
   const [replacementUserLabel, setReplacementUserLabel] = useState("");
-  const [swapUserId, setSwapUserId] = useState<number | null>(null);
   const [swapUserLabel, setSwapUserLabel] = useState("");
-  const [overtimeShiftId, setOvertimeShiftId] = useState<number | null>(null);
   const [overtimeShiftLabel, setOvertimeShiftLabel] = useState("");
-  const [overtimeDate, setOvertimeDate] = useState(date);
-  const [clientError, setClientError] = useState("");
+
+  const { register, handleSubmit, control, watch, setError, clearErrors, reset, formState: { errors } } = useForm<OverrideFormValues>({
+    defaultValues: {
+      reason: "",
+      new_shift_id: null,
+      new_schedule_date: date,
+      replacement_user_id: null,
+      swap_user_id: null,
+      overtime_shift_id: null,
+      overtime_date: date,
+    }
+  });
+
+  const swapUserId = watch("swap_user_id");
 
   const reschedule = useRescheduleOverride();
   const emergency = useEmergencyOverride();
@@ -83,27 +102,55 @@ export default function OverrideModal({
   const isPending =
     reschedule.isPending || emergency.isPending || swap.isPending || overtime.isPending;
 
-  const setSchemaError = (result: { success: false; error: { issues: Array<{ message: string }> } }) => {
-    setClientError(result.error.issues[0]?.message || "Data override tidak valid.");
-  };
+  useEffect(() => {
+    clearErrors();
+  }, [activeTab, clearErrors]);
+
+  // Reset form when date or schedule changes
+  useEffect(() => {
+    if (isOpen) {
+      reset({
+        reason: "",
+        new_shift_id: null,
+        new_schedule_date: date,
+        replacement_user_id: null,
+        swap_user_id: null,
+        overtime_shift_id: null,
+        overtime_date: date,
+      });
+      setNewShiftLabel("");
+      setReplacementUserLabel("");
+      setSwapUserLabel("");
+      setOvertimeShiftLabel("");
+    }
+  }, [isOpen, date, reset]);
 
   const finishSuccess = () => {
-    setReason("");
-    setClientError("");
+    reset();
+    setNewShiftLabel("");
+    setReplacementUserLabel("");
+    setSwapUserLabel("");
+    setOvertimeShiftLabel("");
     onSuccess();
   };
 
-  const handleSubmit = () => {
+  const onSubmit = (data: OverrideFormValues) => {
+    clearErrors();
+
     if (activeTab === "reschedule") {
       const payload = {
         schedule_id: scheduleId,
-        new_shift_id: newShiftId,
-        new_schedule_date: newScheduleDate === date ? null : newScheduleDate,
-        reason: reason.trim(),
+        new_shift_id: data.new_shift_id,
+        new_schedule_date: data.new_schedule_date === date ? null : data.new_schedule_date,
+        reason: data.reason.trim(),
       };
       const result = rescheduleOverrideSchema.safeParse(payload);
       if (!result.success) {
-        setSchemaError(result);
+        const issue = result.error.issues[0];
+        const path = (issue.path[0] === "new_shift_id" || issue.path[0] === "new_schedule_date")
+          ? (issue.path[0] as keyof OverrideFormValues)
+          : "reason";
+        setError(path, { type: "manual", message: issue.message });
         return;
       }
 
@@ -117,11 +164,13 @@ export default function OverrideModal({
     if (activeTab === "emergency") {
       const result = emergencyOverrideSchema.safeParse({
         schedule_id: scheduleId,
-        replacement_user_id: replacementUserId,
-        reason: reason.trim(),
+        replacement_user_id: data.replacement_user_id,
+        reason: data.reason.trim(),
       });
       if (!result.success) {
-        setSchemaError(result);
+        const issue = result.error.issues[0];
+        const path = issue.path[0] === "replacement_user_id" ? "replacement_user_id" : "reason";
+        setError(path, { type: "manual", message: issue.message });
         return;
       }
 
@@ -136,10 +185,12 @@ export default function OverrideModal({
       const result = swapOverrideSchema.safeParse({
         schedule_id_1: scheduleId,
         schedule_id_2: swapTargetSchedule?.id,
-        reason: reason.trim(),
+        reason: data.reason.trim(),
       });
       if (!result.success) {
-        setSchemaError(result);
+        const issue = result.error.issues[0];
+        const path = issue.path[0] === "schedule_id_2" ? "swap_user_id" : "reason";
+        setError(path, { type: "manual", message: issue.message });
         return;
       }
 
@@ -150,14 +201,19 @@ export default function OverrideModal({
       return;
     }
 
+    // overtime
     const result = overtimeOverrideSchema.safeParse({
       user_id: userId,
-      shift_id: overtimeShiftId,
-      schedule_date: overtimeDate,
-      reason: reason.trim(),
+      shift_id: data.overtime_shift_id,
+      schedule_date: data.overtime_date,
+      reason: data.reason.trim(),
     });
     if (!result.success) {
-      setSchemaError(result);
+      const issue = result.error.issues[0];
+      const path = issue.path[0] === "shift_id"
+        ? "overtime_shift_id"
+        : (issue.path[0] === "schedule_date" ? "overtime_date" : "reason");
+      setError(path, { type: "manual", message: issue.message });
       return;
     }
 
@@ -182,10 +238,7 @@ export default function OverrideModal({
             <button
               key={tab.value}
               type="button"
-              onClick={() => {
-                setActiveTab(tab.value);
-                setClientError("");
-              }}
+              onClick={() => setActiveTab(tab.value)}
               className={`min-h-10 rounded-md px-3 text-sm font-medium transition ${
                 activeTab === tab.value
                   ? "bg-white text-brand-600 shadow-sm dark:bg-gray-900 dark:text-brand-300"
@@ -200,47 +253,71 @@ export default function OverrideModal({
         <div className="space-y-4">
           {activeTab === "reschedule" && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <AsyncSearchSelect<OptionDto>
-                label="Shift Baru"
-                value={newShiftId}
-                displayValue={newShiftLabel}
-                onChange={(value, option) => {
-                  setNewShiftId(value === null ? null : Number(value));
-                  setNewShiftLabel(option?.name ? String(option.name) : "");
-                }}
-                placeholder="Cari shift"
-                fetchOptions={fetchShiftOptions}
-                optionLabel="name"
-                optionValue="id"
-                searchMinLength={0}
-              />
+              <div className="space-y-1">
+                <Controller
+                  name="new_shift_id"
+                  control={control}
+                  render={({ field }) => (
+                    <AsyncSearchSelect<OptionDto>
+                      label="Shift Baru"
+                      value={field.value}
+                      displayValue={newShiftLabel}
+                      onChange={(value, option) => {
+                        field.onChange(value === null ? null : Number(value));
+                        setNewShiftLabel(option?.name ? String(option.name) : "");
+                      }}
+                      placeholder="Cari shift"
+                      fetchOptions={fetchShiftOptions}
+                      optionLabel="name"
+                      optionValue="id"
+                      searchMinLength={0}
+                    />
+                  )}
+                />
+                {errors.new_shift_id && (
+                  <p className="mt-1 text-xs text-red-500">{errors.new_shift_id.message}</p>
+                )}
+              </div>
               <div>
                 <Label>Tanggal Baru</Label>
                 <input
                   type="date"
-                  value={newScheduleDate}
-                  onChange={(event) => setNewScheduleDate(event.target.value)}
+                  {...register("new_schedule_date")}
                   className={inputClass}
                 />
+                {errors.new_schedule_date && (
+                  <p className="mt-1 text-xs text-red-500">{errors.new_schedule_date.message}</p>
+                )}
               </div>
             </div>
           )}
 
           {activeTab === "emergency" && (
-            <AsyncSearchSelect<OptionDto>
-              label="Karyawan Pengganti"
-              value={replacementUserId}
-              displayValue={replacementUserLabel}
-              onChange={(value, option) => {
-                setReplacementUserId(value === null ? null : Number(value));
-                setReplacementUserLabel(option?.name ? String(option.name) : "");
-              }}
-              placeholder="Cari karyawan"
-              fetchOptions={fetchUserOptions}
-              optionLabel="name"
-              optionValue="id"
-              searchMinLength={0}
-            />
+            <div className="space-y-1">
+              <Controller
+                name="replacement_user_id"
+                control={control}
+                render={({ field }) => (
+                  <AsyncSearchSelect<OptionDto>
+                    label="Karyawan Pengganti"
+                    value={field.value}
+                    displayValue={replacementUserLabel}
+                    onChange={(value, option) => {
+                      field.onChange(value === null ? null : Number(value));
+                      setReplacementUserLabel(option?.name ? String(option.name) : "");
+                    }}
+                    placeholder="Cari karyawan"
+                    fetchOptions={fetchUserOptions}
+                    optionLabel="name"
+                    optionValue="id"
+                    searchMinLength={0}
+                  />
+                )}
+              />
+              {errors.replacement_user_id && (
+                <p className="mt-1 text-xs text-red-500">{errors.replacement_user_id.message}</p>
+              )}
+            </div>
           )}
 
           {activeTab === "swap" && (
@@ -253,20 +330,31 @@ export default function OverrideModal({
                   </span>
                 </div>
               </div>
-              <AsyncSearchSelect<OptionDto>
-                label="Karyawan untuk Ditukar"
-                value={swapUserId}
-                displayValue={swapUserLabel}
-                onChange={(value, option) => {
-                  setSwapUserId(value === null ? null : Number(value));
-                  setSwapUserLabel(option?.name ? String(option.name) : "");
-                }}
-                placeholder="Cari karyawan"
-                fetchOptions={fetchUserOptions}
-                optionLabel="name"
-                optionValue="id"
-                searchMinLength={0}
-              />
+              <div className="space-y-1">
+                <Controller
+                  name="swap_user_id"
+                  control={control}
+                  render={({ field }) => (
+                    <AsyncSearchSelect<OptionDto>
+                      label="Karyawan untuk Ditukar"
+                      value={field.value}
+                      displayValue={swapUserLabel}
+                      onChange={(value, option) => {
+                        field.onChange(value === null ? null : Number(value));
+                        setSwapUserLabel(option?.name ? String(option.name) : "");
+                      }}
+                      placeholder="Cari karyawan"
+                      fetchOptions={fetchUserOptions}
+                      optionLabel="name"
+                      optionValue="id"
+                      searchMinLength={0}
+                    />
+                  )}
+                />
+                {errors.swap_user_id && (
+                  <p className="mt-1 text-xs text-red-500">{errors.swap_user_id.message}</p>
+                )}
+              </div>
               {swapUserId && (
                 <div className="rounded-lg border border-gray-100 p-3 text-sm dark:border-gray-800">
                   {isFetchingSwapTarget ? (
@@ -297,41 +385,60 @@ export default function OverrideModal({
 
           {activeTab === "overtime" && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <AsyncSearchSelect<OptionDto>
-                label="Shift Lembur"
-                value={overtimeShiftId}
-                displayValue={overtimeShiftLabel}
-                onChange={(value, option) => {
-                  setOvertimeShiftId(value === null ? null : Number(value));
-                  setOvertimeShiftLabel(option?.name ? String(option.name) : "");
-                }}
-                placeholder="Cari shift"
-                fetchOptions={fetchShiftOptions}
-                optionLabel="name"
-                optionValue="id"
-                searchMinLength={0}
-              />
+              <div className="space-y-1">
+                <Controller
+                  name="overtime_shift_id"
+                  control={control}
+                  render={({ field }) => (
+                    <AsyncSearchSelect<OptionDto>
+                      label="Shift Lembur"
+                      value={field.value}
+                      displayValue={overtimeShiftLabel}
+                      onChange={(value, option) => {
+                        field.onChange(value === null ? null : Number(value));
+                        setOvertimeShiftLabel(option?.name ? String(option.name) : "");
+                      }}
+                      placeholder="Cari shift"
+                      fetchOptions={fetchShiftOptions}
+                      optionLabel="name"
+                      optionValue="id"
+                      searchMinLength={0}
+                    />
+                  )}
+                />
+                {errors.overtime_shift_id && (
+                  <p className="mt-1 text-xs text-red-500">{errors.overtime_shift_id.message}</p>
+                )}
+              </div>
               <div>
                 <Label>Tanggal Lembur</Label>
                 <input
                   type="date"
-                  value={overtimeDate}
-                  onChange={(event) => setOvertimeDate(event.target.value)}
+                  {...register("overtime_date")}
                   className={inputClass}
                 />
+                {errors.overtime_date && (
+                  <p className="mt-1 text-xs text-red-500">{errors.overtime_date.message}</p>
+                )}
               </div>
             </div>
           )}
 
           <div>
             <Label>Alasan</Label>
-            <TextArea
-              rows={4}
-              value={reason}
-              onChange={setReason}
-              placeholder="Tuliskan alasan perubahan jadwal"
-              error={!!clientError}
-              hint={clientError}
+            <Controller
+              name="reason"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  rows={4}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Tuliskan alasan perubahan jadwal"
+                  error={!!errors.reason}
+                  hint={errors.reason?.message}
+                />
+              )}
             />
           </div>
         </div>
@@ -340,7 +447,7 @@ export default function OverrideModal({
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             Batal
           </Button>
-          <Button size="sm" variant="primary" onClick={handleSubmit} isLoading={isPending}>
+          <Button size="sm" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isPending}>
             Simpan Override
           </Button>
         </div>

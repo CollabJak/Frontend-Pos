@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
 import { fetchShiftOptions } from "../../api/options";
 import type { OptionDto } from "../../api/options";
 import ConfirmDialog from "../common/ConfirmDialog";
@@ -30,7 +32,11 @@ interface ScheduleDetailModalProps {
   onClose: () => void;
 }
 
-type DraftMode = "shift" | "day_off";
+interface DraftScheduleFormValues {
+  shift_id: number | null;
+  day_off_note: string;
+  is_day_off: boolean;
+}
 
 const statusLabels: Record<string, string> = {
   draft: "Draft",
@@ -46,6 +52,15 @@ const overrideLabels: Record<string, string> = {
   overtime: "Overtime",
 };
 
+const draftScheduleSchema = z.object({
+  shift_id: z.number().nullable().optional(),
+  day_off_note: z.string().max(255, "Catatan libur maksimal 255 karakter.").nullable().optional(),
+  is_day_off: z.boolean(),
+}).refine(
+  (data) => data.is_day_off || !!data.shift_id,
+  { message: "Pilih shift untuk draft jadwal.", path: ["shift_id"] }
+);
+
 export default function ScheduleDetailModal({
   isOpen,
   userId,
@@ -59,12 +74,19 @@ export default function ScheduleDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
   const [showOverride, setShowOverride] = useState(false);
-  const [draftMode, setDraftMode] = useState<DraftMode>(cell?.is_day_off ? "day_off" : "shift");
-  const [shiftId, setShiftId] = useState<number | null>(null);
   const [shiftLabel, setShiftLabel] = useState("");
-  const [dayOffNote, setDayOffNote] = useState("");
-  const [clientError, setClientError] = useState("");
+  
   const scheduleId = cell?.schedule_id;
+
+  const { handleSubmit, control, watch, setValue, setError, clearErrors, reset, formState: { errors } } = useForm<DraftScheduleFormValues>({
+    defaultValues: {
+      shift_id: null,
+      day_off_note: "",
+      is_day_off: false,
+    }
+  });
+
+  const isDayOff = watch("is_day_off");
 
   const { data: schedule, isLoading } = useScheduleDetail(scheduleId);
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useScheduleAuditLogs(
@@ -85,12 +107,15 @@ export default function ScheduleDetailModal({
     setShowDeleteConfirm(false);
     setShowAudit(false);
     setShowOverride(false);
-    setClientError("");
-    setDraftMode(cell?.is_day_off ? "day_off" : "shift");
-    setShiftId(schedule?.shift_id ?? null);
+    clearErrors();
+
+    reset({
+      shift_id: schedule?.shift_id ?? null,
+      day_off_note: schedule?.day_off_note ?? cell?.day_off_note ?? "",
+      is_day_off: cell?.is_day_off ?? false,
+    });
     setShiftLabel(schedule?.shift?.name ?? cell?.shift_name ?? "");
-    setDayOffNote(schedule?.day_off_note ?? cell?.day_off_note ?? "");
-  }, [isOpen, cell, schedule]);
+  }, [isOpen, cell, schedule, reset, clearErrors]);
 
   const title = useMemo(() => {
     if (!cell) return "Tambah Draft Jadwal";
@@ -102,28 +127,19 @@ export default function ScheduleDetailModal({
     ? "Hari Off"
     : schedule?.snapshot?.shift_name || schedule?.shift?.name || cell?.shift_name || "Tanpa shift";
 
-  const validateDraft = () => {
-    if (draftMode === "shift" && !shiftId) {
-      setClientError("Pilih shift untuk draft jadwal.");
-      return false;
+  const onSubmit = (data: DraftScheduleFormValues) => {
+    const result = draftScheduleSchema.safeParse(data);
+    if (!result.success) {
+      const issue = result.error.issues[0];
+      const path = issue.path[0] as keyof DraftScheduleFormValues;
+      setError(path, { type: "manual", message: issue.message });
+      return;
     }
-
-    if (draftMode === "day_off" && dayOffNote.trim().length > 255) {
-      setClientError("Catatan libur maksimal 255 karakter.");
-      return false;
-    }
-
-    setClientError("");
-    return true;
-  };
-
-  const handleSaveDraft = () => {
-    if (!validateDraft()) return;
 
     const payload = {
-      shift_id: draftMode === "shift" ? shiftId : null,
-      is_day_off: draftMode === "day_off",
-      day_off_note: draftMode === "day_off" ? dayOffNote.trim() || null : null,
+      shift_id: !data.is_day_off ? data.shift_id : null,
+      is_day_off: data.is_day_off,
+      day_off_note: data.is_day_off ? data.day_off_note.trim() || null : null,
       location_id: locationId ?? schedule?.location_id ?? null,
     };
 
@@ -190,11 +206,11 @@ export default function ScheduleDetailModal({
                 <button
                   type="button"
                   onClick={() => {
-                    setDraftMode("shift");
-                    setClientError("");
+                    setValue("is_day_off", false);
+                    clearErrors();
                   }}
                   className={`min-h-10 rounded-md px-3 text-sm font-medium transition ${
-                    draftMode === "shift"
+                    !isDayOff
                       ? "bg-white text-brand-600 shadow-sm dark:bg-gray-900 dark:text-brand-300"
                       : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                   }`}
@@ -204,11 +220,11 @@ export default function ScheduleDetailModal({
                 <button
                   type="button"
                   onClick={() => {
-                    setDraftMode("day_off");
-                    setClientError("");
+                    setValue("is_day_off", true);
+                    clearErrors();
                   }}
                   className={`min-h-10 rounded-md px-3 text-sm font-medium transition ${
-                    draftMode === "day_off"
+                    isDayOff
                       ? "bg-white text-brand-600 shadow-sm dark:bg-gray-900 dark:text-brand-300"
                       : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                   }`}
@@ -217,37 +233,50 @@ export default function ScheduleDetailModal({
                 </button>
               </div>
 
-              {draftMode === "shift" ? (
-                <AsyncSearchSelect<OptionDto>
-                  label="Shift"
-                  value={shiftId}
-                  displayValue={shiftLabel}
-                  onChange={(value, option) => {
-                    setShiftId(value === null ? null : Number(value));
-                    setShiftLabel(option?.name ? String(option.name) : "");
-                  }}
-                  placeholder="Cari shift"
-                  fetchOptions={fetchShiftOptions}
-                  optionLabel="name"
-                  optionValue="id"
-                  searchMinLength={0}
-                />
+              {!isDayOff ? (
+                <div className="space-y-1">
+                  <Controller
+                    name="shift_id"
+                    control={control}
+                    render={({ field }) => (
+                      <AsyncSearchSelect<OptionDto>
+                        label="Shift"
+                        value={field.value}
+                        displayValue={shiftLabel}
+                        onChange={(value, option) => {
+                          field.onChange(value === null ? null : Number(value));
+                          setShiftLabel(option?.name ? String(option.name) : "");
+                        }}
+                        placeholder="Cari shift"
+                        fetchOptions={fetchShiftOptions}
+                        optionLabel="name"
+                        optionValue="id"
+                        searchMinLength={0}
+                      />
+                    )}
+                  />
+                  {errors.shift_id && (
+                    <p className="mt-1 text-xs text-red-500">{errors.shift_id.message}</p>
+                  )}
+                </div>
               ) : (
                 <div>
                   <Label>Catatan Libur</Label>
-                  <TextArea
-                    rows={3}
-                    value={dayOffNote}
-                    onChange={setDayOffNote}
-                    placeholder="Contoh: Libur mingguan"
+                  <Controller
+                    name="day_off_note"
+                    control={control}
+                    render={({ field }) => (
+                      <TextArea
+                        rows={3}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Contoh: Libur mingguan"
+                        error={!!errors.day_off_note}
+                        hint={errors.day_off_note?.message}
+                      />
+                    )}
                   />
                 </div>
-              )}
-
-              {clientError && (
-                <p className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/10 dark:text-red-300">
-                  {clientError}
-                </p>
               )}
 
               {isDraft && (
@@ -272,7 +301,7 @@ export default function ScheduleDetailModal({
                     Generate Batch
                   </Button>
                 )}
-                <Button size="sm" variant="primary" onClick={handleSaveDraft} isLoading={isSaving}>
+                <Button size="sm" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving}>
                   {scheduleId ? "Simpan Draft" : "Buat Draft"}
                 </Button>
               </div>
