@@ -15,7 +15,6 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../hooks/useAuth";
-import { useSubscriptionStatus } from "../hooks/useSubscriptionStatus";
 import { hasAccess } from "../utils/rbac";
 
 type NavItem = {
@@ -24,8 +23,7 @@ type NavItem = {
   path?: string;
   roles?: string[];
   permissions?: string[];
-  requiresActiveSubscription?: boolean;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean; roles?: string[]; permissions?: string[]; requiresActiveSubscription?: boolean }[];
+  subItems?: { name: string; path: string; pro?: boolean; new?: boolean; roles?: string[]; permissions?: string[] }[];
 };
 
 const navItems: NavItem[] = [
@@ -86,9 +84,9 @@ const navItems: NavItem[] = [
     name: "Absensi",
     permissions: ["absensi.view"],
     subItems: [
-      { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"], requiresActiveSubscription: true },
-      { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"], requiresActiveSubscription: true },
-      { name: "Riwayat Kehadiran", path: "/absensi/history", pro: false, permissions: ["absensi.view"], requiresActiveSubscription: true },
+      { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"] },
+      { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"] },
+      { name: "Riwayat Kehadiran", path: "/absensi/history", pro: false, permissions: ["absensi.view"] },
     ],
   },
   {
@@ -96,12 +94,12 @@ const navItems: NavItem[] = [
     name: "Jadwal Kerja",
     permissions: ["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"],
     subItems: [
-      { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"], requiresActiveSubscription: true },
-      { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"], requiresActiveSubscription: true },
-      { name: "Batch Jadwal", path: "/scheduling/batches", pro: false, permissions: ["jadwal.view"], requiresActiveSubscription: true },
-      { name: "Master Shift", path: "/scheduling/shifts", pro: false, permissions: ["shift.view"], requiresActiveSubscription: true },
-      { name: "Pola Rotasi", path: "/scheduling/rotation-patterns", pro: false, permissions: ["rotation.view"], requiresActiveSubscription: true },
-      { name: "Kalender Libur", path: "/scheduling/holidays", pro: false, permissions: ["holiday.view"], requiresActiveSubscription: true },
+      { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"] },
+      { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"] },
+      { name: "Batch Jadwal", path: "/scheduling/batches", pro: false, permissions: ["jadwal.view"] },
+      { name: "Master Shift", path: "/scheduling/shifts", pro: false, permissions: ["shift.view"] },
+      { name: "Pola Rotasi", path: "/scheduling/rotation-patterns", pro: false, permissions: ["rotation.view"] },
+      { name: "Kalender Libur", path: "/scheduling/holidays", pro: false, permissions: ["holiday.view"] },
     ],
   },
   {
@@ -142,26 +140,17 @@ const navItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const { user } = useAuth();
-  const { hasActiveSubscription } = useSubscriptionStatus();
   const location = useLocation();
 
   const userRoles = user?.roles || [];
   const userPermissions = user?.permissions || [];
-  const canUseSubscribedFeatures = userRoles.includes("admin") || hasActiveSubscription;
-  const hasSubscriptionAccess = useCallback(
-    (item: { requiresActiveSubscription?: boolean }) => !item.requiresActiveSubscription || canUseSubscribedFeatures,
-    [canUseSubscribedFeatures]
-  );
 
   const filteredNavItems = useMemo(() => navItems
     .filter((item) => hasAccess(userRoles, userPermissions, item.roles, item.permissions))
-    .filter(hasSubscriptionAccess)
     .map((item) => ({
       ...item,
-      subItems: item.subItems
-        ?.filter((sub) => hasAccess(userRoles, userPermissions, sub.roles, sub.permissions))
-        .filter(hasSubscriptionAccess),
-    })), [userRoles, userPermissions, hasSubscriptionAccess]);
+      subItems: item.subItems?.filter((sub) => hasAccess(userRoles, userPermissions, sub.roles, sub.permissions)),
+    })), [userRoles, userPermissions]);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main";
