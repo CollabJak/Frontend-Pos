@@ -85,7 +85,6 @@ const navItems: NavItem[] = [
     icon: <TaskIcon />,
     name: "Absensi",
     permissions: ["absensi.view"],
-    requiresActiveSubscription: true,
     subItems: [
       { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"], requiresActiveSubscription: true },
       { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"], requiresActiveSubscription: true },
@@ -96,7 +95,6 @@ const navItems: NavItem[] = [
     icon: <CalendarIcon />,
     name: "Jadwal Kerja",
     permissions: ["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"],
-    requiresActiveSubscription: true,
     subItems: [
       { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"], requiresActiveSubscription: true },
       { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"], requiresActiveSubscription: true },
