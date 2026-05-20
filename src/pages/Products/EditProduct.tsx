@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -14,7 +14,7 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ProductFormData, productSchema, productStatuses } from "../../Schemas/productSchema";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import { fetchBrandOptions, fetchCategoryOptions, fetchUnitOptions, OptionDto } from "../../api/options";
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
@@ -31,30 +31,6 @@ export default function EditProduct() {
   const [files, setFiles] = useState<unknown[]>([]);
   type FilePondItem = { file?: File };
   
-  const fetchCategoryOptions = useMemo(
-    () =>
-      createOptionsFetcher<OptionDto>({
-        endpoint: "/options/categories",
-      }),
-    []
-  );
-
-  const fetchBrandOptions = useMemo(
-    () =>
-      createOptionsFetcher<OptionDto>({
-        endpoint: "/options/brands",
-      }),
-    []
-  );
-
-  const fetchUnitOptions = useMemo(
-    () =>
-      createOptionsFetcher<OptionDto>({
-        endpoint: "/options/units",
-      }),
-    []
-  );
-
   const {
     register,
     handleSubmit,
@@ -220,6 +196,7 @@ export default function EditProduct() {
               <Label>Category</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
+                keyName="product-category-options"
                 value={watch("category_id") ?? null}
                 displayValue={product?.category?.name}
                 onChange={(selectedValue) => {
@@ -243,6 +220,7 @@ export default function EditProduct() {
               <Label>Brand</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
+                keyName="product-brand-options"
                 value={watch("brand_id") ?? null}
                 displayValue={product?.brand?.name}
                 onChange={(selectedValue) => {
@@ -266,6 +244,7 @@ export default function EditProduct() {
               <Label>Unit</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
+                keyName="product-unit-options"
                 value={watch("unit_id") ?? null}
                 displayValue={product?.unit?.name}
                 onChange={(selectedValue) => {

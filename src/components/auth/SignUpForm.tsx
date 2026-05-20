@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../../hooks/useAuth";
 import { runtimeConfig } from "../../utils/runtimeConfig";
+import Button from "../ui/button/Button";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -272,13 +273,14 @@ export default function SignUpForm() {
               </div>
               {/* <!-- Button --> */}
               <div>
-                <button
+                <Button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  size="sm"
+                  className="w-full"
+                  isLoading={isSubmitting}
                 >
-                  {isSubmitting ? "Creating Account..." : "Sign Up"}
-                </button>
+                  Sign Up
+                </Button>
               </div>
             </div>
           </form>
