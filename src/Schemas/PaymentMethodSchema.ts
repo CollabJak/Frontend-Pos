@@ -15,14 +15,30 @@ export const PaymentMethodSchema = z.object({
     is_default: z.boolean().default(false),
     sort_order: z.number().default(0),
     metadata: z.any().optional(),
-}).refine((data) => {
+}).superRefine((data, ctx) => {
     if (data.type === 'bank_transfer' || data.type === 'e_wallet') {
-        return !!data.provider_name && !!data.account_name && !!data.account_number;
+        if (!data.provider_name || data.provider_name.trim() === '') {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: data.type === 'bank_transfer' ? "Bank Name is required" : "E-Wallet Provider is required",
+                path: ["provider_name"]
+            });
+        }
+        if (!data.account_name || data.account_name.trim() === '') {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Account Holder Name is required",
+                path: ["account_name"]
+            });
+        }
+        if (!data.account_number || data.account_number.trim() === '') {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: data.type === 'bank_transfer' ? "Account Number is required" : "Phone Number is required",
+                path: ["account_number"]
+            });
+        }
     }
-    return true;
-}, {
-    message: "Provider, Account Name, and Account Number are required for this type",
-    path: ["provider_name"]
 });
 
 export type PaymentMethodSchemaType = z.infer<typeof PaymentMethodSchema>;
