@@ -50,18 +50,19 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
+        const featuresData = Array.isArray(initialData.features) || !initialData.features ? {} : initialData.features;
         reset({
           name: initialData.name,
-          duration: initialData.duration,
-          price: initialData.price,
+          duration: initialData.duration !== undefined && initialData.duration !== null ? Number(initialData.duration) : 30,
+          price: initialData.price !== undefined && initialData.price !== null ? Number(initialData.price) : 0,
           description: initialData.description || "",
           is_popular: !!initialData.is_popular,
-          billing_cycle: initialData.billing_cycle as any || "monthly",
-          features: initialData.features || {},
+          billing_cycle: (initialData.billing_cycle?.toLowerCase() as any) || "monthly",
+          features: featuresData,
         });
 
         // Convert record to array for the UI
-        const rows = Object.entries(initialData.features || {}).map(([k, v]) => ({
+        const rows = Object.entries(featuresData).map(([k, v]) => ({
           key: k,
           value: typeof v === 'object' ? JSON.stringify(v) : String(v)
         }));
@@ -135,15 +136,22 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
               />
             </div>
 
-            <Select
-              label="Billing Cycle"
-              options={[
-                { value: "monthly", label: "Monthly" },
-                { value: "yearly", label: "Yearly" },
-              ]}
-              value={watch("billing_cycle")}
-              onChange={(val) => setValue("billing_cycle", val as any)}
-            />
+            <div>
+              <Select
+                label="Billing Cycle"
+                options={[
+                  { value: "monthly", label: "Monthly" },
+                  { value: "yearly", label: "Yearly" },
+                ]}
+                value={watch("billing_cycle")}
+                onChange={(val) => setValue("billing_cycle", val as any)}
+              />
+              {errors.billing_cycle && (
+                <p className="mt-1.5 text-xs text-error-500">
+                  {errors.billing_cycle.message as string}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,6 +204,11 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
                 + Add Feature
               </Button>
             </div>
+            {errors.features && (
+              <p className="mt-1.5 text-xs text-error-500">
+                {errors.features.message as string}
+              </p>
+            )}
             
             <div className="space-y-2">
               {featureRows.map((row, index) => (

@@ -13,7 +13,7 @@ import Button from "../../components/ui/button/Button";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Badge from "../../components/ui/badge/Badge";
-import { CheckCircleIcon, CreditCardIcon } from "../../icons";
+import { CheckCircleIcon, CreditCardIcon, EyeIcon } from "../../icons";
 import { Modal } from "../../components/ui/modal";
 
 export default function CheckoutPlanPage() {
@@ -21,6 +21,7 @@ export default function CheckoutPlanPage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
+    const [isZoomModalOpen, setIsZoomModalOpen] = React.useState(false);
     const [_, setCheckoutResult] = React.useState<any>(null);
 
     const { data: plan, isLoading: isPlanLoading } = useFetchSubscriptionPlan(parseInt(planId || "0", 10));
@@ -180,13 +181,35 @@ export default function CheckoutPlanPage() {
 
                                         {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.type === 'qris' ? (
                                             <div className="flex flex-col sm:flex-row items-center gap-6">
-                                                <div className="p-3 bg-white rounded-2xl shadow-sm border border-gray-100 ring-4 ring-brand-500/5">
-                                                    <img
-                                                        src={paymentMethods.find(m => m.id === selectedPaymentMethodId)?.qr_image_url || undefined}
-                                                        alt="QR Code"
-                                                        className="size-32 object-contain"
-                                                    />
-                                                </div>
+                                                 <div 
+                                                     onClick={() => setIsZoomModalOpen(true)}
+                                                     className="relative group cursor-pointer p-3 bg-white rounded-2xl shadow-sm border border-gray-100 ring-4 ring-brand-500/5 transition-all hover:scale-[1.03] hover:ring-brand-500/15 overflow-hidden"
+                                                 >
+                                                     <img
+                                                         src={paymentMethods.find(m => m.id === selectedPaymentMethodId)?.qr_image_url || undefined}
+                                                         alt="QR Code"
+                                                         className="size-32 object-contain transition-transform duration-300 group-hover:scale-105"
+                                                     />
+                                                     
+                                                     {/* Sleek Overlay Hover */}
+                                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-2xl">
+                                                         <div className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white ring-1 ring-white/30 transform scale-95 group-hover:scale-100 transition-all duration-300">
+                                                             <EyeIcon className="size-6" />
+                                                         </div>
+                                                     </div>
+
+                                                     {/* Floating Eye Button */}
+                                                     <button
+                                                         type="button"
+                                                         onClick={(e) => {
+                                                             e.stopPropagation();
+                                                             setIsZoomModalOpen(true);
+                                                         }}
+                                                         className="absolute top-2 right-2 p-1.5 rounded-lg bg-gray-50 border border-gray-100 text-gray-500 hover:text-brand-500 hover:bg-brand-50 hover:scale-105 transition-all shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700"
+                                                     >
+                                                         <EyeIcon className="size-4" />
+                                                     </button>
+                                                 </div>
                                                 <div className="space-y-4">
                                                     <div>
                                                         <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Merchant Name</div>
@@ -381,6 +404,41 @@ export default function CheckoutPlanPage() {
                             Tutup
                         </Button>
                     </div>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal
+            isOpen={isZoomModalOpen}
+            onClose={() => setIsZoomModalOpen(false)}
+            className="max-w-lg"
+        >
+            <div className="p-6">
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-100 dark:border-white/[0.05]">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <EyeIcon className="size-5 text-brand-500" />
+                        QR Code Pembayaran
+                    </h3>
+                </div>
+                
+                <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-white/[0.02] rounded-2xl border border-gray-100 dark:border-white/[0.05] shadow-inner mb-6">
+                    <img
+                        src={activeMethod?.qr_image_url || undefined}
+                        alt="QR Code Zoomed"
+                        className="max-w-xs md:max-w-sm w-full h-auto object-contain rounded-lg ring-1 ring-gray-100"
+                    />
+                </div>
+
+                <div className="p-4 bg-brand-50 dark:bg-brand-500/5 rounded-xl border border-brand-100/50 dark:border-brand-500/10 text-center">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                        Pindai kode QR di atas menggunakan aplikasi perbankan atau e-wallet Anda untuk menyelesaikan pembayaran.
+                    </p>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                    <Button onClick={() => setIsZoomModalOpen(false)} variant="outline">
+                        Tutup
+                    </Button>
                 </div>
             </div>
         </Modal>
