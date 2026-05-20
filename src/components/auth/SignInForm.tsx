@@ -16,6 +16,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isEmailVerified = searchParams.get("verified") === "true";
   const isPasswordReset = searchParams.get("reset") === "success";
   const errorMessage = searchParams.get("error");
@@ -24,10 +25,13 @@ export default function SignInForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await login(email, password);
     } catch (error) {
       console.error("Login failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -172,7 +176,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm" type="submit">
+                  <Button className="w-full" size="sm" type="submit" isLoading={isSubmitting}>
                     Sign in
                   </Button>
                 </div>

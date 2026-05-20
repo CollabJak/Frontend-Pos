@@ -11,7 +11,12 @@ import { Input } from "../../components/form/input/InputField";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import {
+  fetchAtributeOptions,
+  fetchProductOptions,
+  fetchUnitOptions,
+  OptionDto,
+} from "../../api/options";
 import {
   useFetchProductVariant,
   useUpdateProductVariant,
@@ -30,18 +35,6 @@ export default function EditProductVariant() {
   const variantId = Number(id);
   const { data: productVariant, isLoading } = useFetchProductVariant(variantId);
   const { mutate: updateProductVariant, isPending } = useUpdateProductVariant();
-
-  const fetchProductOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/products",
-  });
-
-  const fetchAtributeOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/atributes",
-  });
-
-  const fetchUnitOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/units",
-  });
 
   const {
     register,
@@ -185,6 +178,7 @@ export default function EditProductVariant() {
               <Label>Product</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-product-options"
                 value={watch("product_id") || null}
                 displayValue={productVariant?.product?.name}
                 onChange={(selectedValue) => {
@@ -276,6 +270,7 @@ export default function EditProductVariant() {
               <Label>Base Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-base-unit-options"
                 value={watch("base_unit_id") || null}
                 displayValue={productVariant?.base_unit?.name}
                 onChange={(selectedValue) => {
@@ -299,6 +294,7 @@ export default function EditProductVariant() {
               <Label>Purchase Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-purchase-unit-options"
                 value={watch("purchase_unit_id") || null}
                 displayValue={productVariant?.purchase_unit?.name}
                 onChange={(selectedValue) => {
@@ -322,6 +318,7 @@ export default function EditProductVariant() {
               <Label>Sales Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-sales-unit-options"
                 value={watch("sales_unit_id") || null}
                 displayValue={productVariant?.sales_unit?.name}
                 onChange={(selectedValue) => {
@@ -453,6 +450,7 @@ export default function EditProductVariant() {
                     <Label>Atribute</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
+                      keyName={`product-variant-atribute-options-${index}`}
                       value={watch(`attributes_json.${index}.atribute_id`) || null}
                       displayValue={productVariant?.attributes_json?.[index]?.name ?? undefined}
                       onChange={(selectedValue) => {

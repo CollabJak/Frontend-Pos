@@ -10,7 +10,12 @@ import { Input } from "../../components/form/input/InputField";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import {
+  fetchAtributeOptions,
+  fetchProductOptions,
+  fetchUnitOptions,
+  OptionDto,
+} from "../../api/options";
 import { useCreateProductVariant } from "../../hooks/useProductVariants";
 import { ApiErrorResponse } from "../../types/types";
 import {
@@ -22,18 +27,6 @@ type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddProductVariant() {
   const { mutate: createProductVariant, isPending } = useCreateProductVariant();
-
-  const fetchProductOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/products",
-  });
-
-  const fetchAtributeOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/atributes",
-  });
-
-  const fetchUnitOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/units",
-  });
 
   const {
     register,
@@ -113,6 +106,7 @@ export default function AddProductVariant() {
             <Label>Product</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="product-variant-product-options"
               value={watch("product_id") || null}
               onChange={(selectedValue) => {
                 setValue("product_id", Number(selectedValue ?? 0), {
@@ -203,6 +197,7 @@ export default function AddProductVariant() {
               <Label>Base Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-base-unit-options"
                 value={watch("base_unit_id") || null}
                 onChange={(selectedValue) => {
                   setValue("base_unit_id", Number(selectedValue ?? 0), {
@@ -225,6 +220,7 @@ export default function AddProductVariant() {
               <Label>Purchase Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-purchase-unit-options"
                 value={watch("purchase_unit_id") || null}
                 onChange={(selectedValue) => {
                   setValue("purchase_unit_id", Number(selectedValue ?? 0), {
@@ -247,6 +243,7 @@ export default function AddProductVariant() {
               <Label>Sales Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
+                keyName="product-variant-sales-unit-options"
                 value={watch("sales_unit_id") || null}
                 onChange={(selectedValue) => {
                   setValue("sales_unit_id", Number(selectedValue ?? 0), {
@@ -377,6 +374,7 @@ export default function AddProductVariant() {
                     <Label>Atribute</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
+                      keyName={`product-variant-atribute-options-${index}`}
                       value={watch(`attributes_json.${index}.atribute_id`) || null}
                       onChange={(selectedValue) => {
                         setValue(

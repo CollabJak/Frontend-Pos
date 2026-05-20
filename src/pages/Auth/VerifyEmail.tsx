@@ -120,10 +120,10 @@ export default function VerifyEmail() {
         <div className="space-y-3">
           <Button
             onClick={handleResendEmail}
-            disabled={isResending}
+            isLoading={isResending}
             className="w-full"
           >
-            {isResending ? "Sending..." : "Resend Email"}
+            Resend Email
           </Button>
 
           <button
