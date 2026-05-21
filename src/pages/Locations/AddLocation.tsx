@@ -8,12 +8,12 @@ import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher } from "../../api/options";
+import { fetchLocationOptions, OptionDto } from "../../api/options";
 import { useCreateLocation } from "../../hooks/useLocations";
-import { ApiErrorResponse, Location, LocationFormData } from "../../types/types";
+import { ApiErrorResponse, LocationFormData } from "../../types/types";
 import { locationSchema } from "../../Schemas/locationSchema";
 
-type SelectLocationOption = Pick<Location, "id" | "name" | "type">;
+type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
@@ -24,9 +24,6 @@ const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
 
 export default function AddLocation() {
   const { mutate: createLocation, isPending } = useCreateLocation();
-  const fetchLocationOptions = createOptionsFetcher<SelectLocationOption>({
-    endpoint: "/options/locations",
-  });
 
   const {
     register,
@@ -113,6 +110,7 @@ export default function AddLocation() {
             <Label>Parent Location (Optional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
+              keyName="location-parent-options"
               value={watch("parent_id") ?? null}
               onChange={(selectedValue) => {
                 setValue(

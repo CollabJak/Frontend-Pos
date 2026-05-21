@@ -10,12 +10,12 @@ import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher } from "../../api/options";
+import { fetchLocationOptions as fetchBaseLocationOptions, OptionDto } from "../../api/options";
 import { useFetchLocation, useUpdateLocation } from "../../hooks/useLocations";
-import { ApiErrorResponse, Location, LocationFormData } from "../../types/types";
+import { ApiErrorResponse, LocationFormData } from "../../types/types";
 import { locationSchema } from "../../Schemas/locationSchema";
 
-type SelectLocationOption = Pick<Location, "id" | "name" | "type">;
+type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
@@ -30,16 +30,13 @@ export default function EditLocation() {
 
   const { data: location, isLoading } = useFetchLocation(locationId);
   const { mutate: updateLocation, isPending } = useUpdateLocation();
-  const fetchLocationOptionsBase = createOptionsFetcher<SelectLocationOption>({
-    endpoint: "/options/locations",
-  });
 
   const fetchLocationOptions = async (params: {
     limit: number;
     search?: string;
     signal?: AbortSignal;
   }) => {
-    const options = await fetchLocationOptionsBase(params);
+    const options = await fetchBaseLocationOptions(params);
     return options.filter((option) => option.id !== locationId);
   };
 
@@ -145,6 +142,7 @@ export default function EditLocation() {
             <Label>Parent Location (Optional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
+              keyName="location-parent-options"
               value={watch("parent_id") ?? null}
               onChange={(selectedValue) => {
                 setValue(

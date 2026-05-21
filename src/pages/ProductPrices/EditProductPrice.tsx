@@ -11,7 +11,7 @@ import { Input } from "../../components/form/input/InputField";
 import DateTimePicker from "../../components/form/date-time-picker";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import { fetchLocationOptions, fetchProductVariantOptions, OptionDto } from "../../api/options";
 import {
   useFetchProductPrice,
   useUpdateProductPrice,
@@ -59,14 +59,6 @@ export default function EditProductPrice() {
   const productPriceId = Number(id);
   const { data: productPrice, isLoading } = useFetchProductPrice(productPriceId);
   const { mutate: updateProductPrice, isPending } = useUpdateProductPrice();
-
-  const fetchLocationOptions = createOptionsFetcher<SelectLocationOption>({
-    endpoint: "/options/locations",
-  });
-
-  const fetchProductVariantOptions = createOptionsFetcher<SelectProductVariantOption>({
-    endpoint: "/options/product-variants",
-  });
 
   const {
     register,
@@ -144,8 +136,9 @@ export default function EditProductPrice() {
 
           <div>
             <Label>Product Variant</Label>
-            <AsyncSearchSelect<SelectLocationOption>
+            <AsyncSearchSelect<SelectProductVariantOption>
               label=""
+              keyName="product-price-product-variant-options"
               value={watch("product_variant_id") || null}
               displayValue={productPrice?.product_variant?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -204,6 +197,7 @@ export default function EditProductPrice() {
             <Label>Location</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
+              keyName="product-price-location-options"
               value={watch("location_id") || null}
               displayValue={productPrice?.location?.name ?? undefined}
               onChange={(selectedValue) => {

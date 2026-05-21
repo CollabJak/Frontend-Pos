@@ -10,7 +10,12 @@ import DateTimePicker from "../../components/form/date-time-picker";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import {
+  fetchCustomerGroupOptions,
+  fetchLocationOptions,
+  fetchProductVariantOptions,
+  OptionDto,
+} from "../../api/options";
 import { useCreateCustomerGroupPrice } from "../../hooks/useCustomerGroupPrices";
 import {
   ApiErrorResponse,
@@ -22,18 +27,6 @@ type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddCustomerGroupPrice() {
   const { mutate: createCustomerGroupPrice, isPending } = useCreateCustomerGroupPrice();
-
-  const fetchProductVariantOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/product-variants",
-  });
-
-  const fetchCustomerGroupOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/customer-groups",
-  });
-
-  const fetchLocationOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/locations",
-  });
 
   const {
     register,
@@ -93,6 +86,7 @@ export default function AddCustomerGroupPrice() {
             <Label>Product Variant</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="customer-group-price-product-variant-options"
               value={watch("product_variant_id") || null}
               onChange={(selectedValue) => {
                 setValue("product_variant_id", Number(selectedValue ?? 0), {
@@ -115,6 +109,7 @@ export default function AddCustomerGroupPrice() {
             <Label>Customer Group</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="customer-group-price-customer-group-options"
               value={watch("customer_group_id") || null}
               onChange={(selectedValue) => {
                 setValue("customer_group_id", Number(selectedValue ?? 0), {
@@ -150,6 +145,7 @@ export default function AddCustomerGroupPrice() {
             <Label>Location</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="customer-group-price-location-options"
               value={watch("location_id") || null}
               onChange={(selectedValue) => {
                 setValue("location_id", Number(selectedValue ?? 0), {
