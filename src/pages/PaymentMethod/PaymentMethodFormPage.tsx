@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PaymentMethodSchema, PaymentMethodSchemaType } from '../../Schemas/PaymentMethodSchema';
+import { createPaymentMethodSchema, PaymentMethodSchemaType } from '../../Schemas/PaymentMethodSchema';
 import { useCreatePaymentMethod, useUpdatePaymentMethod, useFetchPaymentMethod } from '../../hooks/usePaymentMethods';
 import ComponentCard from '../../components/common/ComponentCard';
 import Button from '../../components/ui/button/Button';
@@ -22,9 +22,14 @@ const PaymentMethodFormPage: React.FC = () => {
     const { data: initialData, isLoading: isFetching } = useFetchPaymentMethod(id);
     const createMutation = useCreatePaymentMethod();
     const updateMutation = useUpdatePaymentMethod(id || 0);
+    const hasExistingQrImage = Boolean(initialData?.qr_image_path || initialData?.qr_image_url);
+    const paymentMethodSchema = useMemo(
+        () => createPaymentMethodSchema({ hasExistingQrImage }),
+        [hasExistingQrImage]
+    );
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<any>({
-        resolver: zodResolver(PaymentMethodSchema),
+    const { register, handleSubmit, watch, setValue, clearErrors, formState: { errors } } = useForm<any>({
+        resolver: zodResolver(paymentMethodSchema),
         defaultValues: {
             scope: isAdmin ? 'system' : 'business',
             type: 'bank_transfer',
@@ -36,6 +41,8 @@ const PaymentMethodFormPage: React.FC = () => {
 
     const selectedType = watch('type');
     const selectedScope = watch('scope');
+    const qrImage = watch('qr_image');
+    const isQrImageRequired = selectedType === 'qris' && !hasExistingQrImage;
 
     useEffect(() => {
         if (initialData) {
@@ -56,13 +63,22 @@ const PaymentMethodFormPage: React.FC = () => {
 
     const [qrPreview, setQrPreview] = useState<string | null>(null);
 
+    useEffect(() => {
+        if (selectedType !== 'qris') {
+            clearErrors('qr_image');
+        }
+    }, [clearErrors, selectedType]);
+
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setValue('qr_image', file);
+            setValue('qr_image', file, { shouldValidate: true });
             const reader = new FileReader();
             reader.onloadend = () => setQrPreview(reader.result as string);
             reader.readAsDataURL(file);
+        } else {
+            setValue('qr_image', null, { shouldValidate: true });
+            setQrPreview(null);
         }
     };
 
@@ -115,7 +131,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                             <button
                                                 key={type}
                                                 type="button"
-                                                onClick={() => setValue('type', type as any)}
+                                                onClick={() => setValue('type', type as any, { shouldValidate: true })}
                                                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${selectedType === type
                                                     ? 'bg-brand-500 border-brand-500 text-white shadow-lg'
                                                     : 'border-gray-100 dark:border-white/[0.05] text-gray-500 hover:border-gray-200'
@@ -161,8 +177,11 @@ const PaymentMethodFormPage: React.FC = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={onFileChange}
-                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+                                                className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 ${errors.qr_image ? 'text-red-500' : ''}`}
                                             />
+                                            {errors.qr_image && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.qr_image.message as any}</p>
+                                            )}
                                             {(qrPreview || initialData?.qr_image_url) && (
                                                 <div className="mt-4 p-4 border rounded-2xl border-dashed border-gray-200 dark:border-white/[0.1] text-center">
                                                     <img
@@ -171,6 +190,9 @@ const PaymentMethodFormPage: React.FC = () => {
                                                         className="max-h-40 mx-auto rounded-lg"
                                                     />
                                                 </div>
+                                            )}
+                                            {isQrImageRequired && !qrImage && !qrPreview && (
+                                                <p className="text-xs text-gray-500 mt-2">Upload QRIS image before saving this method.</p>
                                             )}
                                         </div>
                                         <div>
