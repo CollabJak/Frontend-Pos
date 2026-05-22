@@ -7,7 +7,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import { fetchPromotionOptions, OptionDto } from "../../api/options";
 import { useCreatePromotionCondition } from "../../hooks/usePromotionConditions";
 import { ApiErrorResponse, PromotionConditionFormData } from "../../types/types";
 import PromotionConditionValueField from "./PromotionConditionValueField";
@@ -21,10 +21,6 @@ type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddPromotionCondition() {
   const { mutate: createPromotionCondition, isPending } = useCreatePromotionCondition();
-
-  const fetchPromotionOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/promotions",
-  });
 
   const {
     register,
@@ -87,6 +83,7 @@ export default function AddPromotionCondition() {
             <Label>Promotion</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="promotion-condition-promotion-options"
               value={watch("promotion_id") || null}
               onChange={(selectedValue) => {
                 setValue("promotion_id", Number(selectedValue ?? 0), {

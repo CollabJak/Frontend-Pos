@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { businessSchema } from "../Schemas/businessSchema";
+import { businessSchema, createBusinessSchema } from "../Schemas/businessSchema";
 
 export interface Business {
   id: number;
@@ -11,4 +11,5 @@ export interface Business {
   is_active: boolean;
 }
 
-export type CreateBusinessPayload = z.infer<typeof businessSchema>;
+export type CreateBusinessPayload = z.infer<typeof createBusinessSchema>;
+export type UpdateBusinessPayload = z.infer<typeof businessSchema>;

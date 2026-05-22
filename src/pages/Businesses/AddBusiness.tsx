@@ -6,7 +6,7 @@ import { Input } from "../../components/form/input/InputField";
 import TextArea from "../../components/form/input/TextArea";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
-import { businessSchema, BusinessFormData } from "../../Schemas/businessSchema";
+import { createBusinessSchema, CreateBusinessFormData } from "../../Schemas/businessSchema";
 import { useCreateBusiness } from "../../hooks/useBusinesses";
 import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
@@ -29,8 +29,8 @@ export default function AddBusiness() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<BusinessFormData>({
-    resolver: zodResolver(businessSchema),
+  } = useForm<CreateBusinessFormData>({
+    resolver: zodResolver(createBusinessSchema),
     defaultValues: {
       name: "",
       code: "",
@@ -45,7 +45,7 @@ export default function AddBusiness() {
     return <Navigate to="/businesses" replace />;
   }
 
-  const onSubmit = (data: BusinessFormData) => {
+  const onSubmit = (data: CreateBusinessFormData) => {
     setError("root", { type: "server", message: "" });
 
     const isFirstSetup = isManager && !user?.business_id;
@@ -63,7 +63,7 @@ export default function AddBusiness() {
 
             if (fieldErrors) {
               Object.entries(fieldErrors).forEach(([key, messages]) => {
-                setError(key as keyof BusinessFormData, {
+                setError(key as keyof CreateBusinessFormData, {
                   type: "server",
                   message: messages[0],
                 });
@@ -123,7 +123,7 @@ export default function AddBusiness() {
                 {...register("phone")}
                 type="text"
                 id="business-phone"
-                placeholder="Input business phone (optional)"
+                placeholder="Input business phone"
               />
               {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
             </div>
@@ -136,7 +136,7 @@ export default function AddBusiness() {
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional address"
+                placeholder="Input business address"
               />
               {errors.address && <p className="text-red-500">{errors.address.message}</p>}
             </div>

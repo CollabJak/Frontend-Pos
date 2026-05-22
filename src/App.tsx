@@ -319,7 +319,7 @@ export default function App() {
                 <Route path="/businesses" element={<BusinessList />} />
                 <Route path="/businesses/create" element={<AddBusiness />} />
                 <Route path="/businesses/edit/:id" element={<EditBusiness />} />
-                <Route element={<ProtectedRoute allowedPermissions={["payment_method.view"]}><Outlet /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute allowedPermissions={["payment_method.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                   <Route path="/payment-methods" element={<PaymentMethodListPage />} />
                   <Route path="/payment-methods/create" element={<PaymentMethodFormPage />} />
                   <Route path="/payment-methods/edit/:id" element={<PaymentMethodFormPage />} />

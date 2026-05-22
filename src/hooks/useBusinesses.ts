@@ -2,13 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router";
 import apiClient from "../api/axiosConfig";
-import { ApiErrorResponse, Business, CreateBusinessPayload, PaginatedApiResponse } from "../types/types";
+import { ApiErrorResponse, Business, CreateBusinessPayload, PaginatedApiResponse, UpdateBusinessPayload } from "../types/types";
 
 interface FetchBusinessesParams {
   page?: number;
 }
 
-const normalizePayload = (payload: CreateBusinessPayload) => ({
+const normalizePayload = (payload: CreateBusinessPayload | UpdateBusinessPayload) => ({
   ...payload,
   phone: payload.phone && payload.phone.trim() !== "" ? payload.phone : null,
   address: payload.address && payload.address.trim() !== "" ? payload.address : null,
@@ -68,7 +68,7 @@ export const useUpdateBusiness = () => {
   return useMutation<
     Business,
     AxiosError<ApiErrorResponse>,
-    { id: number } & CreateBusinessPayload
+    { id: number } & UpdateBusinessPayload
   >({
     mutationFn: async ({ id, ...payload }) => {
       const response = await apiClient.put(`/businesses/${id}`, normalizePayload(payload));
