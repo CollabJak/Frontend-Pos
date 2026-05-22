@@ -22,6 +22,56 @@ const normalizePayload = (payload: any) => ({
       : null,
 });
 
+const contentTypeExtensions: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "application/pdf": "pdf",
+};
+
+const sanitizeFilename = (value?: string) => {
+  const sanitized = value
+    ?.trim()
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized || "subscription-payment-proof";
+};
+
+const getFilenameFromDisposition = (disposition?: string) => {
+  if (!disposition) return undefined;
+
+  const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) {
+    return decodeURIComponent(utf8Match[1].replace(/["']/g, ""));
+  }
+
+  const filenameMatch = disposition.match(/filename="?([^";]+)"?/i);
+  return filenameMatch?.[1];
+};
+
+const getExtensionFromContentType = (contentType?: string) => {
+  if (!contentType) return "jpg";
+
+  const normalizedType = contentType.split(";")[0].trim().toLowerCase();
+  return contentTypeExtensions[normalizedType] ?? "jpg";
+};
+
+const downloadBlob = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+};
+
 export const useFetchSubscriptionPlans = ({
   page = 1, search
 }: FetchSubscriptionPlansParams) => {
@@ -223,6 +273,31 @@ export const useFetchProofImage = () => {
                 responseType: "blob",
             });
             return URL.createObjectURL(response.data);
+        },
+    });
+};
+
+export const useDownloadProofImage = () => {
+    return useMutation<
+        void,
+        AxiosError<ApiErrorResponse | Blob>,
+        { id: number; invoiceNumber?: string }
+    >({
+        mutationFn: async ({ id, invoiceNumber }) => {
+            const response = await apiClient.get(`/subscription-payments/${id}/view-proof`, {
+                responseType: "blob",
+            });
+
+            const rawHeaderFilename = getFilenameFromDisposition(
+                response.headers["content-disposition"]
+            );
+            const headerFilename = rawHeaderFilename
+                ? sanitizeFilename(rawHeaderFilename)
+                : undefined;
+            const extension = getExtensionFromContentType(response.headers["content-type"]);
+            const fallbackFilename = `${sanitizeFilename(invoiceNumber)}-proof.${extension}`;
+
+            downloadBlob(response.data, headerFilename || fallbackFilename);
         },
     });
 };

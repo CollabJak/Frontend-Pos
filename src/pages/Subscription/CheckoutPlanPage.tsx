@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "../../hooks/useAuth";
 import { useFetchSubscriptionPlan, useSubscriptionCheckout } from "../../hooks/useSubscriptionPlans";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
+import { useFetchBusinesses } from "../../hooks/useBusinesses";
 import { CheckoutSchema, CheckoutFormData } from "../../Schemas/CheckoutSchema";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
@@ -12,6 +12,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import Button from "../../components/ui/button/Button";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
+import TextArea from "../../components/form/input/TextArea";
 import Badge from "../../components/ui/badge/Badge";
 import { CheckCircleIcon, CreditCardIcon, EyeIcon } from "../../icons";
 import { Modal } from "../../components/ui/modal";
@@ -19,27 +20,29 @@ import { Modal } from "../../components/ui/modal";
 export default function CheckoutPlanPage() {
     const { planId } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false);
     const [isZoomModalOpen, setIsZoomModalOpen] = React.useState(false);
     const [_, setCheckoutResult] = React.useState<any>(null);
 
     const { data: plan, isLoading: isPlanLoading } = useFetchSubscriptionPlan(parseInt(planId || "0", 10));
+    const { data: businesses, isLoading: isBusinessesLoading } = useFetchBusinesses({ page: 1 });
     const { data: paymentMethods = [], isLoading: isMethodsLoading } = useFetchPaymentMethodOptions('system');
     const { mutate: checkout, isPending: isCheckingOut } = useSubscriptionCheckout();
+    const business = businesses?.data?.[0];
 
     const {
         register,
         handleSubmit,
         watch,
         setValue,
+        setError,
         formState: { errors },
-    } = useForm<any>({
+    } = useForm<CheckoutFormData>({
         resolver: zodResolver(CheckoutSchema),
         defaultValues: {
-            business_name: user?.merchant?.name || user?.name || "",
-            email: user?.email || "",
-            phone: user?.phone || "",
+            business_name: "",
+            email: "",
+            phone: "",
         },
     });
 
@@ -53,8 +56,23 @@ export default function CheckoutPlanPage() {
         }
     }, [paymentMethods, setValue, selectedPaymentMethodId]);
 
+    useEffect(() => {
+        if (!business) return;
+
+        setValue("business_name", business.name, { shouldValidate: true });
+        setValue("email", business.email, { shouldValidate: true });
+        setValue("phone", business.phone || "", { shouldValidate: true });
+    }, [business, setValue]);
+
     const onSubmit = (data: CheckoutFormData) => {
         if (!plan) return;
+        if (!business) {
+            setError("root", {
+                type: "manual",
+                message: "Business belum tersedia. Silakan buat business terlebih dahulu.",
+            });
+            return;
+        }
 
         checkout({
             subscription_plan_id: plan.id,
@@ -70,7 +88,7 @@ export default function CheckoutPlanPage() {
         });
     };
 
-    if (isPlanLoading || isMethodsLoading) {
+    if (isPlanLoading || isMethodsLoading || isBusinessesLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <p className="text-gray-500">Memuat detail paket...</p>
@@ -84,6 +102,27 @@ export default function CheckoutPlanPage() {
                 <h2 className="text-2xl font-bold mb-4">Paket Tidak Ditemukan</h2>
                 <Button onClick={() => navigate("/pricing")}>Kembali ke Daftar Paket</Button>
             </div>
+        );
+    }
+
+    if (!business) {
+        return (
+            <>
+                <PageMeta title="Checkout" description="Complete your subscription purchase." />
+                <PageBreadcrumb pageTitle="Checkout" />
+                <div className="mx-auto max-w-2xl">
+                    <ComponentCard title="Business Information Required">
+                        <div className="space-y-4 text-center">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                Business belum tersedia untuk akun ini. Silakan buat business terlebih dahulu sebelum melakukan checkout subscription.
+                            </p>
+                            <Button onClick={() => navigate("/businesses/create")}>
+                                Buat Business
+                            </Button>
+                        </div>
+                    </ComponentCard>
+                </div>
+            </>
         );
     }
 
@@ -107,13 +146,27 @@ export default function CheckoutPlanPage() {
                     <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
                         {/* Step 1: Business Information */}
                         <ComponentCard title="1. Business Information" className="shadow-sm">
+                            {errors.root?.message && (
+                                <p className="mb-4 text-sm text-red-500">{errors.root.message}</p>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
+                                <div>
+                                    <Label htmlFor="business_code">Business Code</Label>
+                                    <Input
+                                        id="business_code"
+                                        value={business.code}
+                                        readOnly
+                                        className="!bg-gray-50 dark:!bg-gray-800"
+                                    />
+                                </div>
                                 <div>
                                     <Label htmlFor="business_name">Business Name</Label>
                                     <Input
                                         {...register("business_name")}
                                         id="business_name"
                                         placeholder="Your business name"
+                                        readOnly
+                                        className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.business_name && <p className="text-xs text-red-500 mt-1">{errors.business_name.message as any}</p>}
                                 </div>
@@ -124,17 +177,30 @@ export default function CheckoutPlanPage() {
                                         type="email"
                                         id="email"
                                         placeholder="business@example.com"
+                                        readOnly
+                                        className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message as any}</p>}
                                 </div>
-                                <div className="md:col-span-2">
+                                <div>
                                     <Label htmlFor="phone">Phone Number</Label>
                                     <Input
                                         {...register("phone")}
                                         id="phone"
                                         placeholder="+62 812..."
+                                        readOnly
+                                        className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message as any}</p>}
+                                </div>
+                                <div className="md:col-span-2">
+                                    <Label htmlFor="business_address">Address</Label>
+                                    <TextArea
+                                        value={business.address || ""}
+                                        rows={3}
+                                        disabled
+                                        className="bg-gray-50 dark:bg-gray-800"
+                                    />
                                 </div>
                             </div>
                         </ComponentCard>
@@ -257,7 +323,7 @@ export default function CheckoutPlanPage() {
                                 type="submit"
                                 fullWidth
                                 size="md"
-                                disabled={isCheckingOut}
+                                disabled={isCheckingOut || !business}
                             >
                                 {isCheckingOut ? "Processing Transaction..." : "Complete Secure Purchase"}
                             </Button>
@@ -334,7 +400,7 @@ export default function CheckoutPlanPage() {
                                 onClick={handleSubmit(onSubmit as any)}
                                 fullWidth
                                 size="lg"
-                                disabled={isCheckingOut}
+                                disabled={isCheckingOut || !business}
                             >
                                 {isCheckingOut ? "Processing..." : "Complete Purchase"}
                             </Button>

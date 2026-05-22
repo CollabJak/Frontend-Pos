@@ -12,7 +12,12 @@ import DateTimePicker from "../../components/form/date-time-picker";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import {
+  fetchCustomerGroupOptions,
+  fetchLocationOptions,
+  fetchProductVariantOptions,
+  OptionDto,
+} from "../../api/options";
 import { useFetchPriceTier, useUpdatePriceTier } from "../../hooks/usePriceTiers";
 import { ApiErrorResponse, PriceTierFormData } from "../../types/types";
 import { priceTierSchema } from "../../Schemas/priceTierSchema";
@@ -44,18 +49,6 @@ export default function EditPriceTier() {
   const priceTierId = Number(id);
   const { data: priceTier, isLoading } = useFetchPriceTier(priceTierId);
   const { mutate: updatePriceTier, isPending } = useUpdatePriceTier();
-
-  const fetchProductVariantOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/product-variants",
-  });
-
-  const fetchCustomerGroupOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/customer-groups",
-  });
-
-  const fetchLocationOptions = createOptionsFetcher<SelectOption>({
-    endpoint: "/options/locations",
-  });
 
   const {
     register,
@@ -139,6 +132,7 @@ export default function EditPriceTier() {
             <Label>Product Variant</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="price-tier-product-variant-options"
               value={watch("product_variant_id") || null}
               displayValue={priceTier?.product_variant?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -162,6 +156,7 @@ export default function EditPriceTier() {
             <Label>Customer Group</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="price-tier-customer-group-options"
               value={watch("customer_group_id") || null}
               displayValue={priceTier?.customer_group?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -211,6 +206,7 @@ export default function EditPriceTier() {
             <Label>Location</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="price-tier-location-options"
               value={watch("location_id") || null}
               displayValue={priceTier?.location?.name ?? undefined}
               onChange={(selectedValue) => {

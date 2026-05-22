@@ -5,12 +5,13 @@ import ComponentCard from "../../components/common/ComponentCard";
 import {
     useFetchAllSubscriptionPayments,
     useConfirmSubscriptionPayment,
-    useFetchProofImage
+    useFetchProofImage,
+    useDownloadProofImage
 } from "../../hooks/useSubscriptionPlans";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
 import { Modal } from "../../components/ui/modal";
-import { EyeIcon, CheckCircleIcon } from "../../icons";
+import { EyeIcon, CheckCircleIcon, DownloadIcon } from "../../icons";
 import {
     Table,
     TableBody,
@@ -23,6 +24,21 @@ import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
+import { useFetchBusiness } from "../../hooks/useBusinesses";
+
+type SelectedBusinessPayment = {
+    businessId: number;
+    userName?: string | null;
+};
+
+const DetailItem = ({ label, value }: { label: string; value?: string | number | null }) => (
+    <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 text-left dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <p className="mb-1 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">{label}</p>
+        <p className="break-words text-sm font-medium text-gray-800 dark:text-white/90">
+            {value || "-"}
+        </p>
+    </div>
+);
 
 export default function AdminSubscriptionVerificationPage() {
     const [page, setPage] = useState(1);
@@ -30,23 +46,33 @@ export default function AdminSubscriptionVerificationPage() {
     const debouncedSearch = useDebouncedValue(search.trim(), 400);
 
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedPayment, setSelectedPayment] = useState<{ id: number; invoiceNumber: string } | null>(null);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [loadingImageId, setLoadingImageId] = useState<number | null>(null);
+    const [selectedBusinessPayment, setSelectedBusinessPayment] = useState<SelectedBusinessPayment | null>(null);
 
     const { data, isLoading } = useFetchAllSubscriptionPayments({
         page,
         search: debouncedSearch || undefined,
     });
+    const { data: selectedBusiness, isLoading: isLoadingBusiness } = useFetchBusiness(
+        selectedBusinessPayment?.businessId ?? 0
+    );
 
     const { mutate: confirmPayment, isPending: isConfirming } = useConfirmSubscriptionPayment();
     const { mutate: fetchImage } = useFetchProofImage();
+    const { mutate: downloadProof, isPending: isDownloadingProof } = useDownloadProofImage();
     const { isOpen: isConfirmOpen, openModal: openConfirm, closeModal: closeConfirm } = useModal();
     const [pendingConfirm, setPendingConfirm] = useState<{ id: number; invoice: string } | null>(null);
 
-    const handleViewProof = (id: number) => {
-        setLoadingImageId(id);
-        fetchImage(id, {
+    const handleViewProof = (payment: any) => {
+        setLoadingImageId(payment.id);
+        fetchImage(payment.id, {
             onSuccess: (url) => {
+                setSelectedPayment({
+                    id: payment.id,
+                    invoiceNumber: payment.invoice_number,
+                });
                 setSelectedImage(url);
                 setIsImageModalOpen(true);
                 setLoadingImageId(null);
@@ -55,6 +81,34 @@ export default function AdminSubscriptionVerificationPage() {
                 setLoadingImageId(null);
             }
         });
+    };
+
+    const handleCloseImageModal = () => {
+        setIsImageModalOpen(false);
+        setSelectedImage(null);
+        setSelectedPayment(null);
+    };
+
+    const handleDownloadProof = () => {
+        if (!selectedPayment) return;
+
+        downloadProof({
+            id: selectedPayment.id,
+            invoiceNumber: selectedPayment.invoiceNumber,
+        });
+    };
+
+    const handleOpenBusinessModal = (payment: any) => {
+        if (!payment.business?.id) return;
+
+        setSelectedBusinessPayment({
+            businessId: payment.business.id,
+            userName: payment.user?.name || null,
+        });
+    };
+
+    const handleCloseBusinessModal = () => {
+        setSelectedBusinessPayment(null);
     };
 
     const handleConfirmClick = (id: number, invoice: string) => {
@@ -83,6 +137,14 @@ export default function AdminSubscriptionVerificationPage() {
     useEffect(() => {
         setPage(1);
     }, [debouncedSearch]);
+
+    useEffect(() => {
+        return () => {
+            if (selectedImage) {
+                URL.revokeObjectURL(selectedImage);
+            }
+        };
+    }, [selectedImage]);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -160,12 +222,30 @@ export default function AdminSubscriptionVerificationPage() {
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start">
-                                                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                            {payment.business?.name || "N/A"}
-                                                        </span>
-                                                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                                            {payment.user?.name}
-                                                        </span>
+                                                        {payment.business?.id ? (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleOpenBusinessModal(payment)}
+                                                                aria-label={`Lihat detail business ${payment.business?.name || ""}`}
+                                                                className="group block max-w-[220px] rounded-md text-left focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                                                            >
+                                                                <span className="block truncate font-medium text-gray-800 text-theme-sm transition-colors group-hover:text-brand-600 group-hover:underline dark:text-white/90 dark:group-hover:text-brand-400">
+                                                                    {payment.business?.name || "N/A"}
+                                                                </span>
+                                                                <span className="block truncate text-gray-500 text-theme-xs dark:text-gray-400">
+                                                                    {payment.user?.name || "-"}
+                                                                </span>
+                                                            </button>
+                                                        ) : (
+                                                            <>
+                                                                <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                                    N/A
+                                                                </span>
+                                                                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                                                    {payment.user?.name || "-"}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start text-gray-500 text-theme-sm dark:text-gray-400">
                                                         {payment.subscription_plan?.name}
@@ -181,7 +261,7 @@ export default function AdminSubscriptionVerificationPage() {
                                                             <Button
                                                                 variant="outline"
                                                                 size="sm"
-                                                                onClick={() => handleViewProof(payment.id)}
+                                                                onClick={() => handleViewProof(payment)}
                                                                 disabled={loadingImageId === payment.id || payment.payment_status === 'pending' || payment.payment_status === 'expired'}
                                                                 startIcon={<EyeIcon className="size-5 text-gray-500" />}
                                                             >
@@ -222,7 +302,7 @@ export default function AdminSubscriptionVerificationPage() {
             {/* Image Modal */}
             <Modal
                 isOpen={isImageModalOpen}
-                onClose={() => setIsImageModalOpen(false)}
+                onClose={handleCloseImageModal}
                 className="max-w-2xl"
             >
                 <div className="p-6 text-center">
@@ -238,8 +318,86 @@ export default function AdminSubscriptionVerificationPage() {
                     ) : (
                         <p className="text-gray-500">Tidak ada gambar untuk ditampilkan.</p>
                     )}
+                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <Button
+                            variant="outline"
+                            fullWidth
+                            onClick={handleCloseImageModal}
+                        >
+                            Tutup
+                        </Button>
+                        <Button
+                            variant="primary"
+                            fullWidth
+                            onClick={handleDownloadProof}
+                            disabled={!selectedPayment}
+                            isLoading={isDownloadingProof}
+                            startIcon={<DownloadIcon className="size-5 text-white" />}
+                        >
+                            Download
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Business Detail Modal */}
+            <Modal
+                isOpen={!!selectedBusinessPayment}
+                onClose={handleCloseBusinessModal}
+                className="max-w-2xl"
+            >
+                <div className="p-6">
+                    <div className="mb-6 pr-12">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+                            Business Detail
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Informasi business yang terdaftar pada menu Business.
+                        </p>
+                    </div>
+
+                    {isLoadingBusiness ? (
+                        <p className="rounded-lg border border-gray-100 p-4 text-sm text-gray-500 dark:border-white/[0.05] dark:text-gray-400">
+                            Loading business detail...
+                        </p>
+                    ) : selectedBusiness ? (
+                        <div className="space-y-5">
+                            <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-gray-100 p-4 dark:border-white/[0.05]">
+                                <div>
+                                    <p className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
+                                        Business
+                                    </p>
+                                    <h4 className="mt-1 text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        {selectedBusiness.name}
+                                    </h4>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Registered user: {selectedBusinessPayment?.userName || "-"}
+                                    </p>
+                                </div>
+                                {selectedBusiness.is_active ? (
+                                    <Badge color="success">Active</Badge>
+                                ) : (
+                                    <Badge color="error">Inactive</Badge>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <DetailItem label="Code" value={selectedBusiness.code} />
+                                <DetailItem label="Email" value={selectedBusiness.email} />
+                                <DetailItem label="Phone" value={selectedBusiness.phone} />
+                                <DetailItem label="Address" value={selectedBusiness.address} />
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="rounded-lg border border-gray-100 p-4 text-sm text-gray-500 dark:border-white/[0.05] dark:text-gray-400">
+                            Business detail tidak tersedia.
+                        </p>
+                    )}
+
                     <div className="mt-6">
-                        <Button variant="outline" fullWidth onClick={() => setIsImageModalOpen(false)}>Tutup</Button>
+                        <Button variant="outline" fullWidth onClick={handleCloseBusinessModal}>
+                            Tutup
+                        </Button>
                     </div>
                 </div>
             </Modal>
