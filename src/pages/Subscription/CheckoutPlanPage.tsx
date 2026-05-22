@@ -37,7 +37,7 @@ export default function CheckoutPlanPage() {
         setValue,
         setError,
         formState: { errors },
-    } = useForm<CheckoutFormData>({
+    } = useForm<any>({
         resolver: zodResolver(CheckoutSchema),
         defaultValues: {
             business_name: "",
