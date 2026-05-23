@@ -8,44 +8,72 @@ const formatCurrency = (value: number): string =>
   }).format(value).replace("Rp", "Rp.");
 
 interface PaymentPanelProps {
-  estimatedTotal: number;
-  authoritativeTotal?: number | null;
+  subtotal: number;
+  discount: number;
+  tax: number;
+  total: number;
   isPaying: boolean;
   disabled: boolean;
   errorMessage: string | null;
   onPayNow: () => void;
   onReprintReceipt?: () => void;
   reprintDisabled?: boolean;
+  isCalculatingPrice?: boolean;
 }
 
 export default function PaymentPanel({
-  estimatedTotal,
-  authoritativeTotal,
+  subtotal,
+  discount,
+  tax,
+  total,
   isPaying,
   disabled,
   errorMessage,
   onPayNow,
+  isCalculatingPrice = false,
 }: PaymentPanelProps) {
-  const subtotal = estimatedTotal / 1.11; // Reverse 11% tax for demo
-  const tax = estimatedTotal - subtotal;
-
   return (
     <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
       {/* Totals */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Subtotal</span>
-          <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(subtotal)}</span>
+          {isCalculatingPrice ? (
+            <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(subtotal)}</span>
+          )}
         </div>
+
+        {discount > 0 && (
+          <div className="flex items-center justify-between text-success-600 dark:text-success-400">
+            <span className="text-sm font-medium">Discount</span>
+            {isCalculatingPrice ? (
+              <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            ) : (
+              <span className="text-sm font-bold">- {formatCurrency(discount)}</span>
+            )}
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Tax (11%)</span>
-          <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(tax)}</span>
+          {isCalculatingPrice ? (
+            <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formatCurrency(tax)}</span>
+          )}
         </div>
+
         <div className="flex items-center justify-between pt-2">
           <span className="text-lg font-black tracking-tight text-gray-800 dark:text-white">Total</span>
-          <span className="text-2xl font-black text-brand-600 dark:text-brand-400">
-            {formatCurrency(authoritativeTotal ?? estimatedTotal)}
-          </span>
+          {isCalculatingPrice ? (
+            <div className="h-6 w-32 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <span className="text-2xl font-black text-brand-600 dark:text-brand-400">
+              {formatCurrency(total)}
+            </span>
+          )}
         </div>
       </div>
 
@@ -78,9 +106,9 @@ export default function PaymentPanel({
       <Button
         className="h-16 w-full rounded-xl text-lg font-black uppercase tracking-widest shadow-lg transition-all active:scale-[0.98]"
         onClick={onPayNow}
-        disabled={disabled || isPaying}
+        disabled={disabled || isPaying || isCalculatingPrice}
       >
-        {isPaying ? "Processing..." : `Pay ${formatCurrency(authoritativeTotal ?? estimatedTotal)}`}
+        {isPaying ? "Processing..." : isCalculatingPrice ? "Calculating..." : `Pay ${formatCurrency(total)}`}
       </Button>
     </div>
   );

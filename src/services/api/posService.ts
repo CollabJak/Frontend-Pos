@@ -1,5 +1,5 @@
 import apiClient from "../../api/axiosConfig";
-import type { ApiResponse, PosCheckoutPayload, PosCheckoutResult, PosProduct, ReceiptPayload } from "../../types/types";
+import type { ApiResponse, PosCheckoutPayload, PosCheckoutResult, PosProduct, ReceiptPayload, PosShift, PosShiftCashMovement } from "../../types/types";
 
 interface RawPosProduct {
   variant_id?: number | string;
@@ -76,8 +76,8 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
     stock,
     categoryId: categoryId ?? undefined,
     imageUrl: row.imageUrl ?? row.image_url,
-    description: firstText(row.description) || "Premium quality product.",
-    isBestSeller: variantId % 3 === 0,
+    description: firstText(row.description) || undefined,
+    isBestSeller: false, // TODO: Source from backend when best_seller field is added
   };
 };
 
@@ -116,6 +116,38 @@ export const checkoutPos = async (
   return response.data;
 };
 
+export interface PosCalculateCartPayload {
+  location_id: number;
+  items: Array<{ variant_id: number; qty: number }>;
+  customer_group_id?: number | null;
+  channel?: string;
+}
+
+export interface PosCalculateCartResult {
+  items: Array<{
+    variant_id: number;
+    qty: number;
+    base_price: number;
+    discount: number;
+    tax: number;
+    final_unit_price: number;
+    final_total_price: number;
+    applied_promotions: number[];
+    applied_tier: number | null;
+  }>;
+  subtotal: number;
+  discount_total: number;
+  tax_total: number;
+  grand_total: number;
+}
+
+export const calculatePosCart = async (
+  payload: PosCalculateCartPayload
+): Promise<ApiResponse<PosCalculateCartResult>> => {
+  const response = await apiClient.post<ApiResponse<PosCalculateCartResult>>("/pos/calculate-cart", payload);
+  return response.data;
+};
+
 export const fetchReceiptByOrderId = async (orderId: number): Promise<ReceiptPayload> => {
   const response = await apiClient.get<ApiResponse<ReceiptPayload>>(`/receipt/${orderId}`);
   if (!response.data.data) {
@@ -123,4 +155,53 @@ export const fetchReceiptByOrderId = async (orderId: number): Promise<ReceiptPay
   }
 
   return response.data.data;
+};
+
+export interface OpenPosShiftPayload {
+  location_id: number;
+  starting_cash: string | number;
+  notes?: string | null;
+}
+
+export interface AddCashMovementPayload {
+  pos_shift_id: number;
+  type: "in" | "out";
+  amount: string | number;
+  description?: string | null;
+}
+
+export interface ClosePosShiftPayload {
+  actual_cash: string | number;
+  notes?: string | null;
+}
+
+export const fetchActivePosShift = async (locationId: number): Promise<ApiResponse<PosShift | null>> => {
+  const response = await apiClient.get<ApiResponse<PosShift | null>>("/pos/shifts/active", {
+    params: { location_id: locationId },
+  });
+  return response.data;
+};
+
+export const openPosShift = async (payload: OpenPosShiftPayload): Promise<ApiResponse<PosShift>> => {
+  const response = await apiClient.post<ApiResponse<PosShift>>("/pos/shifts/open", {
+    ...payload,
+    starting_cash: String(payload.starting_cash),
+  });
+  return response.data;
+};
+
+export const addPosShiftCashMovement = async (payload: AddCashMovementPayload): Promise<ApiResponse<PosShiftCashMovement>> => {
+  const response = await apiClient.post<ApiResponse<PosShiftCashMovement>>("/pos/shifts/cash-movement", {
+    ...payload,
+    amount: String(payload.amount),
+  });
+  return response.data;
+};
+
+export const closePosShift = async (shiftId: number, payload: ClosePosShiftPayload): Promise<ApiResponse<PosShift>> => {
+  const response = await apiClient.post<ApiResponse<PosShift>>(`/pos/shifts/${shiftId}/close`, {
+    ...payload,
+    actual_cash: String(payload.actual_cash),
+  });
+  return response.data;
 };

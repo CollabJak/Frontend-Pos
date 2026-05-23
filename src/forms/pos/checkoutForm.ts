@@ -6,7 +6,10 @@ const toMoneyString = (value: number): string => {
   return fixed.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.0+$/, "");
 };
 
-export const toPosCheckoutPayload = (values: PosCheckoutFormValues): PosCheckoutPayload => ({
+export const toPosCheckoutPayload = (
+  values: PosCheckoutFormValues,
+  expectedTotal?: number
+): PosCheckoutPayload => ({
   location_id: values.location_id,
   items: values.items.map((item) => ({
     variant_id: item.variant_id,
@@ -17,4 +20,5 @@ export const toPosCheckoutPayload = (values: PosCheckoutFormValues): PosCheckout
     amount_paid: toMoneyString(values.payment.amount_paid),
   },
   device_id: values.device_id,
+  ...(expectedTotal !== undefined ? { expected_total: toMoneyString(expectedTotal) } : {}),
 });

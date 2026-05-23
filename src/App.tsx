@@ -90,6 +90,7 @@ import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
 import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
 import POSPage from "./pages/POS/POSPage";
+import OpenShiftPage from "./pages/POS/OpenShiftPage";
 import POSPaymentPage from "./pages/POS/POSPaymentPage";
 import FaceRegistrationPage from "./pages/absensi/FaceRegistrationPage";
 import AttendanceScannerPage from "./pages/absensi/AttendanceScannerPage";
@@ -299,6 +300,7 @@ export default function App() {
               <Route element={<ProtectedRoute allowedPermissions={["pos.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
 
                 <Route path="/pos" element={<POSPage />} />
+                <Route path="/pos/open-shift" element={<OpenShiftPage />} />
                 <Route path="/pos/payment" element={<POSPaymentPage />} />
               </Route>
 
