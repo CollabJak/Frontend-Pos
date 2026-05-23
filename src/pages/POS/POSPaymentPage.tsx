@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
+import { isAxiosError } from "axios";
 import { usePosStore } from "../../stores/pos.store";
 import Keypad from "../../components/pos/Keypad";
 import PaymentMethodCard from "../../components/pos/PaymentMethodCard";
@@ -10,31 +11,26 @@ import { usePosCheckout } from "../../hooks/usePos";
 import { useReceiptPrint } from "../../hooks/useReceiptPrint";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
 import { useZodForm } from "../../hooks/form/useZodForm";
-import { posCheckoutSchema } from "../../Schemas/pos.schema";
+import { posCheckoutSchema, type PosCheckoutFormValues } from "../../Schemas/pos.schema";
 import type { PosCheckoutResult } from "../../types/types";
-
-// Fallback currency formatter if util not found or different
-const formatIDR = (value: number): string =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(value).replace("Rp", "Rp.");
-
-const POS_TAX_RATE = 0.11;
+import { formatCurrency } from "../../utils/currency";
+import { resolveErrorMessage } from "../../utils/error";
+import { POS_TAX_RATE } from "../../constants/pos";
 
 export default function POSPaymentPage() {
   const navigate = useNavigate();
-  const { cartItems, selectedLocation, deviceId, clearCart } = usePosStore();
+  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot } = usePosStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState<PosCheckoutResult | null>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   const {
     handleSubmit,
     setValue,
     watch,
     setError,
+    clearErrors,
     formState: { errors },
   } = useZodForm({
     schema: posCheckoutSchema,
@@ -80,11 +76,20 @@ export default function POSPaymentPage() {
 
   // Totals
   const subtotal = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
-  }, [cartItems]);
+    return pricingSnapshot?.subtotal ?? cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+  }, [cartItems, pricingSnapshot]);
 
-  const tax = useMemo(() => subtotal * POS_TAX_RATE, [subtotal]);
-  const totalDue = useMemo(() => subtotal + tax, [subtotal, tax]);
+  const discount = useMemo(() => {
+    return pricingSnapshot?.discount_total ?? 0;
+  }, [pricingSnapshot]);
+
+  const tax = useMemo(() => {
+    return pricingSnapshot?.tax_total ?? (subtotal * POS_TAX_RATE);
+  }, [subtotal, pricingSnapshot]);
+
+  const totalDue = useMemo(() => {
+    return pricingSnapshot?.grand_total ?? (subtotal - discount + tax);
+  }, [subtotal, discount, tax, pricingSnapshot]);
 
   const receivedAmount = parseFloat(receivedAmountStr || "0");
   const change = Math.max(0, receivedAmount - totalDue);
@@ -139,19 +144,61 @@ export default function POSPaymentPage() {
       return;
     }
 
-    setIsProcessing(true);
-    try {
-      const payload = toPosCheckoutPayload(formValues);
-      const response = await checkoutOrder({ payload });
-
-      if (response.data) {
-        setSuccessData(response.data);
-      }
-    } catch (error) {
-      console.error("Checkout failed:", error);
-    } finally {
-      setIsProcessing(false);
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+              const r = (Math.random() * 16) | 0;
+              const v = c === "x" ? r : (r & 0x3) | 0x8;
+              return v.toString(16);
+            });
     }
+    const currentKey = idempotencyKeyRef.current;
+
+    setIsProcessing(true);
+    clearErrors("root");
+
+    let attempts = 0;
+    const maxRetries = 3;
+    const delayMs = 1000;
+
+    while (true) {
+      try {
+        const payload = toPosCheckoutPayload(formValues, totalDue);
+        const response = await checkoutOrder({ payload, idempotencyKey: currentKey });
+
+        if (response.data) {
+          setSuccessData(response.data);
+          idempotencyKeyRef.current = null;
+        }
+        break;
+      } catch (error: unknown) {
+        attempts++;
+        const status = isAxiosError(error) ? error.response?.status : null;
+        const isNetworkError = isAxiosError(error) && !error.response;
+
+        if ((status === 409 || isNetworkError || status === 502 || status === 504) && attempts < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, delayMs * attempts));
+          continue;
+        }
+
+        console.error("Checkout failed permanently after attempts:", attempts, error);
+        
+        const message = resolveErrorMessage(error, "Checkout failed. Please try again.");
+        setError("root", {
+          type: "server",
+          message,
+        });
+
+        if (status === 422 || status === 400) {
+          idempotencyKeyRef.current = null;
+        }
+
+        break;
+      }
+    }
+    setIsProcessing(false);
   });
 
   const handleSuccessDone = () => {
@@ -195,7 +242,7 @@ export default function POSPaymentPage() {
                 {/* Card Header (Fixed) */}
                 <div className="mb-6 flex items-center justify-between shrink-0">
                   <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    #48291
+                    #{successData?.order_id ? `${successData.order_id}` : 'Order'}
                   </h3>
                   <button
                     onClick={() => navigate("/pos")}
@@ -210,45 +257,56 @@ export default function POSPaymentPage() {
 
                 {/* Card Body (Scrollable) */}
                 <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
-                  {cartItems.map((item) => (
-                    <div key={item.variantId} className="flex gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand-500 shadow-sm dark:bg-slate-800 overflow-hidden">
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
-                        ) : (
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-bold text-slate-800 dark:text-white leading-tight break-words">
-                          {item.name} {item.variantName ? `(${item.variantName})` : ""}
+                  {cartItems.map((item) => {
+                    const snapItem = pricingSnapshot?.items.find((si) => si.variant_id === item.variantId);
+                    const itemUnitPrice = snapItem?.final_unit_price ?? item.unitPrice;
+                    const itemTotalPrice = snapItem?.final_total_price ?? (item.qty * item.unitPrice);
+                    return (
+                      <div key={item.variantId} className="flex gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand-500 shadow-sm dark:bg-slate-800 overflow-hidden">
+                          {item.imageUrl ? (
+                            <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-bold text-slate-800 dark:text-white leading-tight break-words">
+                            {item.name} {item.variantName ? `(${item.variantName})` : ""}
+                          </p>
+                          <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                            {item.qty} × {formatCurrency(itemUnitPrice)}
+                          </p>
+                        </div>
+                        <p className="text-[13px] font-black text-slate-800 dark:text-white whitespace-nowrap shrink-0">
+                          {formatCurrency(itemTotalPrice)}
                         </p>
-                        <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
-                          {item.qty} × {formatIDR(item.unitPrice)}
-                        </p>
                       </div>
-                      <p className="text-[13px] font-black text-slate-800 dark:text-white whitespace-nowrap shrink-0">
-                        {formatIDR(item.qty * item.unitPrice)}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Card Footer (Fixed) */}
                 <div className="mt-6 space-y-2 pt-5 border-t border-slate-200/60 dark:border-slate-700/60 shrink-0">
                   <div className="flex justify-between text-[11px] font-medium">
                     <span className="text-slate-400">Subtotal</span>
-                    <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatIDR(subtotal)}</span>
+                    <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatCurrency(subtotal)}</span>
                   </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                      <span>Discount</span>
+                      <span className="whitespace-nowrap">- {formatCurrency(discount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-[11px] font-medium">
-                    <span className="text-slate-400">Tax ({(POS_TAX_RATE * 100).toFixed(0)}%)</span>
-                    <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatIDR(tax)}</span>
+                    <span className="text-slate-400">Tax</span>
+                    <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatCurrency(tax)}</span>
                   </div>
                   <div className="flex justify-between pt-1">
                     <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Total Due</span>
-                    <span className="text-base font-black text-slate-900 dark:text-white whitespace-nowrap">{formatIDR(totalDue)}</span>
+                    <span className="text-base font-black text-slate-900 dark:text-white whitespace-nowrap">{formatCurrency(totalDue)}</span>
                   </div>
                 </div>
               </div>
@@ -320,7 +378,7 @@ export default function POSPaymentPage() {
                       selected={paymentMethod === method.id}
                       onClick={() => {
                         if (!method.disabled) {
-                          setValue("payment.method", method.id as any);
+                          setValue("payment.method", method.id as PosCheckoutFormValues["payment"]["method"]);
                         }
                       }}
                       icon={<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">{method.icon}</svg>}
@@ -333,11 +391,11 @@ export default function POSPaymentPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[11px] font-bold">
                     <span className="text-slate-400 uppercase tracking-widest">Total Due</span>
-                    <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">{formatIDR(totalDue)}</span>
+                    <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">{formatCurrency(totalDue)}</span>
                   </div>
                   <div className="flex justify-between items-center rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800 relative">
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">Received</span>
-                    <span className="text-base font-black text-brand-500 whitespace-nowrap">{formatIDR(amountPaid)}</span>
+                    <span className="text-base font-black text-brand-500 whitespace-nowrap">{formatCurrency(amountPaid)}</span>
                     {errors.payment?.amount_paid && (
                       <p className="absolute -bottom-4 right-0 text-[10px] font-bold text-red-500">
                         {errors.payment.amount_paid.message}
@@ -347,9 +405,14 @@ export default function POSPaymentPage() {
                   <div className="flex justify-between items-end pt-1 border-t border-slate-100 dark:border-slate-700">
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Change</span>
                     <span className="text-2xl font-black text-success-500 whitespace-nowrap leading-none tabular-nums">
-                      {formatIDR(change)}
+                      {formatCurrency(change)}
                     </span>
                   </div>
+                  {errors.root?.message && (
+                    <div className="rounded-2xl border border-red-200 bg-red-50/50 px-4 py-3 text-xs text-red-600 dark:border-red-800/30 dark:bg-red-950/20 dark:text-red-400 mt-2 font-semibold">
+                      {errors.root.message}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-6 space-y-3">
@@ -367,12 +430,6 @@ export default function POSPaymentPage() {
                       )}
                     </div>
                   </Button>
-                  <button
-                    className="w-full text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 transition-colors"
-                    onClick={() => {/* Mock print */ }}
-                  >
-                    Print Receipt Only
-                  </button>
                 </div>
               </div>
             </div>
@@ -384,7 +441,7 @@ export default function POSPaymentPage() {
         <PaymentSuccessModal
           isOpen={true}
           transactionId={successData.order_id}
-          totalPaid={formatIDR(successData.paid)}
+          totalPaid={formatCurrency(successData.paid)}
           paymentMethod={paymentMethod}
           onDone={handleSuccessDone}
           onPrintReceipt={handleSuccessPrint}

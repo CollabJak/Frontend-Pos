@@ -22,10 +22,11 @@ export interface PosCheckoutPayload {
   location_id: number;
   items: PosCheckoutItemPayload[];
   payment: {
-    method: "cash" | "card" | "qris";
+    method: "cash" | "card" | "qris" | "split" | "wallet";
     amount_paid: string;
   };
   device_id?: string;
+  expected_total?: string;
 }
 
 export interface PosCheckoutResult {
@@ -35,4 +36,30 @@ export interface PosCheckoutResult {
   change: number;
   items: ReceiptItem[];
   receipt: ReceiptPayload;
+}
+
+export interface PosShift {
+  id: number;
+  business_id: number;
+  location_id: number;
+  user_id: number;
+  device_id?: string | null;
+  status: "open" | "closed";
+  opened_at: string;
+  closed_at?: string | null;
+  starting_cash: number;
+  expected_cash: number;
+  actual_cash?: number | null;
+  difference?: number | null;
+  notes?: string | null;
+}
+
+export interface PosShiftCashMovement {
+  id: number;
+  pos_shift_id: number;
+  user_id: number;
+  type: "in" | "out";
+  amount: number;
+  description?: string | null;
+  created_at: string;
 }
