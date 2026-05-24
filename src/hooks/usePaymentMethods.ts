@@ -13,7 +13,7 @@ export const useFetchPaymentMethods = (filters: any = {}) => {
     });
 };
 
-export const useFetchPaymentMethodOptions = (context: 'system' | 'bussines' = 'bussines') => {
+export const useFetchPaymentMethodOptions = (context: 'system' | 'business' = 'business') => {
     return useQuery({
         queryKey: ['payment-method-options', context],
         queryFn: async () => {

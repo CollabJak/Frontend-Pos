@@ -40,6 +40,8 @@ interface PosStoreState {
   clearCart: () => void;
   setPricingSnapshot: (snapshot: PosCalculateCartResult | null) => void;
   toGridItems: (search: string) => PosGridItem[];
+  selectedPaymentMethodId: number | null;
+  setSelectedPaymentMethodId: (id: number | null) => void;
 }
 
 const syncCartItems = (items: PosCartItem[], productsMap: Map<number, PosProduct>): PosCartItem[] => {
@@ -98,10 +100,13 @@ export const usePosStore = create<PosStoreState>()(
       cartItems: [],
       deviceId: buildDeviceId(),
       pricingSnapshot: null,
+      selectedPaymentMethodId: null,
 
       setSelectedLocation: (locationId) => {
-        set({ selectedLocation: locationId, cartItems: [], pricingSnapshot: null });
+        set({ selectedLocation: locationId, cartItems: [], pricingSnapshot: null, selectedPaymentMethodId: null });
       },
+
+      setSelectedPaymentMethodId: (id) => set({ selectedPaymentMethodId: id }),
 
       setProducts: (products) => {
         const productsMap = new Map(products.map((product) => [product.variantId, product]));
@@ -286,6 +291,7 @@ export const usePosStore = create<PosStoreState>()(
         selectedLocation: state.selectedLocation,
         cartItems: state.cartItems,
         deviceId: state.deviceId,
+        selectedPaymentMethodId: state.selectedPaymentMethodId,
       }),
     }
   )

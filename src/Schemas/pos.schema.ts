@@ -9,7 +9,7 @@ export const posCheckoutSchema = z.object({
   location_id: z.number().int("Location is invalid").positive("Location is required"),
   items: z.array(posCheckoutItemSchema).min(1, "Cart is empty"),
   payment: z.object({
-    method: z.enum(["cash", "card", "qris", "split", "wallet"]),
+    payment_method_id: z.number().int("Payment method is invalid").positive("Payment method is required"),
     amount_paid: z.coerce.number().positive("Paid amount must be greater than zero"),
   }),
   device_id: z.string().trim().min(1).optional(),

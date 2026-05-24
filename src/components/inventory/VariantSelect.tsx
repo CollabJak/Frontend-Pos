@@ -1,6 +1,8 @@
 import AsyncSearchSelect from "../form/AsyncSearchSelect";
 import Label from "../form/Label";
-import { createOptionsFetcher, OptionDto } from "../../api/options";
+import apiClient from "../../api/axiosConfig";
+import type { ApiResponse } from "../../types/api";
+import type { OptionDto } from "../../api/options";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -8,21 +10,46 @@ interface VariantSelectProps {
   value: number | null;
   onChange: (value: number | null) => void;
   disabled?: boolean;
+  locationId?: number | null;
   label?: string;
   placeholder?: string;
 }
-
-const fetchVariantOptions = createOptionsFetcher<SelectOption>({
-  endpoint: "/options/product-variants",
-});
 
 export default function VariantSelect({
   value,
   onChange,
   disabled = false,
+  locationId = null,
   label = "Product Variant",
   placeholder = "Search product variant...",
 }: VariantSelectProps) {
+  const fetchVariantOptions = async (params: {
+    limit: number;
+    search?: string;
+    signal?: AbortSignal;
+  }): Promise<SelectOption[]> => {
+    const response = await apiClient.get<ApiResponse<unknown>>("/options/product-variants", {
+      params: {
+        limit: params.limit,
+        ...(params.search ? { search: params.search } : {}),
+        ...(locationId ? { location_id: locationId } : {}),
+      },
+      signal: params.signal,
+    });
+
+    const payload = response.data.data as SelectOption[] | { data?: SelectOption[] } | null | undefined;
+
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    if (payload && Array.isArray(payload.data)) {
+      return payload.data;
+    }
+
+    return [];
+  };
+
   return (
     <div>
       <Label>{label}</Label>
@@ -36,6 +63,7 @@ export default function VariantSelect({
         fetchOptions={fetchVariantOptions}
         optionLabel="name"
         optionValue="id"
+        keyName={`product-variants-${locationId ?? "all"}`}
         debounceMs={400}
         searchMinLength={0}
         disabled={disabled}

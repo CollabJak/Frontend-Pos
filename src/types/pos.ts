@@ -22,7 +22,7 @@ export interface PosCheckoutPayload {
   location_id: number;
   items: PosCheckoutItemPayload[];
   payment: {
-    method: "cash" | "card" | "qris" | "split" | "wallet";
+    payment_method_id: number;
     amount_paid: string;
   };
   device_id?: string;

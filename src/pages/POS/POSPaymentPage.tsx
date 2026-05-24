@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { isAxiosError } from "axios";
 import { usePosStore } from "../../stores/pos.store";
@@ -11,18 +11,23 @@ import { usePosCheckout } from "../../hooks/usePos";
 import { useReceiptPrint } from "../../hooks/useReceiptPrint";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
 import { useZodForm } from "../../hooks/form/useZodForm";
-import { posCheckoutSchema, type PosCheckoutFormValues } from "../../Schemas/pos.schema";
+import { posCheckoutSchema } from "../../Schemas/pos.schema";
 import type { PosCheckoutResult } from "../../types/types";
 import { formatCurrency } from "../../utils/currency";
 import { resolveErrorMessage } from "../../utils/error";
 import { POS_TAX_RATE } from "../../constants/pos";
+import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
+import { runtimeConfig } from "../../utils/runtimeConfig";
+import { Modal } from "../../components/ui/modal";
+import { EyeIcon } from "../../icons";
 
 export default function POSPaymentPage() {
   const navigate = useNavigate();
-  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot } = usePosStore();
+  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot, selectedPaymentMethodId } = usePosStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState<PosCheckoutResult | null>(null);
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const idempotencyKeyRef = useRef<string | null>(null);
 
   const {
@@ -41,14 +46,14 @@ export default function POSPaymentPage() {
         qty: item.qty,
       })),
       payment: {
-        method: "cash",
+        payment_method_id: 0,
         amount_paid: 0,
       },
       device_id: deviceId,
     },
   });
 
-  const paymentMethod = watch("payment.method");
+  const selectedMethodId = watch("payment.payment_method_id");
   const amountPaid = watch("payment.amount_paid");
 
   // Local state for the raw keypad string to handle decimals/zeros correctly
@@ -60,6 +65,16 @@ export default function POSPaymentPage() {
   });
 
   const { mutateAsync: checkoutOrder } = usePosCheckout();
+
+  const { data: paymentMethods, isLoading: isLoadingMethods } = useFetchPaymentMethodOptions('business');
+
+  const selectedMethodModel = useMemo(() => {
+    return paymentMethods?.find((m) => m.id === selectedMethodId);
+  }, [paymentMethods, selectedMethodId]);
+
+  const isCash = useMemo(() => {
+    return !selectedMethodModel || selectedMethodModel.type === "cash";
+  }, [selectedMethodModel]);
 
   // Helper to format amount for display (e.g. 1.000,50)
   const formatAmountDisplay = (str: string) => {
@@ -91,8 +106,49 @@ export default function POSPaymentPage() {
     return pricingSnapshot?.grand_total ?? (subtotal - discount + tax);
   }, [subtotal, discount, tax, pricingSnapshot]);
 
+  // Auto-select is_default payment method or the one pre-selected in store
+  useEffect(() => {
+    if (paymentMethods && paymentMethods.length > 0) {
+      const activeMethods = paymentMethods.filter((m) => m.is_active);
+      const methodToSelect = activeMethods.find((m) => m.id === selectedPaymentMethodId) ||
+                            activeMethods.find((m) => m.is_default) ||
+                            activeMethods[0];
+      
+      if (methodToSelect && selectedMethodId === 0) {
+        setValue("payment.payment_method_id", methodToSelect.id, { shouldValidate: true });
+        
+        if (methodToSelect.type !== "cash") {
+          setReceivedAmountStr(totalDue.toString());
+          setValue("payment.amount_paid", totalDue, { shouldValidate: true });
+        } else {
+          setReceivedAmountStr("0");
+          setValue("payment.amount_paid", 0);
+        }
+      }
+    }
+  }, [paymentMethods, selectedPaymentMethodId, selectedMethodId, totalDue, setValue]);
+
   const receivedAmount = parseFloat(receivedAmountStr || "0");
   const change = Math.max(0, receivedAmount - totalDue);
+
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const baseUrl = runtimeConfig.apiBaseUrl.replace(/\/api\/?$/, "");
+    return `${baseUrl}/storage/${path}`;
+  };
+
+  const getMethodIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "cash":
+        return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />;
+      case "qris":
+        return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h.01M18 8h.01M6 12h.01M18 12h.01M6 16h.01M12 16h.01M18 16h.01M6 8h.01M12 8h.01M12 12h.01M4 4h4v4H4V4zm0 12h4v4H4v-4zm12-12h4v4h-4V4z" />;
+      default:
+        // bank_transfer, card, wallet, etc.
+        return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" />;
+    }
+  };
 
   // Keypad Handlers
   const handleKeyPress = (key: string) => {
@@ -312,51 +368,175 @@ export default function POSPaymentPage() {
               </div>
             </div>
 
-            {/* Middle Column: Keypad */}
+            {/* Middle Column: Keypad / Non-Cash Details */}
             <div className="flex h-full flex-col space-y-4 lg:col-span-5 min-h-0">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-brand-500 shrink-0">
-                Amount Received
+                {isCash ? "Amount Received" : "Payment Details"}
               </h2>
               <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-                {/* Display */}
-                <div className="relative flex h-20 shrink-0 items-center justify-end rounded-3xl bg-white px-8 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 shadow-sm group transition-all">
-                  <div className="absolute left-8 flex items-center gap-2">
-                    <span className="text-xl font-black text-brand-500/30">Rp</span>
-                  </div>
-                  <span className="text-5xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">
-                    {formatAmountDisplay(receivedAmountStr)}
-                  </span>
-                  <button
-                    onClick={handleClear}
-                    className="absolute right-2 top-3 p-1 text-slate-300 hover:text-slate-600 dark:hover:text-white bg-slate-50 dark:bg-slate-700 rounded-lg transition-all"
-                  >
-                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
+                {isCash ? (
+                  <>
+                    {/* Display */}
+                    <div className="relative flex h-20 shrink-0 items-center justify-end rounded-3xl bg-white px-8 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 shadow-sm group transition-all">
+                      <div className="absolute left-8 flex items-center gap-2">
+                        <span className="text-xl font-black text-brand-500/30">Rp</span>
+                      </div>
+                      <span className="text-5xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">
+                        {formatAmountDisplay(receivedAmountStr)}
+                      </span>
+                      <button
+                        onClick={handleClear}
+                        className="absolute right-2 top-3 p-1 text-slate-300 hover:text-slate-600 dark:hover:text-white bg-slate-50 dark:bg-slate-700 rounded-lg transition-all"
+                      >
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
 
-                {/* Pad */}
-                <Keypad onKeyPress={handleKeyPress} className="flex-1" />
+                    {/* Pad */}
+                    <Keypad onKeyPress={handleKeyPress} className="flex-1" />
 
-                {/* Quick Cash */}
-                <div className="space-y-2 shrink-0">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quick Cash</span>
-                  <div className="grid grid-cols-4 gap-2">
-                    <button onClick={() => handleQuickCash(20000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                      20k
-                    </button>
-                    <button onClick={() => handleQuickCash(50000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                      50k
-                    </button>
-                    <button onClick={() => handleQuickCash(100000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                      100k
-                    </button>
-                    <button onClick={handleExact} className="rounded-xl bg-brand-500 py-2.5 text-[11px] font-bold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-600 active:scale-95">
-                      Exact
-                    </button>
+                    {/* Quick Cash */}
+                    <div className="space-y-2 shrink-0">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quick Cash</span>
+                      <div className="grid grid-cols-4 gap-2">
+                        <button onClick={() => handleQuickCash(20000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                          20k
+                        </button>
+                        <button onClick={() => handleQuickCash(50000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                          50k
+                        </button>
+                        <button onClick={() => handleQuickCash(100000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
+                          100k
+                        </button>
+                        <button onClick={handleExact} className="rounded-xl bg-brand-500 py-2.5 text-[11px] font-bold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-600 active:scale-95">
+                          Exact
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-1 flex-col overflow-y-auto rounded-3xl bg-slate-50/50 p-6 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 space-y-6">
+                    {/* Readonly Display */}
+                    <div className="text-center py-4 border-b border-slate-200/60 dark:border-slate-700/60">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                        Amount to Pay
+                      </span>
+                      <span className="text-3xl font-black text-slate-900 dark:text-white">
+                        {formatCurrency(totalDue)}
+                      </span>
+                    </div>
+
+                    {selectedMethodModel && selectedMethodModel.type === "qris" ? (
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <span className="text-xs font-black uppercase tracking-wider text-brand-500">
+                          Scan QRIS Code
+                        </span>
+                        
+                        <div 
+                          onClick={() => setIsZoomModalOpen(true)}
+                          className="relative group cursor-pointer p-3 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-all duration-300 hover:scale-[1.03]"
+                        >
+                          {selectedMethodModel.qr_image_path ? (
+                            <>
+                              <img
+                                src={getImageUrl(selectedMethodModel.qr_image_path)}
+                                alt="QRIS Code"
+                                className="w-56 h-56 object-contain rounded-2xl"
+                              />
+                              {/* Sleek Overlay Hover */}
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-3xl">
+                                <div className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white ring-1 ring-white/30 transform scale-95 group-hover:scale-100 transition-all duration-300">
+                                  <EyeIcon className="h-6 w-6" />
+                                </div>
+                              </div>
+                              {/* Floating Eye Button */}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsZoomModalOpen(true);
+                                }}
+                                className="absolute top-4 right-4 p-1.5 rounded-lg bg-slate-50 border border-slate-100 text-slate-500 hover:text-brand-500 hover:scale-105 transition-all shadow-sm dark:bg-slate-800 dark:border-slate-700"
+                              >
+                                <EyeIcon className="h-4 w-4" />
+                              </button>
+                            </>
+                          ) : (
+                            <div className="w-56 h-56 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400">
+                              <svg className="w-16 h-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h.01M18 8h.01M6 12h.01M18 12h.01M6 16h.01M12 16h.01M18 16h.01M6 8h.01M12 8h.01M12 12h.01M4 4h4v4H4V4zm0 12h4v4H4v-4zm12-12h4v4h-4V4z" />
+                              </svg>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">No QR Image Available</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <p className="text-[11px] text-slate-500 max-w-xs leading-relaxed font-semibold">
+                          Show the QR code above to scan and pay. Click to zoom in.
+                        </p>
+                      </div>
+                    ) : 
+                    selectedMethodModel && selectedMethodModel.type !== "cash" ? (
+                      <div className="flex flex-col space-y-4">
+                        <span className="text-xs font-black uppercase tracking-wider text-brand-500 text-center block">
+                          {selectedMethodModel.name} Details
+                        </span>
+                        
+                        <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                          {selectedMethodModel.provider_name && (
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 font-medium">Provider / Bank</span>
+                              <span className="font-bold text-slate-800 dark:text-white uppercase">
+                                {selectedMethodModel.provider_name}
+                              </span>
+                            </div>
+                          )}
+                          {selectedMethodModel.account_number && (
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 font-medium">Account / Ref Number</span>
+                              <span className="font-black text-slate-800 dark:text-white tracking-widest font-mono">
+                                {selectedMethodModel.account_number}
+                              </span>
+                            </div>
+                          )}
+                          {selectedMethodModel.account_name && (
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-slate-400 font-medium">Account / Holder Name</span>
+                              <span className="font-bold text-slate-800 dark:text-white">
+                                {selectedMethodModel.account_name}
+                              </span>
+                            </div>
+                          )}
+                          {selectedMethodModel.description && (
+                            <div className="border-t border-slate-100 dark:border-slate-800 pt-3 text-xs">
+                              <span className="text-slate-400 font-medium block mb-1">Description</span>
+                              <p className="text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                                {selectedMethodModel.description}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {selectedMethodModel.payment_instructions && (
+                          <div className="rounded-xl bg-brand-50/30 dark:bg-brand-500/5 p-4 border border-brand-100/30 dark:border-brand-500/10">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-brand-500 block mb-1">
+                              Instructions
+                            </span>
+                            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                              {selectedMethodModel.payment_instructions}
+                            </p>
+                          </div>
+                        )}
+                        
+                        <p className="text-[11px] text-slate-500 text-center leading-relaxed font-semibold">
+                          Verify the transaction before completing this order.
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -366,25 +546,43 @@ export default function POSPaymentPage() {
                 Payment Method
               </h2>
               <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
-                {[
-                  { id: "cash", label: "Cash", disabled: false, icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /> },
-                  { id: "card", label: "Credit Card (Soon)", disabled: true, icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" /> },
-                  { id: "split", label: "Split (Soon)", disabled: true, icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /> },
-                  { id: "wallet", label: "E-Wallet (Soon)", disabled: true, icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
-                ].map((method) => (
-                  <div key={method.id} className={method.disabled ? "w-full opacity-40 grayscale cursor-not-allowed" : "w-full"}>
-                    <PaymentMethodCard
-                      label={method.label}
-                      selected={paymentMethod === method.id}
-                      onClick={() => {
-                        if (!method.disabled) {
-                          setValue("payment.method", method.id as PosCheckoutFormValues["payment"]["method"]);
-                        }
-                      }}
-                      icon={<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">{method.icon}</svg>}
-                    />
+                {isLoadingMethods ? (
+                  <div className="flex justify-center py-8">
+                    <span className="text-xs font-semibold text-slate-400">Loading payment methods...</span>
                   </div>
-                ))}
+                ) : paymentMethods && paymentMethods.length > 0 ? (
+                  paymentMethods
+                    .filter((method) => method.is_active)
+                    .map((method) => (
+                      <div key={method.id} className="w-full">
+                        <PaymentMethodCard
+                          label={method.name}
+                          selected={selectedMethodId === method.id}
+                          onClick={() => {
+                            setValue("payment.payment_method_id", method.id, { shouldValidate: true });
+                            if (method.type !== "cash") {
+                              setReceivedAmountStr(totalDue.toString());
+                              setValue("payment.amount_paid", totalDue, { shouldValidate: true });
+                            } else {
+                              setReceivedAmountStr("0");
+                              setValue("payment.amount_paid", 0, { shouldValidate: true });
+                            }
+                          }}
+                          icon={
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              {getMethodIcon(method.type)}
+                            </svg>
+                          }
+                        />
+                      </div>
+                    ))
+                ) : (
+                  <div className="flex justify-center py-8">
+                    <span className="text-xs font-semibold text-slate-400 text-center">
+                      No active payment methods found.
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="mt-4 rounded-3xl bg-white p-6 shadow-xl dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 shrink-0">
@@ -394,7 +592,7 @@ export default function POSPaymentPage() {
                     <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">{formatCurrency(totalDue)}</span>
                   </div>
                   <div className="flex justify-between items-center rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800 relative">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">Received</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">{isCash ? "Received" : "Paid"}</span>
                     <span className="text-base font-black text-brand-500 whitespace-nowrap">{formatCurrency(amountPaid)}</span>
                     {errors.payment?.amount_paid && (
                       <p className="absolute -bottom-4 right-0 text-[10px] font-bold text-red-500">
@@ -442,10 +640,47 @@ export default function POSPaymentPage() {
           isOpen={true}
           transactionId={successData.order_id}
           totalPaid={formatCurrency(successData.paid)}
-          paymentMethod={paymentMethod}
+          paymentMethod={selectedMethodModel?.name || "Payment"}
           onDone={handleSuccessDone}
           onPrintReceipt={handleSuccessPrint}
         />
+      )}
+
+      {selectedMethodModel?.type === "qris" && selectedMethodModel.qr_image_path && (
+        <Modal
+          isOpen={isZoomModalOpen}
+          onClose={() => setIsZoomModalOpen(false)}
+          className="max-w-lg"
+        >
+          <div className="p-6">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <EyeIcon className="h-5 w-5 text-brand-500" />
+                QR Code Pembayaran
+              </h3>
+            </div>
+            
+            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-inner mb-6">
+              <img
+                src={getImageUrl(selectedMethodModel.qr_image_path)}
+                alt="QR Code Zoomed"
+                className="max-h-[50vh] w-auto max-w-full object-contain rounded-lg ring-1 ring-slate-200 dark:ring-slate-800"
+              />
+            </div>
+
+            <div className="p-4 bg-brand-50 dark:bg-brand-500/5 rounded-xl border border-brand-100/50 dark:border-brand-500/10 text-center">
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                Pindai kode QR di atas menggunakan aplikasi perbankan atau e-wallet Anda untuk menyelesaikan pembayaran.
+              </p>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button onClick={() => setIsZoomModalOpen(false)} variant="outline">
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </Modal>
       )}
 
       {successData?.receipt ? (

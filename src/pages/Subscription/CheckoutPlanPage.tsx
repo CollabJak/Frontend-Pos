@@ -491,7 +491,7 @@ export default function CheckoutPlanPage() {
                     <img
                         src={activeMethod?.qr_image_url || undefined}
                         alt="QR Code Zoomed"
-                        className="max-w-xs md:max-w-sm w-full h-auto object-contain rounded-lg ring-1 ring-gray-100"
+                        className="max-h-[50vh] w-auto max-w-full object-contain rounded-lg ring-1 ring-gray-100"
                     />
                 </div>
 

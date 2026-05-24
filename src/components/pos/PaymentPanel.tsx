@@ -7,6 +7,17 @@ const formatCurrency = (value: number): string =>
     minimumFractionDigits: 0,
   }).format(value).replace("Rp", "Rp.");
 
+const getMethodIconPath = (type: string): string => {
+  switch (type?.toLowerCase()) {
+    case "cash":
+      return "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z";
+    case "qris":
+      return "M12 4v1m6 11h.01M18 8h.01M6 12h.01M18 12h.01M6 16h.01M12 16h.01M18 16h.01M6 8h.01M12 8h.01M12 12h.01M4 4h4v4H4V4zm0 12h4v4H4v-4zm12-12h4v4h-4V4z";
+    default:
+      return "M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z";
+  }
+};
+
 interface PaymentPanelProps {
   subtotal: number;
   discount: number;
@@ -19,6 +30,9 @@ interface PaymentPanelProps {
   onReprintReceipt?: () => void;
   reprintDisabled?: boolean;
   isCalculatingPrice?: boolean;
+  paymentMethods?: any[];
+  selectedPaymentMethodId?: number | null;
+  onSelectPaymentMethod?: (id: number | null) => void;
 }
 
 export default function PaymentPanel({
@@ -31,6 +45,9 @@ export default function PaymentPanel({
   errorMessage,
   onPayNow,
   isCalculatingPrice = false,
+  paymentMethods = [],
+  selectedPaymentMethodId = null,
+  onSelectPaymentMethod,
 }: PaymentPanelProps) {
   return (
     <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
@@ -84,23 +101,32 @@ export default function PaymentPanel({
       )}
 
       {/* Payment Methods */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { id: "card", label: "CARD", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" },
-          { id: "cash", label: "CASH", icon: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
-          { id: "scan", label: "SCAN", icon: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" },
-        ].map((method) => (
-          <button
-            key={method.id}
-            className="flex flex-col items-center justify-center gap-2 rounded-xl bg-brand-50/50 py-4 text-brand-600 transition-all hover:bg-brand-50 active:scale-95 dark:bg-brand-500/5 dark:text-brand-400 dark:hover:bg-brand-500/10"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={method.icon} />
-            </svg>
-            <span className="text-[10px] font-black uppercase tracking-widest">{method.label}</span>
-          </button>
-        ))}
-      </div>
+      {paymentMethods && paymentMethods.length > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          {paymentMethods.map((method) => {
+            const isSelected = selectedPaymentMethodId === method.id;
+            return (
+              <button
+                key={method.id}
+                type="button"
+                onClick={() => onSelectPaymentMethod?.(method.id)}
+                className={`flex flex-col items-center justify-center gap-2 rounded-xl py-3.5 transition-all duration-300 active:scale-95 border ${
+                  isSelected
+                    ? "bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/25 dark:bg-brand-600 dark:border-brand-600"
+                    : "bg-brand-50/50 border-transparent text-brand-600 hover:bg-brand-50 dark:bg-brand-500/5 dark:text-brand-400 dark:hover:bg-brand-500/10"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getMethodIconPath(method.type)} />
+                </svg>
+                <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-full px-1">
+                  {method.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Pay Button */}
       <Button
