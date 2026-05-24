@@ -57,18 +57,14 @@ const navItems: NavItem[] = [
       { name: "Atributes", path: "/atributes", pro: false, permissions: ["atribute.view"] }
     ],
   },
-  {
-    icon: <ListIcon />,
-    name: "Warehouse",
-    path: "/warehouses",
-    permissions: ["warehouse.view"],
-  },
+
   {
     icon: <ListIcon />,
     name: "Inventory",
     permissions: ["inventory.view"],
     subItems: [
       { name: "Inventory List", path: "/inventory", pro: false, permissions: ["inventory.view"] },
+      { name: "Orphaned Stocks", path: "/inventory/orphaned", pro: false, permissions: ["inventory.view"] },
       { name: "Inventory Movements", path: "/inventory/movements", pro: false, permissions: ["inventory.movements"] },
       { name: "Stock Adjustment", path: "/inventory/adjustment", pro: false, permissions: ["inventory.adjustment"] },
     ],

@@ -16,7 +16,7 @@ export const toPosCheckoutPayload = (
     qty: item.qty,
   })),
   payment: {
-    method: values.payment.method,
+    payment_method_id: values.payment.payment_method_id,
     amount_paid: toMoneyString(values.payment.amount_paid),
   },
   device_id: values.device_id,

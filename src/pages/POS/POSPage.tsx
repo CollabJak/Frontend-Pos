@@ -24,6 +24,7 @@ import AddCashMovementModal from "../../components/pos/AddCashMovementModal";
 import CloseShiftModal from "../../components/pos/CloseShiftModal";
 import { resolveErrorMessage } from "../../utils/error";
 import { POS_TAX_RATE } from "../../constants/pos";
+import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
 
 export default function POSPage() {
   const navigate = useNavigate();
@@ -50,7 +51,23 @@ export default function POSPage() {
     clearCart,
     setPricingSnapshot,
     toGridItems,
+    selectedPaymentMethodId,
+    setSelectedPaymentMethodId,
   } = usePosStore();
+
+  // Fetch dynamic payment methods
+  const { data: paymentMethods = [] } = useFetchPaymentMethodOptions('business');
+
+  // Auto-select the default payment method on initial fetch if none is set
+  useEffect(() => {
+    if (paymentMethods && paymentMethods.length > 0 && selectedPaymentMethodId === null) {
+      const activeMethods = paymentMethods.filter((m) => m.is_active);
+      const defaultMethod = activeMethods.find((m) => m.is_default) || activeMethods[0];
+      if (defaultMethod) {
+        setSelectedPaymentMethodId(defaultMethod.id);
+      }
+    }
+  }, [paymentMethods, selectedPaymentMethodId, setSelectedPaymentMethodId]);
 
   // Active POS Shift Register Guard Query
   const { data: activeShiftResponse, isLoading: isActiveShiftLoading } = useFetchActivePosShift(
@@ -81,7 +98,7 @@ export default function POSPage() {
         qty: item.qty,
       })),
       payment: {
-        method: "cash",
+        payment_method_id: selectedPaymentMethodId ?? 0,
         amount_paid: 0,
       },
       device_id: deviceId,
@@ -344,6 +361,9 @@ export default function POSPage() {
             errorMessage={checkoutErrorMessage}
             onPayNow={handleCheckout}
             isCalculatingPrice={isCalculatingPrice}
+            paymentMethods={paymentMethods.filter((m) => m.is_active)}
+            selectedPaymentMethodId={selectedPaymentMethodId}
+            onSelectPaymentMethod={setSelectedPaymentMethodId}
           />
         }
       />

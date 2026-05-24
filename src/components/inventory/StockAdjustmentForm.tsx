@@ -145,6 +145,7 @@ export default function StockAdjustmentForm() {
               <div>
                 <VariantSelect
                   value={field.value > 0 ? field.value : null}
+                  locationId={locationId}
                   onChange={(value) => {
                     field.onChange(value ?? 0);
                     changeVariant(value);

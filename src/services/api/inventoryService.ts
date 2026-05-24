@@ -92,3 +92,19 @@ export const fetchInventorySummary = async (): Promise<InventorySummary> => {
   const response = await apiClient.get("/inventory/summary");
   return response.data.data;
 };
+
+export const fetchOrphanedStocks = async ({
+  page = 1,
+  search,
+  locationId,
+}: InventoryListParams): Promise<PaginatedApiResponse<InventoryListItem>> => {
+  const response = await apiClient.get("/inventory/orphaned-stocks", {
+    params: {
+      page,
+      ...(search ? { search } : {}),
+      ...(locationId ? { location_id: locationId } : {}),
+    },
+  });
+
+  return response.data.data;
+};

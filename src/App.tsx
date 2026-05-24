@@ -78,14 +78,12 @@ import EditLocation from "./pages/Locations/EditLocation";
 import BusinessList from "./pages/Businesses/BusinessList";
 import AddBusiness from "./pages/Businesses/AddBusiness";
 import EditBusiness from "./pages/Businesses/EditBusiness";
-import WarehouseList from "./pages/Warehouses/WarehouseList";
-import AddWarehouse from "./pages/Warehouses/AddWarehouses";
-import EditWarehouse from "./pages/Warehouses/EditWarehouses";
 import VerifyEmail from "./pages/Auth/VerifyEmail";
 import RoleList from "./pages/Roles/RoleList";
 import PermissionList from "./pages/Roles/PermissionList";
 import SubscriptionPlanForm from "./pages/SubscriptionPlans/SubscriptionPlanForm";
 import InventoryList from "./pages/Inventory/InventoryList";
+import InventoryOrphanedList from "./pages/Inventory/InventoryOrphanedList";
 import InventoryDetail from "./pages/Inventory/InventoryDetail";
 import InventoryMovements from "./pages/Inventory/InventoryMovements";
 import InventoryAdjustment from "./pages/Inventory/InventoryAdjustment";
@@ -201,16 +199,10 @@ export default function App() {
                 <Route path="/locations/edit/:id" element={<EditLocation />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["warehouse.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/warehouses" element={<WarehouseList />} />
-                <Route path="/warehouses/create" element={<AddWarehouse />} />
-                <Route path="/warehouses/edit/:id" element={<EditWarehouse />} />
-              </Route>
-
               <Route element={<ProtectedRoute allowedPermissions={["inventory.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
 
                 <Route path="/inventory" element={<InventoryList />} />
+                <Route path="/inventory/orphaned" element={<InventoryOrphanedList />} />
                 <Route path="/inventory/movements" element={<InventoryMovements />} />
                 <Route path="/inventory/adjustment" element={<InventoryAdjustment />} />
                 <Route path="/inventory/:variantId" element={<InventoryDetail />} />

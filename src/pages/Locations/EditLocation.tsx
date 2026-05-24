@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { fetchLocationOptions as fetchBaseLocationOptions, OptionDto } from "../../api/options";
 import { useFetchLocation, useUpdateLocation } from "../../hooks/useLocations";
 import { ApiErrorResponse, LocationFormData } from "../../types/types";
@@ -30,6 +31,10 @@ export default function EditLocation() {
 
   const { data: location, isLoading } = useFetchLocation(locationId);
   const { mutate: updateLocation, isPending } = useUpdateLocation();
+
+  // --- Location Type Change Warning States ---
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<LocationFormData | null>(null);
 
   const fetchLocationOptions = async (params: {
     limit: number;
@@ -66,8 +71,7 @@ export default function EditLocation() {
     setValue("parent_id", location.parent_id ?? null);
   }, [location, setValue]);
 
-  const onSubmit = (data: LocationFormData) => {
-    setError("root", { type: "server", message: "" });
+  const executeSubmit = (data: LocationFormData) => {
     updateLocation(
       { id: locationId, ...data },
       {
@@ -93,6 +97,32 @@ export default function EditLocation() {
         },
       }
     );
+  };
+
+  const onSubmit = (data: LocationFormData) => {
+    setError("root", { type: "server", message: "" });
+
+    // Check if the type of location has changed to prompt the warning modal
+    if (location && location.type !== data.type) {
+      setPendingFormData(data);
+      setIsWarningOpen(true);
+      return;
+    }
+
+    executeSubmit(data);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (pendingFormData) {
+      executeSubmit(pendingFormData);
+    }
+    setIsWarningOpen(false);
+    setPendingFormData(null);
+  };
+
+  const handleCancelUpdate = () => {
+    setIsWarningOpen(false);
+    setPendingFormData(null);
   };
 
   if (isLoading) {
@@ -171,6 +201,18 @@ export default function EditLocation() {
           </div>
         </form>
       </ComponentCard>
+
+      {/* Warning Dialog when changing Location Type */}
+      <ConfirmDialog
+        isOpen={isWarningOpen}
+        title="Ubah Tipe Lokasi?"
+        description="Mengubah tipe lokasi akan berdampak pada ketersediaan produk di lokasi ini berdasarkan pengaturan Product Variant Location Type. Apakah Anda yakin?"
+        confirmText="Yakin, Ubah Tipe"
+        cancelText="Batal"
+        tone="warning"
+        onConfirm={handleConfirmUpdate}
+        onCancel={handleCancelUpdate}
+      />
     </>
   );
 }
