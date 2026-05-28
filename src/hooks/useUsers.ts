@@ -3,7 +3,7 @@ import apiClient from "../api/axiosConfig";
 import { User } from "../types/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { ApiErrorResponse, PaginatedApiResponse, CreateUserPayload } from "../types/types";
+import { ApiErrorResponse, PaginatedApiResponse, CreateUserPayload, Location } from "../types/types";
 
 interface FetchUsersParams {
   page?: number;
@@ -126,6 +126,44 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
+    },
+  });
+};
+
+export const useFetchUserLocations = (userId: number) => {
+  return useQuery<Location[], AxiosError>({
+    queryKey: ["user-locations", userId],
+    queryFn: async () => {
+      const response = await apiClient.get(`/users/${userId}/locations`);
+      return response.data.data;
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useSyncUserLocations = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation<
+    Location[],
+    AxiosError<ApiErrorResponse>,
+    { userId: number; location_ids: number[]; primary_location_id: number }
+  >({
+    mutationFn: async ({ userId, location_ids, primary_location_id }) => {
+      const response = await apiClient.put(`/users/${userId}/locations`, {
+        location_ids,
+        primary_location_id,
+      });
+      return response.data.data;
+    },
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["user-locations", userId] });
+      // Invalidate auth me to refresh the logged-in user locations if self
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      navigate("/users");
     },
   });
 };

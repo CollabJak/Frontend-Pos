@@ -1,3 +1,5 @@
+import { Location } from "./location";
+
 export interface MerchantProfile {
   id?: number;
   name?: string | null;
@@ -20,4 +22,6 @@ export interface User {
   has_active_subscription?: boolean;
   subscription_status?: string | null;
   subscription_ends_at?: string | null;
+  locations?: Location[];
+  primary_location?: Location | null;
 }

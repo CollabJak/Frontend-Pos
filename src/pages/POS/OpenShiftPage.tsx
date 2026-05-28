@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,6 +20,7 @@ export default function OpenShiftPage() {
   const [searchParams] = useSearchParams();
   const { selectedLocation, setSelectedLocation } = usePosStore();
   const { mutate: openShift, isPending } = useOpenPosShift();
+  const [isCancelling, setIsCancelling] = useState(false);
 
   // Determine location ID from Zustand store or query parameters
   const urlLocationId = Number(searchParams.get("location_id"));
@@ -48,6 +49,8 @@ export default function OpenShiftPage() {
 
   // Sync state if store or URL parameters change
   useEffect(() => {
+    if (isCancelling) return;
+
     if (activeLocationId) {
       setValue("location_id", activeLocationId);
       if (!selectedLocation) {
@@ -57,7 +60,7 @@ export default function OpenShiftPage() {
       toast.error("Please select a store location first to open a shift.");
       navigate("/pos");
     }
-  }, [activeLocationId, selectedLocation, setSelectedLocation, setValue, navigate]);
+  }, [activeLocationId, selectedLocation, setSelectedLocation, setValue, navigate, isCancelling]);
 
   const onSubmit = (data: OpenPosShiftFormValues) => {
     clearErrors("root");
@@ -173,7 +176,11 @@ export default function OpenShiftPage() {
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => navigate("/pos")}
+                onClick={() => {
+                  setIsCancelling(true);
+                  setSelectedLocation(null);
+                  navigate("/pos");
+                }}
                 disabled={isPending}
               >
                 Cancel

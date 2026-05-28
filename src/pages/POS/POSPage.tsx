@@ -119,6 +119,12 @@ export default function POSPage() {
   );
 
   useEffect(() => {
+    if (selectedLocation === null && user?.locations && user.locations.length === 1) {
+      setSelectedLocation(user.locations[0].id);
+    }
+  }, [user, selectedLocation, setSelectedLocation]);
+
+  useEffect(() => {
     if (selectedLocation === null) {
       setProducts([]);
       return;
@@ -306,26 +312,48 @@ export default function POSPage() {
             searchValue={searchQuery}
             onSearchChange={setSearchQuery}
             locationSelector={
-              <Controller
-                name="location_id"
-                control={control}
-                render={({ field }) => (
-                  <div className="relative">
-                     <LocationSelect
-                      value={field.value ?? selectedLocation}
-                      onChange={(value) => {
-                        field.onChange(value ?? undefined);
-                        handleLocationChange(value);
-                      }}
-                      label=""
-                      placeholder="Switch Store..."
-                    />
-                    {errors.location_id?.message && (
-                      <p className="absolute -bottom-5 left-0 text-[10px] text-error-500">{errors.location_id.message}</p>
+              <div className="relative">
+                {user?.locations && user.locations.length > 1 ? (
+                  <select
+                    value={selectedLocation ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleLocationChange(val ? Number(val) : null);
+                    }}
+                    className="p-2.5 rounded-lg border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-300 focus:border-brand-500 focus:ring-brand-500 cursor-pointer"
+                  >
+                    <option value="" disabled>Select Store Location</option>
+                    {user.locations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>
+                        {loc.name} {loc.is_primary && "⭐"}
+                      </option>
+                    ))}
+                  </select>
+                ) : user?.locations && user.locations.length === 1 ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 text-xs font-semibold border border-brand-100 dark:border-brand-500/20">
+                    📍 {user.locations[0].name}
+                  </span>
+                ) : (
+                  <Controller
+                    name="location_id"
+                    control={control}
+                    render={({ field }) => (
+                      <LocationSelect
+                        value={field.value ?? selectedLocation}
+                        onChange={(value) => {
+                          field.onChange(value ?? undefined);
+                          handleLocationChange(value);
+                        }}
+                        label=""
+                        placeholder="Switch Store..."
+                      />
                     )}
-                  </div>
+                  />
                 )}
-              />
+                {errors.location_id?.message && (
+                  <p className="absolute -bottom-5 left-0 text-[10px] text-error-500">{errors.location_id.message}</p>
+                )}
+              </div>
             }
           />
         }

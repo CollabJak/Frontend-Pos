@@ -111,6 +111,12 @@ export default function UserList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
+                        Locations
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
                         Action
                       </TableCell>
                     </TableRow>
@@ -146,6 +152,29 @@ export default function UserList() {
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {user.phone}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-start text-theme-sm dark:text-gray-400">
+                          {user.locations && user.locations.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                              {user.locations.map((loc) => {
+                                const isPrimary = loc.is_primary || (user.primary_location && user.primary_location.id === loc.id);
+                                return (
+                                  <span
+                                    key={loc.id}
+                                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                      isPrimary
+                                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800"
+                                        : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
+                                    }`}
+                                  >
+                                    {loc.name} {isPrimary && "⭐️"}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <span className="text-red-500 text-xs italic">No location assigned</span>
+                          )}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">

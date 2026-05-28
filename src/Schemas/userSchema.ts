@@ -31,3 +31,14 @@ export const userSchema = z.object({
 });
 
 export type UserFormData = z.infer<typeof userSchema>;
+
+export const syncUserLocationsSchema = z.object({
+  location_ids: z.array(z.number()).min(1, "Please select at least one location."),
+  primary_location_id: z.number().nullable().refine((val) => val !== null && val !== undefined, "Please select a primary location."),
+}).refine((data) => data.primary_location_id !== null && data.location_ids.includes(data.primary_location_id!), {
+  message: "Primary location must be one of the selected locations.",
+  path: ["primary_location_id"],
+});
+
+export type SyncUserLocationsFormData = z.infer<typeof syncUserLocationsSchema>;
+
