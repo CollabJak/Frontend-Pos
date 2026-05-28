@@ -23,6 +23,22 @@ const AttendanceScannerPage: React.FC = () => {
   const { mutateAsync: checkIn, isPending: isCheckingIn } = useAttendanceMutation("checkin");
   const { mutateAsync: checkOut, isPending: isCheckingOut } = useAttendanceMutation("checkout");
 
+  const assignedLocations = user?.locations || [];
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (assignedLocations.length === 1) {
+      setSelectedLocationId(assignedLocations[0].id);
+    } else if (assignedLocations.length > 1) {
+      const primary = assignedLocations.find((loc) => loc.is_primary);
+      if (primary) {
+        setSelectedLocationId(primary.id);
+      } else {
+        setSelectedLocationId(assignedLocations[0].id);
+      }
+    }
+  }, [assignedLocations]);
+
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setInterval(() => {
@@ -67,6 +83,9 @@ const AttendanceScannerPage: React.FC = () => {
 
     const formData = new FormData();
     formData.append("face_image", file);
+    if (type === "checkin" && selectedLocationId) {
+      formData.append("location_id", selectedLocationId.toString());
+    }
 
     try {
       if (type === "checkin") {
@@ -176,11 +195,42 @@ const AttendanceScannerPage: React.FC = () => {
             </h2>
           </div>
 
+          <div className="space-y-4">
+            {assignedLocations.length === 0 ? (
+              <div className="p-4 rounded-xl border border-error-200 bg-error-50 dark:bg-error-950/10 text-error-600 dark:text-error-400 text-sm">
+                ⚠️ Anda belum ditugaskan ke lokasi kerja mana pun. Silakan hubungi manajer Anda.
+              </div>
+            ) : assignedLocations.length === 1 ? (
+              <div className="p-4 rounded-xl border border-brand-200 bg-brand-50/50 dark:bg-brand-950/10 text-gray-700 dark:text-gray-300 text-sm flex justify-between items-center">
+                <span>📍 Lokasi Absensi:</span>
+                <span className="font-bold text-brand-600 dark:text-brand-400">{assignedLocations[0].name}</span>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                  Pilih Lokasi Absensi
+                </label>
+                <select
+                  value={selectedLocationId || ""}
+                  onChange={(e) => setSelectedLocationId(Number(e.target.value))}
+                  disabled={!!todayAttendance?.check_in_time}
+                  className="w-full p-4 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold focus:border-brand-500 focus:ring-brand-500 disabled:opacity-75"
+                >
+                  {assignedLocations.map((loc) => (
+                    <option key={loc.id} value={loc.id}>
+                      {loc.name} {loc.is_primary && " (Utama)"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 gap-4">
             {/* Check In Button */}
             <button
               onClick={() => handleAction("checkin")}
-              disabled={isLoading || cooldown > 0 || !!todayAttendance?.check_in_time}
+              disabled={isLoading || cooldown > 0 || !!todayAttendance?.check_in_time || assignedLocations.length === 0}
               className="group relative flex items-center justify-between p-6 bg-brand-500 hover:bg-brand-600 rounded-2xl transition-all duration-300 shadow-lg shadow-brand-500/25 active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:grayscale"
             >
               <div className="flex items-center gap-6">

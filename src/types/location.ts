@@ -19,6 +19,8 @@ export interface Location {
     type: LocationType;
     parent_id: number | null;
   }>;
+  is_primary?: boolean;
+  is_active_pivot?: boolean;
 }
 
 export type LocationFormData = z.infer<typeof locationSchema>;
