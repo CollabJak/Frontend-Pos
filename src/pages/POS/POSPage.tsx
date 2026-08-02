@@ -70,19 +70,23 @@ export default function POSPage() {
   }, [paymentMethods, selectedPaymentMethodId, setSelectedPaymentMethodId]);
 
   // Active POS Shift Register Guard Query
-  const { data: activeShiftResponse, isLoading: isActiveShiftLoading } = useFetchActivePosShift(
-    selectedLocation || 0
-  );
+  const { 
+    data: activeShiftResponse, 
+    isLoading: isActiveShiftLoading,
+    isFetching: isActiveShiftFetching 
+  } = useFetchActivePosShift(selectedLocation || 0);
 
   // Enforce Open Shift Register Guard
   useEffect(() => {
-    if (selectedLocation !== null && !isActiveShiftLoading) {
+    if (selectedLocation !== null && !isActiveShiftLoading && !isActiveShiftFetching) {
       if (!activeShiftResponse?.data) {
-        toast.error("You must open a register shift at this location to start selling.");
+        toast.error("You must open a register shift at this location to start selling.", {
+          id: "pos-active-shift-required",
+        });
         navigate(`/pos/open-shift?location_id=${selectedLocation}`);
       }
     }
-  }, [selectedLocation, activeShiftResponse, isActiveShiftLoading, navigate]);
+  }, [selectedLocation, activeShiftResponse, isActiveShiftLoading, isActiveShiftFetching, navigate]);
 
   const {
     control,

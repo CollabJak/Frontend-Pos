@@ -92,9 +92,10 @@ export const useOpenPosShift = () => {
     { payload: OpenPosShiftPayload }
   >({
     mutationFn: ({ payload }) => openPosShift(payload),
-    onSuccess: (data) => {
-      const locationId = data.data?.location_id;
+    onSuccess: (data, variables) => {
+      const locationId = data.data?.location_id || variables.payload.location_id;
       if (locationId) {
+        queryClient.setQueryData(["pos-active-shift", locationId], data);
         queryClient.invalidateQueries({ queryKey: ["pos-active-shift", locationId] });
       }
     },
