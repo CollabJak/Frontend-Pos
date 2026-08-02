@@ -4,7 +4,6 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
-import Checkbox from "../../components/form/input/Checkbox";
 import TextArea from "../../components/form/input/TextArea";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
@@ -280,46 +279,7 @@ export default function EditProduct() {
               {errors.status && (
                 <p className="text-red-500">{errors.status.message}</p>
               )}
-            </div>
-
-            <div className="space-y-3">
-              <Label>Product Flags</Label>
-              <Checkbox
-                id="product-is-sellable"
-                checked={Boolean(watch("is_sellable"))}
-                onChange={(checked) =>
-                  setValue("is_sellable", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Is sellable"
-              />
-              <Checkbox
-                id="product-is-purchasable"
-                checked={Boolean(watch("is_purchasable"))}
-                onChange={(checked) =>
-                  setValue("is_purchasable", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Is purchasable"
-              />
-              <Checkbox
-                id="product-has-variant"
-                checked={Boolean(watch("has_variant"))}
-                onChange={(checked) =>
-                  setValue("has_variant", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Has variant"
-              />
-            </div>
-
-            <div>
+            </div>            <div>
               <Label htmlFor="product-description">Description</Label>
               <TextArea
                 value={watch("description") || ""}

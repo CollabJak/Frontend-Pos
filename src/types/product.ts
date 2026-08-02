@@ -31,4 +31,4 @@ export interface Product {
   } | null;
 }
 
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.input<typeof productSchema>;

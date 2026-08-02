@@ -54,7 +54,7 @@ export const useCreateProduct = () => {
       if(payload.description) {
         formData.append("description", payload.description);
       }
-      formData.append("status", payload.status);
+      formData.append("status", payload.status ?? "active");
       formData.append("is_sellable", payload.is_sellable ? "1" : "0");
       formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");
       formData.append("has_variant", payload.has_variant ? "1" : "0");
@@ -70,6 +70,7 @@ export const useCreateProduct = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/products");
     },
   });
@@ -96,7 +97,7 @@ export const useUpdateProduct = () => {
       if(payload.description) {
         formData.append("description", payload.description);
       }
-      formData.append("status", payload.status);
+      formData.append("status", payload.status ?? "active");
       formData.append("is_sellable", payload.is_sellable ? "1" : "0");
       formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");
       formData.append("has_variant", payload.has_variant ? "1" : "0");
@@ -114,6 +115,7 @@ export const useUpdateProduct = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["product", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/products");
     },
   });
@@ -129,6 +131,7 @@ export const useDeleteProduct = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
     },
   });
 };

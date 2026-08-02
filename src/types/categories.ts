@@ -18,4 +18,4 @@ export interface Categories {
   updated_at: string;
 }
 
-export type CreateCategoryPayload = z.infer<typeof categorySchema>;
+export type CreateCategoryPayload = z.input<typeof categorySchema>;

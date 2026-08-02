@@ -204,12 +204,6 @@ export default function ProductVariantList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Strategy
-                      </TableCell>
-                      <TableCell
-                        isHeader
-                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                      >
                         Active
                       </TableCell>
                       <TableCell
@@ -247,9 +241,6 @@ export default function ProductVariantList() {
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {variant.attributes_json?.map((item) => `${item.name ?? "Atribute"}: ${item.value}`).join(", ") || "-"}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {variant.picking_strategy} / {variant.costing_method}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {variant.is_active ? "Yes" : "No"}

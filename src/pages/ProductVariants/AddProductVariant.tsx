@@ -49,8 +49,6 @@ export default function AddProductVariant() {
       track_expiry: false,
       costing_method: "FIFO",
       base_unit_id: 0,
-      purchase_unit_id: 0,
-      sales_unit_id: 0,
       allow_negative_stock: false,
       min_stock: undefined,
       reorder_point: undefined,
@@ -162,38 +160,6 @@ export default function AddProductVariant() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label htmlFor="picking-strategy">Picking Strategy</Label>
-              <select
-                id="picking-strategy"
-                {...register("picking_strategy")}
-                className="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                <option value="FIFO">FIFO</option>
-                <option value="FEFO">FEFO</option>
-              </select>
-              {errors.picking_strategy && (
-                <p className="text-red-500">{errors.picking_strategy.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="costing-method">Costing Method</Label>
-              <select
-                id="costing-method"
-                {...register("costing_method")}
-                className="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                <option value="FIFO">FIFO</option>
-                <option value="AVERAGE">AVERAGE</option>
-              </select>
-              {errors.costing_method && (
-                <p className="text-red-500">{errors.costing_method.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
               <Label>Base Unit</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
@@ -217,54 +183,6 @@ export default function AddProductVariant() {
             </div>
 
             <div>
-              <Label>Purchase Unit</Label>
-              <AsyncSearchSelect<SelectOption>
-                label=""
-                keyName="product-variant-purchase-unit-options"
-                value={watch("purchase_unit_id") || null}
-                onChange={(selectedValue) => {
-                  setValue("purchase_unit_id", Number(selectedValue ?? 0), {
-                    shouldValidate: true,
-                  });
-                }}
-                placeholder="Search purchase unit..."
-                fetchOptions={fetchUnitOptions}
-                optionLabel="name"
-                optionValue="id"
-                debounceMs={400}
-                searchMinLength={0}
-              />
-              {errors.purchase_unit_id && (
-                <p className="text-red-500">{errors.purchase_unit_id.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label>Sales Unit</Label>
-              <AsyncSearchSelect<SelectOption>
-                label=""
-                keyName="product-variant-sales-unit-options"
-                value={watch("sales_unit_id") || null}
-                onChange={(selectedValue) => {
-                  setValue("sales_unit_id", Number(selectedValue ?? 0), {
-                    shouldValidate: true,
-                  });
-                }}
-                placeholder="Search sales unit..."
-                fetchOptions={fetchUnitOptions}
-                optionLabel="name"
-                optionValue="id"
-                debounceMs={400}
-                searchMinLength={0}
-              />
-              {errors.sales_unit_id && (
-                <p className="text-red-500">{errors.sales_unit_id.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
               <Label htmlFor="min-stock">Min Stock</Label>
               <Input
                 {...register("min_stock")}
@@ -275,21 +193,6 @@ export default function AddProductVariant() {
                 placeholder="0"
               />
               {errors.min_stock && <p className="text-red-500">{errors.min_stock.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="reorder-point">Reorder Point</Label>
-              <Input
-                {...register("reorder_point")}
-                id="reorder-point"
-                type="number"
-                step="0.0001"
-                min="0"
-                placeholder="0"
-              />
-              {errors.reorder_point && (
-                <p className="text-red-500">{errors.reorder_point.message}</p>
-              )}
             </div>
           </div>
 
@@ -304,39 +207,6 @@ export default function AddProductVariant() {
                 })
               }
               label="Is Stock Item"
-            />
-            <Checkbox
-              id="variant-allow-negative-stock"
-              checked={Boolean(watch("allow_negative_stock"))}
-              onChange={(checked) =>
-                setValue("allow_negative_stock", checked, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-              label="Allow Negative Stock"
-            />
-            <Checkbox
-              id="variant-track-batch"
-              checked={Boolean(watch("track_batch"))}
-              onChange={(checked) =>
-                setValue("track_batch", checked, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-              label="Track Batch"
-            />
-            <Checkbox
-              id="variant-track-expiry"
-              checked={Boolean(watch("track_expiry"))}
-              onChange={(checked) =>
-                setValue("track_expiry", checked, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-              label="Track Expiry"
             />
             <Checkbox
               id="variant-is-active"

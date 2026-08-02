@@ -9,10 +9,10 @@ export const productSchema = z.object({
   brand_id: z.number().int().min(1, 'Brand is required'),
   unit_id: z.number().int().min(1, 'Unit is required'),
   description: z.string().optional(),
-  status: z.enum(productStatuses),
-  is_sellable: z.boolean(),
-  is_purchasable: z.boolean(),
-  has_variant: z.boolean(),
+  status: z.enum(productStatuses).optional().default("active"),
+  is_sellable: z.boolean().optional().default(true),
+  is_purchasable: z.boolean().optional().default(true),
+  has_variant: z.boolean().optional().default(false),
   thumbnail: z
     .instanceof(File)
     .optional()
@@ -37,4 +37,4 @@ export const productSchema = z.object({
     ),
 });
 
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.input<typeof productSchema>;
