@@ -3,10 +3,9 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
-import Checkbox from "../../components/form/input/Checkbox";
 import TextArea from "../../components/form/input/TextArea";
 import Button from "../../components/ui/button/Button";
-import { roundingModeValues, UnitFormData, unitSchema } from "../../Schemas/unitSchema";
+import { UnitFormData, unitSchema } from "../../Schemas/unitSchema";
 import { useCreateUnit } from "../../hooks/useUnits";
 import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
@@ -103,58 +102,6 @@ export default function AddUnit() {
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="unit-is-base">Base Unit</Label>
-              <Checkbox
-                id="unit-is-base"
-                checked={Boolean(watch("is_base_unit"))}
-                onChange={(checked) =>
-                  setValue("is_base_unit", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Set as base inventory unit"
-              />
-              {errors.is_base_unit && (
-                <p className="text-red-500">{errors.is_base_unit.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="unit-precision">Precision</Label>
-              <select
-                {...register("precision", { valueAsNumber: true })}
-                id="unit-precision"
-                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                <option value={0}>0</option>
-                <option value={2}>2</option>
-                <option value={4}>4</option>
-              </select>
-              {errors.precision && (
-                <p className="text-red-500">{errors.precision.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="unit-rounding-mode">Rounding Mode</Label>
-              <select
-                {...register("rounding_mode")}
-                id="unit-rounding-mode"
-                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                {roundingModeValues.map((mode) => (
-                  <option key={mode} value={mode}>
-                    {mode}
-                  </option>
-                ))}
-              </select>
-              {errors.rounding_mode && (
-                <p className="text-red-500">{errors.rounding_mode.message}</p>
               )}
             </div>
 

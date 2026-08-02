@@ -13,4 +13,4 @@ export interface Units {
   rounding_mode: RoundingMode;
 }
 
-export type CreateUnitPayload = z.infer<typeof unitSchema>;
+export type CreateUnitPayload = z.input<typeof unitSchema>;

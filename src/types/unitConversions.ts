@@ -18,4 +18,4 @@ export interface UnitConversions {
   is_sales_conversion: boolean;
 }
 
-export type UnitConversionFormData = z.infer<typeof unitConversionSchema>
+export type UnitConversionFormData = z.input<typeof unitConversionSchema>;

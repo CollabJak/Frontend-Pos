@@ -48,6 +48,8 @@ export const useCreateAtribute = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["atribute"] });
+      queryClient.invalidateQueries({ queryKey: ["atributes"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/atributes");
     },
   });
@@ -69,6 +71,7 @@ export const useUpdateAtribute = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["atributes"] });
       queryClient.invalidateQueries({ queryKey: ["atribute", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/atributes");
     },
   });
@@ -84,6 +87,7 @@ export const useDeleteAtribute = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["atributes"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
     },
   });
 };

@@ -53,6 +53,7 @@ export const useCreateUnit = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/units");
     },
   });
@@ -74,6 +75,7 @@ export const useUpdateUnit = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["unit", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/units");
     },
   });
@@ -89,6 +91,7 @@ export const useDeleteUnit = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
     },
   });
 };

@@ -6,16 +6,16 @@ export const unitSchema = z.object({
   name: z.string().min(1, "Unit name is required").max(255, "Unit name is too long"),
   symbol: z.string().min(1, "Unit symbol is required").max(50, "Unit symbol is too long"),
   description: z.string().optional().or(z.literal("")),
-  is_base_unit: z.boolean(),
+  is_base_unit: z.boolean().optional().default(false),
   precision: z
     .number()
     .int("Precision must be an integer")
     .refine((value) => [0, 2, 4].includes(value), {
       message: "Precision must be one of: 0, 2, 4",
-    }),
-  rounding_mode: z.enum(roundingModeValues, {
-    message: "Rounding mode is required",
-  }),
+    })
+    .optional()
+    .default(0),
+  rounding_mode: z.enum(roundingModeValues).optional().default("HALF_UP"),
 });
 
-export type UnitFormData = z.infer<typeof unitSchema>;
+export type UnitFormData = z.input<typeof unitSchema>;

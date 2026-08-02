@@ -5,11 +5,9 @@ export const categoryPickingStrategies = ["FIFO", "FEFO"] as const;
 export const categorySchema = z.object({
     name: z.string().min(1, "Name is required"), 
     tagline: z.string().nullable().optional(), 
-    require_expiry: z.boolean(),
-    require_batch: z.boolean(),
-    default_picking_strategy: z.enum(categoryPickingStrategies, {
-      message: "Default picking strategy is required",
-    }),
+    require_expiry: z.boolean().optional().default(false),
+    require_batch: z.boolean().optional().default(false),
+    default_picking_strategy: z.enum(categoryPickingStrategies).optional().default("FIFO"),
     photo: z
     .instanceof(File)
     .optional()
@@ -34,4 +32,4 @@ export const categorySchema = z.object({
     ),
   });
 
-export type CategoryFormData = z.infer<typeof categorySchema>;
+export type CategoryFormData = z.input<typeof categorySchema>;

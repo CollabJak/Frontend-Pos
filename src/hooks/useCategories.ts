@@ -56,7 +56,7 @@ export const useCreateCategory = () => {
       }
       formData.append("require_expiry", payload.require_expiry ? "1" : "0");
       formData.append("require_batch", payload.require_batch ? "1" : "0");
-      formData.append("default_picking_strategy", payload.default_picking_strategy);
+      formData.append("default_picking_strategy", payload.default_picking_strategy ?? "FIFO");
       if(payload.photo) {
         formData.append("photo", payload.photo);
       }
@@ -69,6 +69,7 @@ export const useCreateCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/categories");
 
     },
@@ -92,7 +93,7 @@ export const useUpdateCategory = () => {
       }
       formData.append("require_expiry", payload.require_expiry ? "1" : "0");
       formData.append("require_batch", payload.require_batch ? "1" : "0");
-      formData.append("default_picking_strategy", payload.default_picking_strategy);
+      formData.append("default_picking_strategy", payload.default_picking_strategy ?? "FIFO");
       formData.append("_method", "PUT");
 
       if (payload.photo) {
@@ -108,6 +109,7 @@ export const useUpdateCategory = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["category", id] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
       navigate("/categories");
 
     },
@@ -124,6 +126,7 @@ export const useDeleteCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options"] });
     },
   });
 };

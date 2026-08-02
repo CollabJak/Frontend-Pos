@@ -4,7 +4,6 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import {Input} from "../../components/form/input/InputField";
-import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
@@ -35,7 +34,6 @@ export default function AddCategory() {
     handleSubmit,
     setError,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
@@ -140,31 +138,6 @@ export default function AddCategory() {
                   <p className="text-red-500">{errors.default_picking_strategy.message}</p>
                 )}
               </div>
-            </div>
-            <div className="space-y-3">
-              <Label>Category Rules</Label>
-              <Checkbox
-                id="category-require-expiry"
-                checked={Boolean(watch("require_expiry"))}
-                onChange={(checked) =>
-                  setValue("require_expiry", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Require expiry for products"
-              />
-              <Checkbox
-                id="category-require-batch"
-                checked={Boolean(watch("require_batch"))}
-                onChange={(checked) =>
-                  setValue("require_batch", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Require batch for products"
-              />
             </div>
             <div>
               <Button className="w-full" size="sm" type="submit">
