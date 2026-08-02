@@ -40,3 +40,52 @@ export const hasAccess = (
   // If provided an empty array of roles or permissions, and user is not admin/manager, access is denied
   return false;
 };
+
+export interface DenialContext {
+  denied: boolean;
+  reason?: "permission" | "role" | "generic";
+  requiredPermissions?: string[];
+  requiredRoles?: string[];
+}
+
+/**
+ * Returns contextual information about why access was denied.
+ * Useful for building detailed 403 response states for UI feedback.
+ */
+export const getDenialContext = (
+  userRoles: string[] = [],
+  userPermissions: string[] = [],
+  allowedRoles?: string[],
+  allowedPermissions?: string[]
+): DenialContext => {
+  if (hasAccess(userRoles, userPermissions, allowedRoles, allowedPermissions)) {
+    return { denied: false };
+  }
+
+  // Priority 1: Check if denied due to permissions requirement
+  if (allowedPermissions && allowedPermissions.length > 0) {
+    const missingPermissions = allowedPermissions.filter(
+      (perm) => !userPermissions.includes(perm)
+    );
+    return {
+      denied: true,
+      reason: "permission",
+      requiredPermissions: missingPermissions.length > 0 ? missingPermissions : allowedPermissions,
+    };
+  }
+
+  // Priority 2: Check if denied due to roles requirement
+  if (allowedRoles && allowedRoles.length > 0) {
+    return {
+      denied: true,
+      reason: "role",
+      requiredRoles: allowedRoles,
+    };
+  }
+
+  return {
+    denied: true,
+    reason: "generic",
+  };
+};
+

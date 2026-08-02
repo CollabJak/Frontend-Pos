@@ -6,6 +6,7 @@ import SignUp from "./pages/AuthPages/SignUp";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import NotFound from "./pages/OtherPage/NotFound";
+import UnauthorizedPage from "./pages/OtherPage/UnauthorizedPage";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -139,6 +140,7 @@ export default function App() {
               }
             >
               <Route index path="/dashboard" element={<Home />} />
+              <Route path="/403" element={<UnauthorizedPage />} />
               <Route
                 element={
                   <ProtectedRoute allowedPermissions={["dashboard.view"]}>
@@ -302,11 +304,17 @@ export default function App() {
                 <Route path="/absensi/history" element={<AttendanceHistoryPage />} />
               </Route>
 
-              {/* Roles: Admin, Manager Only (Superuser bypass via rbac.ts) */}
-              <Route element={<ProtectedRoute allowedPermissions={["business.view"]}><Outlet /></ProtectedRoute>}>
+              {/* Roles, Permissions & Administration */}
+              <Route element={<ProtectedRoute allowedPermissions={["role.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/roles" element={<RoleList />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedPermissions={["permission.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/permissions" element={<PermissionList />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedPermissions={["subscription_plan.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/subscriptions-plans" element={<SubscriptionPlanForm />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedPermissions={["business.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/pricing/checkout/:planId" element={<CheckoutPlanPage />} />
                 <Route path="/billing" element={<BillingHistoryPage />} />

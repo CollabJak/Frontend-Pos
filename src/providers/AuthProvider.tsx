@@ -82,6 +82,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     window.history.replaceState({}, "", nextUrl);
   }, [isGoogleLogin, user, meQuery.isFetching, navigate, location.pathname, location.search]);
 
+  // Proactive navigation guard for unverified email users
+  useEffect(() => {
+    if (!loading && user && !user.email_verified_at && !user.is_email_verified && !PUBLIC_PATHS.has(location.pathname)) {
+      navigate("/verify-email", { replace: true });
+    }
+  }, [user, loading, location.pathname, navigate]);
+
   // Global listener for session expiry signals
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -100,16 +107,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     window.addEventListener("auth:business-setup-required", handleBusinessSetupRequired);
 
+    const handleEmailUnverified = () => {
+      navigate("/verify-email", { replace: true });
+    };
+
+    window.addEventListener("auth:email-unverified", handleEmailUnverified);
+
     const handleSubscriptionRequired = () => {
       navigate("/pricing", { replace: true, state: { reason: "no_subscription" } });
     };
 
     window.addEventListener("subscription:required", handleSubscriptionRequired);
 
+    const handleForbidden = (event: Event) => {
+      const customEvent = event as CustomEvent<{ message?: string; path?: string }>;
+      navigate("/403", {
+        replace: true,
+        state: {
+          reason: "permission",
+          attemptedPath: customEvent.detail?.path || window.location.pathname,
+        },
+      });
+    };
+
+    window.addEventListener("auth:forbidden", handleForbidden);
+
     return () => {
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
       window.removeEventListener("auth:business-setup-required", handleBusinessSetupRequired);
+      window.removeEventListener("auth:email-unverified", handleEmailUnverified);
       window.removeEventListener("subscription:required", handleSubscriptionRequired);
+      window.removeEventListener("auth:forbidden", handleForbidden);
     };
 
   }, [navigate, queryClient]);
