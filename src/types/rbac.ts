@@ -22,3 +22,11 @@ export interface UpsertRolePayload {
 export interface SyncPermissionsPayload {
   permissions: string[];
 }
+
+export interface UnauthorizedPageState {
+  reason?: "permission" | "role" | "generic";
+  requiredPermissions?: string[];
+  requiredRoles?: string[];
+  attemptedPath?: string;
+}
+

@@ -16,6 +16,7 @@ export interface User {
   phone: string;
   business_id?: number | null;
   email_verified_at?: string;
+  is_email_verified?: boolean;
   roles?: string[];
   permissions?: string[];
   merchant?: MerchantProfile | null;

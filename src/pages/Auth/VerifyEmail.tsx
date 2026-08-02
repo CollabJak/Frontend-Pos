@@ -3,25 +3,35 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { CheckCircleIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
 import { authService } from "../../api/authService";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function VerifyEmail() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   
-  // Get email from: URL params > location.state > localStorage
+  // Get email from: AuthContext user > URL params > location.state > localStorage
   const [email, setEmail] = useState<string>(() => {
     const fromUrl = searchParams.get("email") || "";
     const fromState = (location.state?.email as string) || "";
     const fromStorage = localStorage.getItem("pendingVerificationEmail") || "";
     
-    const foundEmail = fromUrl || fromState || fromStorage;
-    return foundEmail;
+    return user?.email || fromUrl || fromState || fromStorage;
   });
+
+  const activeEmail = email || user?.email || "";
   
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [resendError, setResendError] = useState("");
+
+  // Sync email from AuthContext if available
+  useEffect(() => {
+    if (user?.email && !email) {
+      setEmail(user.email);
+    }
+  }, [user?.email, email]);
 
   // Store email in localStorage whenever it changes
   useEffect(() => {
@@ -35,13 +45,15 @@ export default function VerifyEmail() {
     setResendMessage("");
     setResendError("");
 
+    const targetEmail = activeEmail.trim();
+
     try {
-      if (!email || email.trim() === "") {
+      if (!targetEmail && !user) {
         setResendError("Email address not found. Please enter your email or register again.");
         return;
       }
       
-      const response = await authService.resendVerificationEmail(email);
+      const response = await authService.resendVerificationEmail(targetEmail);
       setResendMessage(response.message || "Verification email sent! Check your inbox.");
     } catch (error) {
       console.error("Resend error:", error);
@@ -76,11 +88,11 @@ export default function VerifyEmail() {
             We've sent a verification link to:
           </p>
           <p className="mt-2 font-semibold text-gray-800 dark:text-white">
-            {email && email.trim() !== "" ? email : "your email address"}
+            {activeEmail && activeEmail.trim() !== "" ? activeEmail : "your email address"}
           </p>
         </div>
 
-        {!email || email.trim() === "" && (
+        {(!activeEmail || activeEmail.trim() === "") && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email Address

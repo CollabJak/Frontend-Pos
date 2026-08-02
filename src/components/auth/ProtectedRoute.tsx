@@ -1,8 +1,9 @@
 import { Navigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { hasAccess } from "../../utils/rbac";
+import { hasAccess, getDenialContext } from "../../utils/rbac";
 import { SubscriptionGuard } from "./SubscriptionGuard";
+import type { UnauthorizedPageState } from "../../types/types";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -28,8 +29,15 @@ export default function ProtectedRoute({ children, allowedRoles, allowedPermissi
 
   // Check if user has access to this route
   if (!hasAccess(user.roles || [], user.permissions || [], allowedRoles, allowedPermissions)) {
-    // If user is logged in but doesn't have roles, redirect to dashboard or a safe place
-    return <Navigate to="/dashboard" replace />;
+    const denial = getDenialContext(user.roles || [], user.permissions || [], allowedRoles, allowedPermissions);
+    const state: UnauthorizedPageState = {
+      reason: denial.reason,
+      requiredPermissions: denial.requiredPermissions,
+      requiredRoles: denial.requiredRoles,
+      attemptedPath: window.location.pathname,
+    };
+
+    return <Navigate to="/403" replace state={state} />;
   }
 
   // Guard: Manager without business_id redirected to setup business

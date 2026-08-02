@@ -30,6 +30,19 @@ apiClient.interceptors.response.use(
     } else if (status === 403 && errorCode === "BUSINESS_SETUP_REQUIRED") {
       // Redirect to business setup page
       window.dispatchEvent(new CustomEvent("auth:business-setup-required"));
+    } else if (status === 403 && errorCode === "EMAIL_NOT_VERIFIED") {
+      // Redirect to email verification page
+      window.dispatchEvent(new CustomEvent("auth:email-unverified"));
+    } else if (status === 403) {
+      // Handle Forbidden Access (RBAC 403) -> Dispatch event for auto-redirect to /403 page
+      window.dispatchEvent(
+        new CustomEvent("auth:forbidden", {
+          detail: {
+            message: error.response?.data?.message,
+            path: window.location.pathname,
+          },
+        })
+      );
     } else {
       void handleError(error);
     }
