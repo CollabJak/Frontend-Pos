@@ -77,72 +77,72 @@ export default function AddBusiness() {
 
   return (
     <>
-      <PageMeta title="Add Business" description="Add business page" />
-      <PageBreadcrumb pageTitle="Add Business" />
-      <ComponentCard title="Add Business Form">
+      <PageMeta title="Tambah Bisnis" description="Halaman tambah bisnis baru" />
+      <PageBreadcrumb pageTitle="Tambah Bisnis" />
+      <ComponentCard title="Form Tambah Bisnis">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="business-name">Name</Label>
+              <Label htmlFor="business-name">Nama Bisnis</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="business-name"
-                placeholder="Input business name"
+                placeholder="Masukkan nama bisnis / usaha"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-code">Code</Label>
+              <Label htmlFor="business-code">Kode Bisnis</Label>
               <Input
                 {...register("code")}
                 type="text"
                 id="business-code"
-                placeholder="Input business code"
+                placeholder="Masukkan kode unik bisnis"
               />
               {errors.code && <p className="text-red-500">{errors.code.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-email">Email</Label>
+              <Label htmlFor="business-email">Email Perusahaan</Label>
               <Input
                 {...register("email")}
                 type="email"
                 id="business-email"
-                placeholder="Input business email"
+                placeholder="Masukkan email bisnis"
               />
               {errors.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-phone">Phone</Label>
+              <Label htmlFor="business-phone">No. Telepon (Opsional)</Label>
               <Input
                 {...register("phone")}
                 type="text"
                 id="business-phone"
-                placeholder="Input business phone"
+                placeholder="Masukkan nomor telepon"
               />
               {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-address">Address</Label>
+              <Label htmlFor="business-address">Alamat Lengkap</Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Input business address"
+                placeholder="Masukkan alamat lengkap bisnis"
               />
               {errors.address && <p className="text-red-500">{errors.address.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-active">Active Status</Label>
+              <Label htmlFor="business-active">Status Aktif</Label>
               <Checkbox
                 id="business-active"
                 checked={Boolean(watch("is_active"))}
@@ -152,14 +152,14 @@ export default function AddBusiness() {
                     shouldDirty: true,
                   })
                 }
-                label="Business is active"
+                label="Bisnis berstatus aktif"
               />
               {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
             </div>
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding Business..." : "Add Business"}
+                {isPending ? "Menambahkan Bisnis..." : "Tambah Bisnis"}
               </Button>
             </div>
           </div>

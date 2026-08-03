@@ -69,25 +69,25 @@ export default function AddLocation() {
 
   return (
     <>
-      <PageMeta title="Add Location" description="Add location page" />
-      <PageBreadcrumb pageTitle="Add Location" />
-      <ComponentCard title="Add Location Form">
+      <PageMeta title="Tambah Lokasi" description="Halaman tambah lokasi bisnis" />
+      <PageBreadcrumb pageTitle="Tambah Lokasi" />
+      <ComponentCard title="Form Tambah Lokasi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label htmlFor="location-name">Location Name</Label>
+            <Label htmlFor="location-name">Nama Lokasi</Label>
             <Input
               {...register("name")}
               type="text"
               id="location-name"
-              placeholder="Input location name"
+              placeholder="Masukkan nama lokasi"
             />
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="location-type">Location Type</Label>
+            <Label htmlFor="location-type">Tipe Lokasi</Label>
             <select
               id="location-type"
               {...register("type")}
@@ -107,7 +107,7 @@ export default function AddLocation() {
           </div>
 
           <div>
-            <Label>Parent Location (Optional)</Label>
+            <Label>Lokasi Induk / Parent (Opsional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="location-parent-options"
@@ -119,7 +119,7 @@ export default function AddLocation() {
                   { shouldValidate: true }
                 );
               }}
-              placeholder="Search parent location..."
+              placeholder="Cari lokasi induk..."
               fetchOptions={fetchLocationOptions}
               optionLabel="name"
               optionValue="id"
@@ -133,7 +133,7 @@ export default function AddLocation() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding location..." : "Add Location"}
+              {isPending ? "Menambahkan lokasi..." : "Tambah Lokasi"}
             </Button>
           </div>
         </form>

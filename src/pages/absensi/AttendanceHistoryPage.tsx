@@ -84,20 +84,20 @@ const AttendanceHistoryPage: React.FC = () => {
       {/* Top Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <MetricCard 
-           title="WEEKLY HOURS" 
-           value={isCheckedIn ? "Active" : "0.0h"} 
-           subValue="+0.0h vs last week"
+           title="JAM KERJA MINGGUAN" 
+           value={isCheckedIn ? "Aktif" : "0.0j"} 
+           subValue="+0,0j vs minggu lalu"
            subValueColor="text-success-500"
            icon={<ArrowUpIcon className="size-3 text-success-500" />}
          />
          <MetricCard 
-           title="OVERTIME" 
-           value="0.0h" 
-           subValue="Accrued this period"
+           title="WAKTU LEMBUR" 
+           value="0.0j" 
+           subValue="Terkumpul periode ini"
            subValueColor="text-gray-400"
          />
          <MetricCard 
-           title="PUNCTUALITY" 
+           title="KETEPATAN WAKTU" 
            value="--" 
            subValue={
              <div className="w-full bg-gray-100 h-1.5 rounded-full mt-2 overflow-hidden">
@@ -113,9 +113,9 @@ const AttendanceHistoryPage: React.FC = () => {
             {/* Work Status Toggle Widget */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-theme-sm space-y-4">
                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Work Status</h3>
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Status Kehadiran</h3>
                   <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${isCheckedIn ? "bg-success-100 text-success-600" : "bg-gray-100 text-gray-400"}`}>
-                    {isCheckedIn ? (isCheckedOut ? "Finished" : "Active") : "Inactive"}
+                    {isCheckedIn ? (isCheckedOut ? "Selesai Shift" : "Sedang Bekerja") : "Belum Absen"}
                   </span>
                </div>
                <div 
@@ -132,7 +132,7 @@ const AttendanceHistoryPage: React.FC = () => {
                         )}
                      </div>
                      <span className={`text-sm font-bold transition-colors ${isCheckedIn ? "text-brand-700" : "text-gray-700 dark:text-gray-300"}`}>
-                        {isCheckedIn ? (isCheckedOut ? "Checked Out" : "Checked In") : "Check In"}
+                        {isCheckedIn ? (isCheckedOut ? "Sudah Check Out" : "Sudah Check In") : "Belum Check In"}
                      </span>
                   </div>
                   <div className={`w-10 h-6 rounded-full flex items-center px-1 transition-colors ${isCheckedIn ? (isCheckedOut ? "bg-error-500" : "bg-success-500") : "bg-gray-300"}`}>
@@ -142,7 +142,7 @@ const AttendanceHistoryPage: React.FC = () => {
                <p className="text-center text-[10px] text-gray-400">
                  {isCheckedIn 
                     ? `Check in: ${todayAttendance?.check_in_time}` 
-                    : (todayAttendance?.check_out_time ? `Last checkout: ${todayAttendance.check_out_time}` : "Belum ada absensi hari ini")}
+                    : (todayAttendance?.check_out_time ? `Check out terakhir: ${todayAttendance.check_out_time}` : "Belum ada absensi hari ini")}
                </p>
             </div>
 
@@ -163,25 +163,25 @@ const AttendanceHistoryPage: React.FC = () => {
                
                <div className="absolute top-4 left-4 flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full animate-pulse ${isCheckedIn ? "bg-success-500" : "bg-error-500"}`} />
-                  <span className="text-[10px] font-bold text-white uppercase tracking-widest opacity-80">Live Terminal Feed</span>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-widest opacity-80">Kamera Terminal Absensi</span>
                </div>
                <div className="absolute bottom-4 left-4">
-                  <h4 className="text-white font-bold text-sm">{user?.name || "Authenticating..."}</h4>
+                  <h4 className="text-white font-bold text-sm">{user?.name || "Memuat autentikasi..."}</h4>
                   <p className="text-[10px] text-white/60 font-medium">
-                    {isCheckedIn ? `FACE RECOGNIZED • ${todayAttendance?.check_in_time}` : "RECOGNIZING FACE..."}
+                    {isCheckedIn ? `WAJAH TERIDENTIFIKASI • ${todayAttendance?.check_in_time}` : "PINDAI WAJAH..."}
                   </p>
                </div>
             </div>
 
            {/* Pending Alerts */}
            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-theme-sm space-y-4">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Pending Alerts</h3>
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Informasi & Pengumuman</h3>
               <div className="space-y-3">
                  <div className="bg-brand-500 p-3 rounded-xl flex gap-3 shadow-lg shadow-brand-500/20">
                     <CalenderIcon className="size-4 text-white shrink-0 mt-0.5" />
                     <div>
-                       <h4 className="text-xs font-bold text-white">Shift Info</h4>
-                       <p className="text-[10px] text-white/80">Jadwal: 09:00 - 18:00</p>
+                       <h4 className="text-xs font-bold text-white">Jadwal Shift</h4>
+                       <p className="text-[10px] text-white/80">Jam Kerja: 09:00 - 18:00 WIB</p>
                     </div>
                  </div>
               </div>
@@ -194,7 +194,7 @@ const AttendanceHistoryPage: React.FC = () => {
                <div className="flex items-center justify-between mb-8">
                   <div>
                      <h2 className="text-xl font-bold text-gray-900 dark:text-white capitalize">{monthYearLabel}</h2>
-                     <p className="text-xs text-gray-400 font-medium tracking-wide">Riwayat Kehadiran Personal</p>
+                     <p className="text-xs text-gray-400 font-medium tracking-wide">Riwayat Kehadiran Karyawan</p>
                   </div>
                   <div className="flex items-center gap-2">
                      <button 
@@ -214,7 +214,7 @@ const AttendanceHistoryPage: React.FC = () => {
 
                {/* Calendar Grid */}
                <div className="grid grid-cols-7 gap-y-8 gap-x-4">
-                  {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
+                  {['SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB', 'MIN'].map(day => (
                      <div key={day} className="text-center text-[10px] font-bold text-gray-300 dark:text-gray-600 tracking-widest">{day}</div>
                   ))}
                   
@@ -254,8 +254,8 @@ const AttendanceHistoryPage: React.FC = () => {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div className="bg-brand-500 p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-brand-500/20">
                   <div className="space-y-1">
-                     <h4 className="text-[10px] font-bold text-white uppercase tracking-widest">Shift Report</h4>
-                     <p className="text-sm font-bold text-white">Laporan Mingguan Siap</p>
+                     <h4 className="text-[10px] font-bold text-white uppercase tracking-widest">Laporan Kehadiran</h4>
+                     <p className="text-sm font-bold text-white">Unduh Laporan Mingguan</p>
                   </div>
                   <button className="size-10 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors">
                      <DownloadIcon className="size-5 text-white" />
@@ -264,8 +264,8 @@ const AttendanceHistoryPage: React.FC = () => {
 
               <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-theme-sm flex items-center justify-between">
                  <div className="space-y-1">
-                    <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Overtime Claim</h4>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Ajukan Klaim Lembur</p>
+                    <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Klaim Lembur</h4>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">Ajukan Klaim Lembur Karyawan</p>
                  </div>
                  <button className="size-10 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <AngleRightIcon className="size-5 text-gray-400" />

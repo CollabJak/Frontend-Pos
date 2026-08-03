@@ -179,10 +179,10 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
       <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900/20">
         <div>
           <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-            Location Types Availability
+            Ketersediaan Tipe Lokasi
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            This product variant will be active and allowed in all locations of the checked types.
+            Varian produk ini akan aktif dan diizinkan di semua lokasi dengan tipe yang dicentang.
           </p>
         </div>
 
@@ -194,12 +194,18 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
 
         {isLoadingTypes ? (
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Loading location types...
+            Memuat tipe lokasi...
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {(["store", "warehouse", "pos", "hq"] as const).map((type) => {
               const checked = selectedTypes.includes(type);
+              const typeLabels: Record<string, string> = {
+                store: "Toko (Store)",
+                warehouse: "Gudang (Warehouse)",
+                pos: "Kasir (POS)",
+                hq: "Kantor Pusat (HQ)",
+              };
               return (
                 <label
                   key={type}
@@ -211,8 +217,8 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
                     onChange={() => handleToggleType(type)}
                     className="h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500 dark:border-gray-700"
                   />
-                  <span className="text-sm font-medium text-gray-750 dark:text-gray-200 capitalize">
-                    {type === "hq" ? "HQ (Headquarters)" : type}
+                  <span className="text-sm font-medium text-gray-750 dark:text-gray-200">
+                    {typeLabels[type] || type}
                   </span>
                 </label>
               );
@@ -227,7 +233,7 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
             onClick={handleSaveTypes}
             disabled={syncTypesMutation.isPending || !isTypesDirty}
           >
-            {syncTypesMutation.isPending ? "Saving..." : "Save Location Types"}
+            {syncTypesMutation.isPending ? "Menyimpan..." : "Simpan Tipe Lokasi"}
           </Button>
         </div>
       </div>
@@ -238,10 +244,10 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
       <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900/20">
         <div>
           <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-            Specific Location Mappings
+            Pemetaan Lokasi Spesifik
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Toggle specific locations below to allow this variant in particular locations regardless of their type.
+            Centang lokasi tertentu di bawah ini untuk mengizinkan varian produk di lokasi khusus tanpa memandang tipe lokasinya.
           </p>
         </div>
 
@@ -258,13 +264,13 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
 
         <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
           <div className="grid grid-cols-[1fr_auto] border-b border-gray-100 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-600 dark:border-gray-800 dark:bg-gray-900/50 dark:text-gray-300">
-            <span>Location</span>
-            <span>Enabled</span>
+            <span>Nama Lokasi</span>
+            <span>Status Diizinkan</span>
           </div>
 
           {isLoading ? (
             <p className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
-              Loading locations...
+              Memuat daftar lokasi...
             </p>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -300,7 +306,7 @@ export default function VariantLocationMapping({ variantId }: VariantLocationMap
             onClick={handleSave}
             disabled={saveMutation.isPending || !isDirty}
           >
-            {saveMutation.isPending ? "Saving..." : "Save Locations"}
+            {saveMutation.isPending ? "Menyimpan..." : "Simpan Pemetaan Lokasi"}
           </Button>
         </div>
       </div>

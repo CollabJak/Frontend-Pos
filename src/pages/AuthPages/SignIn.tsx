@@ -21,7 +21,7 @@ export default function SignIn() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <span className="text-sm text-gray-500">Authenticating...</span>
+        <span className="text-sm text-gray-500">Mengautentikasi...</span>
       </div>
     );
   }
@@ -33,8 +33,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Chronalix | Sign In"
-        description="Chronalix Sign In Page"
+        title="Chronalix | Masuk"
+        description="Halaman Masuk Chronalix"
       />
       <AuthLayout>
         <SignInForm />

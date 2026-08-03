@@ -108,16 +108,16 @@ export default function CheckoutPlanPage() {
     if (!business) {
         return (
             <>
-                <PageMeta title="Checkout" description="Complete your subscription purchase." />
-                <PageBreadcrumb pageTitle="Checkout" />
+                <PageMeta title="Pembayaran Langganan" description="Selesaikan proses pembayaran paket langganan Anda." />
+                <PageBreadcrumb pageTitle="Pembayaran Langganan" />
                 <div className="mx-auto max-w-2xl">
-                    <ComponentCard title="Business Information Required">
+                    <ComponentCard title="Informasi Bisnis Diperlukan">
                         <div className="space-y-4 text-center">
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Business belum tersedia untuk akun ini. Silakan buat business terlebih dahulu sebelum melakukan checkout subscription.
+                                Bisnis belum terdaftar untuk akun ini. Silakan buat bisnis terlebih dahulu sebelum melakukan checkout langganan.
                             </p>
                             <Button onClick={() => navigate("/businesses/create")}>
-                                Buat Business
+                                Buat Bisnis
                             </Button>
                         </div>
                     </ComponentCard>
@@ -132,26 +132,26 @@ export default function CheckoutPlanPage() {
 
     return (
         <>
-            <PageMeta title="Checkout" description="Complete your subscription purchase." />
-            <PageBreadcrumb pageTitle="Checkout" />
+            <PageMeta title="Pembayaran Langganan" description="Selesaikan proses pembayaran paket langganan Anda." />
+            <PageBreadcrumb pageTitle="Pembayaran Langganan" />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
                 {/* Left Section: Checkout Form */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="mb-6">
                         <span className="text-xs font-bold text-brand-500 uppercase tracking-widest">CHECKOUT</span>
-                        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mt-2">Complete your subscription</h1>
+                        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mt-2">Selesaikan Pembayaran Paket Langganan</h1>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
                         {/* Step 1: Business Information */}
-                        <ComponentCard title="1. Business Information" className="shadow-sm">
+                        <ComponentCard title="1. Informasi Bisnis / Usaha" className="shadow-sm">
                             {errors.root?.message && (
                                 <p className="mb-4 text-sm text-red-500">{errors.root.message}</p>
                             )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
                                 <div>
-                                    <Label htmlFor="business_code">Business Code</Label>
+                                    <Label htmlFor="business_code">Kode Bisnis</Label>
                                     <Input
                                         id="business_code"
                                         value={business.code}
@@ -160,41 +160,41 @@ export default function CheckoutPlanPage() {
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="business_name">Business Name</Label>
+                                    <Label htmlFor="business_name">Nama Bisnis / Usaha</Label>
                                     <Input
                                         {...register("business_name")}
                                         id="business_name"
-                                        placeholder="Your business name"
+                                        placeholder="Nama bisnis Anda"
                                         readOnly
                                         className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.business_name && <p className="text-xs text-red-500 mt-1">{errors.business_name.message as any}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="email">Email Address</Label>
+                                    <Label htmlFor="email">Email Perusahaan</Label>
                                     <Input
                                         {...register("email")}
                                         type="email"
                                         id="email"
-                                        placeholder="business@example.com"
+                                        placeholder="bisnis@contoh.com"
                                         readOnly
                                         className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message as any}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="phone">Phone Number</Label>
+                                    <Label htmlFor="phone">Nomor Telepon</Label>
                                     <Input
                                         {...register("phone")}
                                         id="phone"
-                                        placeholder="+62 812..."
+                                        placeholder="0812..."
                                         readOnly
                                         className="!bg-gray-50 dark:!bg-gray-800"
                                     />
                                     {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message as any}</p>}
                                 </div>
                                 <div className="md:col-span-2">
-                                    <Label htmlFor="business_address">Address</Label>
+                                    <Label htmlFor="business_address">Alamat Lengkap</Label>
                                     <TextArea
                                         value={business.address || ""}
                                         rows={3}
@@ -206,7 +206,7 @@ export default function CheckoutPlanPage() {
                         </ComponentCard>
 
                         {/* Step 2: Payment Method */}
-                        <ComponentCard title="2. Payment Method" className="shadow-sm">
+                        <ComponentCard title="2. Metode Pembayaran" className="shadow-sm">
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                     {paymentMethods.map((method) => (
@@ -226,7 +226,7 @@ export default function CheckoutPlanPage() {
                                             <span className={`text-xs font-bold uppercase tracking-tight text-center ${selectedPaymentMethodId === method.id ? "text-white" : "text-gray-700 dark:text-gray-400"}`}>
                                                 {method.name}
                                             </span>
-                                            {method.is_default && <span className={`text-[8px] uppercase font-bold mt-1 ${selectedPaymentMethodId === method.id ? 'text-white/70' : 'text-brand-500'}`}>DEFAULT</span>}
+                                            {method.is_default && <span className={`text-[8px] uppercase font-bold mt-1 ${selectedPaymentMethodId === method.id ? 'text-white/70' : 'text-brand-500'}`}>UTAMA</span>}
                                         </div>
                                     ))}
                                 </div>
@@ -234,7 +234,7 @@ export default function CheckoutPlanPage() {
 
                                 {paymentMethods.length === 0 && (
                                     <div className="py-8 text-center bg-gray-50 dark:bg-white/[0.02] rounded-2xl border border-dashed border-gray-200">
-                                        <p className="text-sm text-gray-400">No payment methods available for subscription.</p>
+                                        <p className="text-sm text-gray-400">Tidak ada metode pembayaran yang tersedia untuk langganan.</p>
                                     </div>
                                 )}
 
@@ -242,7 +242,7 @@ export default function CheckoutPlanPage() {
                                     <div className="mt-6 p-5 rounded-2xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
                                         <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
-                                            Payment Details
+                                            Detail Pembayaran
                                         </h4>
 
                                         {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.type === 'qris' ? (
@@ -278,13 +278,13 @@ export default function CheckoutPlanPage() {
                                                  </div>
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Merchant Name</div>
+                                                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Nama Pemilik / Merchant</div>
                                                         <div className="text-sm font-bold dark:text-white">{paymentMethods.find(m => m.id === selectedPaymentMethodId)?.provider_name}</div>
                                                     </div>
                                                     <div>
-                                                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Instructions</div>
+                                                        <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Instruksi Pembayaran</div>
                                                         <p className="text-xs text-gray-500 max-w-xs leading-relaxed">
-                                                            {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.payment_instructions || 'Scan the QR code with your banking or e-wallet app.'}
+                                                            {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.payment_instructions || 'Scan kode QR di atas menggunakan aplikasi perbankan atau e-wallet Anda.'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -292,20 +292,20 @@ export default function CheckoutPlanPage() {
                                         ) : (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="p-4 bg-white dark:bg-white/[0.04] rounded-xl border border-gray-100 dark:border-white/[0.05]">
-                                                    <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Account Number</div>
+                                                    <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Nomor Rekening / HP</div>
                                                     <div className="text-lg font-mono font-black text-brand-600 dark:text-brand-400">
                                                         {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.account_number}
                                                     </div>
                                                 </div>
                                                 <div className="p-4 bg-white dark:bg-white/[0.04] rounded-xl border border-gray-100 dark:border-white/[0.05]">
-                                                    <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Account Holder</div>
+                                                    <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Nama Pemilik Rekening</div>
                                                     <div className="text-sm font-black dark:text-white truncate">
                                                         {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.account_name}
                                                     </div>
                                                 </div>
                                                 {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.payment_instructions && (
                                                     <div className="sm:col-span-2 p-4 bg-brand-50/50 dark:bg-brand-500/5 rounded-xl border border-brand-100/50 dark:border-brand-500/10">
-                                                        <div className="text-[10px] text-brand-500 uppercase font-black tracking-tighter mb-1">How to pay</div>
+                                                        <div className="text-[10px] text-brand-500 uppercase font-black tracking-tighter mb-1">Tata Cara Pembayaran</div>
                                                         <p className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
                                                             {paymentMethods.find(m => m.id === selectedPaymentMethodId)?.payment_instructions}
                                                         </p>
@@ -325,10 +325,10 @@ export default function CheckoutPlanPage() {
                                 size="md"
                                 disabled={isCheckingOut || !business}
                             >
-                                {isCheckingOut ? "Processing Transaction..." : "Complete Secure Purchase"}
+                                {isCheckingOut ? "Memproses Transaksi..." : "Selesaikan Pembayaran Aman"}
                             </Button>
                             <p className="text-[10px] text-gray-400 text-center mt-3">
-                                By clicking the button, you agree to our Terms of Service and Privacy Policy.
+                                Dengan menekan tombol di atas, Anda menyetujui Syarat & Ketentuan serta Kebijakan Privasi kami.
                             </p>
                         </div>
                     </form>
@@ -337,16 +337,16 @@ export default function CheckoutPlanPage() {
                 {/* Right Section: Order Summary (Sticky) */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-24 space-y-6">
-                        <ComponentCard title="Order Summary" className="shadow-lg border-brand-100 dark:border-white/[0.08]">
+                        <ComponentCard title="Ringkasan Pesanan" className="shadow-lg border-brand-100 dark:border-white/[0.08]">
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-white/[0.05]">
                                     <div>
                                         <h3 className="font-bold text-gray-800 dark:text-white">{plan.name}</h3>
                                         <p className="text-xs text-gray-500 uppercase tracking-tighter">
-                                            {plan.billing_cycle === 'monthly' ? 'Monthly' : 'Yearly'} Billing
+                                            {plan.billing_cycle === 'monthly' ? 'Tagihan Bulanan' : 'Tagihan Tahunan'}
                                         </p>
                                     </div>
-                                    <Badge color="success">ACTIVE</Badge>
+                                    <Badge color="success">AKTIF</Badge>
                                 </div>
 
                                 <ul className="space-y-3">
@@ -354,10 +354,10 @@ export default function CheckoutPlanPage() {
                                         <li key={key} className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                             <CheckCircleIcon className="size-4 text-green-500" />
                                             <span>
-                                                {key === 'max_locations' && `${value} Business Locations`}
-                                                {key === 'max_products' && `${value} Products Catalog`}
-                                                {key === 'has_face_recognition' && (value ? "Face Recognition Available" : "Face Recognition Not Available")}
-                                                {key === 'support_type' && (String(value).includes('priority') ? "Priority Email Support" : "Standard Email Support")}
+                                                {key === 'max_locations' && `${value} Lokasi Toko / Bisnis`}
+                                                {key === 'max_products' && `${value} Katalog Produk`}
+                                                {key === 'has_face_recognition' && (value ? "Fitur Absensi Pemindai Wajah Tersedia" : "Fitur Absensi Pemindai Wajah Tidak Tersedia")}
+                                                {key === 'support_type' && (String(value).includes('priority') ? "Dukungan Email Prioritas" : "Dukungan Email Standar")}
                                                 {!['max_locations', 'max_products', 'has_face_recognition', 'support_type'].includes(key) && `${key.replace(/_/g, ' ')}: ${value}`}
                                             </span>
                                         </li>
@@ -366,14 +366,14 @@ export default function CheckoutPlanPage() {
 
                                 <div className="pt-4 space-y-3">
                                     <div className="flex items-center gap-2">
-                                        <Input className="text-xs h-9" placeholder="Promo Code" />
+                                        <Input className="text-xs h-9" placeholder="Kode Promo" />
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             className="h-9 px-4"
                                             disabled
                                         >
-                                            Apply
+                                            Gunakan
                                         </Button>
                                     </div>
 
@@ -387,7 +387,7 @@ export default function CheckoutPlanPage() {
                                             <span className="font-medium">Rp {tax.toLocaleString("id-ID")}</span>
                                         </div>
                                         <div className="flex justify-between text-lg font-bold text-brand-600 dark:text-brand-400 pt-2">
-                                            <span>Total Amount</span>
+                                            <span>Total Pembayaran</span>
                                             <span>Rp {total.toLocaleString("id-ID")}</span>
                                         </div>
                                     </div>
@@ -402,18 +402,18 @@ export default function CheckoutPlanPage() {
                                 size="lg"
                                 disabled={isCheckingOut || !business}
                             >
-                                {isCheckingOut ? "Processing..." : "Complete Purchase"}
+                                {isCheckingOut ? "Memproses..." : "Selesaikan Pembayaran"}
                             </Button>
                         </div>
 
                         <div className="flex flex-col items-center gap-3 px-4">
                             <div className="flex items-center gap-4 opacity-50 grayscale">
                                 <span className="text-[10px] font-bold tracking-widest text-gray-400 border border-gray-300 px-1 rounded">IDR</span>
-                                <Badge color="light" size="sm">Verified Merchant</Badge>
-                                <Badge color="light" size="sm">Instant Activation</Badge>
+                                <Badge color="light" size="sm">Merchant Terverifikasi</Badge>
+                                <Badge color="light" size="sm">Aktivasi Instan</Badge>
                             </div>
                             <p className="text-[10px] text-gray-400 text-center">
-                                Secure encrypted checkout provided by our payment partners.
+                                Pembayaran aman dan terenkripsi diproses oleh mitra pembayaran terpercaya.
                             </p>
                         </div>
                     </div>

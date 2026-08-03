@@ -7,12 +7,12 @@ const InventoryAlerts: React.FC = () => {
   const alertsData = alertsResponse?.data;
 
   const getIdleDays = (lastMovement: string | null) => {
-    if (!lastMovement) return "Old Stock";
+    if (!lastMovement) return "Stok Lama";
     const last = new Date(lastMovement);
     const now = new Date();
     const diff = now.getTime() - last.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    return `${days} Days Idle`;
+    return `${days} Hari Mengendap`;
   };
 
   const getExpText = (date: string) => {
@@ -20,9 +20,9 @@ const InventoryAlerts: React.FC = () => {
     const now = new Date();
     const diff = exp.getTime() - now.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    if (days < 0) return "EXPIRED";
-    if (days === 0) return "EXPIRES TODAY";
-    return `EXPIRES IN ${days} DAYS (${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(exp).toUpperCase()})`;
+    if (days < 0) return "KADALUARSA";
+    if (days === 0) return "KADALUARSA HARI INI";
+    return `KADALUARSA DALAM ${days} HARI (${new Intl.DateTimeFormat("id-ID", { month: "short", day: "numeric" }).format(exp).toUpperCase()})`;
   };
 
   if (isLoading) {
@@ -38,7 +38,7 @@ const InventoryAlerts: React.FC = () => {
   if (isError) {
     return (
       <div className="p-4 bg-error-50 dark:bg-error-500/5 rounded-2xl border border-error-100 dark:border-error-900/20 text-xs text-error-600 font-bold">
-        Failed to load inventory alerts.
+        Gagal memuat peringatan inventaris.
       </div>
     );
   }
@@ -52,13 +52,13 @@ const InventoryAlerts: React.FC = () => {
             <AlertIcon className="text-error-600 size-5" />
           </div>
           <h3 className="text-sm font-bold text-gray-800 dark:text-white/90 uppercase tracking-wider">
-            Low Stock Alert
+            Peringatan Stok Menipis
           </h3>
         </div>
 
         <div className="space-y-4">
           {alertsData?.low_stock_items.length === 0 ? (
-            <p className="text-xs text-gray-500 italic">No low stock items detected.</p>
+            <p className="text-xs text-gray-500 italic">Tidak ada item stok menipis.</p>
           ) : (
             alertsData?.low_stock_items.map((item, i) => (
               <div key={i} className="flex items-start justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/5">
@@ -68,13 +68,13 @@ const InventoryAlerts: React.FC = () => {
                   </div>
                   <div className="max-w-[120px]">
                     <p className="text-xs font-bold text-gray-800 dark:text-white/90 truncate" title={item.name}>{item.name}</p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400">Limit: {item.min_stock}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">Batas: {item.min_stock}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-error-600">{item.available} Left</p>
+                  <p className="text-xs font-bold text-error-600">{item.available} Tersisa</p>
                   <p className="text-[10px] font-medium text-gray-400 uppercase">
-                    {item.available <= 0 ? "OUT OF STOCK" : "RESTOCK"}
+                    {item.available <= 0 ? "STOK HABIS" : "ISI ULANG"}
                   </p>
                 </div>
               </div>
@@ -90,13 +90,13 @@ const InventoryAlerts: React.FC = () => {
             <TimeIcon className="text-gray-600 size-5 dark:text-gray-400" />
           </div>
           <h3 className="text-sm font-bold text-gray-800 dark:text-white/90 uppercase tracking-wider">
-            Dead Stock (30D+)
+            Stok Mati / Mengendap (30 Hari+)
           </h3>
         </div>
 
         <div className="space-y-3">
           {alertsData?.dead_stock_items.length === 0 ? (
-            <p className="text-xs text-gray-500 italic">Inventory is moving healthily.</p>
+            <p className="text-xs text-gray-500 italic">Pergerakan stok lancar dan sehat.</p>
           ) : (
             alertsData?.dead_stock_items.map((item, i) => (
               <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-800 last:border-0">
@@ -113,7 +113,7 @@ const InventoryAlerts: React.FC = () => {
 
         {alertsData?.dead_stock_items.length ? (
           <button className="mt-6 w-full py-2.5 border border-gray-100 rounded-xl text-[10px] font-bold text-brand-600 uppercase tracking-widest hover:bg-gray-50 transition-colors dark:border-gray-800 dark:hover:bg-white/5">
-            Run Promotion Insight
+            Jalankan Wawasan Promosi
           </button>
         ) : null}
       </div>
@@ -125,13 +125,13 @@ const InventoryAlerts: React.FC = () => {
             <BoltIcon className="text-warning-600 size-5" />
           </div>
           <h3 className="text-sm font-bold text-gray-800 dark:text-white/90 uppercase tracking-wider">
-            Expiring Batches
+            Batch Mendekati Kadaluarsa
           </h3>
         </div>
 
         <div className="space-y-5">
           {alertsData?.expiring_batch_items.length === 0 ? (
-            <p className="text-xs text-gray-500 italic">No batches near expiry.</p>
+            <p className="text-xs text-gray-500 italic">Tidak ada batch mendekati kadaluarsa.</p>
           ) : (
             alertsData?.expiring_batch_items.map((item, i) => {
               const expDate = new Date(item.expiry_date);

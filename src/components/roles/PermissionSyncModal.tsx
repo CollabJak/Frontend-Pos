@@ -64,10 +64,10 @@ const PermissionSyncModal: React.FC<PermissionSyncModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[800px] p-6 lg:p-10">
       <div className="flex flex-col h-full max-h-[80vh]">
         <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-          Manage Permissions: {role.name}
+          Atur Hak Akses: {role.name}
         </h4>
         <p className="mb-7 text-sm text-gray-500 dark:text-gray-400">
-          Select the permissions you want to assign to this role. Changes are applied immediately after saving.
+          Pilih hak akses yang ingin diberikan pada peran ini. Perubahan akan langsung diterapkan setelah disimpan.
         </p>
 
         <div className="flex-1 overflow-y-auto mb-6 pr-2 space-y-8 scrollbar-thin">
@@ -93,10 +93,10 @@ const PermissionSyncModal: React.FC<PermissionSyncModalProps> = ({
 
         <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            Cancel
+            Batal
           </Button>
           <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Permissions"}
+            {loading ? "Menyimpan..." : "Simpan Hak Akses"}
           </Button>
         </div>
       </div>

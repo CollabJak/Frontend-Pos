@@ -123,9 +123,9 @@ const FaceRegistrationPage: React.FC = () => {
       <canvas ref={canvasRef} className="hidden" />
       
       <div className="flex flex-col gap-1">
-        <h1 className="text-title-sm font-bold text-gray-900">Face Registration</h1>
-        <p className="text-theme-sm text-gray-500">
-          Pendaftaran biometrik wajah untuk sistem absensi AI.
+        <h1 className="text-title-sm font-bold text-gray-900 dark:text-white">Pendaftaran Wajah (Biometrik Absensi)</h1>
+        <p className="text-theme-sm text-gray-500 dark:text-gray-400">
+          Pendaftaran biometrik wajah karyawan untuk sistem absensi berbasis pemindaian kecerdasan buatan (AI).
         </p>
       </div>
 
@@ -171,9 +171,9 @@ const FaceRegistrationPage: React.FC = () => {
               <div className="bg-brand-500 dark:bg-brand-500/10 border border-brand-500/20 p-4 rounded-xl flex gap-3">
                 <InfoIcon className="size-6 text-white dark:text-brand-400 shrink-0" />
                 <div className="space-y-1">
-                  <h4 className="text-white dark:text-white font-semibold text-sm">Instruksi Pengambilan</h4>
+                  <h4 className="text-white dark:text-white font-semibold text-sm">Instruksi Pengambilan Foto</h4>
                   <p className="text-white/90 dark:text-gray-300 text-xs leading-relaxed">
-                    Pastikan wajah berada di tengah bingkai, lepaskan kacamata, dan pastikan pencahayaan cukup terang.
+                    Pastikan wajah berada tepat di tengah bingkai pemindai, lepaskan kacamata atau masker, dan pastikan pencahayaan cukup terang.
                   </p>
                 </div>
               </div>
@@ -217,7 +217,7 @@ const FaceRegistrationPage: React.FC = () => {
                   startIcon={<PlusIcon className="size-5" />}
                   disabled={isPending}
                 >
-                  {isPending ? "REGISTERING..." : "CAPTURE & ENROLL"}
+                  {isPending ? "MENDAFTARKAN WAJAH..." : "AMBIL FOTO & DAFTARKAN WAJAH"}
                 </Button>
               </div>
             </div>
@@ -230,7 +230,7 @@ const FaceRegistrationPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-theme-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-theme-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-                Alur Pendaftaran
+                Alur Pendaftaran Biometrik
               </h3>
             </div>
 
@@ -238,25 +238,25 @@ const FaceRegistrationPage: React.FC = () => {
                 <div className="flex gap-4">
                     <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">1</div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Data karyawan (Nama & Email) otomatis diambil dari sesi login Anda.
+                        Data profil karyawan (Nama & Email) otomatis terisi dari akun sesi login Anda.
                     </p>
                 </div>
                 <div className="flex gap-4">
                     <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">2</div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Tekan tombol <b>Capture & Enroll</b> untuk mengambil foto biometrik wajah.
+                        Posisikan wajah pada kamera, lalu tekan tombol <b>Ambil Foto & Daftarkan Wajah</b>.
                     </p>
                 </div>
                 <div className="flex gap-4">
                     <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">3</div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Setelah berhasil, Anda akan diarahkan ke halaman scanner untuk mencoba absensi.
+                        Setelah berhasil terdaftar, Anda dapat langsung melakukan absensi pada pemindai wajah.
                     </p>
                 </div>
             </div>
 
             <button onClick={() => navigate('/absensi/scanner')} className="w-full mt-10 py-3 text-sm font-bold text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-xl transition-colors uppercase tracking-widest border border-brand-100 dark:border-brand-500/20">
-              Buka Scanner
+              Buka Pemindai Absensi
             </button>
           </div>
         </div>

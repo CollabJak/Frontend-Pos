@@ -135,13 +135,13 @@ export default function EditProductVariant() {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Product Variant" description="Edit product variant page" />
-      <PageBreadcrumb pageTitle="Edit Product Variant" />
+      <PageMeta title="Edit Varian Produk" description="Halaman edit varian produk" />
+      <PageBreadcrumb pageTitle="Edit Varian Produk" />
       <div className="mb-6 inline-flex rounded-lg border border-gray-200 p-1 dark:border-gray-800">
         <button
           type="button"
@@ -152,7 +152,7 @@ export default function EditProductVariant() {
               : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           }`}
         >
-          General
+          Umum
         </button>
         <button
           type="button"
@@ -163,17 +163,17 @@ export default function EditProductVariant() {
               : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           }`}
         >
-          Locations
+          Pengaturan Lokasi
         </button>
       </div>
 
       {activeTab === "general" && (
-        <ComponentCard title="Edit Product Variant Form">
+        <ComponentCard title="Form Edit Varian Produk">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
             <div>
-              <Label>Product</Label>
+              <Label>Produk Utama</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 keyName="product-variant-product-options"
@@ -184,7 +184,7 @@ export default function EditProductVariant() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search product..."
+                placeholder="Cari produk..."
                 fetchOptions={fetchProductOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -197,34 +197,34 @@ export default function EditProductVariant() {
             </div>
 
           <div>
-            <Label htmlFor="variant-name">Variant Name</Label>
+            <Label htmlFor="variant-name">Nama Varian</Label>
             <Input
               {...register("name")}
               id="variant-name"
               type="text"
-              placeholder="Input variant name"
+              placeholder="Masukkan nama varian"
             />
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="variant-barcode">Barcode (Optional)</Label>
+            <Label htmlFor="variant-barcode">Barcode (Opsional)</Label>
             <Input
               {...register("barcode")}
               id="variant-barcode"
               type="text"
-              placeholder="Input barcode"
+              placeholder="Masukkan barcode"
             />
             {errors.barcode && <p className="text-red-500">{errors.barcode.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="variant-internal-code">Internal Code (Optional)</Label>
+            <Label htmlFor="variant-internal-code">Kode Internal (Opsional)</Label>
             <Input
               {...register("internal_code")}
               id="variant-internal-code"
               type="text"
-              placeholder="Input internal code"
+              placeholder="Masukkan kode internal"
             />
             {errors.internal_code && (
               <p className="text-red-500">{errors.internal_code.message}</p>
@@ -233,7 +233,7 @@ export default function EditProductVariant() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label>Base Unit</Label>
+              <Label>Satuan Dasar (Base Unit)</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 keyName="product-variant-base-unit-options"
@@ -244,7 +244,7 @@ export default function EditProductVariant() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search base unit..."
+                placeholder="Cari satuan dasar..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -257,7 +257,7 @@ export default function EditProductVariant() {
             </div>
 
             <div>
-              <Label htmlFor="min-stock">Min Stock</Label>
+              <Label htmlFor="min-stock">Stok Minimal (Min Stock)</Label>
               <Input
                 {...register("min_stock")}
                 id="min-stock"
@@ -280,7 +280,7 @@ export default function EditProductVariant() {
                   shouldDirty: true,
                 })
               }
-              label="Is Stock Item"
+              label="Barang Berstok (Stock Item)"
             />
             <Checkbox
               id="variant-is-active"
@@ -291,20 +291,20 @@ export default function EditProductVariant() {
                   shouldDirty: true,
                 })
               }
-              label="Is Active"
+              label="Status Aktif"
             />
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Atributes</Label>
+              <Label>Atribut Varian</Label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => append({ atribute_id: 0, value: "" })}
               >
-                Add Atribute
+                Tambah Atribut
               </Button>
             </div>
 
@@ -315,7 +315,7 @@ export default function EditProductVariant() {
               >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <Label>Atribute</Label>
+                    <Label>Atribut</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
                       keyName={`product-variant-atribute-options-${index}`}
@@ -328,7 +328,7 @@ export default function EditProductVariant() {
                           { shouldValidate: true }
                         );
                       }}
-                      placeholder="Search atribute..."
+                      placeholder="Cari atribut..."
                       fetchOptions={fetchAtributeOptions}
                       optionLabel="name"
                       optionValue="id"
@@ -343,12 +343,12 @@ export default function EditProductVariant() {
                   </div>
 
                   <div>
-                    <Label htmlFor={`atribute-value-${index}`}>Value</Label>
+                    <Label htmlFor={`atribute-value-${index}`}>Nilai Atribut</Label>
                     <Input
                       {...register(`attributes_json.${index}.value`)}
                       id={`atribute-value-${index}`}
                       type="text"
-                      placeholder="e.g. Red, XL"
+                      placeholder="Contoh: Merah, XL, 256GB"
                     />
                     {errors.attributes_json?.[index]?.value && (
                       <p className="text-red-500">
@@ -366,7 +366,7 @@ export default function EditProductVariant() {
                     disabled={fields.length === 1}
                     onClick={() => remove(index)}
                   >
-                    Remove
+                    Hapus
                   </Button>
                 </div>
               </div>
@@ -379,7 +379,7 @@ export default function EditProductVariant() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating product variant..." : "Update Product Variant"}
+                {isPending ? "Memperbarui varian produk..." : "Perbarui Varian Produk"}
               </Button>
             </div>
           </form>
@@ -388,7 +388,7 @@ export default function EditProductVariant() {
 
       {activeTab === "locations" && (
         <ComponentCard
-          title={`Variant Locations${productVariant?.name ? ` - ${productVariant.name}` : ""}`}
+          title={`Lokasi Varian${productVariant?.name ? ` - ${productVariant.name}` : ""}`}
         >
           <VariantLocationMapping variantId={variantId} />
         </ComponentCard>

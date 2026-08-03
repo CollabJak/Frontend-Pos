@@ -80,77 +80,77 @@ export default function EditBusiness() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat data bisnis...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Business" description="Edit business page" />
-      <PageBreadcrumb pageTitle="Edit Business" />
-      <ComponentCard title="Edit Business Form">
+      <PageMeta title="Edit Bisnis" description="Halaman edit bisnis" />
+      <PageBreadcrumb pageTitle="Edit Bisnis" />
+      <ComponentCard title="Form Edit Bisnis">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="business-name">Name</Label>
+              <Label htmlFor="business-name">Nama Bisnis</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="business-name"
-                placeholder="Input business name"
+                placeholder="Masukkan nama bisnis / usaha"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-code">Code</Label>
+              <Label htmlFor="business-code">Kode Bisnis</Label>
               <Input
                 {...register("code")}
                 type="text"
                 id="business-code"
-                placeholder="Input business code"
+                placeholder="Masukkan kode unik bisnis"
               />
               {errors.code && <p className="text-red-500">{errors.code.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-email">Email</Label>
+              <Label htmlFor="business-email">Email Perusahaan</Label>
               <Input
                 {...register("email")}
                 type="email"
                 id="business-email"
-                placeholder="Input business email"
+                placeholder="Masukkan email bisnis"
               />
               {errors.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-phone">Phone</Label>
+              <Label htmlFor="business-phone">No. Telepon (Opsional)</Label>
               <Input
                 {...register("phone")}
                 type="text"
                 id="business-phone"
-                placeholder="Input business phone (optional)"
+                placeholder="Masukkan nomor telepon (opsional)"
               />
               {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-address">Address</Label>
+              <Label htmlFor="business-address">Alamat Lengkap</Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional address"
+                placeholder="Masukkan alamat lengkap bisnis (opsional)"
               />
               {errors.address && <p className="text-red-500">{errors.address.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-active">Active Status</Label>
+              <Label htmlFor="business-active">Status Aktif</Label>
               <Checkbox
                 id="business-active"
                 checked={Boolean(watch("is_active"))}
@@ -160,14 +160,14 @@ export default function EditBusiness() {
                     shouldDirty: true,
                   })
                 }
-                label="Business is active"
+                label="Bisnis berstatus aktif"
               />
               {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
             </div>
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating Business..." : "Update Business"}
+                {isPending ? "Menyimpan Perubahan..." : "Simpan Perubahan"}
               </Button>
             </div>
           </div>

@@ -96,18 +96,18 @@ export default function EditCategory() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Memuat...</div>;
   }
 
 
   return (
     <>
       <PageMeta
-        title="Edit Categories Products"
-        description="Edit new category of products page"
+        title="Edit Kategori Produk"
+        description="Halaman edit kategori produk"
       />
-      <PageBreadcrumb pageTitle="Edit Categories Product" />
-      <ComponentCard title="Edit Category Form">
+      <PageBreadcrumb pageTitle="Edit Kategori Produk" />
+      <ComponentCard title="Form Edit Kategori">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
             files={files as never[]}
@@ -124,7 +124,7 @@ export default function EditCategory() {
             }}
             acceptedFileTypes={["image/png", "image/jpeg"]}
             name="files"
-            labelIdle='Drag & Drop atau <span class="filepond--label-action">Browse</span>'
+            labelIdle='Tarik & Lepas atau <span class="filepond--label-action">Pilih File</span>'
             server={{
               load: (source, load, error, _progress, abort) => {
                 fetch(source as string)
@@ -152,8 +152,8 @@ export default function EditCategory() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="category">Category</Label>
-              <Input {...register("name")} type="text" id="category" placeholder="Input category" />
+              <Label htmlFor="category">Kategori</Label>
+              <Input {...register("name")} type="text" id="category" placeholder="Masukkan kategori" />
               <div>
                 {errors.name && (
                   <p className="text-red-500">{errors.name.message}</p>
@@ -162,7 +162,7 @@ export default function EditCategory() {
             </div>
             <div>
               <Label htmlFor="tagline">Tagline</Label>
-              <Input {...register("tagline")} type="text" id="tagline" placeholder="Input tagline" />
+              <Input {...register("tagline")} type="text" id="tagline" placeholder="Masukkan tagline" />
               <div>
                 {errors.tagline && (
                   <p className="text-red-500">{errors.tagline.message}</p>
@@ -170,7 +170,7 @@ export default function EditCategory() {
               </div>
             </div>
             <div>
-              <Label htmlFor="default-picking-strategy">Default Picking Strategy</Label>
+              <Label htmlFor="default-picking-strategy">Strategi Pengambilan Default</Label>
               <select
                 {...register("default_picking_strategy")}
                 id="default-picking-strategy"
@@ -190,7 +190,7 @@ export default function EditCategory() {
             </div>
             <div>
               <Button className="w-full" size="sm" type="submit">
-                { isUpdating ? "Updating Category..." : "Update Category" }
+                { isUpdating ? "Memperbarui Kategori..." : "Perbarui Kategori" }
               </Button>
             </div>
           </div>

@@ -94,14 +94,14 @@ export default function AddProductVariant() {
 
   return (
     <>
-      <PageMeta title="Add Product Variant" description="Add product variant page" />
-      <PageBreadcrumb pageTitle="Add Product Variant" />
-      <ComponentCard title="Add Product Variant Form">
+      <PageMeta title="Tambah Varian Produk" description="Halaman tambah varian produk" />
+      <PageBreadcrumb pageTitle="Tambah Varian Produk" />
+      <ComponentCard title="Form Tambah Varian Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Product</Label>
+            <Label>Produk Utama</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="product-variant-product-options"
@@ -111,7 +111,7 @@ export default function AddProductVariant() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product..."
+              placeholder="Cari produk..."
               fetchOptions={fetchProductOptions}
               optionLabel="name"
               optionValue="id"
@@ -124,34 +124,34 @@ export default function AddProductVariant() {
           </div>
 
           <div>
-            <Label htmlFor="variant-name">Variant Name</Label>
+            <Label htmlFor="variant-name">Nama Varian</Label>
             <Input
               {...register("name")}
               id="variant-name"
               type="text"
-              placeholder="Input variant name"
+              placeholder="Masukkan nama varian"
             />
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="variant-barcode">Barcode (Optional)</Label>
+            <Label htmlFor="variant-barcode">Barcode (Opsional)</Label>
             <Input
               {...register("barcode")}
               id="variant-barcode"
               type="text"
-              placeholder="Input barcode"
+              placeholder="Masukkan barcode"
             />
             {errors.barcode && <p className="text-red-500">{errors.barcode.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="variant-internal-code">Internal Code (Optional)</Label>
+            <Label htmlFor="variant-internal-code">Kode Internal (Opsional)</Label>
             <Input
               {...register("internal_code")}
               id="variant-internal-code"
               type="text"
-              placeholder="Input internal code"
+              placeholder="Masukkan kode internal"
             />
             {errors.internal_code && (
               <p className="text-red-500">{errors.internal_code.message}</p>
@@ -160,7 +160,7 @@ export default function AddProductVariant() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label>Base Unit</Label>
+              <Label>Satuan Dasar (Base Unit)</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 keyName="product-variant-base-unit-options"
@@ -170,7 +170,7 @@ export default function AddProductVariant() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search base unit..."
+                placeholder="Cari satuan dasar..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -183,7 +183,7 @@ export default function AddProductVariant() {
             </div>
 
             <div>
-              <Label htmlFor="min-stock">Min Stock</Label>
+              <Label htmlFor="min-stock">Stok Minimal (Min Stock)</Label>
               <Input
                 {...register("min_stock")}
                 id="min-stock"
@@ -206,7 +206,7 @@ export default function AddProductVariant() {
                   shouldDirty: true,
                 })
               }
-              label="Is Stock Item"
+              label="Barang Berstok (Stock Item)"
             />
             <Checkbox
               id="variant-is-active"
@@ -217,20 +217,20 @@ export default function AddProductVariant() {
                   shouldDirty: true,
                 })
               }
-              label="Is Active"
+              label="Status Aktif"
             />
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Atributes</Label>
+              <Label>Atribut Varian</Label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => append({ atribute_id: 0, value: "" })}
               >
-                Add Atribute
+                Tambah Atribut
               </Button>
             </div>
 
@@ -241,7 +241,7 @@ export default function AddProductVariant() {
               >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <Label>Atribute</Label>
+                    <Label>Atribut</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
                       keyName={`product-variant-atribute-options-${index}`}
@@ -253,7 +253,7 @@ export default function AddProductVariant() {
                           { shouldValidate: true }
                         );
                       }}
-                      placeholder="Search atribute..."
+                      placeholder="Cari atribut..."
                       fetchOptions={fetchAtributeOptions}
                       optionLabel="name"
                       optionValue="id"
@@ -268,12 +268,12 @@ export default function AddProductVariant() {
                   </div>
 
                   <div>
-                    <Label htmlFor={`atribute-value-${index}`}>Value</Label>
+                    <Label htmlFor={`atribute-value-${index}`}>Nilai Atribut</Label>
                     <Input
                       {...register(`attributes_json.${index}.value`)}
                       id={`atribute-value-${index}`}
                       type="text"
-                      placeholder="e.g. Red, XL"
+                      placeholder="Contoh: Merah, XL, 256GB"
                     />
                     {errors.attributes_json?.[index]?.value && (
                       <p className="text-red-500">
@@ -291,7 +291,7 @@ export default function AddProductVariant() {
                     disabled={fields.length === 1}
                     onClick={() => remove(index)}
                   >
-                    Remove
+                    Hapus
                   </Button>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function AddProductVariant() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding product variant..." : "Add Product Variant"}
+              {isPending ? "Menambahkan varian produk..." : "Tambah Varian Produk"}
             </Button>
           </div>
         </form>

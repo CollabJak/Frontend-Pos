@@ -87,19 +87,19 @@ export default function EditPromotionProduct() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Promotion Product" description="Edit promotion product page" />
-      <PageBreadcrumb pageTitle="Edit Promotion Product" />
-      <ComponentCard title="Edit Promotion Product Form">
+      <PageMeta title="Edit Produk Promosi" description="Halaman edit produk dalam promosi" />
+      <PageBreadcrumb pageTitle="Edit Produk Promosi" />
+      <ComponentCard title="Form Edit Produk Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promotion</Label>
+            <Label>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("promotion_id") || null}
@@ -109,7 +109,7 @@ export default function EditPromotionProduct() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search promotion..."
+              placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
               optionLabel="name"
               optionValue="id"
@@ -120,7 +120,7 @@ export default function EditPromotionProduct() {
           </div>
 
           <div>
-            <Label>Product Variant</Label>
+            <Label>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("product_variant_id") || null}
@@ -130,7 +130,7 @@ export default function EditPromotionProduct() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product variant..."
+              placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
               optionLabel="name"
               optionValue="id"
@@ -144,7 +144,7 @@ export default function EditPromotionProduct() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating promotion product..." : "Update Promotion Product"}
+              {isPending ? "Memperbarui produk promosi..." : "Perbarui Produk Promosi"}
             </Button>
           </div>
         </form>

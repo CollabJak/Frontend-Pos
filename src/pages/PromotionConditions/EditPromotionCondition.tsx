@@ -101,19 +101,19 @@ export default function EditPromotionCondition() {
       : undefined;
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Promotion Condition" description="Edit promotion condition page" />
-      <PageBreadcrumb pageTitle="Edit Promotion Condition" />
-      <ComponentCard title="Edit Promotion Condition Form">
+      <PageMeta title="Edit Syarat Promosi" description="Halaman edit syarat promosi" />
+      <PageBreadcrumb pageTitle="Edit Syarat Promosi" />
+      <ComponentCard title="Form Edit Syarat Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promotion</Label>
+            <Label>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="promotion-condition-promotion-options"
@@ -124,7 +124,7 @@ export default function EditPromotionCondition() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search promotion..."
+              placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
               optionLabel="name"
               optionValue="id"
@@ -135,7 +135,7 @@ export default function EditPromotionCondition() {
           </div>
 
           <div>
-            <Label htmlFor="condition-type">Condition Type</Label>
+            <Label htmlFor="condition-type">Tipe Syarat</Label>
             <select
               {...register("condition_type")}
               id="condition-type"
@@ -151,7 +151,7 @@ export default function EditPromotionCondition() {
           </div>
 
           <div>
-            <Label htmlFor="condition-operator">Condition Operator</Label>
+            <Label htmlFor="condition-operator">Operator Syarat</Label>
             <select
               {...register("condition_operator")}
               id="condition-operator"
@@ -183,7 +183,7 @@ export default function EditPromotionCondition() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating promotion condition..." : "Update Promotion Condition"}
+              {isPending ? "Memperbarui syarat promosi..." : "Perbarui Syarat Promosi"}
             </Button>
           </div>
         </form>

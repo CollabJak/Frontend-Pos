@@ -165,41 +165,41 @@ export default function AdminSubscriptionVerificationPage() {
             <PageBreadcrumb pageTitle="Verifikasi Langganan" />
 
             <div className="space-y-6">
-                <ComponentCard title="Subscription Verification List">
+                <ComponentCard title="Daftar Verifikasi Langganan">
                     <div className="mb-4">
                         <Input
                             id="payment-search"
                             type="text"
-                            placeholder="Search by invoice, business, or user name..."
+                            placeholder="Cari berdasarkan nomor invoice, nama bisnis, atau nama pengguna..."
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                         />
                     </div>
                     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                         <div className="max-w-full overflow-x-auto">
-                            {isLoading && <p className="p-3">Loading...</p>}
+                            {isLoading && <p className="p-3">Memuat data...</p>}
 
                             {!isLoading && (
                                 <Table className="table-auto">
                                     <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                                         <TableRow>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                Invoice / Date
+                                                Invoice / Tanggal
                                             </TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                Business / User
+                                                Bisnis / Pengguna
                                             </TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                Plan
+                                                Paket
                                             </TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                Amount
+                                                Jumlah Pembayaran
                                             </TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                                 Status
                                             </TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">
-                                                Action
+                                                Aksi
                                             </TableCell>
                                         </TableRow>
                                     </TableHeader>
@@ -207,7 +207,7 @@ export default function AdminSubscriptionVerificationPage() {
                                         {data?.data?.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                                                    No subscription payments found.
+                                                    Tidak ada data pembayaran langganan.
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
@@ -226,7 +226,7 @@ export default function AdminSubscriptionVerificationPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleOpenBusinessModal(payment)}
-                                                                aria-label={`Lihat detail business ${payment.business?.name || ""}`}
+                                                                aria-label={`Lihat detail bisnis ${payment.business?.name || ""}`}
                                                                 className="group block max-w-[220px] rounded-md text-left focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                                                             >
                                                                 <span className="block truncate font-medium text-gray-800 text-theme-sm transition-colors group-hover:text-brand-600 group-hover:underline dark:text-white/90 dark:group-hover:text-brand-400">
@@ -334,7 +334,7 @@ export default function AdminSubscriptionVerificationPage() {
                             isLoading={isDownloadingProof}
                             startIcon={<DownloadIcon className="size-5 text-white" />}
                         >
-                            Download
+                            Unduh
                         </Button>
                     </div>
                 </div>
@@ -349,48 +349,48 @@ export default function AdminSubscriptionVerificationPage() {
                 <div className="p-6">
                     <div className="mb-6 pr-12">
                         <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                            Business Detail
+                            Detail Bisnis
                         </h3>
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Informasi business yang terdaftar pada menu Business.
+                            Informasi bisnis yang terdaftar pada menu Bisnis.
                         </p>
                     </div>
 
                     {isLoadingBusiness ? (
                         <p className="rounded-lg border border-gray-100 p-4 text-sm text-gray-500 dark:border-white/[0.05] dark:text-gray-400">
-                            Loading business detail...
+                            Memuat detail bisnis...
                         </p>
                     ) : selectedBusiness ? (
                         <div className="space-y-5">
                             <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-gray-100 p-4 dark:border-white/[0.05]">
                                 <div>
                                     <p className="text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
-                                        Business
+                                        Nama Bisnis
                                     </p>
                                     <h4 className="mt-1 text-lg font-semibold text-gray-800 dark:text-white/90">
                                         {selectedBusiness.name}
                                     </h4>
                                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                        Registered user: {selectedBusinessPayment?.userName || "-"}
+                                        Pengguna Terdaftar: {selectedBusinessPayment?.userName || "-"}
                                     </p>
                                 </div>
                                 {selectedBusiness.is_active ? (
-                                    <Badge color="success">Active</Badge>
+                                    <Badge color="success">Aktif</Badge>
                                 ) : (
-                                    <Badge color="error">Inactive</Badge>
+                                    <Badge color="error">Tidak Aktif</Badge>
                                 )}
                             </div>
 
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <DetailItem label="Code" value={selectedBusiness.code} />
-                                <DetailItem label="Email" value={selectedBusiness.email} />
-                                <DetailItem label="Phone" value={selectedBusiness.phone} />
-                                <DetailItem label="Address" value={selectedBusiness.address} />
+                                <DetailItem label="Kode Bisnis" value={selectedBusiness.code} />
+                                <DetailItem label="Email Perusahaan" value={selectedBusiness.email} />
+                                <DetailItem label="No. Telepon" value={selectedBusiness.phone} />
+                                <DetailItem label="Alamat Lengkap" value={selectedBusiness.address} />
                             </div>
                         </div>
                     ) : (
                         <p className="rounded-lg border border-gray-100 p-4 text-sm text-gray-500 dark:border-white/[0.05] dark:text-gray-400">
-                            Business detail tidak tersedia.
+                            Detail bisnis tidak tersedia.
                         </p>
                     )}
 
@@ -405,14 +405,14 @@ export default function AdminSubscriptionVerificationPage() {
             {/* Confirmation Dialog */}
             <ConfirmDialog
                 isOpen={isConfirmOpen}
-                title="Confirm Payment?"
+                title="Konfirmasi Pembayaran?"
                 description={
                     pendingConfirm
-                        ? `Are you sure you want to confirm the payment for invoice "${pendingConfirm.invoice}"? This will activate the subscription.`
-                        : "Confirming this payment will activate the subscription."
+                        ? `Apakah Anda yakin ingin mengonfirmasi pembayaran untuk invoice "${pendingConfirm.invoice}"? Ini akan mengaktifkan paket langganan.`
+                        : "Mengonfirmasi pembayaran ini akan mengaktifkan paket langganan."
                 }
-                confirmText="Confirm"
-                cancelText="Cancel"
+                confirmText="Konfirmasi"
+                cancelText="Batal"
                 tone="info"
                 onConfirm={handleConfirmSubmit}
                 onCancel={handleCancelConfirm}

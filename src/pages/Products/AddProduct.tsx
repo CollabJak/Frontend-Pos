@@ -75,9 +75,9 @@ export default function AddProduct() {
 
   return (
     <>
-      <PageMeta title="Add Product" description="Add new product page" />
-      <PageBreadcrumb pageTitle="Add Product" />
-      <ComponentCard title="Add Product Form">
+      <PageMeta title="Tambah Produk" description="Halaman tambah produk baru" />
+      <PageBreadcrumb pageTitle="Tambah Produk" />
+      <ComponentCard title="Form Tambah Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
@@ -94,7 +94,7 @@ export default function AddProduct() {
               }}
               acceptedFileTypes={["image/png", "image/jpeg"]}
               name="files"
-              labelIdle='Drag & Drop atau <span class="filepond--label-action">Browse</span>'
+              labelIdle='Pilih atau tarik foto produk di sini <span class="filepond--label-action">Browse</span>'
             />
             <div>
               {errors.thumbnail && (
@@ -104,12 +104,12 @@ export default function AddProduct() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-name">Product Name</Label>
+              <Label htmlFor="product-name">Nama Produk</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="product-name"
-                placeholder="Input product name"
+                placeholder="Masukkan nama produk"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -122,7 +122,7 @@ export default function AddProduct() {
                 {...register("barcode")}
                 type="text"
                 id="product-barcode"
-                placeholder="Input product barcode"
+                placeholder="Masukkan barcode produk"
               />
               {errors.barcode && (
                 <p className="text-red-500">{errors.barcode.message}</p>
@@ -130,7 +130,7 @@ export default function AddProduct() {
             </div>
 
             <div>
-              <Label>Category</Label>
+              <Label>Kategori</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-category-options"
@@ -140,7 +140,7 @@ export default function AddProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search category..."
+                placeholder="Cari kategori..."
                 fetchOptions={fetchCategoryOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -153,7 +153,7 @@ export default function AddProduct() {
             </div>
 
             <div>
-              <Label>Brand</Label>
+              <Label>Merek</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-brand-options"
@@ -163,7 +163,7 @@ export default function AddProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search brand..."
+                placeholder="Cari merek..."
                 fetchOptions={fetchBrandOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -176,7 +176,7 @@ export default function AddProduct() {
             </div>
 
             <div>
-              <Label>Unit</Label>
+              <Label>Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-unit-options"
@@ -186,7 +186,7 @@ export default function AddProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search unit..."
+                placeholder="Cari satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -215,14 +215,14 @@ export default function AddProduct() {
                 <p className="text-red-500">{errors.status.message}</p>
               )}
             </div>            <div>
-              <Label htmlFor="product-description">Description</Label>
+              <Label htmlFor="product-description">Deskripsi</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -231,7 +231,7 @@ export default function AddProduct() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding product..." : "Add Product"}
+                {isPending ? "Menambahkan produk..." : "Tambah Produk"}
               </Button>
             </div>
           </div>

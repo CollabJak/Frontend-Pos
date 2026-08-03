@@ -98,7 +98,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Edit profile
+              Edit Profil
             </DropdownItem>
           </li>
           <li>
@@ -123,7 +123,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Account settings
+              Pengaturan Akun
             </DropdownItem>
           </li>
           <li>
@@ -138,7 +138,7 @@ export default function UserDropdown() {
                 <path d="M7 14.5C5.61929 14.5 4.5 15.6193 4.5 17C4.5 18.3807 5.61929 19.5 7 19.5C8.38071 19.5 9.5 18.3807 9.5 17C9.5 15.6193 8.38071 14.5 7 14.5Z" stroke="currentColor" strokeWidth="1.5" />
                 <path d="M17 14.5C15.6193 14.5 14.5 15.6193 14.5 17C14.5 18.3807 15.6193 19.5 17 19.5C18.3807 19.5 19.5 18.3807 19.5 17C19.5 15.6193 18.3807 14.5 17 14.5Z" stroke="currentColor" strokeWidth="1.5" />
               </svg>
-              Role Settings
+              Pengaturan Peran
             </DropdownItem>
           </li>
           <li>
@@ -151,7 +151,7 @@ export default function UserDropdown() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Permission Settings
+              Pengaturan Izin Akses
             </DropdownItem>
           </li>
           <li>
@@ -176,7 +176,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Support
+              Dukungan / Bantuan
             </DropdownItem>
           </li>
         </ul>
@@ -198,7 +198,7 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Sign out
+          Keluar
         </button>
       </Dropdown>
     </div>

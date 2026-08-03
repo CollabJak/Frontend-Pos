@@ -94,24 +94,24 @@ export default function SubscriptionPlanForm() {
     return (
         <>
             <PageMeta
-                title="Subscription Plans"
-                description="Manage subscription plans and pricing."
+                title="Paket Langganan"
+                description="Kelola paket langganan dan penetapan harga."
             />
-            <PageBreadcrumb pageTitle="Subscription Plans" />
+            <PageBreadcrumb pageTitle="Paket Langganan" />
 
             <div className="space-y-6">
-                <ComponentCard title="Subscription Plans">
+                <ComponentCard title="Daftar Paket Langganan">
                     <div className="flex justify-end mb-4">
                         <Button
                             size="sm"
                             onClick={handleCreate}
                         >
-                            Add Subscription Plan
+                            Tambah Paket Langganan
                         </Button>
                     </div>
                     <div>
                         <Input
-                            placeholder="Search subscription plans by name..."
+                            placeholder="Cari paket langganan berdasarkan nama..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -121,7 +121,7 @@ export default function SubscriptionPlanForm() {
                         <div className="max-w-full overflow-x-auto">
                             {isLoading && (
                                 <p className="p-5 text-sm text-gray-500">
-                                    Loading subscription plans...
+                                    Memuat data paket langganan...
                                 </p>
                             )}
 
@@ -131,19 +131,19 @@ export default function SubscriptionPlanForm() {
                                         <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                                             <TableRow>
                                                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                    Name
+                                                    Nama Paket
                                                 </TableCell>
                                                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                    Duration
+                                                    Durasi (Hari)
                                                 </TableCell>
                                                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                    Price
+                                                    Harga
                                                 </TableCell>
                                                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                                    Description
+                                                    Deskripsi
                                                 </TableCell>
                                                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">
-                                                    Actions
+                                                    Aksi
                                                 </TableCell>
                                             </TableRow>
                                         </TableHeader>
@@ -155,10 +155,10 @@ export default function SubscriptionPlanForm() {
                                                         {plan.name}
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start text-gray-500 dark:text-gray-400">
-                                                        {plan.duration}
+                                                        {plan.duration} hari
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start text-gray-500 dark:text-gray-400">
-                                                        {formatPrice(plan.price)}
+                                                        Rp {formatPrice(plan.price)}
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start text-gray-500 dark:text-gray-400 max-w-md">
                                                         {plan.description || "-"}
@@ -168,14 +168,14 @@ export default function SubscriptionPlanForm() {
                                                             <button
                                                                 onClick={() => handleEdit(plan)}
                                                                 className="p-2 text-gray-500 hover:text-brand-500 transition-colors"
-                                                                title="Edit Subscription Plan"
+                                                                title="Edit Paket Langganan"
                                                             >
                                                                 <PencilIcon className="size-5" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDeleteClick(plan)}
                                                                 className="p-2 text-gray-500 hover:text-red-500 transition-colors disabled:opacity-50"
-                                                                title="Delete Subscription Plan"
+                                                                title="Hapus Paket Langganan"
                                                                 disabled={isDeleting}
                                                             >
                                                                 <TrashBinIcon className="size-5" />
@@ -211,14 +211,14 @@ export default function SubscriptionPlanForm() {
 
             <ConfirmDialog
                 isOpen={isConfirmOpen}
-                title="Delete Subscription Plan?"
+                title="Hapus Paket Langganan?"
                 description={
                     pendingDelete
-                        ? `Are you sure you want to delete "${pendingDelete.name}"? This action cannot be undone.`
-                        : "This action cannot be undone."
+                        ? `Apakah Anda yakin ingin menghapus paket "${pendingDelete.name}"? Tindakan ini tidak dapat dibatalkan.`
+                        : "Tindakan ini tidak dapat dibatalkan."
                 }
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText="Hapus"
+                cancelText="Batal"
                 tone="danger"
                 onConfirm={confirmDelete}
                 onCancel={closeConfirm}

@@ -75,15 +75,15 @@ export default function AddUnitConversion() {
 
   return (
     <>
-      <PageMeta title="Add Unit Conversion" description="Add new unit conversion product page" />
-      <PageBreadcrumb pageTitle="Add Unit Conversion" />
-      <ComponentCard title="Add Unit Conversion Form">
+      <PageMeta title="Tambah Konversi Satuan" description="Halaman tambah konversi satuan produk baru" />
+      <PageBreadcrumb pageTitle="Tambah Konversi Satuan" />
+      <ComponentCard title="Form Tambah Konversi Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-variant-name">Product Variant</Label>
+              <Label htmlFor="product-variant-name">Varian Produk</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-product-variant-options"
@@ -93,7 +93,7 @@ export default function AddUnitConversion() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search product variant..."
+                placeholder="Cari varian produk..."
                 fetchOptions={fetchProductVariantOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -106,7 +106,7 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label>From Unit</Label>
+              <Label>Dari Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-from-unit-options"
@@ -116,7 +116,7 @@ export default function AddUnitConversion() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search from unit..."
+                placeholder="Cari dari satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -129,7 +129,7 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label>To Unit</Label>
+              <Label>Ke Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-to-unit-options"
@@ -139,7 +139,7 @@ export default function AddUnitConversion() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search to unit..."
+                placeholder="Cari ke satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -152,12 +152,12 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label htmlFor="unit-conversion-multiplier">Multiplier</Label>
+              <Label htmlFor="unit-conversion-multiplier">Pengali</Label>
               <Input
                 {...register("multiplier", { valueAsNumber: true })}
                 type="number"
                 id="unit-conversion-multiplier"
-                placeholder="Input unit conversion multiplier"
+                placeholder="Masukkan pengali konversi satuan"
               />
               {errors.multiplier && (
                 <p className="text-red-500">{errors.multiplier.message}</p>
@@ -166,7 +166,7 @@ export default function AddUnitConversion() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding unit conversion..." : "Add Unit Conversion"}
+                {isPending ? "Menambahkan konversi satuan..." : "Tambah Konversi Satuan"}
               </Button>
             </div>
           </div>

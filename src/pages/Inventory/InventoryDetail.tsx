@@ -45,7 +45,7 @@ const resolveAvailable = (balance: InventoryLocationBalance): string => {
 };
 
 const resolveLocationName = (balance: InventoryLocationBalance): string => {
-  return balance.location?.name ?? balance.location_name ?? "Unknown location";
+  return balance.location?.name ?? balance.location_name ?? "Lokasi tidak diketahui";
 };
 
 const resolveBatchNumber = (batch: InventoryBatch): string => {
@@ -69,15 +69,15 @@ export default function InventoryDetail() {
   if (!variantId) {
     return (
       <>
-        <PageMeta title="Inventory Detail" description="Inventory detail page" />
-        <PageBreadcrumb pageTitle="Inventory Detail" />
-        <p className="text-red-500">Invalid product variant id.</p>
+        <PageMeta title="Detail Inventaris" description="Halaman detail stok inventaris" />
+        <PageBreadcrumb pageTitle="Detail Inventaris" />
+        <p className="text-red-500">ID varian produk tidak valid.</p>
       </>
     );
   }
 
   const balances = data?.balances ?? [];
-  const productName = data?.product_variant?.name ?? data?.product_name ?? `Variant #${variantId}`;
+  const productName = data?.product_variant?.name ?? data?.product_name ?? `Varian #${variantId}`;
   const productSku = data?.product_variant?.sku ?? data?.sku ?? "-";
 
   const handleToggleBatches = () => {
@@ -87,17 +87,17 @@ export default function InventoryDetail() {
 
   return (
     <>
-      <PageMeta title="Inventory Detail" description="Inventory detail page" />
-      <PageBreadcrumb pageTitle="Inventory Detail" />
+      <PageMeta title="Detail Inventaris" description="Halaman detail stok inventaris" />
+      <PageBreadcrumb pageTitle="Detail Inventaris" />
 
       <div className="space-y-6">
-        <ComponentCard title="Product Information">
+        <ComponentCard title="Informasi Produk">
           {isLoading ? (
-            <p>Loading...</p>
+            <p>Memuat...</p>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Product</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Produk</p>
                 <p className="font-medium text-gray-800 dark:text-white/90">{productName}</p>
               </div>
               <div>
@@ -108,10 +108,10 @@ export default function InventoryDetail() {
           )}
         </ComponentCard>
 
-        <ComponentCard title="Stock Per Location">
+        <ComponentCard title="Stok Per Lokasi">
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -121,25 +121,25 @@ export default function InventoryDetail() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty On Hand
+                        Stok Fisik (Qty On Hand)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty Reserved
+                        Stok Direservasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Available
+                        Stok Tersedia
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -168,16 +168,16 @@ export default function InventoryDetail() {
 
           <div className="pt-4">
             <Button variant="outline" onClick={handleToggleBatches}>
-              {showBatches ? "Hide Batches" : "View Batches"}
+              {showBatches ? "Sembunyikan Batch" : "Lihat Batch"}
             </Button>
           </div>
         </ComponentCard>
 
         {showBatches && (
-          <ComponentCard title="Batch Viewer">
+          <ComponentCard title="Detail Batch (Batch Viewer)">
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
               <div className="max-w-full overflow-x-auto">
-                {isBatchLoading && <p className="p-3">Loading...</p>}
+                {isBatchLoading && <p className="p-3">Memuat...</p>}
 
                 {!isBatchLoading && (
                   <Table className="table-auto">
@@ -187,31 +187,31 @@ export default function InventoryDetail() {
                           isHeader
                           className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                          Batch Number
+                          Nomor Batch
                         </TableCell>
                         <TableCell
                           isHeader
                           className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                          Remaining Qty
+                          Sisa Stok
                         </TableCell>
                         <TableCell
                           isHeader
                           className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                          Reserved Qty
+                          Stok Direservasi
                         </TableCell>
                         <TableCell
                           isHeader
                           className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                          Cost
+                          Harga Pokok (Cost)
                         </TableCell>
                         <TableCell
                           isHeader
                           className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                          Expiry Date
+                          Tanggal Kadaluarsa
                         </TableCell>
                       </TableRow>
                     </TableHeader>

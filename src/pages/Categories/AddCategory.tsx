@@ -73,11 +73,11 @@ export default function AddCategory() {
   return (
     <>
       <PageMeta
-        title="Add Categories Products"
-        description="Add new category of products page"
+        title="Tambah Kategori Produk"
+        description="Halaman tambah kategori produk baru"
       />
-      <PageBreadcrumb pageTitle="Add Categories Product" />
-      <ComponentCard title="Add Category Form">
+      <PageBreadcrumb pageTitle="Tambah Kategori Produk" />
+      <ComponentCard title="Form Tambah Kategori">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
             files={files as never[]}
@@ -92,7 +92,7 @@ export default function AddCategory() {
             }}
             acceptedFileTypes={["image/png", "image/jpeg"]}
             name="files"
-            labelIdle='Drag & Drop atau <span class="filepond--label-action">Browse</span>'
+            labelIdle='Tarik & Lepas atau <span class="filepond--label-action">Pilih File</span>'
           />
           <div>
             <div>
@@ -103,8 +103,8 @@ export default function AddCategory() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="category">Category</Label>
-              <Input {...register("name")} type="text" id="category" placeholder="Input category" />
+              <Label htmlFor="category">Kategori</Label>
+              <Input {...register("name")} type="text" id="category" placeholder="Masukkan kategori" />
               <div>
                 {errors.name && (
                   <p className="text-red-500">{errors.name.message}</p>
@@ -113,7 +113,7 @@ export default function AddCategory() {
             </div>
             <div>
               <Label htmlFor="tagline">Tagline</Label>
-              <Input {...register("tagline")} type="text" id="tagline" placeholder="Input tagline" />
+              <Input {...register("tagline")} type="text" id="tagline" placeholder="Masukkan tagline" />
               <div>
                 {errors.tagline && (
                   <p className="text-red-500">{errors.tagline.message}</p>
@@ -121,7 +121,7 @@ export default function AddCategory() {
               </div>
             </div>
             <div>
-              <Label htmlFor="default-picking-strategy">Default Picking Strategy</Label>
+              <Label htmlFor="default-picking-strategy">Strategi Pengambilan Default</Label>
               <select
                 {...register("default_picking_strategy")}
                 id="default-picking-strategy"
@@ -141,7 +141,7 @@ export default function AddCategory() {
             </div>
             <div>
               <Button className="w-full" size="sm" type="submit">
-                { isPending ? "Adding Category..." : "Add Category" }
+                { isPending ? "Menambahkan Kategori..." : "Tambah Kategori" }
               </Button>
             </div>
           </div>

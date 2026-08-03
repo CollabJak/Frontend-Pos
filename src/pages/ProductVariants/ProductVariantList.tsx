@@ -111,20 +111,20 @@ export default function ProductVariantList() {
 
   return (
     <>
-      <PageMeta title="Product Variants" description="Product variant list page" />
-      <PageBreadcrumb pageTitle="Product Variants" />
+      <PageMeta title="Varian Produk" description="Halaman daftar varian produk" />
+      <PageBreadcrumb pageTitle="Varian Produk" />
 
       <div className="space-y-6">
         <ComponentCard
-          title="Product Variants List"
-          linkLabel="Add Product Variant"
+          title="Daftar Varian Produk"
+          linkLabel="Tambah Varian Produk"
           linkTo="/product-variants/create"
         >
           {/* Search and Bulk Actions header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
             <div className="flex-1">
               <Input
-                placeholder="Search product variants by name, SKU, or barcode..."
+                placeholder="Cari varian produk berdasarkan nama, SKU, atau barcode..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -132,7 +132,7 @@ export default function ProductVariantList() {
             {selectedIds.length > 0 && (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {selectedIds.length} items selected
+                  {selectedIds.length} item dipilih
                 </span>
                 <Button
                   type="button"
@@ -140,7 +140,7 @@ export default function ProductVariantList() {
                   variant="primary"
                   onClick={() => setIsBulkModalOpen(true)}
                 >
-                  Bulk Assign Location Types
+                  Atur Tipe Lokasi Sekaligus
                 </Button>
               </div>
             )}
@@ -148,7 +148,7 @@ export default function ProductVariantList() {
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -174,13 +174,13 @@ export default function ProductVariantList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Product
+                        Produk Utama
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Variant Name
+                        Nama Varian
                       </TableCell>
                       <TableCell
                         isHeader
@@ -198,19 +198,19 @@ export default function ProductVariantList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Atributes
+                        Atribut
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Active
+                        Status Aktif
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -240,10 +240,10 @@ export default function ProductVariantList() {
                           {variant.barcode || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {variant.attributes_json?.map((item) => `${item.name ?? "Atribute"}: ${item.value}`).join(", ") || "-"}
+                          {variant.attributes_json?.map((item) => `${item.name ?? "Atribut"}: ${item.value}`).join(", ") || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {variant.is_active ? "Yes" : "No"}
+                          {variant.is_active ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -259,7 +259,7 @@ export default function ProductVariantList() {
                               variant="danger"
                               onClick={handleDeleteClick(variant.id, variant.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -284,14 +284,14 @@ export default function ProductVariantList() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete product variant?"
+        title="Hapus varian produk?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Varian produk "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
@@ -306,10 +306,10 @@ export default function ProductVariantList() {
         <div className="space-y-5">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-              Bulk Assign Location Types
+              Atur Tipe Lokasi Sekaligus
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Configure location types for the {selectedIds.length} selected product variants. These variants will be automatically available in all locations that match the selected types.
+              Konfigurasikan tipe lokasi untuk {selectedIds.length} varian produk yang dipilih. Varian ini akan otomatis tersedia di semua lokasi yang sesuai dengan tipe yang dipilih.
             </p>
           </div>
 
@@ -322,6 +322,12 @@ export default function ProductVariantList() {
           <div className="grid grid-cols-2 gap-3 py-2">
             {(["store", "warehouse", "pos", "hq"] as const).map((type) => {
               const checked = bulkSelectedTypes.includes(type);
+              const typeLabels: Record<string, string> = {
+                store: "Toko (Store)",
+                warehouse: "Gudang (Warehouse)",
+                pos: "Kasir (POS)",
+                hq: "Kantor Pusat (HQ)",
+              };
               return (
                 <label
                   key={type}
@@ -333,8 +339,8 @@ export default function ProductVariantList() {
                     onChange={() => handleToggleBulkType(type)}
                     className="h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500 dark:border-gray-700"
                   />
-                  <span className="text-sm font-medium text-gray-750 dark:text-gray-200 capitalize">
-                    {type === "hq" ? "HQ (Headquarters)" : type}
+                  <span className="text-sm font-medium text-gray-750 dark:text-gray-200">
+                    {typeLabels[type] || type}
                   </span>
                 </label>
               );
@@ -348,7 +354,7 @@ export default function ProductVariantList() {
               size="sm"
               onClick={() => setIsBulkModalOpen(false)}
             >
-              Cancel
+              Batal
             </Button>
             <Button
               type="button"
@@ -356,7 +362,7 @@ export default function ProductVariantList() {
               onClick={handleConfirmBulkAssign}
               disabled={isBulkPending}
             >
-              {isBulkPending ? "Applying..." : "Apply"}
+              {isBulkPending ? "Menerapkan..." : "Terapkan"}
             </Button>
           </div>
         </div>

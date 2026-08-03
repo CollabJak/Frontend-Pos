@@ -70,16 +70,16 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px] p-6">
       <div className="mb-4">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Assign Role to {user?.name}
+          Atur Peran untuk {user?.name}
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Select a role to assign to this user.
+          Pilih peran yang ingin diberikan pada pengguna ini.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <Label htmlFor="role">Select Role</Label>
+          <Label htmlFor="role">Pilih Peran</Label>
           <Controller
             name="role"
             control={control}
@@ -87,7 +87,7 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
               <Select
                 {...field}
                 options={roles?.map((r) => ({ value: r.name, label: r.name })) || []}
-                placeholder="Choose a role"
+                placeholder="Pilih peran pengguna"
                 className={errors.role ? "border-red-500" : ""}
               />
             )}
@@ -99,10 +99,10 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
 
         <div className="flex justify-end gap-3 pt-4">
           <Button variant="outline" onClick={onClose} type="button">
-            Cancel
+            Batal
           </Button>
           <Button type="submit" isLoading={isPending} disabled={rolesLoading || userRolesLoading}>
-            Assign Role
+            Simpan Peran
           </Button>
         </div>
       </form>

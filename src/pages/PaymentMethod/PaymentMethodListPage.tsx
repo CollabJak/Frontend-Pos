@@ -59,24 +59,42 @@ export default function PaymentMethodListPage() {
         }
     };
 
+    const formatTypeLabel = (type: string) => {
+        switch (type) {
+            case 'qris': return 'QRIS';
+            case 'bank_transfer': return 'Transfer Bank';
+            case 'e_wallet': return 'E-Wallet';
+            case 'cash': return 'Tunai';
+            default: return type.replace('_', ' ').toUpperCase();
+        }
+    };
+
+    const formatScopeLabel = (scope: string) => {
+        switch (scope) {
+            case 'business': return 'Bisnis (POS)';
+            case 'system': return 'Sistem (Langganan)';
+            default: return scope;
+        }
+    };
+
     return (
         <>
             <PageMeta
-                title="Payment Methods"
-                description="Manage payment methods for POS and Subscriptions"
+                title="Metode Pembayaran"
+                description="Kelola metode pembayaran untuk POS dan Langganan"
             />
-            <PageBreadcrumb pageTitle="Payment Methods" />
+            <PageBreadcrumb pageTitle="Metode Pembayaran" />
             <div className="space-y-6">
                 <ComponentCard 
-                    title="Payment Method List" 
-                    linkLabel="Add Method" 
+                    title="Daftar Metode Pembayaran" 
+                    linkLabel="Tambah Metode" 
                     linkTo="/payment-methods/create"
                 >
                     <div className="mb-4">
                         <Input
                             id="payment-method-search"
                             type="text"
-                            placeholder="Search by name..."
+                            placeholder="Cari berdasarkan nama..."
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                         />
@@ -84,25 +102,25 @@ export default function PaymentMethodListPage() {
                     
                     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                         <div className="max-w-full overflow-x-auto">
-                            {isLoading && <p className="p-3 text-center">Loading...</p>}
+                            {isLoading && <p className="p-3 text-center">Memuat data...</p>}
 
                             {!isLoading && (
                                 <Table className="table-auto">
                                     <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                                         <TableRow>
-                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Name</TableCell>
-                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Type</TableCell>
-                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Scope</TableCell>
-                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Provider / Account</TableCell>
+                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Nama Metode</TableCell>
+                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Tipe</TableCell>
+                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Cakupan (Scope)</TableCell>
+                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Penyedia / Rekening</TableCell>
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Status</TableCell>
-                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Actions</TableCell>
+                                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Aksi</TableCell>
                                         </TableRow>
                                     </TableHeader>
 
                                     <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                                         {paymentMethods.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={6} className="py-10 text-center text-gray-500">No payment methods found.</TableCell>
+                                                <TableCell colSpan={6} className="py-10 text-center text-gray-500">Tidak ada metode pembayaran yang ditemukan.</TableCell>
                                             </TableRow>
                                         ) : (
                                             paymentMethods.map((method: PaymentMethod) => (
@@ -114,21 +132,21 @@ export default function PaymentMethodListPage() {
                                                             </div>
                                                             <div>
                                                                 <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{method.name}</span>
-                                                                {method.is_default && <span className="text-[10px] text-brand-500 font-bold uppercase">Default</span>}
+                                                                {method.is_default && <span className="text-[10px] text-brand-500 font-bold uppercase">Utama</span>}
                                                             </div>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start">
                                                         <Badge color={getTypeBadge(method.type) as any}>
-                                                            {method.type.replace('_', ' ').toUpperCase()}
+                                                            {formatTypeLabel(method.type)}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="px-5 py-4 text-start text-gray-500 text-theme-sm dark:text-gray-400 capitalize">
-                                                        {method.scope}
+                                                    <TableCell className="px-5 py-4 text-start text-gray-500 text-theme-sm dark:text-gray-400">
+                                                        {formatScopeLabel(method.scope)}
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start text-theme-sm">
                                                         {method.type === 'cash' ? (
-                                                            <span className="text-gray-400 italic">No account needed</span>
+                                                            <span className="text-gray-400 italic">Tidak memerlukan rekening</span>
                                                         ) : (
                                                             <div>
                                                                 <div className="font-medium dark:text-white">{method.provider_name}</div>
@@ -138,9 +156,9 @@ export default function PaymentMethodListPage() {
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start">
                                                         {method.is_active ? (
-                                                            <Badge color="success">Active</Badge>
+                                                            <Badge color="success">Aktif</Badge>
                                                         ) : (
-                                                            <Badge color="light">Inactive</Badge>
+                                                            <Badge color="light">Tidak Aktif</Badge>
                                                         )}
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-end">
@@ -172,14 +190,14 @@ export default function PaymentMethodListPage() {
 
             <ConfirmDialog
                 isOpen={isOpen}
-                title="Deactivate Payment Method?"
+                title="Nonaktifkan Metode Pembayaran?"
                 description={
                     pendingDelete
-                        ? `Are you sure you want to deactivate "${pendingDelete.name}"? This method will no longer be available for new transactions.`
-                        : "This action will deactivate the payment method."
+                        ? `Apakah Anda yakin ingin menonaktifkan "${pendingDelete.name}"? Metode ini tidak akan lagi tersedia untuk transaksi baru.`
+                        : "Tindakan ini akan menonaktifkan metode pembayaran."
                 }
-                confirmText="Deactivate"
-                cancelText="Cancel"
+                confirmText="Nonaktifkan"
+                cancelText="Batal"
                 tone="danger"
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}

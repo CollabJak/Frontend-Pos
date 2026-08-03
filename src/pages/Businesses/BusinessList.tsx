@@ -46,36 +46,36 @@ export default function BusinessList() {
 
   return (
     <>
-      <PageMeta title="Businesses" description="Businesses list page" />
-      <PageBreadcrumb pageTitle="Businesses" />
+      <PageMeta title="Bisnis" description="Halaman daftar bisnis" />
+      <PageBreadcrumb pageTitle="Daftar Bisnis" />
 
       <div className="space-y-6">
-        <ComponentCard title="Businesses List" linkLabel="Add Business" linkTo="/businesses/create">
+        <ComponentCard title="Daftar Bisnis" linkLabel="Tambah Bisnis" linkTo="/businesses/create">
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat data...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Code
+                        Kode Bisnis
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Name
+                        Nama Bisnis
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                         Email
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Phone
+                        No. Telepon
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Active
+                        Status Aktif
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -98,7 +98,7 @@ export default function BusinessList() {
                           {business.phone || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {business.is_active ? "Yes" : "No"}
+                          {business.is_active ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -114,7 +114,7 @@ export default function BusinessList() {
                               variant="danger"
                               onClick={handleDeleteClick(business.id, business.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -138,14 +138,14 @@ export default function BusinessList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete business?"
+        title="Hapus Bisnis?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Bisnis "${pendingDelete.name}" akan dihapus secara permanen.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

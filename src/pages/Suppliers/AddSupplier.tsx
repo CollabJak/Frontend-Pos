@@ -52,19 +52,19 @@ export default function AddSupplier() {
 
   return (
     <>
-      <PageMeta title="Add Supplier" description="Add new supplier of products page" />
-      <PageBreadcrumb pageTitle="Add Supplier" />
-      <ComponentCard title="Add Supplier Form">
+      <PageMeta title="Tambah Pemasok" description="Halaman tambah pemasok produk baru" />
+      <PageBreadcrumb pageTitle="Tambah Pemasok" />
+      <ComponentCard title="Form Tambah Pemasok">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="supplier-name">Supplier Name</Label>
+              <Label htmlFor="supplier-name">Nama Pemasok</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="supplier-name"
-                placeholder="Input supplier name"
+                placeholder="Masukkan nama pemasok"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -72,12 +72,12 @@ export default function AddSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-contact_person">Supplier Contact Person</Label>
+              <Label htmlFor="supplier-contact_person">Nama Penanggung Jawab (CP)</Label>
               <Input
                 {...register("contact_person")}
                 type="text"
                 id="supplier-contact_person"
-                placeholder="Input supplier contact_person"
+                placeholder="Masukkan nama penanggung jawab"
               />
               {errors.contact_person && (
                 <p className="text-red-500">{errors.contact_person.message}</p>
@@ -85,12 +85,12 @@ export default function AddSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-phone">Supplier Phone</Label>
+              <Label htmlFor="supplier-phone">Telepon Pemasok</Label>
               <Input
                 {...register("phone")}
                 type="number"
                 id="supplier-phone"
-                placeholder="Input supplier phone"
+                placeholder="Masukkan telepon pemasok"
               />
               {errors.phone && (
                 <p className="text-red-500">{errors.phone.message}</p>
@@ -98,12 +98,12 @@ export default function AddSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-email">Supplier Email</Label>
+              <Label htmlFor="supplier-email">Email Pemasok</Label>
               <Input
                 {...register("email")}
                 type="email"
                 id="supplier-email"
-                placeholder="Input supplier email"
+                placeholder="Masukkan email pemasok"
               />
               {errors.email && (
                 <p className="text-red-500">{errors.email.message}</p>
@@ -111,14 +111,14 @@ export default function AddSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-description">Supplier Address</Label>
+              <Label htmlFor="supplier-description">Alamat Pemasok</Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional address"
+                placeholder="Alamat opsional"
               />
               {errors.address && (
                 <p className="text-red-500">{errors.address.message}</p>
@@ -127,7 +127,7 @@ export default function AddSupplier() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding Supplier..." : "Add Supplier"}
+                {isPending ? "Menambahkan Pemasok..." : "Tambah Pemasok"}
               </Button>
             </div>
           </div>

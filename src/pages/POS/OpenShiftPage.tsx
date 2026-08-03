@@ -57,7 +57,7 @@ export default function OpenShiftPage() {
         setSelectedLocation(activeLocationId);
       }
     } else {
-      toast.error("Please select a store location first to open a shift.");
+      toast.error("Silakan pilih lokasi toko terlebih dahulu untuk membuka shift.");
       navigate("/pos");
     }
   }, [activeLocationId, selectedLocation, setSelectedLocation, setValue, navigate, isCancelling]);
@@ -69,7 +69,7 @@ export default function OpenShiftPage() {
       { payload: data },
       {
         onSuccess: () => {
-          toast.success("POS Shift opened successfully. Happy selling!");
+          toast.success("Shift kasir berhasil dibuka. Selamat bertransaksi!");
           navigate("/pos");
         },
         onError: (error) => {
@@ -92,9 +92,9 @@ export default function OpenShiftPage() {
           } else {
             setError("root", {
               type: "server",
-              message: "An unexpected network error occurred. Please try again.",
+              message: "Terjadi kesalahan jaringan. Silakan coba lagi.",
             });
-            toast.error("Failed to connect to the server.");
+            toast.error("Gagal terhubung ke server.");
           }
         },
       }
@@ -103,25 +103,25 @@ export default function OpenShiftPage() {
 
   return (
     <>
-      <PageMeta title="Open POS Shift" description="Start a new register shift" />
-      <PageBreadcrumb pageTitle="Open POS Shift" />
+      <PageMeta title="Buka Shift Kasir" description="Mulai shift registrasi kasir baru" />
+      <PageBreadcrumb pageTitle="Buka Shift Kasir" />
 
       <div className="mx-auto max-w-xl">
-        <ComponentCard title="Open Shift Register">
+        <ComponentCard title="Form Buka Shift Kasir">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Store Information Card */}
             <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-gray-900/30">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                Register Store Context
+                Konteks Toko Registrasi
               </h4>
               <div className="mt-2 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                    {isLocationLoading ? "Loading store info..." : locationData?.name || "Unknown Location"}
+                    {isLocationLoading ? "Memuat informasi toko..." : locationData?.name || "Lokasi Tidak Diketahui"}
                   </p>
                 </div>
                 <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/10 dark:bg-amber-500/10 dark:text-amber-400">
-                  Shift Closed
+                  Shift Tertutup
                 </span>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function OpenShiftPage() {
 
             {/* Starting Cash */}
             <div>
-              <Label htmlFor="starting_cash">Starting Cash Register Modal</Label>
+              <Label htmlFor="starting_cash">Modal Awal Kasir</Label>
               <div className="relative mt-1 rounded-md shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <span className="text-gray-500 sm:text-sm">Rp</span>
@@ -151,19 +151,19 @@ export default function OpenShiftPage() {
                 <p className="mt-1 text-xs text-red-500">{errors.starting_cash.message}</p>
               )}
               <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-                Enter the total base cash amount present inside the drawer drawer.
+                Masukkan total nilai uang tunai fisik awal yang ada di dalam laci kasir.
               </p>
             </div>
 
             {/* Notes */}
             <div>
-              <Label htmlFor="notes">Opening Notes / Drawer Status</Label>
+              <Label htmlFor="notes">Catatan Pembukaan / Kondisi Laci</Label>
               <textarea
                 {...register("notes")}
                 id="notes"
                 rows={3}
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-                placeholder="Optional notes regarding register count, shift handoff, drawer condition..."
+                placeholder="Catatan opsional mengenai hitungan kasir, serah terima shift, kondisi laci..."
               />
               {errors.notes && (
                 <p className="mt-1 text-xs text-red-500">{errors.notes.message}</p>
@@ -183,10 +183,10 @@ export default function OpenShiftPage() {
                 }}
                 disabled={isPending}
               >
-                Cancel
+                Batal
               </Button>
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Opening Register..." : "Open Register"}
+                {isPending ? "Membuka Shift..." : "Buka Shift Kasir"}
               </Button>
             </div>
           </form>

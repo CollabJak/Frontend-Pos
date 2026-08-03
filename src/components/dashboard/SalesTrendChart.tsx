@@ -83,7 +83,7 @@ const SalesTrendChart: React.FC = () => {
     yaxis: [
       {
         title: {
-          text: "Revenue (IDR)",
+          text: "Pendapatan (IDR)",
           style: {
             color: "#465fff",
             fontSize: "12px",
@@ -91,8 +91,8 @@ const SalesTrendChart: React.FC = () => {
         },
         labels: {
           formatter: (val) => {
-            if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)}M`;
-            if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)}K`;
+            if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)}Jt`;
+            if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)}Rb`;
             return `Rp ${val}`;
           },
           style: {
@@ -104,7 +104,7 @@ const SalesTrendChart: React.FC = () => {
       {
         opposite: true,
         title: {
-          text: "Orders",
+          text: "Pesanan",
           style: {
             color: "#f97316",
             fontSize: "12px",
@@ -126,7 +126,7 @@ const SalesTrendChart: React.FC = () => {
           if (seriesIndex === 0) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
           }
-          return `${val} orders`;
+          return `${val} pesanan`;
         }
       }
     },
@@ -143,10 +143,10 @@ const SalesTrendChart: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Sales Trend
+            Tren Penjualan
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {activeTab === 'weekly' ? 'Revenue movement over the last 7 days' : 'Revenue movement over the last 30 days'}
+            {activeTab === 'weekly' ? 'Pergerakan pendapatan 7 hari terakhir' : 'Pergerakan pendapatan 30 hari terakhir'}
           </p>
         </div>
         <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg dark:bg-gray-800">
@@ -157,7 +157,7 @@ const SalesTrendChart: React.FC = () => {
               : "text-gray-500 hover:text-gray-800 dark:hover:text-white"
               }`}
           >
-            WEEKLY
+            MINGGUAN
           </button>
           <button
             onClick={() => setActiveTab("monthly")}
@@ -166,16 +166,16 @@ const SalesTrendChart: React.FC = () => {
               : "text-gray-500 hover:text-gray-800 dark:hover:text-white"
               }`}
           >
-            MONTHLY
+            BULANAN
           </button>
         </div>
       </div>
 
       <div className="w-full">
         {isLoading ? (
-          <div className="h-[300px] flex items-center justify-center text-sm text-gray-500">Loading chart data...</div>
+          <div className="h-[300px] flex items-center justify-center text-sm text-gray-500">Memuat data grafik...</div>
         ) : isError ? (
-          <div className="h-[300px] flex items-center justify-center text-sm text-red-500">Failed to load chart data</div>
+          <div className="h-[300px] flex items-center justify-center text-sm text-red-500">Gagal memuat data grafik</div>
         ) : (
           <Chart options={options} series={series} type="line" height={300} />
         )}

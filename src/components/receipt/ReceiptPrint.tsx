@@ -79,9 +79,9 @@ const ReceiptPrint = forwardRef<HTMLDivElement, ReceiptPrintProps>(function Rece
       centerLine(receipt.header.business_name, width),
       centerLine(receipt.header.address, width),
       ruler,
-      formatLine("Date", receipt.header.date, width),
-      formatLine("Invoice", receipt.header.invoice, width),
-      formatLine("Cashier", receipt.header.cashier, width),
+      formatLine("Tanggal", receipt.header.date, width),
+      formatLine("Faktur", receipt.header.invoice, width),
+      formatLine("Kasir", receipt.header.cashier, width),
       ruler,
     ];
 
@@ -95,8 +95,8 @@ const ReceiptPrint = forwardRef<HTMLDivElement, ReceiptPrintProps>(function Rece
       ruler,
       formatLine("Subtotal", toMoney(receipt.summary.subtotal), width),
       formatLine("Total", toMoney(receipt.summary.total), width),
-      formatLine("Paid", toMoney(receipt.summary.paid), width),
-      formatLine("Change", toMoney(receipt.summary.change), width),
+      formatLine("Dibayar", toMoney(receipt.summary.paid), width),
+      formatLine("Kembali", toMoney(receipt.summary.change), width),
       ruler,
       centerLine(receipt.footer.note, width)
     );

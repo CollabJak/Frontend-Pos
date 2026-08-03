@@ -47,11 +47,11 @@ const formatDecimal = (value?: string | number | null): string => {
 };
 
 const resolveProductName = (row: InventoryMovementItem): string => {
-  return row.product_variant?.name ?? row.product_name ?? "Unknown product";
+  return row.product_variant?.name ?? row.product_name ?? "Produk tidak diketahui";
 };
 
 const resolveLocationName = (row: InventoryMovementItem): string => {
-  return row.location?.name ?? row.location_name ?? "Unknown location";
+  return row.location?.name ?? row.location_name ?? "Lokasi tidak diketahui";
 };
 
 const resolveReference = (row: InventoryMovementItem): string => {
@@ -112,32 +112,32 @@ export default function InventoryMovements() {
 
   return (
     <>
-      <PageMeta title="Inventory Movements" description="Inventory movement ledger page" />
-      <PageBreadcrumb pageTitle="Inventory Movements" />
+      <PageMeta title="Riwayat Pergerakan Stok" description="Halaman catatan riwayat pergerakan stok" />
+      <PageBreadcrumb pageTitle="Riwayat Pergerakan Stok" />
 
       <div className="space-y-6">
-        <ComponentCard title="Inventory Movement Ledger">
+        <ComponentCard title="Buku Besar Pergerakan Stok">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             <div>
-              <Label htmlFor="inventory-movement-product-search">Product</Label>
+              <Label htmlFor="inventory-movement-product-search">Produk</Label>
               <Input
                 id="inventory-movement-product-search"
                 type="text"
-                placeholder="Search by product..."
+                placeholder="Cari produk..."
                 value={productSearch}
                 onChange={(event) => setProductSearch(event.target.value)}
               />
             </div>
 
             <div>
-              <Label>Location</Label>
+              <Label>Lokasi</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 value={locationId}
                 onChange={(selectedValue) => {
                   setLocationId(selectedValue != null ? Number(selectedValue) : null);
                 }}
-                placeholder="Search location..."
+                placeholder="Cari lokasi..."
                 fetchOptions={fetchLocationOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -147,7 +147,7 @@ export default function InventoryMovements() {
             </div>
 
             <div>
-              <Label htmlFor="inventory-movement-date-from">Date From</Label>
+              <Label htmlFor="inventory-movement-date-from">Dari Tanggal</Label>
               <Input
                 id="inventory-movement-date-from"
                 type="date"
@@ -157,7 +157,7 @@ export default function InventoryMovements() {
             </div>
 
             <div>
-              <Label htmlFor="inventory-movement-date-to">Date To</Label>
+              <Label htmlFor="inventory-movement-date-to">Sampai Tanggal</Label>
               <Input
                 id="inventory-movement-date-to"
                 type="date"
@@ -167,7 +167,7 @@ export default function InventoryMovements() {
             </div>
 
             <div>
-              <Label htmlFor="inventory-movement-type">Movement Type</Label>
+              <Label htmlFor="inventory-movement-type">Tipe Pergerakan</Label>
               <select
                 id="inventory-movement-type"
                 value={movementType}
@@ -180,7 +180,7 @@ export default function InventoryMovements() {
                     value={option}
                     className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
                   >
-                    {option === "" ? "All Types" : option}
+                    {option === "" ? "Semua Tipe" : option}
                   </option>
                 ))}
               </select>
@@ -189,13 +189,13 @@ export default function InventoryMovements() {
 
           <div>
             <Button variant="outline" onClick={handleResetFilters}>
-              Reset Filters
+              Reset Filter
             </Button>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -205,43 +205,43 @@ export default function InventoryMovements() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Date
+                        Tanggal & Waktu
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Product
+                        Produk
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Type
+                        Tipe
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty
+                        Jumlah (Qty)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Cost
+                        Harga Pokok (Cost)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Reference
+                        Referensi
                       </TableCell>
                     </TableRow>
                   </TableHeader>

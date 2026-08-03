@@ -58,50 +58,50 @@ const PermissionFormModal: React.FC<PermissionFormModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px] p-6 lg:p-10">
       <div className="flex flex-col">
         <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-          {permission ? "Edit Permission" : "Add New Permission"}
+          {permission ? "Edit Hak Akses" : "Tambah Hak Akses Baru"}
         </h4>
         <p className="mb-7 text-sm text-gray-500 dark:text-gray-400">
           {permission
-            ? "Update the name of the existing permission."
-            : "Enter a unique name for the new permission (e.g. user.view)."}
+            ? "Perbarui nama untuk hak akses yang sudah ada."
+            : "Masukkan nama unik untuk hak akses baru (contoh: user.view)."}
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <div>
             <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Permission Name
+              Nama Hak Akses
             </label>
             <Controller
               name="name"
               control={control}
-              rules={{ required: "Permission name is required" }}
+              rules={{ required: "Nama hak akses wajib diisi" }}
               render={({ field }) => (
                 <Input
                   {...field}
-                  placeholder="e.g. user.view"
+                  placeholder="contoh: user.view"
                   error={Boolean(errors.name)}
                   hint={errors.name?.message}
                 />
               )}
             />
             <p className="mt-2 text-xs text-gray-500">
-              Use dot notation for grouping (e.g., module.action).
+              Gunakan format titik untuk pengelompokan (contoh: modul.aksi).
             </p>
           </div>
 
           <div className="flex items-center justify-end gap-4 mt-2">
             <Button variant="outline" onClick={onClose} type="button">
-              Cancel
+              Batal
             </Button>
             <Button
               type="submit"
               disabled={upsertPermission.isPending}
             >
               {upsertPermission.isPending
-                ? "Saving..."
+                ? "Menyimpan..."
                 : permission
-                  ? "Update Permission"
-                  : "Create Permission"}
+                  ? "Simpan Perubahan"
+                  : "Buat Hak Akses"}
             </Button>
           </div>
         </form>

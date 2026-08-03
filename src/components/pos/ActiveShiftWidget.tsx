@@ -43,7 +43,7 @@ export default function ActiveShiftWidget({
               <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-emerald-500"></span>
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Shift Register Open
+              Shift Kasir Terbuka
             </span>
           </div>
 
@@ -52,7 +52,7 @@ export default function ActiveShiftWidget({
           {/* Cashier Info */}
           <div className="space-y-0.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Active Cashier
+              Kasir Aktif
             </p>
             <p className="text-xs font-bold text-gray-700 dark:text-gray-200">
               {cashierName}
@@ -64,7 +64,7 @@ export default function ActiveShiftWidget({
           {/* Opened At */}
           <div className="space-y-0.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Session Opened At
+              Waktu Buka Shift
             </p>
             <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
               {formatTime(shift.opened_at)}
@@ -76,7 +76,7 @@ export default function ActiveShiftWidget({
           {/* Expected Cash */}
           <div className="space-y-0.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Expected Cash Drawer Value
+              Estimasi Uang di Laci
             </p>
             <p className="text-sm font-black text-brand-600 dark:text-brand-400">
               {formatCurrency(shift.expected_cash)}
@@ -103,7 +103,7 @@ export default function ActiveShiftWidget({
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            Adjust Cash
+            Penyesuaian Kas
           </button>
           
           <button
@@ -123,7 +123,7 @@ export default function ActiveShiftWidget({
                 d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z"
               />
             </svg>
-            Close Register Shift
+            Tutup Shift Kasir
           </button>
         </div>
       </div>

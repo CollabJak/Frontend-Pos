@@ -27,8 +27,8 @@ export default function PricingPage() {
 
     return (
         <>
-            <PageMeta title="Pricing Plans" description="Choose the best plan for your business." />
-            <PageBreadcrumb pageTitle="Subscription Pricing" />
+            <PageMeta title="Paket Langganan" description="Pilih paket langganan terbaik untuk mendukung operasional bisnis Anda." />
+            <PageBreadcrumb pageTitle="Harga Langganan" />
 
             {isNoSubscription && (
                 <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex items-start gap-3">

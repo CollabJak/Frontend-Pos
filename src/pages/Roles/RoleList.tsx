@@ -101,40 +101,40 @@ export default function RoleList() {
   return (
     <>
       <PageMeta
-        title="Role Management"
-        description="Manage system roles and their associated permissions."
+        title="Manajemen Peran"
+        description="Kelola peran pengguna sistem dan hak akses (izin) yang terkait."
       />
-      <PageBreadcrumb pageTitle="Role Management" />
+      <PageBreadcrumb pageTitle="Manajemen Peran" />
 
       <div className="space-y-6">
-        <ComponentCard title="System Roles">
+        <ComponentCard title="Peran Sistem">
           <div className="flex justify-end mb-4">
             <Button
               size="sm"
               onClick={handleCreate}
             >
-              Add Role
+              Tambah Peran
             </Button>
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {(rolesLoading || permsLoading) && <p className="p-5 text-sm text-gray-500">Loading roles...</p>}
+              {(rolesLoading || permsLoading) && <p className="p-5 text-sm text-gray-500">Memuat data peran...</p>}
 
               {!rolesLoading && roles && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Role Name
+                        Nama Peran
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                         Guard
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Permissions
+                        Hak Akses (Permissions)
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">
-                        Actions
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -157,7 +157,7 @@ export default function RoleList() {
                                 </Badge>
                               ))
                             ) : (
-                              <span className="text-gray-400 text-xs italic">No permissions assigned</span>
+                              <span className="text-gray-400 text-xs italic">Belum ada hak akses</span>
                             )}
                           </div>
                         </TableCell>
@@ -166,14 +166,14 @@ export default function RoleList() {
                             <button
                               onClick={() => handleManagePermissions(role)}
                               className="p-2 text-gray-500 hover:text-brand-500 transition-colors"
-                              title="Manage Permissions"
+                              title="Atur Hak Akses"
                             >
                               <LockIcon className="size-5" />
                             </button>
                             <button
                               onClick={() => handleEditName(role)}
                               className="p-2 text-gray-500 hover:text-brand-500 transition-colors"
-                              title="Edit Name"
+                              title="Edit Nama Peran"
                             >
                               <PencilIcon className="size-5" />
                             </button>
@@ -181,7 +181,7 @@ export default function RoleList() {
                               <button
                                 onClick={() => handleDeleteClick(role)}
                                 className="p-2 text-gray-500 hover:text-red-500 transition-colors disabled:opacity-50"
-                                title="Delete Role"
+                                title="Hapus Peran"
                                 disabled={isDeleting}
                               >
                                 <TrashBinIcon className="size-5" />
@@ -218,10 +218,10 @@ export default function RoleList() {
 
       <ConfirmDialog
         isOpen={isConfirmOpen}
-        title="Delete Role?"
-        description={`Are you sure you want to delete the "${pendingDelete?.name}" role? This may affect users assigned to this role.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="Hapus Peran?"
+        description={`Apakah Anda yakin ingin menghapus peran "${pendingDelete?.name}"? Tindakan ini dapat memengaruhi pengguna yang memiliki peran ini.`}
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={confirmDelete}
         onCancel={closeConfirm}

@@ -99,19 +99,19 @@ export default function EditPromotionAction() {
       : undefined;
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Promotion Action" description="Edit promotion action page" />
-      <PageBreadcrumb pageTitle="Edit Promotion Action" />
-      <ComponentCard title="Edit Promotion Action Form">
+      <PageMeta title="Edit Aksi Promosi" description="Halaman edit aksi promosi" />
+      <PageBreadcrumb pageTitle="Edit Aksi Promosi" />
+      <ComponentCard title="Form Edit Aksi Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promotion</Label>
+            <Label>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="promotion-action-promotion-options"
@@ -122,7 +122,7 @@ export default function EditPromotionAction() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search promotion..."
+              placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
               optionLabel="name"
               optionValue="id"
@@ -133,7 +133,7 @@ export default function EditPromotionAction() {
           </div>
 
           <div>
-            <Label htmlFor="action-type">Action Type</Label>
+            <Label htmlFor="action-type">Tipe Aksi</Label>
             <select
               {...register("action_type")}
               id="action-type"
@@ -178,7 +178,7 @@ export default function EditPromotionAction() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating promotion action..." : "Update Promotion Action"}
+              {isPending ? "Memperbarui aksi promosi..." : "Perbarui Aksi Promosi"}
             </Button>
           </div>
         </form>

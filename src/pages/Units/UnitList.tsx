@@ -56,24 +56,24 @@ export default function UnitList() {
   return (
     <>
       <PageMeta
-        title="Units Products"
-        description="Unit list of products page"
+        title="Satuan Produk"
+        description="Halaman daftar satuan produk"
       />
-      <PageBreadcrumb pageTitle="Units Product" />
+      <PageBreadcrumb pageTitle="Satuan Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Units Product List" linkLabel="Add Unit" linkTo="/units/create">
+        <ComponentCard title="Daftar Satuan Produk" linkLabel="Tambah Satuan" linkTo="/units/create">
           <div>
             <Input
               id="unit-search"
               type="text"
-              placeholder="Search unit by name, symbol, or description..."
+              placeholder="Cari satuan berdasarkan nama, simbol, atau deskripsi..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -83,25 +83,25 @@ export default function UnitList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Symbol
+                        Simbol
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Description
+                        Deskripsi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -134,7 +134,7 @@ export default function UnitList() {
                               variant="danger"
                               onClick={handleDeleteClick(unit.id, unit.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -157,14 +157,14 @@ export default function UnitList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete unit?"
+        title="Hapus satuan?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

@@ -48,10 +48,10 @@ export default function PaymentSuccessModal({
 
         {/* Header Text */}
         <h2 className="text-2xl font-black text-indigo-950 tracking-tight mb-1 max-w-[200px] leading-tight">
-          Payment Successful
+          Pembayaran Berhasil!
         </h2>
         <p className="text-sm font-medium text-slate-500 mb-6">
-          Transaction ID #{transactionId}
+          ID Transaksi #{transactionId}
         </p>
 
         {/* Payment Info Badge */}
@@ -66,7 +66,7 @@ export default function PaymentSuccessModal({
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <span className="text-sm font-bold text-slate-700">
-            Total Paid {totalPaid} via <span className="capitalize">{paymentMethod}</span>
+            Total Dibayar {totalPaid} via <span className="capitalize">{paymentMethod}</span>
           </span>
         </div>
 
@@ -76,7 +76,7 @@ export default function PaymentSuccessModal({
             onClick={onDone}
             className="w-full bg-brand-500 hover:bg-brand-600 focus:ring-4 focus:ring-brand-500/20 text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-brand-500/20 active:scale-[0.98] transition-all"
           >
-            Done / New Order
+            Selesai / Transaksi Baru
           </button>
 
           <button
@@ -92,7 +92,7 @@ export default function PaymentSuccessModal({
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 00-2-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            Print Receipt
+            Cetak Struk Pembayaran
           </button>
         </div>
       </div>

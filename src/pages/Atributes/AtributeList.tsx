@@ -53,23 +53,23 @@ export default function AtributeList() {
   return (
     <>
       <PageMeta
-        title="Atributes Products"
-        description="Atribute list of products page"
+        title="Atribut Produk"
+        description="Halaman daftar atribut produk"
       />
-      <PageBreadcrumb pageTitle="Atributes Product" />
+      <PageBreadcrumb pageTitle="Atribut Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Atributes Product List" linkLabel="Add Atribute" linkTo="/atributes/create">
+        <ComponentCard title="Daftar Atribut Produk" linkLabel="Tambah Atribut" linkTo="/atributes/create">
           <div>
             <Input
               id="atribute-search"
-              placeholder="Search atributes by name..."
+              placeholder="Cari atribut berdasarkan nama..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -79,13 +79,13 @@ export default function AtributeList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama Atribut
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -112,7 +112,7 @@ export default function AtributeList() {
                               variant="danger"
                               onClick={handleDeleteClick(atribute.id, atribute.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -135,14 +135,14 @@ export default function AtributeList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete atribute?"
+        title="Hapus atribut?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

@@ -42,13 +42,13 @@ export default function ResetPasswordForm() {
         password_confirmation: passwordConfirmation,
       });
 
-      setSuccessMessage(response.message || "Password reset successfully.");
+      setSuccessMessage(response.message || "Kata sandi berhasil diatur ulang.");
 
       setTimeout(() => {
         navigate("/signin?reset=success", { replace: true });
       }, 1200);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to reset password.";
+      const message = error instanceof Error ? error.message : "Gagal mengatur ulang kata sandi.";
       setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
@@ -65,23 +65,23 @@ export default function ResetPasswordForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
-          Back to Sign In
+          Kembali ke Halaman Masuk
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Reset Password
+            Atur Ulang Kata Sandi
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Set your new password for <span className="font-medium">{email || "-"}</span>.
+            Buat kata sandi baru Anda untuk <span className="font-medium">{email || "-"}</span>.
           </p>
         </div>
 
         {invalidLink ? (
           <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
             <p className="text-sm text-red-800 dark:text-red-200">
-              Invalid or incomplete reset link. Please request a new password reset email.
+              Tautan atur ulang tidak valid atau tidak lengkap. Silakan minta email atur ulang kata sandi yang baru.
             </p>
           </div>
         ) : (
@@ -100,13 +100,13 @@ export default function ResetPasswordForm() {
 
             <div>
               <Label htmlFor="reset-password">
-                New Password <span className="text-error-500">*</span>
+                Kata Sandi Baru <span className="text-error-500">*</span>
               </Label>
               <div className="relative">
                 <Input
                   id="reset-password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your new password"
+                  placeholder="Masukkan kata sandi baru Anda"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -126,13 +126,13 @@ export default function ResetPasswordForm() {
 
             <div>
               <Label htmlFor="reset-password-confirmation">
-                Confirm Password <span className="text-error-500">*</span>
+                Konfirmasi Kata Sandi <span className="text-error-500">*</span>
               </Label>
               <div className="relative">
                 <Input
                   id="reset-password-confirmation"
                   type={showPasswordConfirmation ? "text" : "password"}
-                  placeholder="Confirm your new password"
+                  placeholder="Konfirmasi kata sandi baru Anda"
                   value={passwordConfirmation}
                   onChange={(e) => setPasswordConfirmation(e.target.value)}
                   required
@@ -151,7 +151,7 @@ export default function ResetPasswordForm() {
             </div>
 
             <Button className="w-full" size="sm" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Resetting..." : "Reset Password"}
+              {isSubmitting ? "Mengatur ulang..." : "Atur Ulang Kata Sandi"}
             </Button>
           </form>
         )}

@@ -21,14 +21,14 @@ type FilePondItem = { file?: File };
 
 const signUpSchema = z
   .object({
-    name: z.string().min(1, "Name is required").max(255),
-    email: z.string().email("Invalid email address"),
-    phone: z.string().min(1, "Phone is required").max(20),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    passwordConfirmation: z.string().min(8, "Please confirm your password"),
+    name: z.string().min(1, "Nama wajib diisi").max(255),
+    email: z.string().email("Alamat email tidak valid"),
+    phone: z.string().min(1, "Nomor telepon wajib diisi").max(20),
+    password: z.string().min(8, "Kata sandi minimal 8 karakter"),
+    passwordConfirmation: z.string().min(8, "Konfirmasi kata sandi Anda"),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
-    message: "Passwords don't match",
+    message: "Kata sandi tidak cocok",
     path: ["passwordConfirmation"],
   });
 
@@ -67,7 +67,7 @@ export default function SignUpForm() {
         data.passwordConfirmation
       );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Registration failed";
+      const errorMessage = error instanceof Error ? error.message : "Pendaftaran gagal";
       setServerError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -87,17 +87,17 @@ export default function SignUpForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
-          Back to dashboard
+          Kembali ke dashboard
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign Up
+              Daftar
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign up!
+              Masukkan email dan kata sandi Anda untuk mendaftar!
             </p>
           </div>
           <div>
@@ -130,7 +130,7 @@ export default function SignUpForm() {
                   fill="#EB4335"
                 />
               </svg>
-              Sign up with Google
+              Daftar dengan Google
             </button>
           </div>
           <div className="relative py-3 sm:py-5">
@@ -139,7 +139,7 @@ export default function SignUpForm() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="p-2 text-gray-400 bg-white dark:bg-gray-900 sm:px-5 sm:py-2">
-                Or
+                Atau
               </span>
             </div>
           </div>
@@ -153,12 +153,12 @@ export default function SignUpForm() {
               {/* <!-- Name --> */}
               <div>
                 <Label>
-                  Name<span className="text-error-500">*</span>
+                  Nama<span className="text-error-500">*</span>
                 </Label>
                 <Input
                   type="text"
                   id="name"
-                  placeholder="Enter your full name"
+                  placeholder="Masukkan nama lengkap Anda"
                   {...register("name")}
                 />
                 {errors.name && (
@@ -173,7 +173,7 @@ export default function SignUpForm() {
                 <Input
                   type="email"
                   id="email"
-                  placeholder="Enter your email"
+                  placeholder="Masukkan email Anda"
                   {...register("email")}
                 />
                 {errors.email && (
@@ -183,12 +183,12 @@ export default function SignUpForm() {
               {/* Phone */}
               <div>
                 <Label>
-                  Phone<span className="text-error-500">*</span>
+                  Telepon<span className="text-error-500">*</span>
                 </Label>
                 <Input
                   type="text"
                   id="phone"
-                  placeholder="Enter your phone number"
+                  placeholder="Masukkan nomor telepon Anda"
                   {...register("phone")}
                 />
                 {errors.phone && (
@@ -198,7 +198,7 @@ export default function SignUpForm() {
               {/* Photo */}
               <div>
                 <Label>
-                  Photo<span className="text-error-500"></span>
+                  Foto<span className="text-error-500"></span>
                 </Label>
                 <FilePond
                   files={files as never[]}
@@ -210,7 +210,7 @@ export default function SignUpForm() {
                     if (file instanceof File) {
                       setPhotoError(null);
                     } else if (fileItems.length > 0) {
-                      setPhotoError("Invalid file type");
+                      setPhotoError("Tipe file tidak valid");
                     }
                   }}
                   acceptedFileTypes={["image/png", "image/jpeg", "image/jpg", "image/gif"]}
@@ -222,11 +222,11 @@ export default function SignUpForm() {
               {/* <!-- Password --> */}
               <div>
                 <Label>
-                  Password<span className="text-error-500">*</span>
+                  Kata Sandi<span className="text-error-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    placeholder="Enter your password"
+                    placeholder="Masukkan kata sandi Anda"
                     type={showPassword ? "text" : "password"}
                     {...register("password")}
                   />
@@ -248,11 +248,11 @@ export default function SignUpForm() {
               {/* <!-- Confirm Password --> */}
               <div>
                 <Label>
-                  Confirm Password<span className="text-error-500">*</span>
+                  Konfirmasi Kata Sandi<span className="text-error-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    placeholder="Confirm your password"
+                    placeholder="Konfirmasi kata sandi Anda"
                     type={showPasswordConfirmation ? "text" : "password"}
                     {...register("passwordConfirmation")}
                   />
@@ -279,7 +279,7 @@ export default function SignUpForm() {
                   className="w-full"
                   isLoading={isSubmitting}
                 >
-                  Sign Up
+                  Daftar
                 </Button>
               </div>
             </div>
@@ -287,12 +287,12 @@ export default function SignUpForm() {
 
           <div className="mt-5">
             <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-              Already have an account? {""}
+              Sudah memiliki akun? {""}
               <Link
                 to="/signin"
                 className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
               >
-                Sign In
+                Masuk
               </Link>
             </p>
           </div>

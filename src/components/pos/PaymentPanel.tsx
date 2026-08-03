@@ -64,7 +64,7 @@ export default function PaymentPanel({
 
         {discount > 0 && (
           <div className="flex items-center justify-between text-success-600 dark:text-success-400">
-            <span className="text-sm font-medium">Discount</span>
+            <span className="text-sm font-medium">Diskon</span>
             {isCalculatingPrice ? (
               <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
             ) : (
@@ -74,7 +74,7 @@ export default function PaymentPanel({
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Tax (11%)</span>
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Pajak (11%)</span>
           {isCalculatingPrice ? (
             <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
           ) : (
@@ -134,7 +134,7 @@ export default function PaymentPanel({
         onClick={onPayNow}
         disabled={disabled || isPaying || isCalculatingPrice}
       >
-        {isPaying ? "Processing..." : isCalculatingPrice ? "Calculating..." : `Pay ${formatCurrency(total)}`}
+        {isPaying ? "Memproses..." : isCalculatingPrice ? "Menghitung..." : `Bayar ${formatCurrency(total)}`}
       </Button>
     </div>
   );

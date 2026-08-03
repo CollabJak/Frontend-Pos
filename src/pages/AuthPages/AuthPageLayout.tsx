@@ -26,9 +26,9 @@ export default function AuthLayout({
                 />
               </Link>
               <p className="text-center text-gray-400 dark:text-white/60">
-                - Manage Stock and Merchants Easily -
+                - Kelola Stok dan Merchant dengan Mudah -
               </p>
-              <h3 className="pt-3 text-left text-xl font-semibold text-gray-300 dark:text-white/60">LINKING BUSINESS WITH TIME AND PRECISION</h3>
+              <h3 className="pt-3 text-left text-xl font-semibold text-gray-300 dark:text-white/60">MENGHUBUNGKAN BISNIS DENGAN WAKTU DAN PRESISI</h3>
             </div>
           </div>
         </div>

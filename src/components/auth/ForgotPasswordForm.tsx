@@ -20,9 +20,9 @@ export default function ForgotPasswordForm() {
 
     try {
       const response = await authService.forgotPassword({ email });
-      setSuccessMessage(response.message || "Password reset link sent successfully.");
+      setSuccessMessage(response.message || "Tautan atur ulang kata sandi berhasil dikirim.");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to send reset link.";
+      const message = error instanceof Error ? error.message : "Gagal mengirim tautan atur ulang kata sandi.";
       setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
@@ -37,16 +37,16 @@ export default function ForgotPasswordForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
-          Back to Sign In
+          Kembali ke Halaman Masuk
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Forgot Password
+            Lupa Kata Sandi
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Enter your email to receive a password reset link.
+            Masukkan email Anda untuk menerima tautan atur ulang kata sandi.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function ForgotPasswordForm() {
           </div>
 
           <Button className="w-full" size="sm" type="submit" isLoading={isSubmitting}>
-            Send Reset Link
+            Kirim Tautan Atur Ulang
           </Button>
         </form>
       </div>

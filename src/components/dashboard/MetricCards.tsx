@@ -32,7 +32,7 @@ const MetricCards: React.FC = () => {
 
   const metrics = [
     {
-      title: "GROSS PROFIT",
+      title: "LABA KOTOR",
       value: profitLoading ? "..." : profitError ? "Error" : formatIDR(profitData?.gross_profit ?? 0),
       change: profitLoading ? "..." : (
         <div className="flex items-center gap-1">
@@ -41,51 +41,51 @@ const MetricCards: React.FC = () => {
             Margin: {profitData?.gross_margin_percent ?? 0}%
           </span>
           <span className="text-gray-600 text-xs ml-1 font-medium italic">
-            (Rev - Cost)
+            (Omzet - HPP)
           </span>
         </div>
       ),
       icon: <BoxIconLine className="text-brand-500 size-6" />,
-      badge: { color: "primary", label: "PROFIT" },
+      badge: { color: "primary", label: "LABA" },
       trend: "custom",
     },
     {
-      title: "PAID REVENUE",
+      title: "PENDAPATAN TERBAYAR",
       value: incomeLoading ? "..." : incomeError ? "Error" : formatIDR(incomeData?.paid_revenue ?? 0),
       change: incomeLoading ? "..." : (
         <div className="flex items-center gap-1">
           <span className="text-gray-600 text-xs font-bold uppercase">
-            Gross: {formatIDR(incomeData?.gross_revenue ?? 0)}
+            Kotor: {formatIDR(incomeData?.gross_revenue ?? 0)}
           </span>
           {(incomeData?.gross_revenue ?? 0) > (incomeData?.paid_revenue ?? 0) * 1.1 && (
-            <div className="size-1.5 rounded-full bg-warning-500 animate-pulse" title="Significant Revenue Gap"></div>
+            <div className="size-1.5 rounded-full bg-warning-500 animate-pulse" title="Gap Pendapatan Signifikan"></div>
           )}
         </div>
       ),
       icon: <DollarLineIcon className="text-orange-500 size-6" />,
-      badge: { color: "success", label: "FINANCE" },
+      badge: { color: "success", label: "KEUANGAN" },
       trend: "custom",
     },
     {
-      title: "TOTAL TRANSACTIONS",
+      title: "TOTAL TRANSAKSI",
       value: summaryLoading ? "..." : summaryError ? "Error" : (summaryData?.transactions_total ?? 0).toLocaleString(),
-      change: summaryLoading ? "Fetching..." : (
+      change: summaryLoading ? "Memuat..." : (
         <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs font-bold uppercase">
-          <span className="text-success-700">Paid: {summaryData?.transactions_paid ?? 0}</span>
-          <span className="text-warning-700">Pending: {summaryData?.transactions_pending ?? 0}</span>
-          <span className="text-error-700">Failed: {summaryData?.transactions_failed ?? 0}</span>
+          <span className="text-success-700">Terbayar: {summaryData?.transactions_paid ?? 0}</span>
+          <span className="text-warning-700">Menunggu: {summaryData?.transactions_pending ?? 0}</span>
+          <span className="text-error-700">Gagal: {summaryData?.transactions_failed ?? 0}</span>
         </div>
       ),
       icon: <PieChartIcon className="text-blue-500 size-6" />,
-      badge: { color: "warning", label: "OPERATIONAL" },
+      badge: { color: "warning", label: "OPERASIONAL" },
       trend: "custom",
     },
     {
-      title: "LOW STOCK ALERTS",
-      value: invLoading ? "..." : invError ? "Error" : `${invData?.low_stock_products ?? 0} SKUs`,
-      change: (invData?.low_stock_products ?? 0) > 0 ? "Needs attention" : "Stok Aman",
+      title: "PERINGATAN STOK MENIPIS",
+      value: invLoading ? "..." : invError ? "Error" : `${invData?.low_stock_products ?? 0} SKU`,
+      change: (invData?.low_stock_products ?? 0) > 0 ? "Perlu Perhatian" : "Stok Aman",
       icon: <AlertIcon className="text-error-500 size-6" />,
-      badge: { color: "error", label: "INVENTORY" },
+      badge: { color: "error", label: "INVENTARIS" },
       trend: (invData?.low_stock_products ?? 0) > 0 ? "down" : "neutral",
     },
   ];

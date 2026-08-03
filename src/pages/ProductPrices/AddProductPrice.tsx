@@ -21,11 +21,11 @@ import { productPriceSchema } from "../../Schemas/productPriceSchema";
 type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const PRICE_TYPE_OPTIONS: Array<{ value: ProductPriceType; label: string }> = [
-  { value: "sell", label: "Sell" },
-  { value: "purchase", label: "Purchase" },
-  { value: "wholesale", label: "Wholesale" },
-  { value: "cost", label: "Cost" },
-  { value: "member", label: "Member" },
+  { value: "sell", label: "Harga Jual (Sell)" },
+  { value: "purchase", label: "Harga Beli (Purchase)" },
+  { value: "wholesale", label: "Harga Grosir (Wholesale)" },
+  { value: "cost", label: "Harga Pokok (Cost)" },
+  { value: "member", label: "Harga Member (Member)" },
 ];
 
 export default function AddProductPrice() {
@@ -78,14 +78,14 @@ export default function AddProductPrice() {
 
   return (
     <>
-      <PageMeta title="Add Product Price" description="Add product price page" />
-      <PageBreadcrumb pageTitle="Add Product Price" />
-      <ComponentCard title="Add Product Price Form">
+      <PageMeta title="Tambah Harga Produk" description="Halaman tambah harga produk" />
+      <PageBreadcrumb pageTitle="Tambah Harga Produk" />
+      <ComponentCard title="Form Tambah Harga Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Product Variant</Label>
+            <Label>Varian Produk</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="product-price-product-variant-options"
@@ -95,7 +95,7 @@ export default function AddProductPrice() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product..."
+              placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
               optionLabel="name"
               optionValue="id"
@@ -108,7 +108,7 @@ export default function AddProductPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price-type">Price Type</Label>
+            <Label htmlFor="price-type">Tipe Harga</Label>
             <select
               id="price-type"
               {...register("price_type")}
@@ -130,20 +130,20 @@ export default function AddProductPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price">Price</Label>
+            <Label htmlFor="price">Harga</Label>
             <Input
               id="price"
               type="number"
               min={0}
               step="0.01"
-              placeholder="Input price"
+              placeholder="Masukkan harga"
               {...register("price", { valueAsNumber: true })}
             />
             {errors.price && <p className="text-red-500">{errors.price.message}</p>}
           </div>
 
           <div>
-            <Label>Location</Label>
+            <Label>Lokasi</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="product-price-location-options"
@@ -153,7 +153,7 @@ export default function AddProductPrice() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search location..."
+              placeholder="Cari lokasi..."
               fetchOptions={fetchLocationOptions}
               optionLabel="name"
               optionValue="id"
@@ -168,8 +168,8 @@ export default function AddProductPrice() {
           <div>
             <DateTimePicker
               id="start-date"
-              label="Start Date"
-              placeholder="Select start date and time"
+              label="Tanggal Mulai"
+              placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {
                 setValue("start_date", selectedValue, {
@@ -186,8 +186,8 @@ export default function AddProductPrice() {
           <div>
             <DateTimePicker
               id="end-date"
-              label="End Date (Optional)"
-              placeholder="Select end date and time"
+              label="Tanggal Selesai (Opsional)"
+              placeholder="Pilih tanggal dan waktu selesai"
               value={watch("end_date") ?? ""}
               allowClear
               onChange={(selectedValue) => {
@@ -204,7 +204,7 @@ export default function AddProductPrice() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding product price..." : "Add Product Price"}
+              {isPending ? "Menambahkan harga produk..." : "Tambah Harga Produk"}
             </Button>
           </div>
         </form>

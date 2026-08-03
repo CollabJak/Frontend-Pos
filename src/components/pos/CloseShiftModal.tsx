@@ -59,7 +59,7 @@ export default function CloseShiftModal({
       { shiftId: shift.id, payload: data, locationId },
       {
         onSuccess: () => {
-          toast.success("POS Shift closed successfully. Handoff reconciliation completed.");
+          toast.success("Shift kasir berhasil ditutup. Rekonsiliasi serah terima selesai.");
           reset();
           onClose();
         },
@@ -83,9 +83,9 @@ export default function CloseShiftModal({
           } else {
             setError("root", {
               type: "server",
-              message: "An unexpected error occurred. Please try again.",
+              message: "Terjadi kesalahan. Silakan coba lagi.",
             });
-            toast.error("Closing shift failed.");
+            toast.error("Penutupan shift gagal.");
           }
         },
       }
@@ -101,10 +101,10 @@ export default function CloseShiftModal({
     <Modal isOpen={isOpen} onClose={handleClose} className="m-4 max-w-[460px]">
       <div className="p-5">
         <h3 className="text-lg font-black text-gray-800 dark:text-white">
-          Close Register Shift
+          Tutup Shift Kasir
         </h3>
         <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-          Reconcile final actual drawer cash with system expected cash.
+          Rekonsiliasi total uang tunai fisik di laci dengan estimasi sistem.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
@@ -117,19 +117,19 @@ export default function CloseShiftModal({
           {/* Expected Cash Read-Only display */}
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/30">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              System Expected Cash Count
+              Estimasi Uang Tunai Sistem
             </p>
             <p className="text-xl font-black text-gray-800 dark:text-white mt-0.5">
               {formatCurrency(shift.expected_cash)}
             </p>
             <p className="text-[10px] text-gray-400 mt-1">
-              Includes starting cash + cash payments - cash refunds + manual adjustments.
+              Termasuk modal awal + pembayaran tunai - pengembalian tunai + penyesuaian manual.
             </p>
           </div>
 
           {/* Actual Cash Input */}
           <div>
-            <Label htmlFor="actual_cash">Actual Cash Present inside Drawer</Label>
+            <Label htmlFor="actual_cash">Total Uang Tunai Fisik Aktual di Laci</Label>
             <div className="relative mt-1 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="text-gray-500 sm:text-sm">Rp</span>
@@ -150,7 +150,7 @@ export default function CloseShiftModal({
           {/* Real-time Discrepancy Reconciliation */}
           <div className="space-y-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Discrepancy / Handoff Balance
+              Selisih / Balans Serah Terima
             </span>
             <div className="flex items-center gap-2">
               <p
@@ -163,10 +163,10 @@ export default function CloseShiftModal({
                 }`}
               >
                 {difference === 0
-                  ? "Perfectly Balanced"
+                  ? "Sesuai / Balans Sempurna"
                   : difference > 0
-                  ? `Overage: +${formatCurrency(difference)}`
-                  : `Shortage: -${formatCurrency(Math.abs(difference))}`}
+                  ? `Kelebihan Uang: +${formatCurrency(difference)}`
+                  : `Kekurangan Uang: -${formatCurrency(Math.abs(difference))}`}
               </p>
             </div>
 
@@ -178,23 +178,23 @@ export default function CloseShiftModal({
                     : "border-red-150 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-500/10 dark:text-red-400"
                 }`}
               >
-                <strong>Warning!</strong> Your drawer count does not match the system.
+                <strong>Perhatian!</strong> Jumlah uang di laci tidak cocok dengan sistem.
                 {difference < 0
-                  ? " The cash drawer is short. Please verify your manual calculations."
-                  : " There is more cash than expected. Please document this discrepancy below."}
+                  ? " Uang tunai di laci kurang dari estimasi. Silakan periksa kembali perhitungannya."
+                  : " Uang tunai di laci lebih banyak dari estimasi. Silakan dokumentasikan selisih pada catatan di bawah."}
               </div>
             )}
           </div>
 
           {/* Notes */}
           <div>
-            <Label htmlFor="notes">Reconciliation / Closing Notes</Label>
+            <Label htmlFor="notes">Catatan Rekonsiliasi / Penutupan</Label>
             <textarea
               {...register("notes")}
               id="notes"
               rows={2}
               className="mt-1 block w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              placeholder="e.g. Discrepancy due to change roundings, handoff complete to John..."
+              placeholder="contoh: Selisih karena pembulatan uang kembalian, serah terima selesai ke Budi..."
             />
             {errors.notes && (
               <p className="mt-1 text-xs text-red-500">{errors.notes.message}</p>
@@ -209,14 +209,14 @@ export default function CloseShiftModal({
               onClick={handleClose}
               disabled={isPending}
             >
-              Cancel
+              Batal
             </Button>
             <Button
               type="submit"
               className={difference !== 0 ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
               disabled={isPending}
             >
-              {isPending ? "Closing Shift..." : "Close register & end shift"}
+              {isPending ? "Menutup Shift..." : "Tutup Shift & Akhiri Penjualan"}
             </Button>
           </div>
         </form>

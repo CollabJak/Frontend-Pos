@@ -56,24 +56,24 @@ export default function UnitConversionList() {
   return (
     <>
       <PageMeta
-        title="Unit Conversions Products"
-        description="Unit Conversion list of products page"
+        title="Konversi Satuan Produk"
+        description="Halaman daftar konversi satuan produk"
       />
-      <PageBreadcrumb pageTitle="Unit Conversions Product" />
+      <PageBreadcrumb pageTitle="Konversi Satuan Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Unit Conversions Product List" linkLabel="Add Unit Conversion" linkTo="/unit-conversions/create">
+        <ComponentCard title="Daftar Konversi Satuan Produk" linkLabel="Tambah Konversi Satuan" linkTo="/unit-conversions/create">
           <div>
             <Input
               id="unit-conversion-search"
               type="text"
-              placeholder="Search variant, from unit, to unit, or rounding..."
+              placeholder="Cari varian, dari satuan, ke satuan, atau pembulatan..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -83,31 +83,31 @@ export default function UnitConversionList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Product Variant
+                        Varian Produk
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        From Unit
+                        Dari Satuan
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        To Unit
+                        Ke Satuan
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Multiplier
+                        Pengali
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -143,7 +143,7 @@ export default function UnitConversionList() {
                               variant="danger"
                               onClick={handleDeleteClick(unit.id, unit.product_variant || `#${unit.id}`)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -166,14 +166,14 @@ export default function UnitConversionList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete unit conversion?"
+        title="Hapus konversi satuan?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

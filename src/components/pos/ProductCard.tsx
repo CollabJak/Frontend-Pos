@@ -52,7 +52,7 @@ export default function ProductCard({
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
           {product.isBestSeller && (
             <Badge color="success" size="sm" variant="light">
-              Best Seller
+              Terlaris
             </Badge>
           )}
           <Badge color="info" size="sm" variant="light">
@@ -63,7 +63,7 @@ export default function ProductCard({
 
       {disabled && (
         <div className="absolute inset-x-0 bottom-0 bg-red-500 py-1 text-center text-[10px] font-bold uppercase text-white">
-          Out of Stock
+          Stok Habis
         </div>
       )}
     </div>

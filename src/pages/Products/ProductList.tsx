@@ -53,22 +53,22 @@ export default function ProductList() {
   return (
     <>
       <PageMeta
-        title="Products"
-        description="Product list page"
+        title="Produk"
+        description="Halaman daftar produk"
       />
-      <PageBreadcrumb pageTitle="Products" />
+      <PageBreadcrumb pageTitle="Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Products List" linkLabel="Add Product" linkTo="/products/create">
+        <ComponentCard title="Daftar Produk" linkLabel="Tambah Produk" linkTo="/products/create">
           <div>
             <Input
-              placeholder="Search products by name, sku, barcode..."
+              placeholder="Cari produk berdasarkan nama, SKU, barcode..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table scrollable className="min-w-[1000px]">
@@ -78,7 +78,7 @@ export default function ProductList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama Produk
                       </TableCell>
                       <TableCell
                         isHeader
@@ -96,25 +96,25 @@ export default function ProductList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Category
+                        Kategori
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Unit
+                        Satuan
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Brand
+                        Merek
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Description
+                        Deskripsi
                       </TableCell>
                       <TableCell
                         isHeader
@@ -126,7 +126,7 @@ export default function ProductList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -186,7 +186,7 @@ export default function ProductList() {
                               variant="danger"
                               onClick={handleDeleteClick(product.id, product.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -209,14 +209,14 @@ export default function ProductList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete product?"
+        title="Hapus produk?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Produk "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

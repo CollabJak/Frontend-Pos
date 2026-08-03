@@ -23,14 +23,14 @@ export default function CartPanel({
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-2xl font-black tracking-tight text-gray-800 dark:text-white">
-          Active Cart
+          Keranjang Penjualan
         </h3>
         {items.length > 0 && (
           <button
             onClick={onClear}
             className="text-xs font-bold tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 uppercase"
           >
-            Clear All
+            Hapus Semua
           </button>
         )}
       </div>
@@ -61,7 +61,7 @@ export default function CartPanel({
               </svg>
             </div>
             <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
-              No items in cart
+              Keranjang kosong
             </p>
           </div>
         ) : (
@@ -92,7 +92,7 @@ export default function CartPanel({
                 />
               </svg>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                End of Items
+                Akhir Daftar Item
               </p>
             </div>
           </>

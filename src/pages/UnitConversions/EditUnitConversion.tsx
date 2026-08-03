@@ -92,20 +92,20 @@ export default function EditUnitConversion() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Unit Conversion" description="Edit new unit conversion product page" />
-      <PageBreadcrumb pageTitle="Edit Unit Conversion" />
-      <ComponentCard title="Edit Unit Conversion Form">
+      <PageMeta title="Edit Konversi Satuan" description="Halaman edit konversi satuan produk" />
+      <PageBreadcrumb pageTitle="Edit Konversi Satuan" />
+      <ComponentCard title="Form Edit Konversi Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-variant-name">Product Variant</Label>
+              <Label htmlFor="product-variant-name">Varian Produk</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-product-variant-options"
@@ -116,7 +116,7 @@ export default function EditUnitConversion() {
                   });
                 }}
                 displayValue={unitConversion?.product_variant ?? undefined}
-                placeholder="Search product variant..."
+                placeholder="Cari varian produk..."
                 fetchOptions={fetchProductVariantOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -129,7 +129,7 @@ export default function EditUnitConversion() {
             </div>
 
             <div>
-              <Label>From Unit</Label>
+              <Label>Dari Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-from-unit-options"
@@ -140,7 +140,7 @@ export default function EditUnitConversion() {
                   });
                 }}
                 displayValue={unitConversion?.from_unit ?? undefined}
-                placeholder="Search from unit..."
+                placeholder="Cari dari satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -153,7 +153,7 @@ export default function EditUnitConversion() {
             </div>
 
             <div>
-              <Label>To Unit</Label>
+              <Label>Ke Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-to-unit-options"
@@ -164,7 +164,7 @@ export default function EditUnitConversion() {
                   });
                 }}
                 displayValue={unitConversion?.to_unit ?? undefined}
-                placeholder="Search to unit..."
+                placeholder="Cari ke satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -177,12 +177,12 @@ export default function EditUnitConversion() {
             </div>
 
             <div>
-              <Label htmlFor="unit-conversion-multiplier">Multiplier</Label>
+              <Label htmlFor="unit-conversion-multiplier">Pengali</Label>
               <Input
                 {...register("multiplier", { valueAsNumber: true })}
                 type="number"
                 id="unit-conversion-multiplier"
-                placeholder="Input unit conversion multiplier"
+                placeholder="Masukkan pengali konversi satuan"
               />
               {errors.multiplier && (
                 <p className="text-red-500">{errors.multiplier.message}</p>
@@ -191,7 +191,7 @@ export default function EditUnitConversion() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Editing unit conversion..." : "Edit Unit Conversion"}
+                {isPending ? "Memperbarui konversi satuan..." : "Perbarui Konversi Satuan"}
               </Button>
             </div>
           </div>

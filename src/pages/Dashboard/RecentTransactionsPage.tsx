@@ -82,7 +82,7 @@ export default function RecentTransactionsPage() {
 
   const locationOptions = useMemo(
     () => [
-      { value: "all", label: "ALL LOCATIONS" },
+      { value: "all", label: "SEMUA LOKASI" },
       ...(locationData?.data?.map((loc) => ({ value: String(loc.id), label: loc.name })) || []),
     ],
     [locationData]
@@ -144,31 +144,31 @@ export default function RecentTransactionsPage() {
   return (
     <>
       <PageMeta
-        title="Recent Transactions | Dashboard"
-        description="View all recent transactions with advanced filtering"
+        title="Transaksi Terbaru | Dashboard"
+        description="Lihat semua transaksi terbaru dengan filter lanjutan"
       />
-      <PageBreadcrumb pageTitle="Recent Transactions" />
+      <PageBreadcrumb pageTitle="Transaksi Terbaru" />
 
       <div className="space-y-6">
-        <ComponentCard title="All Recent Transactions">
+        <ComponentCard title="Semua Transaksi Terbaru">
           <div className="flex flex-col gap-4 md:flex-row md:items-end mb-6">
             <div className="flex-1">
               <DatePicker
                 id="range-date"
-                label="Filter by Date Range"
+                label="Filter Rentang Tanggal"
                 mode="range"
-                placeholder="Select date range..."
+                placeholder="Pilih rentang tanggal..."
                 defaultDate={dateValue}
                 onChange={handleDateChange}
               />
             </div>
             <div className="w-full md:w-64">
               <Select
-                label="Filter by Location"
+                label="Filter Lokasi"
                 options={locationOptions}
                 value={selectedLocationId}
                 onChange={(val) => updateSearchParams({ locationId: val })}
-                placeholder="Select Location"
+                placeholder="Pilih Lokasi"
               />
             </div>
           </div>
@@ -176,31 +176,31 @@ export default function RecentTransactionsPage() {
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading ? (
-                <div className="py-8 text-center text-sm text-gray-500">Loading transactions...</div>
+                <div className="py-8 text-center text-sm text-gray-500">Memuat transaksi...</div>
               ) : isError ? (
                 <div className="py-8 text-center text-sm text-red-500">
                   <div className="flex flex-col items-center gap-3">
-                    <span>Failed to load transactions</span>
+                    <span>Gagal memuat transaksi</span>
                     <button
                       onClick={() => refetch()}
                       className="text-xs font-semibold text-brand-600 hover:text-brand-700 uppercase tracking-wide dark:text-brand-400"
                     >
-                      Retry
+                      Coba Lagi
                     </button>
                   </div>
                 </div>
               ) : transactions.length === 0 ? (
-                <div className="py-8 text-center text-sm text-gray-500">No recent transactions found</div>
+                <div className="py-8 text-center text-sm text-gray-500">Tidak ada transaksi terbaru ditemukan</div>
               ) : (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Date/Time</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Business</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Invoice ID</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Location</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Items</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Total Amount</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Tanggal/Waktu</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Bisnis</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">No. Faktur</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Lokasi</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Item</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Total Jumlah</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Status</TableCell>
                     </TableRow>
                   </TableHeader>
@@ -220,7 +220,7 @@ export default function RecentTransactionsPage() {
                           {txn.location_name}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start whitespace-nowrap text-theme-sm text-gray-600 dark:text-gray-400">
-                          {txn.items_count} units
+                          {txn.items_count} unit
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start whitespace-nowrap text-theme-sm font-bold text-gray-800 dark:text-white/90">
                           {formatCurrency(txn.total_amount)}

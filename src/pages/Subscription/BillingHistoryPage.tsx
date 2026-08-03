@@ -45,8 +45,8 @@ export default function BillingHistoryPage() {
 
     return (
         <>
-            <PageMeta title="Billing History" description="Manage your invoices and subscription status." />
-            <PageBreadcrumb pageTitle="Billing & Usage" />
+            <PageMeta title="Riwayat Tagihan" description="Kelola tagihan invoice dan status paket langganan Anda." />
+            <PageBreadcrumb pageTitle="Riwayat & Tagihan" />
 
             {/* ... rest of widgets ... */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
