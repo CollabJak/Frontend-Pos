@@ -75,54 +75,54 @@ export default function PriceTierList() {
 
   return (
     <>
-      <PageMeta title="Price Tiers" description="Price tiers list page" />
-      <PageBreadcrumb pageTitle="Price Tiers" />
+      <PageMeta title="Tingkat Harga (Price Tiers)" description="Halaman daftar tingkat harga grosir" />
+      <PageBreadcrumb pageTitle="Tingkat Harga (Price Tiers)" />
 
       <div className="space-y-6">
-        <ComponentCard title="Price Tiers List" linkLabel="Add Price Tier" linkTo="/price-tiers/create">
+        <ComponentCard title="Daftar Tingkat Harga (Price Tiers)" linkLabel="Tambah Tingkat Harga" linkTo="/price-tiers/create">
         <div>
           <Input
             id="price-tier-search"
             type="text"
-            placeholder="Search price by variant, customer group, location..."
+            placeholder="Cari harga berdasarkan varian, grup pelanggan, lokasi..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Variant
+                        Varian Produk
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Customer Group
+                        Grup Pelanggan
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Min Qty
+                        Jumlah Min.
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Price
+                        Harga
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Start Date
+                        Tanggal Mulai
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        End Date
+                        Tanggal Selesai
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Active
+                        Aktif
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -153,7 +153,7 @@ export default function PriceTierList() {
                           {formatDate(item.end_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {item.is_active ? "Yes" : "No"}
+                          {item.is_active ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -169,7 +169,7 @@ export default function PriceTierList() {
                               variant="danger"
                               onClick={handleDeleteClick(item.id, item.product_variant?.name || `#${item.id}`)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -193,14 +193,14 @@ export default function PriceTierList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete price tier?"
+        title="Hapus tingkat harga?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" tier pricing will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Tingkat harga "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

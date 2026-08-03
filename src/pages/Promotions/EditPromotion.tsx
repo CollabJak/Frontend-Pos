@@ -104,58 +104,58 @@ export default function EditPromotion() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Promotion" description="Edit promotion page" />
-      <PageBreadcrumb pageTitle="Edit Promotion" />
-      <ComponentCard title="Edit Promotion Form">
+      <PageMeta title="Edit Promosi" description="Halaman edit promosi" />
+      <PageBreadcrumb pageTitle="Edit Promosi" />
+      <ComponentCard title="Form Edit Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="promotion-code">Code</Label>
+              <Label htmlFor="promotion-code">Kode Promosi</Label>
               <Input
                 {...register("code")}
                 type="text"
                 id="promotion-code"
-                placeholder="Input promotion code"
+                placeholder="Masukkan kode promosi"
               />
               {errors.code && <p className="text-red-500">{errors.code.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="promotion-name">Name</Label>
+              <Label htmlFor="promotion-name">Nama Promosi</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="promotion-name"
-                placeholder="Input promotion name"
+                placeholder="Masukkan nama promosi"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="promotion-type">Type</Label>
+              <Label htmlFor="promotion-type">Tipe Promosi</Label>
               <Input
                 {...register("type")}
                 type="text"
                 id="promotion-type"
-                placeholder="Input promotion type"
+                placeholder="Masukkan tipe promosi"
               />
               {errors.type && <p className="text-red-500">{errors.type.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="promotion-priority">Priority</Label>
+              <Label htmlFor="promotion-priority">Prioritas</Label>
               <Input
                 {...register("priority", { valueAsNumber: true })}
                 type="number"
                 id="promotion-priority"
-                placeholder="Input priority"
+                placeholder="Masukkan tingkat prioritas"
               />
               {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
             </div>
@@ -163,8 +163,8 @@ export default function EditPromotion() {
             <div>
               <DateTimePicker
                 id="promotion-start-date"
-                label="Start Date"
-                placeholder="Select start date and time"
+                label="Tanggal Mulai"
+                placeholder="Pilih tanggal dan waktu mulai"
                 value={watch("start_date")}
                 onChange={(selectedValue) => {
                   setValue("start_date", selectedValue, {
@@ -179,8 +179,8 @@ export default function EditPromotion() {
             <div>
               <DateTimePicker
                 id="promotion-end-date"
-                label="End Date (Optional)"
-                placeholder="Select end date and time"
+                label="Tanggal Selesai (Opsional)"
+                placeholder="Pilih tanggal dan waktu selesai"
                 value={watch("end_date") ?? ""}
                 allowClear
                 onChange={(selectedValue) => {
@@ -194,7 +194,7 @@ export default function EditPromotion() {
             </div>
 
             <div>
-              <Label htmlFor="promotion-stackable">Stackable</Label>
+              <Label htmlFor="promotion-stackable">Dapat Digabung (Stackable)</Label>
               <Checkbox
                 id="promotion-stackable"
                 checked={Boolean(watch("is_stackable"))}
@@ -204,7 +204,7 @@ export default function EditPromotion() {
                     shouldDirty: true,
                   })
                 }
-                label="Promotion can be stacked"
+                label="Promosi dapat digabung dengan promo lain"
               />
               {errors.is_stackable && (
                 <p className="text-red-500">{errors.is_stackable.message}</p>
@@ -212,7 +212,7 @@ export default function EditPromotion() {
             </div>
 
             <div>
-              <Label htmlFor="promotion-active">Active Status</Label>
+              <Label htmlFor="promotion-active">Status Aktif</Label>
               <Checkbox
                 id="promotion-active"
                 checked={Boolean(watch("is_active"))}
@@ -222,14 +222,14 @@ export default function EditPromotion() {
                     shouldDirty: true,
                   })
                 }
-                label="Promotion is active"
+                label="Promosi aktif"
               />
               {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
             </div>
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating Promotion..." : "Update Promotion"}
+                {isPending ? "Memperbarui Promosi..." : "Perbarui Promosi"}
               </Button>
             </div>
           </div>

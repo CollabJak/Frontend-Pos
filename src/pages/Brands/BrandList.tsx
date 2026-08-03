@@ -53,22 +53,22 @@ export default function BrandList() {
   return (
     <>
       <PageMeta
-        title="Brands Products"
-        description="Brand list of products page"
+        title="Merek Produk"
+        description="Halaman daftar merek produk"
       />
-      <PageBreadcrumb pageTitle="Brands Product" />
+      <PageBreadcrumb pageTitle="Merek Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Brands Product List" linkLabel="Add Brand" linkTo="/brands/create">
+        <ComponentCard title="Daftar Merek Produk" linkLabel="Tambah Merek" linkTo="/brands/create">
           <div>
             <Input
-              placeholder="Search brands by name or code..."
+              placeholder="Cari merek berdasarkan nama atau kode..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -78,25 +78,25 @@ export default function BrandList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama Merek
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Code
+                        Kode Merek
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Description
+                        Deskripsi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -129,7 +129,7 @@ export default function BrandList() {
                               variant="danger"
                               onClick={handleDeleteClick(brand.id, brand.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -152,14 +152,14 @@ export default function BrandList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete brand?"
+        title="Hapus merek?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

@@ -48,11 +48,11 @@ const resolveVariantId = (row: InventoryListItem): number | null => {
 };
 
 const resolveProductName = (row: InventoryListItem): string => {
-  return row.product_variant?.name ?? row.product_name ?? "Unknown product";
+  return row.product_variant?.name ?? row.product_name ?? "Produk tidak diketahui";
 };
 
 const resolveLocationName = (row: InventoryListItem): string => {
-  return row.location?.name ?? row.location_name ?? "Unknown location";
+  return row.location?.name ?? row.location_name ?? "Lokasi tidak diketahui";
 };
 
 const resolveAvailable = (row: InventoryListItem): string => {
@@ -94,41 +94,41 @@ export default function InventoryOrphanedList() {
 
   return (
     <>
-      <PageMeta title="Orphaned Stocks List" description="Inventory orphaned stock report page" />
-      <PageBreadcrumb pageTitle="Orphaned Stocks" />
+      <PageMeta title="Stok Tanpa Pemetaan Lokasi" description="Halaman laporan stok tanpa pemetaan lokasi" />
+      <PageBreadcrumb pageTitle="Stok Tanpa Pemetaan" />
 
       <div className="space-y-6">
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
-          <h4 className="mb-1 font-semibold text-amber-900 dark:text-amber-300">About Orphaned Stocks</h4>
+          <h4 className="mb-1 font-semibold text-amber-900 dark:text-amber-300">Tentang Stok Tanpa Pemetaan Lokasi</h4>
           <p className="text-sm">
-            Orphaned stocks are active quantities on hand located in warehouses or stores that do not have valid location mappings. 
-            This occurs when specific location mappings or location-type associations for the product variant are missing or deactivated.
-            Adjust their configuration to resolve the warning and allow stock operations.
+            Stok tanpa pemetaan adalah stok fisik aktif yang tersimpan di gudang atau toko namun belum/tidak lagi memiliki pemetaan lokasi yang valid pada varian produk. 
+            Hal ini terjadi jika pemetaan lokasi khusus atau tipe lokasi pada varian produk belum diatur atau dinonaktifkan.
+            Silakan atur konfigurasi lokasi pada varian produk agar operasional stok dapat berjalan lancar.
           </p>
         </div>
 
-        <ComponentCard title="Orphaned Stocks Report">
+        <ComponentCard title="Laporan Stok Tanpa Pemetaan">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-6">
             <div>
-              <Label htmlFor="inventory-product-search">Search Product</Label>
+              <Label htmlFor="inventory-product-search">Cari Produk</Label>
               <Input
                 id="inventory-product-search"
                 type="text"
-                placeholder="Search by product name..."
+                placeholder="Cari berdasarkan nama produk..."
                 value={productSearch}
                 onChange={(event) => setProductSearch(event.target.value)}
               />
             </div>
 
             <div>
-              <Label>Filter Location</Label>
+              <Label>Filter Lokasi</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 value={locationId}
                 onChange={(selectedValue) => {
                   setLocationId(selectedValue != null ? Number(selectedValue) : null);
                 }}
-                placeholder="Search location..."
+                placeholder="Cari lokasi..."
                 fetchOptions={fetchLocationOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -139,14 +139,14 @@ export default function InventoryOrphanedList() {
 
             <div className="flex items-end">
               <Button variant="outline" onClick={handleResetFilters}>
-                Reset Filters
+                Reset Filter
               </Button>
             </div>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -156,7 +156,7 @@ export default function InventoryOrphanedList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Product
+                        Produk
                       </TableCell>
                       <TableCell
                         isHeader
@@ -168,25 +168,25 @@ export default function InventoryOrphanedList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty On Hand
+                        Stok Fisik
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty Reserved
+                        Stok Direservasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Available
+                        Stok Tersedia
                       </TableCell>
                       <TableCell
                         isHeader
@@ -198,7 +198,7 @@ export default function InventoryOrphanedList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Actions
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -207,7 +207,7 @@ export default function InventoryOrphanedList() {
                     {(!data || data.data.length === 0) && (
                       <TableRow>
                         <TableCell colSpan={8} className="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
-                          No orphaned stocks found. Your inventory locations are fully configured!
+                          Tidak ditemukan stok tanpa pemetaan. Semua lokasi stok produk Anda telah terkonfigurasi dengan baik!
                         </TableCell>
                       </TableRow>
                     )}
@@ -237,7 +237,7 @@ export default function InventoryOrphanedList() {
                           </TableCell>
                           <TableCell className="px-4 py-3 text-start">
                             <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                              Unmapped Location
+                              Lokasi Belum Dipetakan
                             </span>
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
@@ -247,13 +247,13 @@ export default function InventoryOrphanedList() {
                                   to={`/inventory/${variantId}`}
                                   className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-blue-500 px-3 py-1.5 text-xs text-blue-500 transition-colors hover:border-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:border-blue-400 dark:hover:text-gray-300 link-focus-info"
                                 >
-                                  View Stock Detail
+                                  Lihat Detail Stok
                                 </Link>
                                 <Link
                                   to={`/product-variants/edit/${variantId}`}
                                   className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-500 px-3 py-1.5 text-xs text-emerald-500 transition-colors hover:border-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:text-gray-300 link-focus-info"
                                 >
-                                  Configure Locations
+                                  Konfigurasi Lokasi
                                 </Link>
                               </div>
                             ) : (

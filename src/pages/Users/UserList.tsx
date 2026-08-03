@@ -66,24 +66,24 @@ export default function UserList() {
   return (
     <>
       <PageMeta
-        title="Users Management"
-        description="User list page"
+        title="Manajemen Pengguna"
+        description="Halaman daftar pengguna POS"
       />
-      <PageBreadcrumb pageTitle="Users" />
+      <PageBreadcrumb pageTitle="Daftar Pengguna" />
       <div className="space-y-6">
-        <ComponentCard title="User List" linkLabel="Add User" linkTo="/users/create">
+        <ComponentCard title="Daftar Pengguna" linkLabel="Tambah Pengguna" linkTo="/users/create">
           <div>
             <Input
               id="user-search"
               type="text"
-              placeholder="Search user by name or email..."
+              placeholder="Cari pengguna berdasarkan nama atau email..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat data pengguna...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -93,7 +93,7 @@ export default function UserList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        User
+                        Pengguna
                       </TableCell>
                       <TableCell
                         isHeader
@@ -105,19 +105,19 @@ export default function UserList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Phone
+                        No. Telepon
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Locations
+                        Lokasi Kerja
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -137,7 +137,7 @@ export default function UserList() {
                                   className="object-cover w-full h-full"
                                 />
                               ) : (
-                                <span className="text-gray-400 text-xs">No Photo</span>
+                                <span className="text-gray-400 text-xs">Tanpa Foto</span>
                               )}
                             </div>
                             <div>
@@ -151,7 +151,7 @@ export default function UserList() {
                           {user.email}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {user.phone}
+                          {user.phone || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-start text-theme-sm dark:text-gray-400">
                           {user.locations && user.locations.length > 0 ? (
@@ -173,7 +173,7 @@ export default function UserList() {
                               })}
                             </div>
                           ) : (
-                            <span className="text-red-500 text-xs italic">No location assigned</span>
+                            <span className="text-red-500 text-xs italic">Belum ada lokasi</span>
                           )}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
@@ -190,14 +190,14 @@ export default function UserList() {
                               variant="outline"
                               onClick={() => handleAssignRoleClick(user)}
                             >
-                              Assign Role
+                              Atur Peran
                             </Button>
                             <Button
                               size="sm"
                               variant="danger"
                               onClick={handleDeleteClick(user.id, user.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -220,14 +220,14 @@ export default function UserList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete user?"
+        title="Hapus Pengguna?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Pengguna "${pendingDelete.name}" akan dihapus secara permanen.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

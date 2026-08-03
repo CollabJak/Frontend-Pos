@@ -49,19 +49,19 @@ export default function AddAtribute() {
 
   return (
     <>
-      <PageMeta title="Add Atribute" description="Add new atribute of products page" />
-      <PageBreadcrumb pageTitle="Add Atribute" />
-      <ComponentCard title="Add Atribute Form">
+      <PageMeta title="Tambah Atribut" description="Halaman tambah atribut produk" />
+      <PageBreadcrumb pageTitle="Tambah Atribut" />
+      <ComponentCard title="Form Tambah Atribut">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="atribute-name">Atribute Name</Label>
+              <Label htmlFor="atribute-name">Nama Atribut</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="atribute-name"
-                placeholder="Input atribute name"
+                placeholder="Masukkan nama atribut (contoh: Warna, Ukuran)"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -70,7 +70,7 @@ export default function AddAtribute() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding atribute..." : "Add Atribute"}
+                {isPending ? "Menambahkan atribut..." : "Tambah Atribut"}
               </Button>
             </div>
           </div>

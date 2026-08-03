@@ -59,24 +59,24 @@ export default function EditAtribute() {
   };
 
   if(isLoading) {
-    return <p>Loading...</p>
+    return <p className="p-3">Memuat...</p>
   }
 
   return (
     <>
-      <PageMeta title="Edit Atribute" description="Edit new atribute of products page" />
-      <PageBreadcrumb pageTitle="Edit Atribute" />
-      <ComponentCard title="Edit Atribute Form">
+      <PageMeta title="Edit Atribut" description="Halaman edit atribut produk" />
+      <PageBreadcrumb pageTitle="Edit Atribut" />
+      <ComponentCard title="Form Edit Atribut">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="atribute-name">Atribute Name</Label>
+              <Label htmlFor="atribute-name">Nama Atribut</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="atribute-name"
-                placeholder="Input atribute name"
+                placeholder="Masukkan nama atribut"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -85,7 +85,7 @@ export default function EditAtribute() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating atribute..." : "Update Atribute"}
+                {isPending ? "Memperbarui atribut..." : "Perbarui Atribut"}
               </Button>
             </div>
           </div>

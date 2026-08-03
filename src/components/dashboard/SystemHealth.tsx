@@ -15,30 +15,30 @@ const SystemHealth: React.FC = () => {
 
   const healthItems = [
     { 
-      title: "PAYMENTS", 
+      title: "PEMBAYARAN", 
       value: isLoading ? "..." : isError ? "Error" : `${healthData?.failed_payments_count ?? 0}`, 
-      desc: "Failed Transactions", 
+      desc: "Transaksi Gagal", 
       icon: <DollarLineIcon className={`size-5 ${(healthData?.failed_payments_count ?? 0) > 0 ? "text-error-500" : "text-success-500"}`} />, 
       color: (healthData?.failed_payments_count ?? 0) > 0 ? "border-red-500" : "border-success-500" 
     },
     { 
-      title: "QUEUE", 
+      title: "ANTREAN", 
       value: isLoading ? "..." : isError ? "Error" : `${(healthData?.pending_jobs_count ?? 0) + (healthData?.failed_jobs_count ?? 0)}`, 
-      desc: `${healthData?.failed_jobs_count ?? 0} Failed Jobs`, 
+      desc: `${healthData?.failed_jobs_count ?? 0} Pekerjaan Gagal`, 
       icon: <ListIcon className="text-gray-600 size-5" />, 
       color: (healthData?.failed_jobs_count ?? 0) > 0 ? "border-red-500" : "border-gray-800" 
     },
     { 
-      title: "WEBHOOKS", 
+      title: "WEBHOOK", 
       value: isLoading ? "..." : isError ? "Error" : `${healthData?.unprocessed_payment_events_count ?? 0}`, 
-      desc: "Unprocessed Events", 
+      desc: "Event Belum Diproses", 
       icon: <BoltIcon className={`size-5 ${(healthData?.unprocessed_payment_events_count ?? 0) > 0 ? "text-orange-500" : "text-success-500"}`} />, 
       color: (healthData?.unprocessed_payment_events_count ?? 0) > 0 ? "border-orange-500" : "border-success-500" 
     },
     { 
-      title: "INVENTORY", 
+      title: "INVENTARIS", 
       value: isLoading ? "..." : isError ? "Error" : `${healthData?.negative_stock_count ?? 0}`, 
-      desc: "Negative Stock Detected", 
+      desc: "Terdeteksi Stok Negatif", 
       icon: <AlertIcon className={`size-5 ${(healthData?.negative_stock_count ?? 0) > 0 ? "text-error-500" : "text-success-500"}`} />, 
       color: (healthData?.negative_stock_count ?? 0) > 0 ? "border-red-500" : "border-success-500" 
     },
@@ -54,10 +54,10 @@ const SystemHealth: React.FC = () => {
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-800 dark:text-white/90">
-            Critical Issues & System Health
+            Kesehatan Sistem & Isu Kritis
           </h3>
           <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${hasCriticalIssue ? "text-red-600" : "text-brand-600"}`}>
-            {hasCriticalIssue ? "Active Operational Blocks Requiring Immediate Resolution" : "System Running Optimally - No Critical Issues"}
+            {hasCriticalIssue ? "Masalah Operasional Aktif Membutuhkan Penanganan Segera" : "Sistem Berjalan Optimal - Tidak Ada Masalah Kritis"}
           </p>
         </div>
       </div>

@@ -47,15 +47,15 @@ export default function StockInfoPanel({
   return (
     <div className="space-y-3 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <InfoItem label="Current Stock" value={formatDecimal(currentStock)} />
-        <InfoItem label="Reserved Stock" value={formatDecimal(reservedStock)} />
-        <InfoItem label="Available Stock" value={formatDecimal(availableStock)} />
-        <InfoItem label="New Stock (Preview)" value={formatDecimal(newStockPreview)} highlight />
+        <InfoItem label="Stok Saat Ini" value={formatDecimal(currentStock)} />
+        <InfoItem label="Stok Direservasi" value={formatDecimal(reservedStock)} />
+        <InfoItem label="Stok Tersedia" value={formatDecimal(availableStock)} />
+        <InfoItem label="Stok Baru (Pratinjau)" value={formatDecimal(newStockPreview)} highlight />
       </div>
 
       {isInvalidPreview && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/10 dark:text-red-400">
-          New stock preview cannot be below zero.
+          Pratinjau stok baru tidak boleh kurang dari nol.
         </p>
       )}
     </div>

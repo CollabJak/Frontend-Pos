@@ -43,7 +43,7 @@ export default function CategoryTabs({
             type="text"
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search products..."
+            placeholder="Cari produk..."
             className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-gray-400"
           />
         </div>
@@ -62,7 +62,7 @@ export default function CategoryTabs({
               : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5"
           }`}
         >
-          All Items
+          Semua Produk
         </button>
 
         {isCategoriesLoading ? (

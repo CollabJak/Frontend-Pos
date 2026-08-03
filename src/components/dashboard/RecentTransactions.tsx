@@ -21,7 +21,7 @@ const RecentTransactions: React.FC = () => {
 
   const transactions = transactionData?.data?.data || [];
   const locations = [
-    { id: "", name: "ALL LOCATIONS" },
+    { id: "", name: "SEMUA LOKASI" },
     ...(locationData?.data?.map(loc => ({ id: String(loc.id), name: loc.name })) || [])
   ];
   const viewAllPath = selectedLocation.id
@@ -60,10 +60,10 @@ const RecentTransactions: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Transactions
+            Transaksi Terbaru
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Monitoring the latest activity across all channels
+            Memantau aktivitas terbaru di semua saluran
           </p>
         </div>
         <div className="relative">
@@ -71,7 +71,7 @@ const RecentTransactions: React.FC = () => {
             onClick={() => setIsOpen(!isOpen)}
             className="dropdown-toggle flex items-center gap-2 text-xs font-bold text-gray-800 dark:text-white/90 hover:text-brand-500 transition-colors uppercase"
           >
-            <span className="text-xs font-medium text-gray-400 uppercase">Filter by</span>
+            <span className="text-xs font-medium text-gray-400 uppercase">Filter berdasarkan</span>
             {selectedLocation.name}
             <ChevronDownIcon className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
           </button>
@@ -102,37 +102,37 @@ const RecentTransactions: React.FC = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-gray-100 dark:border-gray-800">
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Date/Time</th>
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Business</th>
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Invoice ID</th>
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Location</th>
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Items</th>
-              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Total Amount</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Tanggal/Waktu</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Bisnis</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">No. Faktur</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Lokasi</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Item</th>
+              <th className="pb-4 text-xs font-bold text-gray-500 uppercase pl-4 whitespace-nowrap">Total Jumlah</th>
               <th className="pb-4 text-xs font-bold text-gray-500 uppercase text-right whitespace-nowrap">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-sm text-gray-500">Loading transactions...</td>
+                <td colSpan={7} className="py-8 text-center text-sm text-gray-500">Memuat transaksi...</td>
               </tr>
             ) : isError ? (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-sm text-red-500">
                   <div className="flex flex-col items-center gap-3">
-                    <span>Failed to load transactions</span>
+                    <span>Gagal memuat transaksi</span>
                     <button
                       onClick={() => refetch()}
                       className="text-xs font-semibold text-brand-600 hover:text-brand-700 uppercase tracking-wide dark:text-brand-400"
                     >
-                      Retry
+                      Coba Lagi
                     </button>
                   </div>
                 </td>
               </tr>
             ) : transactions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-sm text-gray-500">No recent transactions found</td>
+                <td colSpan={7} className="py-8 text-center text-sm text-gray-500">Tidak ada transaksi terbaru ditemukan</td>
               </tr>
             ) : (
               transactions.map((txn) => (
@@ -143,7 +143,7 @@ const RecentTransactions: React.FC = () => {
                   <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 pl-4 whitespace-nowrap">{txn.business_name}</td>
                   <td className="py-4 text-xs font-bold text-brand-600 dark:text-brand-400 pl-4 whitespace-nowrap">{txn.invoice}</td>
                   <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 pl-4 whitespace-nowrap">{txn.location_name}</td>
-                  <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 pl-4 whitespace-nowrap">{txn.items_count} units</td>
+                  <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 pl-4 whitespace-nowrap">{txn.items_count} unit</td>
                   <td className="py-4 text-xs font-bold text-gray-800 dark:text-white/90 pl-4 whitespace-nowrap">{formatCurrency(txn.total_amount)}</td>
                   <td className="py-4 text-right whitespace-nowrap">
                     <Badge color={getStatusColor(txn.order_status)} variant="solid" size="sm">
@@ -162,7 +162,7 @@ const RecentTransactions: React.FC = () => {
           to={viewAllPath}
           className="text-xs font-bold text-brand-600 hover:text-brand-700 uppercase tracking-wider dark:text-brand-400"
         >
-          View All Transactions
+          Lihat Semua Transaksi
         </Link>
       </div>
     </div>

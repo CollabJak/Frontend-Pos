@@ -63,24 +63,24 @@ export default function EditBrand() {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Brand" description="Edit existing brand of products page" />
-      <PageBreadcrumb pageTitle="Edit Brand" />
-      <ComponentCard title="Edit Brand Form">
+      <PageMeta title="Edit Merek" description="Halaman edit merek produk" />
+      <PageBreadcrumb pageTitle="Edit Merek" />
+      <ComponentCard title="Form Edit Merek">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="brand-name">Brand Name</Label>
+              <Label htmlFor="brand-name">Nama Merek</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="brand-name"
-                placeholder="Input brand name"
+                placeholder="Masukkan nama merek"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -88,12 +88,12 @@ export default function EditBrand() {
             </div>
 
             <div>
-              <Label htmlFor="brand-code">Brand code</Label>
+              <Label htmlFor="brand-code">Kode Merek</Label>
               <Input
                 {...register("code")}
                 type="text"
                 id="brand-code"
-                placeholder="Input brand code"
+                placeholder="Masukkan kode merek"
               />
               {errors.code && (
                 <p className="text-red-500">{errors.code.message}</p>
@@ -101,14 +101,14 @@ export default function EditBrand() {
             </div>
 
             <div>
-              <Label htmlFor="brand-description">Brand Description</Label>
+              <Label htmlFor="brand-description">Deskripsi Merek</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -117,7 +117,7 @@ export default function EditBrand() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating Brand..." : "Update Brand"}
+                {isPending ? "Memperbarui Merek..." : "Perbarui Merek"}
               </Button>
             </div>
           </div>

@@ -72,24 +72,24 @@ export default function EditUnit() {
   }, [unitData, setValue]);
 
   if (isUnitLoading) {
-    return <p>Loading...</p>;
+    return <p>Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Unit" description="Edit new unit of products page" />
-      <PageBreadcrumb pageTitle="Edit Unit" />
-      <ComponentCard title="Edit Unit Form">
+      <PageMeta title="Edit Satuan" description="Halaman edit satuan produk" />
+      <PageBreadcrumb pageTitle="Edit Satuan" />
+      <ComponentCard title="Form Edit Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="unit-name">Unit Name</Label>
+              <Label htmlFor="unit-name">Nama Satuan</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="unit-name"
-                placeholder="Input unit name"
+                placeholder="Masukkan nama satuan"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -97,12 +97,12 @@ export default function EditUnit() {
             </div>
 
             <div>
-              <Label htmlFor="unit-symbol">Unit Symbol</Label>
+              <Label htmlFor="unit-symbol">Simbol Satuan</Label>
               <Input
                 {...register("symbol")}
                 type="text"
                 id="unit-symbol"
-                placeholder="Input unit symbol"
+                placeholder="Masukkan simbol satuan"
               />
               {errors.symbol && (
                 <p className="text-red-500">{errors.symbol.message}</p>
@@ -110,14 +110,14 @@ export default function EditUnit() {
             </div>
 
             <div>
-              <Label htmlFor="unit-description">Description</Label>
+              <Label htmlFor="unit-description">Deskripsi</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -126,7 +126,7 @@ export default function EditUnit() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Edit Unit..." : "Edit Unit"}
+                {isPending ? "Memperbarui Satuan..." : "Perbarui Satuan"}
               </Button>
             </div>
           </div>

@@ -12,7 +12,7 @@ const TransactionStatusDetails: React.FC = () => {
 
   const statusItems = [
     {
-      label: "Paid",
+      label: "Terbayar",
       value: summaryData?.transactions_paid ?? 0,
       percent: calculatePercent(summaryData?.transactions_paid ?? 0),
       color: "bg-success-500",
@@ -20,7 +20,7 @@ const TransactionStatusDetails: React.FC = () => {
       bgColor: "bg-success-50 dark:bg-success-500/5",
     },
     {
-      label: "Pending",
+      label: "Menunggu",
       value: summaryData?.transactions_pending ?? 0,
       percent: calculatePercent(summaryData?.transactions_pending ?? 0),
       color: "bg-warning-500",
@@ -28,7 +28,7 @@ const TransactionStatusDetails: React.FC = () => {
       bgColor: "bg-warning-50 dark:bg-warning-500/5",
     },
     {
-      label: "Failed",
+      label: "Gagal",
       value: summaryData?.transactions_failed ?? 0,
       percent: calculatePercent(summaryData?.transactions_failed ?? 0),
       color: "bg-error-500",

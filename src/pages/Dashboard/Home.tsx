@@ -12,8 +12,8 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="Dashboard | The Architectural Intelligence"
-        description="Comprehensive overview of POS performance and health"
+        title="Dashboard | Chronalix"
+        description="Gambaran menyeluruh kinerja dan kesehatan sistem POS"
       />
 
       <div className="space-y-6">
@@ -21,7 +21,7 @@ export default function Home() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-              The Architectural Intelligence
+              Ringkasan Kinerja Bisnis
             </h1>
           </div>
           <MetricCards />

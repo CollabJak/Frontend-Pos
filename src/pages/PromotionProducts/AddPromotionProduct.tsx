@@ -67,14 +67,14 @@ export default function AddPromotionProduct() {
 
   return (
     <>
-      <PageMeta title="Add Promotion Product" description="Add promotion product page" />
-      <PageBreadcrumb pageTitle="Add Promotion Product" />
-      <ComponentCard title="Add Promotion Product Form">
+      <PageMeta title="Tambah Produk Promosi" description="Halaman tambah produk ke dalam promosi" />
+      <PageBreadcrumb pageTitle="Tambah Produk Promosi" />
+      <ComponentCard title="Form Tambah Produk Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promotion</Label>
+            <Label>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("promotion_id") || null}
@@ -83,7 +83,7 @@ export default function AddPromotionProduct() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search promotion..."
+              placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
               optionLabel="name"
               optionValue="id"
@@ -94,7 +94,7 @@ export default function AddPromotionProduct() {
           </div>
 
           <div>
-            <Label>Product Variant</Label>
+            <Label>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("product_variant_id") || null}
@@ -103,7 +103,7 @@ export default function AddPromotionProduct() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product variant..."
+              placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
               optionLabel="name"
               optionValue="id"
@@ -117,7 +117,7 @@ export default function AddPromotionProduct() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding promotion product..." : "Add Promotion Product"}
+              {isPending ? "Menambahkan produk promosi..." : "Tambah Produk Promosi"}
             </Button>
           </div>
         </form>

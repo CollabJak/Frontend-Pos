@@ -56,24 +56,24 @@ export default function SupplierList() {
   return (
     <>
       <PageMeta
-        title="Suppliers Products"
-        description="Supplier list of products page"
+        title="Pemasok Produk"
+        description="Halaman daftar pemasok produk"
       />
-      <PageBreadcrumb pageTitle="Suppliers Product" />
+      <PageBreadcrumb pageTitle="Pemasok Produk" />
       <div className="space-y-6">
-        <ComponentCard title="Suppliers Product List" linkLabel="Add Supplier" linkTo="/suppliers/create">
+        <ComponentCard title="Daftar Pemasok Produk" linkLabel="Tambah Pemasok" linkTo="/suppliers/create">
           <div>
             <Input
               id="supplier-search"
               type="text"
-              placeholder="Search supplier by name, contact, phone, email, or address..."
+              placeholder="Cari pemasok berdasarkan nama, kontak, telepon, email, atau alamat..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -83,19 +83,19 @@ export default function SupplierList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Contact Person
+                        Penanggung Jawab (CP)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Phone
+                        Telepon
                       </TableCell>
                       <TableCell
                         isHeader
@@ -107,13 +107,13 @@ export default function SupplierList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Address
+                        Alamat
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -152,7 +152,7 @@ export default function SupplierList() {
                               variant="danger"
                               onClick={handleDeleteClick(supplier.id, supplier.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -175,14 +175,14 @@ export default function SupplierList() {
       </div>
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete supplier?"
+        title="Hapus pemasok?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

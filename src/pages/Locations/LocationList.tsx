@@ -54,18 +54,18 @@ export default function LocationList() {
 
   return (
     <>
-      <PageMeta title="Locations" description="Location list page" />
-      <PageBreadcrumb pageTitle="Locations" />
+      <PageMeta title="Lokasi" description="Halaman daftar lokasi bisnis" />
+      <PageBreadcrumb pageTitle="Lokasi" />
 
       <div className="space-y-6">
         <ComponentCard
-          title="Location List"
-          linkLabel="Add Location"
+          title="Daftar Lokasi"
+          linkLabel="Tambah Lokasi"
           linkTo="/locations/create"
         >
           <div>
             <Input
-              placeholder="Search locations by name, or type..."
+              placeholder="Cari lokasi berdasarkan nama atau tipe..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-sm"
@@ -73,7 +73,7 @@ export default function LocationList() {
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -83,25 +83,25 @@ export default function LocationList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Name
+                        Nama Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Type
+                        Tipe Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Parent
+                        Lokasi Induk (Parent)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -134,7 +134,7 @@ export default function LocationList() {
                               variant="danger"
                               onClick={handleDeleteClick(location.id, location.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -158,14 +158,14 @@ export default function LocationList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete location?"
+        title="Hapus lokasi?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

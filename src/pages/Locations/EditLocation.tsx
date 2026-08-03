@@ -126,30 +126,30 @@ export default function EditLocation() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Location" description="Edit location page" />
-      <PageBreadcrumb pageTitle="Edit Location" />
-      <ComponentCard title="Edit Location Form">
+      <PageMeta title="Edit Lokasi" description="Halaman edit lokasi bisnis" />
+      <PageBreadcrumb pageTitle="Edit Lokasi" />
+      <ComponentCard title="Form Edit Lokasi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label htmlFor="location-name">Location Name</Label>
+            <Label htmlFor="location-name">Nama Lokasi</Label>
             <Input
               {...register("name")}
               type="text"
               id="location-name"
-              placeholder="Input location name"
+              placeholder="Masukkan nama lokasi"
             />
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="location-type">Location Type</Label>
+            <Label htmlFor="location-type">Tipe Lokasi</Label>
             <select
               id="location-type"
               {...register("type")}
@@ -169,7 +169,7 @@ export default function EditLocation() {
           </div>
 
           <div>
-            <Label>Parent Location (Optional)</Label>
+            <Label>Lokasi Induk / Parent (Opsional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="location-parent-options"
@@ -182,7 +182,7 @@ export default function EditLocation() {
                 );
               }}
               displayValue={location?.parent?.name}
-              placeholder="Search parent location..."
+              placeholder="Cari lokasi induk..."
               fetchOptions={fetchLocationOptions}
               optionLabel="name"
               optionValue="id"
@@ -196,7 +196,7 @@ export default function EditLocation() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating location..." : "Update Location"}
+              {isPending ? "Memperbarui lokasi..." : "Perbarui Lokasi"}
             </Button>
           </div>
         </form>

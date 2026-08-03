@@ -20,8 +20,8 @@ export default function VariantSelect({
   onChange,
   disabled = false,
   locationId = null,
-  label = "Product Variant",
-  placeholder = "Search product variant...",
+  label = "Varian Produk",
+  placeholder = "Cari varian produk...",
 }: VariantSelectProps) {
   const fetchVariantOptions = async (params: {
     limit: number;

@@ -76,14 +76,14 @@ export default function AddCustomerGroupPrice() {
 
   return (
     <>
-      <PageMeta title="Add Customer Group Price" description="Add customer group price page" />
-      <PageBreadcrumb pageTitle="Add Customer Group Price" />
-      <ComponentCard title="Add Customer Group Price Form">
+      <PageMeta title="Tambah Harga Grup Pelanggan" description="Halaman tambah harga grup pelanggan" />
+      <PageBreadcrumb pageTitle="Tambah Harga Grup Pelanggan" />
+      <ComponentCard title="Form Tambah Harga Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Product Variant</Label>
+            <Label>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-product-variant-options"
@@ -93,7 +93,7 @@ export default function AddCustomerGroupPrice() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product variant..."
+              placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
               optionLabel="name"
               optionValue="id"
@@ -106,7 +106,7 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label>Customer Group</Label>
+            <Label>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-customer-group-options"
@@ -116,7 +116,7 @@ export default function AddCustomerGroupPrice() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search customer group..."
+              placeholder="Cari grup pelanggan..."
               fetchOptions={fetchCustomerGroupOptions}
               optionLabel="name"
               optionValue="id"
@@ -129,20 +129,20 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price">Price</Label>
+            <Label htmlFor="price">Harga</Label>
             <Input
               id="price"
               type="number"
               min={0}
               step="0.01"
-              placeholder="Input price"
+              placeholder="Masukkan harga"
               {...register("price", { valueAsNumber: true })}
             />
             {errors.price && <p className="text-red-500">{errors.price.message}</p>}
           </div>
 
           <div>
-            <Label>Location</Label>
+            <Label>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-location-options"
@@ -152,7 +152,7 @@ export default function AddCustomerGroupPrice() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search location..."
+              placeholder="Cari lokasi..."
               fetchOptions={fetchLocationOptions}
               optionLabel="name"
               optionValue="id"
@@ -167,8 +167,8 @@ export default function AddCustomerGroupPrice() {
           <div>
             <DateTimePicker
               id="start-date"
-              label="Start Date"
-              placeholder="Select start date and time"
+              label="Tanggal Mulai"
+              placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {
                 setValue("start_date", selectedValue, {
@@ -185,8 +185,8 @@ export default function AddCustomerGroupPrice() {
           <div>
             <DateTimePicker
               id="end-date"
-              label="End Date (Optional)"
-              placeholder="Select end date and time"
+              label="Tanggal Selesai (Opsional)"
+              placeholder="Pilih tanggal dan waktu selesai"
               value={watch("end_date") ?? ""}
               allowClear
               onChange={(selectedValue) => {
@@ -202,7 +202,7 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label htmlFor="is-active">Active Status</Label>
+            <Label htmlFor="is-active">Status Aktif</Label>
             <Checkbox
               id="is-active"
               checked={Boolean(watch("is_active"))}
@@ -212,14 +212,14 @@ export default function AddCustomerGroupPrice() {
                   shouldDirty: true,
                 })
               }
-              label="Set as active"
+              label="Atur sebagai aktif"
             />
             {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
           </div>
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding customer group price..." : "Add Customer Group Price"}
+              {isPending ? "Menambahkan harga grup pelanggan..." : "Tambah Harga Grup Pelanggan"}
             </Button>
           </div>
         </form>

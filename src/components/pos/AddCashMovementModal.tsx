@@ -48,7 +48,7 @@ export default function AddCashMovementModal({
       { payload: data, locationId },
       {
         onSuccess: () => {
-          toast.success("Cash adjustment recorded successfully.");
+          toast.success("Penyesuaian kas berhasil dicatat.");
           reset();
           onClose();
         },
@@ -72,9 +72,9 @@ export default function AddCashMovementModal({
           } else {
             setError("root", {
               type: "server",
-              message: "An unexpected error occurred. Please try again.",
+              message: "Terjadi kesalahan. Silakan coba lagi.",
             });
-            toast.error("Adjustment failed.");
+            toast.error("Penyesuaian kas gagal.");
           }
         },
       }
@@ -90,10 +90,10 @@ export default function AddCashMovementModal({
     <Modal isOpen={isOpen} onClose={handleClose} className="m-4 max-w-[460px]">
       <div className="p-5">
         <h3 className="text-lg font-black text-gray-800 dark:text-white">
-          Adjust Cash Drawer
+          Penyesuaian Uang Kas Laci
         </h3>
         <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-          Record cash deposits or withdrawals from the register.
+          Catat penyetoran atau penarikan uang tunai pada laci kasir.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
@@ -105,14 +105,14 @@ export default function AddCashMovementModal({
 
           {/* Adjustment Type */}
           <div>
-            <Label htmlFor="type">Adjustment Type</Label>
+            <Label htmlFor="type">Tipe Penyesuaian</Label>
             <select
               {...register("type")}
               id="type"
               className="mt-1 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             >
-              <option value="in">Cash In / Drawer Deposit (+)</option>
-              <option value="out">Cash Out / Drawer Withdrawal (-)</option>
+              <option value="in">Kas Masuk / Setor Laci (+)</option>
+              <option value="out">Kas Keluar / Tarik Laci (-)</option>
             </select>
             {errors.type && (
               <p className="mt-1 text-xs text-red-500">{errors.type.message}</p>
@@ -121,7 +121,7 @@ export default function AddCashMovementModal({
 
           {/* Amount */}
           <div>
-            <Label htmlFor="amount">Adjustment Amount</Label>
+            <Label htmlFor="amount">Jumlah Penyesuaian</Label>
             <div className="relative mt-1 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="text-gray-500 sm:text-sm">Rp</span>
@@ -141,13 +141,13 @@ export default function AddCashMovementModal({
 
           {/* Description */}
           <div>
-            <Label htmlFor="description">Reason for Adjustment</Label>
+            <Label htmlFor="description">Alasan / Keterangan Penyesuaian</Label>
             <textarea
               {...register("description")}
               id="description"
               rows={2}
               className="mt-1 block w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              placeholder="e.g. Deposit base cash, petty cash withdrawal for supplies, etc."
+              placeholder="contoh: Tambah modal awal, penarikan kas kecil untuk operasional, dll."
             />
             {errors.description && (
               <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
@@ -162,10 +162,10 @@ export default function AddCashMovementModal({
               onClick={handleClose}
               disabled={isPending}
             >
-              Cancel
+              Batal
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Recording..." : "Record Adjustment"}
+              {isPending ? "Mencatat..." : "Simpan Penyesuaian"}
             </Button>
           </div>
         </form>

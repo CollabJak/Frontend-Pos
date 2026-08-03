@@ -187,7 +187,7 @@ export default function POSPaymentPage() {
     if (formValues.payment.amount_paid < totalDue) {
       setError("payment.amount_paid", {
         type: "manual",
-        message: "Received amount must be at least the total due.",
+        message: "Jumlah uang yang diterima harus minimal sama dengan total tagihan.",
       });
       return;
     }
@@ -195,7 +195,7 @@ export default function POSPaymentPage() {
     if (!selectedLocation) {
       setError("location_id", {
         type: "manual",
-        message: "Please select a location first.",
+        message: "Silakan pilih lokasi terlebih dahulu.",
       });
       return;
     }
@@ -241,7 +241,7 @@ export default function POSPaymentPage() {
 
         console.error("Checkout failed permanently after attempts:", attempts, error);
         
-        const message = resolveErrorMessage(error, "Checkout failed. Please try again.");
+        const message = resolveErrorMessage(error, "Pembayaran gagal. Silakan coba lagi.");
         setError("root", {
           type: "server",
           message,
@@ -278,8 +278,8 @@ export default function POSPaymentPage() {
   if (cartItems.length === 0 && !successData) {
     return (
       <div className="flex h-[80vh] flex-col items-center justify-center gap-4">
-        <h2 className="text-xl font-semibold text-slate-600">Your cart is empty</h2>
-        <Button onClick={() => navigate("/pos")}>Back to POS</Button>
+        <h2 className="text-xl font-semibold text-slate-600">Keranjang belanja Anda kosong</h2>
+        <Button onClick={() => navigate("/pos")}>Kembali ke Kasir</Button>
       </div>
     );
   }
@@ -292,13 +292,13 @@ export default function POSPaymentPage() {
             {/* Left Column: Order Details */}
             <div className="flex h-full flex-col space-y-4 lg:col-span-3 min-h-0">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-brand-500 shrink-0">
-                Order Details
+                Rincian Pesanan
               </h2>
               <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-slate-50/50 p-6 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
                 {/* Card Header (Fixed) */}
                 <div className="mb-6 flex items-center justify-between shrink-0">
                   <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    #{successData?.order_id ? `${successData.order_id}` : 'Order'}
+                    #{successData?.order_id ? `${successData.order_id}` : 'Pesanan'}
                   </h3>
                   <button
                     onClick={() => navigate("/pos")}
@@ -352,16 +352,16 @@ export default function POSPaymentPage() {
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                      <span>Discount</span>
+                      <span>Diskon</span>
                       <span className="whitespace-nowrap">- {formatCurrency(discount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-[11px] font-medium">
-                    <span className="text-slate-400">Tax</span>
+                    <span className="text-slate-400">Pajak</span>
                     <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatCurrency(tax)}</span>
                   </div>
                   <div className="flex justify-between pt-1">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Total Due</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Total Tagihan</span>
                     <span className="text-base font-black text-slate-900 dark:text-white whitespace-nowrap">{formatCurrency(totalDue)}</span>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export default function POSPaymentPage() {
             {/* Middle Column: Keypad / Non-Cash Details */}
             <div className="flex h-full flex-col space-y-4 lg:col-span-5 min-h-0">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-brand-500 shrink-0">
-                {isCash ? "Amount Received" : "Payment Details"}
+                {isCash ? "Jumlah Uang Diterima" : "Detail Pembayaran"}
               </h2>
               <div className="flex flex-1 flex-col gap-4 overflow-hidden">
                 {isCash ? (
@@ -399,19 +399,19 @@ export default function POSPaymentPage() {
 
                     {/* Quick Cash */}
                     <div className="space-y-2 shrink-0">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quick Cash</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pilihan Cepat Uang Tunai</span>
                       <div className="grid grid-cols-4 gap-2">
                         <button onClick={() => handleQuickCash(20000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                          20k
+                          20rb
                         </button>
                         <button onClick={() => handleQuickCash(50000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                          50k
+                          50rb
                         </button>
                         <button onClick={() => handleQuickCash(100000)} className="rounded-xl bg-white py-2.5 text-[11px] font-bold text-slate-900 shadow-sm border border-slate-100 transition-all hover:bg-slate-50 active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-                          100k
+                          100rb
                         </button>
                         <button onClick={handleExact} className="rounded-xl bg-brand-500 py-2.5 text-[11px] font-bold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-600 active:scale-95">
-                          Exact
+                          Uang Pas
                         </button>
                       </div>
                     </div>
@@ -421,7 +421,7 @@ export default function POSPaymentPage() {
                     {/* Readonly Display */}
                     <div className="text-center py-4 border-b border-slate-200/60 dark:border-slate-700/60">
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">
-                        Amount to Pay
+                        Jumlah yang Harus Dibayar
                       </span>
                       <span className="text-3xl font-black text-slate-900 dark:text-white">
                         {formatCurrency(totalDue)}
@@ -431,7 +431,7 @@ export default function POSPaymentPage() {
                     {selectedMethodModel && selectedMethodModel.type === "qris" ? (
                       <div className="flex flex-col items-center text-center space-y-4">
                         <span className="text-xs font-black uppercase tracking-wider text-brand-500">
-                          Scan QRIS Code
+                          Scan Kode QRIS
                         </span>
                         
                         <div 
@@ -468,26 +468,26 @@ export default function POSPaymentPage() {
                               <svg className="w-16 h-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h.01M18 8h.01M6 12h.01M18 12h.01M6 16h.01M12 16h.01M18 16h.01M6 8h.01M12 8h.01M12 12h.01M4 4h4v4H4V4zm0 12h4v4H4v-4zm12-12h4v4h-4V4z" />
                               </svg>
-                              <span className="text-[10px] font-bold uppercase tracking-wider">No QR Image Available</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">Tidak Ada Gambar QR</span>
                             </div>
                           )}
                         </div>
                         
                         <p className="text-[11px] text-slate-500 max-w-xs leading-relaxed font-semibold">
-                          Show the QR code above to scan and pay. Click to zoom in.
+                          Tunjukkan kode QR di atas untuk dipindai dan dibayar. Klik untuk memperbesar.
                         </p>
                       </div>
                     ) : 
                     selectedMethodModel && selectedMethodModel.type !== "cash" ? (
                       <div className="flex flex-col space-y-4">
                         <span className="text-xs font-black uppercase tracking-wider text-brand-500 text-center block">
-                          {selectedMethodModel.name} Details
+                          Detail {selectedMethodModel.name}
                         </span>
                         
                         <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
                           {selectedMethodModel.provider_name && (
                             <div className="flex justify-between items-center text-xs">
-                              <span className="text-slate-400 font-medium">Provider / Bank</span>
+                              <span className="text-slate-400 font-medium">Penyedia / Bank</span>
                               <span className="font-bold text-slate-800 dark:text-white uppercase">
                                 {selectedMethodModel.provider_name}
                               </span>
@@ -495,7 +495,7 @@ export default function POSPaymentPage() {
                           )}
                           {selectedMethodModel.account_number && (
                             <div className="flex justify-between items-center text-xs">
-                              <span className="text-slate-400 font-medium">Account / Ref Number</span>
+                              <span className="text-slate-400 font-medium">Nomor Rekening / Referensi</span>
                               <span className="font-black text-slate-800 dark:text-white tracking-widest font-mono">
                                 {selectedMethodModel.account_number}
                               </span>
@@ -503,7 +503,7 @@ export default function POSPaymentPage() {
                           )}
                           {selectedMethodModel.account_name && (
                             <div className="flex justify-between items-center text-xs">
-                              <span className="text-slate-400 font-medium">Account / Holder Name</span>
+                              <span className="text-slate-400 font-medium">Nama Pemilik Rekening</span>
                               <span className="font-bold text-slate-800 dark:text-white">
                                 {selectedMethodModel.account_name}
                               </span>
@@ -511,7 +511,7 @@ export default function POSPaymentPage() {
                           )}
                           {selectedMethodModel.description && (
                             <div className="border-t border-slate-100 dark:border-slate-800 pt-3 text-xs">
-                              <span className="text-slate-400 font-medium block mb-1">Description</span>
+                              <span className="text-slate-400 font-medium block mb-1">Deskripsi</span>
                               <p className="text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
                                 {selectedMethodModel.description}
                               </p>
@@ -522,7 +522,7 @@ export default function POSPaymentPage() {
                         {selectedMethodModel.payment_instructions && (
                           <div className="rounded-xl bg-brand-50/30 dark:bg-brand-500/5 p-4 border border-brand-100/30 dark:border-brand-500/10">
                             <span className="text-[10px] font-black uppercase tracking-widest text-brand-500 block mb-1">
-                              Instructions
+                              Instruksi Pembayaran
                             </span>
                             <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                               {selectedMethodModel.payment_instructions}
@@ -531,7 +531,7 @@ export default function POSPaymentPage() {
                         )}
                         
                         <p className="text-[11px] text-slate-500 text-center leading-relaxed font-semibold">
-                          Verify the transaction before completing this order.
+                          Pastikan transaksi telah berhasil sebelum menyelesaikan pesanan ini.
                         </p>
                       </div>
                     ) : null}
@@ -543,12 +543,12 @@ export default function POSPaymentPage() {
             {/* Right Column: Payment Method & Breakdown */}
             <div className="flex h-full flex-col space-y-4 lg:col-span-4 min-h-0">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-brand-500 shrink-0">
-                Payment Method
+                Metode Pembayaran
               </h2>
               <div className="flex flex-1 flex-col gap-2 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
                 {isLoadingMethods ? (
                   <div className="flex justify-center py-8">
-                    <span className="text-xs font-semibold text-slate-400">Loading payment methods...</span>
+                    <span className="text-xs font-semibold text-slate-400">Memuat metode pembayaran...</span>
                   </div>
                 ) : paymentMethods && paymentMethods.length > 0 ? (
                   paymentMethods
@@ -579,7 +579,7 @@ export default function POSPaymentPage() {
                 ) : (
                   <div className="flex justify-center py-8">
                     <span className="text-xs font-semibold text-slate-400 text-center">
-                      No active payment methods found.
+                      Tidak ada metode pembayaran aktif.
                     </span>
                   </div>
                 )}
@@ -588,11 +588,11 @@ export default function POSPaymentPage() {
               <div className="mt-4 rounded-3xl bg-white p-6 shadow-xl dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 shrink-0">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[11px] font-bold">
-                    <span className="text-slate-400 uppercase tracking-widest">Total Due</span>
+                    <span className="text-slate-400 uppercase tracking-widest">Total Tagihan</span>
                     <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">{formatCurrency(totalDue)}</span>
                   </div>
                   <div className="flex justify-between items-center rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800 relative">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">{isCash ? "Received" : "Paid"}</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">{isCash ? "Diterima" : "Dibayar"}</span>
                     <span className="text-base font-black text-brand-500 whitespace-nowrap">{formatCurrency(amountPaid)}</span>
                     {errors.payment?.amount_paid && (
                       <p className="absolute -bottom-4 right-0 text-[10px] font-bold text-red-500">
@@ -601,7 +601,7 @@ export default function POSPaymentPage() {
                     )}
                   </div>
                   <div className="flex justify-between items-end pt-1 border-t border-slate-100 dark:border-slate-700">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Change</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Kembalian</span>
                     <span className="text-2xl font-black text-success-500 whitespace-nowrap leading-none tabular-nums">
                       {formatCurrency(change)}
                     </span>
@@ -620,7 +620,7 @@ export default function POSPaymentPage() {
                     disabled={isProcessing}
                   >
                     <div className="flex items-center gap-2">
-                      <span>{isProcessing ? "PROCESSING..." : "COMPLETE ORDER"}</span>
+                      <span>{isProcessing ? "MEMPROSES..." : "SELESAIKAN PESANAN"}</span>
                       {!isProcessing && (
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />

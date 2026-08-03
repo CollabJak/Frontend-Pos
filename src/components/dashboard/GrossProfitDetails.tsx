@@ -21,7 +21,7 @@ const GrossProfitDetails: React.FC = () => {
 
   const statusItems = [
     {
-      label: "Gross Revenue",
+      label: "Pendapatan Kotor",
       value: profitData?.gross_revenue ?? 0,
       percent: "100%", // Base
       color: "bg-blue-500",
@@ -29,7 +29,7 @@ const GrossProfitDetails: React.FC = () => {
       bgColor: "bg-blue-50 dark:bg-blue-500/5",
     },
     {
-      label: "Gross Cost",
+      label: "Beban Kotor (HPP)",
       value: profitData?.gross_cost ?? 0,
       percent: calculatePercent(profitData?.gross_cost ?? 0),
       color: "bg-orange-500",
@@ -37,7 +37,7 @@ const GrossProfitDetails: React.FC = () => {
       bgColor: "bg-orange-50 dark:bg-orange-500/5",
     },
     {
-      label: "Gross Profit",
+      label: "Laba Kotor",
       value: profitData?.gross_profit ?? 0,
       percent: calculatePercent(profitData?.gross_profit ?? 0),
       color: "bg-gray-300",

@@ -17,16 +17,16 @@ const TopProducts: React.FC = () => {
   const colors = ["bg-brand-500", "bg-orange-500", "bg-blue-500", "bg-green-500", "bg-gray-400"];
 
   const basisOptions = [
-    { value: "revenue", label: "REVENUE" },
-    { value: "qty", label: "QUANTITY" },
-    { value: "profit", label: "PROFIT" },
+    { value: "revenue", label: "PENDAPATAN" },
+    { value: "qty", label: "KUANTITAS" },
+    { value: "profit", label: "LABA" },
   ];
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Top 5 Products
+          5 Produk Teratas
         </h3>
         <div className="relative">
           <button
@@ -58,16 +58,16 @@ const TopProducts: React.FC = () => {
       </div>
       
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-        Primary performance drivers by {basis}
+        Pendorong kinerja utama berdasarkan {basis === "revenue" ? "pendapatan" : basis === "qty" ? "kuantitas" : "laba"}
       </p>
 
       <div className="space-y-7">
         {isLoading ? (
-          <div className="flex justify-center text-sm text-gray-500 py-10">Loading...</div>
+          <div className="flex justify-center text-sm text-gray-500 py-10">Memuat...</div>
         ) : isError ? (
-          <div className="flex justify-center text-sm text-red-500 py-10">Error loading data</div>
+          <div className="flex justify-center text-sm text-red-500 py-10">Gagal memuat data</div>
         ) : products.length === 0 ? (
-          <div className="flex justify-center text-sm text-gray-500 py-10">No data found</div>
+          <div className="flex justify-center text-sm text-gray-500 py-10">Tidak ada data ditemukan</div>
         ) : (
           products.map((product, index) => (
             <div key={product.product_variant_id}>

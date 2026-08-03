@@ -58,45 +58,45 @@ export default function CustomerGroupList() {
 
   return (
     <>
-      <PageMeta title="Customer Groups" description="Customer groups list page" />
-      <PageBreadcrumb pageTitle="Customer Groups" />
+      <PageMeta title="Grup Pelanggan" description="Halaman daftar grup pelanggan" />
+      <PageBreadcrumb pageTitle="Grup Pelanggan" />
 
       <div className="space-y-6">
-        <ComponentCard title="Customer Groups List" linkLabel="Add Customer Group" linkTo="/customer-groups/create">
+        <ComponentCard title="Daftar Grup Pelanggan" linkLabel="Tambah Grup Pelanggan" linkTo="/customer-groups/create">
           <div>
             <Input
               id="customer-group-search"
               type="text"
-              placeholder="Search customer group by code, name, or description..."
+              placeholder="Cari grup pelanggan berdasarkan kode, nama, atau deskripsi..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Code
+                        Kode
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Name
+                        Nama
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Discount %
+                        Diskon %
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                         Default
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Active
+                        Aktif
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -116,10 +116,10 @@ export default function CustomerGroupList() {
                           {customerGroup.discount_percent}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {customerGroup.is_default ? "Yes" : "No"}
+                          {customerGroup.is_default ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {customerGroup.is_active ? "Yes" : "No"}
+                          {customerGroup.is_active ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ export default function CustomerGroupList() {
                               variant="danger"
                               onClick={handleDeleteClick(customerGroup.id, customerGroup.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -159,14 +159,14 @@ export default function CustomerGroupList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete customer group?"
+        title="Hapus grup pelanggan?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

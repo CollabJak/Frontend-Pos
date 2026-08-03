@@ -71,14 +71,14 @@ export default function AddUser() {
   return (
     <>
       <PageMeta
-        title="Add User"
-        description="Add new user page"
+        title="Tambah Pengguna"
+        description="Halaman tambah pengguna baru"
       />
-      <PageBreadcrumb pageTitle="Add User" />
-      <ComponentCard title="Add User Form">
+      <PageBreadcrumb pageTitle="Tambah Pengguna" />
+      <ComponentCard title="Form Tambah Pengguna">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <Label>Photo</Label>
+            <Label>Foto Profil</Label>
             <FilePond
               files={files as never[]}
               onupdatefiles={(fileItems: unknown[]) => {
@@ -94,7 +94,7 @@ export default function AddUser() {
               }}
               acceptedFileTypes={["image/png", "image/jpeg"]}
               name="files"
-              labelIdle='Drag & Drop or <span class="filepond--label-action">Browse</span>'
+              labelIdle='Klik untuk upload atau <span class="filepond--label-action">drag and drop</span>'
             />
             {errors.photo && (
               <p className="text-red-500 text-sm mt-1">{errors.photo.message}</p>
@@ -103,32 +103,32 @@ export default function AddUser() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input {...register("name")} type="text" id="name" placeholder="Enter full name" />
+              <Label htmlFor="name">Nama Lengkap</Label>
+              <Input {...register("name")} type="text" id="name" placeholder="Masukkan nama lengkap" />
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address</Label>
-              <Input {...register("email")} type="email" id="email" placeholder="Enter email address" />
+              <Label htmlFor="email">Email Perusahaan</Label>
+              <Input {...register("email")} type="email" id="email" placeholder="Masukkan alamat email" />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
-              <Input {...register("password")} type="password" id="password" placeholder="Enter password" />
+              <Label htmlFor="password">Kata Sandi</Label>
+              <Input {...register("password")} type="password" id="password" placeholder="Masukkan kata sandi" />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input {...register("phone")} type="text" id="phone" placeholder="Enter phone number" />
+              <Label htmlFor="phone">No. Telepon</Label>
+              <Input {...register("phone")} type="text" id="phone" placeholder="Masukkan nomor telepon" />
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
               )}
@@ -141,7 +141,7 @@ export default function AddUser() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding User..." : "Add User"}
+              {isPending ? "Menambahkan Pengguna..." : "Tambah Pengguna"}
             </Button>
           </div>
         </form>

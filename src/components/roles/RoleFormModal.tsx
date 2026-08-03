@@ -37,21 +37,21 @@ const RoleFormModal: React.FC<RoleFormModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px] p-6 lg:p-10">
       <div className="flex flex-col">
         <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-          {initialData ? "Edit Role" : "Add New Role"}
+          {initialData ? "Edit Peran" : "Tambah Peran Baru"}
         </h4>
         <p className="mb-7 text-sm text-gray-500 dark:text-gray-400">
           {initialData
-            ? "Update the name of the existing role."
-            : "Enter a unique name for the new role."}
+            ? "Perbarui nama untuk peran yang sudah ada."
+            : "Masukkan nama unik untuk peran baru."}
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
             <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Role Name
+              Nama Peran
             </label>
             <input
               type="text"
-              placeholder="e.g. Sales Manager"
+              placeholder="contoh: Manajer Penjualan"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -61,10 +61,10 @@ const RoleFormModal: React.FC<RoleFormModalProps> = ({
 
           <div className="flex items-center justify-end gap-4">
             <Button variant="outline" onClick={onClose} disabled={loading}>
-              Cancel
+              Batal
             </Button>
             <Button type="submit" disabled={loading || !name.trim()}>
-              {loading ? "Saving..." : initialData ? "Update Role" : "Create Role"}
+              {loading ? "Menyimpan..." : initialData ? "Simpan Perubahan" : "Buat Peran"}
             </Button>
           </div>
         </form>

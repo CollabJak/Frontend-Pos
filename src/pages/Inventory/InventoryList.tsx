@@ -48,11 +48,11 @@ const resolveVariantId = (row: InventoryListItem): number | null => {
 };
 
 const resolveProductName = (row: InventoryListItem): string => {
-  return row.product_variant?.name ?? row.product_name ?? "Unknown product";
+  return row.product_variant?.name ?? row.product_name ?? "Produk tidak diketahui";
 };
 
 const resolveLocationName = (row: InventoryListItem): string => {
-  return row.location?.name ?? row.location_name ?? "Unknown location";
+  return row.location?.name ?? row.location_name ?? "Lokasi tidak diketahui";
 };
 
 const resolveAvailable = (row: InventoryListItem): string => {
@@ -94,32 +94,32 @@ export default function InventoryList() {
 
   return (
     <>
-      <PageMeta title="Inventory List" description="Inventory stock overview page" />
-      <PageBreadcrumb pageTitle="Inventory List" />
+      <PageMeta title="Daftar Stok Inventaris" description="Halaman ringkasan stok inventaris" />
+      <PageBreadcrumb pageTitle="Daftar Stok Inventaris" />
 
       <div className="space-y-6">
-        <ComponentCard title="Inventory Stock Overview">
+        <ComponentCard title="Ringkasan Stok Inventaris">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <Label htmlFor="inventory-product-search">Search Product</Label>
+              <Label htmlFor="inventory-product-search">Cari Produk</Label>
               <Input
                 id="inventory-product-search"
                 type="text"
-                placeholder="Search by product name..."
+                placeholder="Cari berdasarkan nama produk..."
                 value={productSearch}
                 onChange={(event) => setProductSearch(event.target.value)}
               />
             </div>
 
             <div>
-              <Label>Filter Location</Label>
+              <Label>Filter Lokasi</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 value={locationId}
                 onChange={(selectedValue) => {
                   setLocationId(selectedValue != null ? Number(selectedValue) : null);
                 }}
-                placeholder="Search location..."
+                placeholder="Cari lokasi..."
                 fetchOptions={fetchLocationOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -130,14 +130,14 @@ export default function InventoryList() {
 
             <div className="flex items-end">
               <Button variant="outline" onClick={handleResetFilters}>
-                Reset Filters
+                Reset Filter
               </Button>
             </div>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -147,37 +147,37 @@ export default function InventoryList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Product
+                        Produk
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty On Hand
+                        Stok Fisik (Qty On Hand)
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Qty Reserved
+                        Stok Direservasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Available
+                        Stok Tersedia
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Actions
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -210,7 +210,7 @@ export default function InventoryList() {
                                 to={`/inventory/${variantId}`}
                                 className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-blue-500 px-3 py-2.5 text-sm text-blue-500 transition-colors hover:border-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:border-blue-400 dark:hover:text-gray-300 link-focus-info"
                               >
-                                View Detail
+                                Lihat Detail
                               </Link>
                             ) : (
                               "-"

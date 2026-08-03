@@ -107,14 +107,14 @@ export default function EditProduct() {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Product" description="Edit new product page" />
-      <PageBreadcrumb pageTitle="Edit Product" />
-      <ComponentCard title="Edit Product Form">
+      <PageMeta title="Edit Produk" description="Halaman edit produk" />
+      <PageBreadcrumb pageTitle="Edit Produk" />
+      <ComponentCard title="Form Edit Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
@@ -133,7 +133,7 @@ export default function EditProduct() {
             }}
               acceptedFileTypes={["image/png", "image/jpeg"]}
               name="files"
-              labelIdle='Drag & Drop atau <span class="filepond--label-action">Browse</span>'
+              labelIdle='Pilih atau tarik foto produk di sini <span class="filepond--label-action">Browse</span>'
               server={{
               load: (source, load, error, _progress, abort) => {
                 fetch(source as string)
@@ -166,12 +166,12 @@ export default function EditProduct() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-name">Product Name</Label>
+              <Label htmlFor="product-name">Nama Produk</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="product-name"
-                placeholder="Input product name"
+                placeholder="Masukkan nama produk"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -184,7 +184,7 @@ export default function EditProduct() {
                 {...register("barcode")}
                 type="text"
                 id="product-barcode"
-                placeholder="Input product barcode"
+                placeholder="Masukkan barcode produk"
               />
               {errors.barcode && (
                 <p className="text-red-500">{errors.barcode.message}</p>
@@ -192,7 +192,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Category</Label>
+              <Label>Kategori</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-category-options"
@@ -203,7 +203,7 @@ export default function EditProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search category..."
+                placeholder="Cari kategori..."
                 fetchOptions={fetchCategoryOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -216,7 +216,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Brand</Label>
+              <Label>Merek</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-brand-options"
@@ -227,7 +227,7 @@ export default function EditProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search brand..."
+                placeholder="Cari merek..."
                 fetchOptions={fetchBrandOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -240,7 +240,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Unit</Label>
+              <Label>Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-unit-options"
@@ -251,7 +251,7 @@ export default function EditProduct() {
                     shouldValidate: true,
                   });
                 }}
-                placeholder="Search unit..."
+                placeholder="Cari satuan..."
                 fetchOptions={fetchUnitOptions}
                 optionLabel="name"
                 optionValue="id"
@@ -280,14 +280,14 @@ export default function EditProduct() {
                 <p className="text-red-500">{errors.status.message}</p>
               )}
             </div>            <div>
-              <Label htmlFor="product-description">Description</Label>
+              <Label htmlFor="product-description">Deskripsi</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -296,7 +296,7 @@ export default function EditProduct() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Updating Product..." : "Update Product"}
+                {isPending ? "Memperbarui produk..." : "Perbarui Produk"}
               </Button>
             </div>
           </div>

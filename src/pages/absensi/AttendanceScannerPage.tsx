@@ -238,9 +238,9 @@ const AttendanceScannerPage: React.FC = () => {
                   <ArrowRightIcon className="size-8 text-white fill-current rotate-0" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-bold text-white">Check In</h3>
+                  <h3 className="text-xl font-bold text-white">Check In (Masuk)</h3>
                   <p className="text-white/70 text-sm italic font-medium">
-                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_in_time ? `Masuk: ${todayAttendance.check_in_time}` : 'Mulai bekerja sekarang')}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_in_time ? `Jam Masuk: ${todayAttendance.check_in_time}` : 'Klik untuk masuk kerja')}
                   </p>
                 </div>
               </div>
@@ -257,9 +257,9 @@ const AttendanceScannerPage: React.FC = () => {
                   <ArrowRightIcon className="size-8 text-gray-400 dark:text-gray-500 fill-current rotate-180" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Check Out</h3>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Check Out (Keluar)</h3>
                   <p className="text-gray-400 text-sm italic font-medium">
-                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_out_time ? `Keluar: ${todayAttendance.check_out_time}` : 'Selesai waktu kerja')}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_out_time ? `Jam Keluar: ${todayAttendance.check_out_time}` : 'Klik saat selesai kerja')}
                   </p>
                 </div>
               </div>
@@ -288,7 +288,7 @@ const AttendanceScannerPage: React.FC = () => {
           <div className="flex items-center gap-2 justify-center pt-4">
             <InfoIcon className="size-4 text-error-500" />
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Lupa ID Card? Gunakan Face Recognition. <button onClick={() => navigate('/absensi/history')} className="text-brand-600 font-bold hover:underline">Riwayat</button>
+              Absensi cepat dengan Pemindai Wajah. <button onClick={() => navigate('/absensi/history')} className="text-brand-600 font-bold hover:underline">Lihat Riwayat</button>
             </p>
           </div>
         </div>

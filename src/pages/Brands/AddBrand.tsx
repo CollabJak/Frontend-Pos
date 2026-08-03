@@ -52,19 +52,19 @@ export default function AddBrand() {
 
   return (
     <>
-      <PageMeta title="Add Brand" description="Add new brand of products page" />
-      <PageBreadcrumb pageTitle="Add Brand" />
-      <ComponentCard title="Add Brand Form">
+      <PageMeta title="Tambah Merek" description="Halaman tambah merek produk" />
+      <PageBreadcrumb pageTitle="Tambah Merek" />
+      <ComponentCard title="Form Tambah Merek">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="brand-name">Brand Name</Label>
+              <Label htmlFor="brand-name">Nama Merek</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="brand-name"
-                placeholder="Input brand name"
+                placeholder="Masukkan nama merek"
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -72,14 +72,14 @@ export default function AddBrand() {
             </div>
 
             <div>
-              <Label htmlFor="brand-description">Brand Description</Label>
+              <Label htmlFor="brand-description">Deskripsi Merek</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -88,7 +88,7 @@ export default function AddBrand() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding Brand..." : "Add Brand"}
+                {isPending ? "Menambahkan Merek..." : "Tambah Merek"}
               </Button>
             </div>
           </div>

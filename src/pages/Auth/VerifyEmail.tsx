@@ -49,18 +49,18 @@ export default function VerifyEmail() {
 
     try {
       if (!targetEmail && !user) {
-        setResendError("Email address not found. Please enter your email or register again.");
+        setResendError("Alamat email tidak ditemukan. Silakan masukkan email Anda atau mendaftar kembali.");
         return;
       }
       
       const response = await authService.resendVerificationEmail(targetEmail);
-      setResendMessage(response.message || "Verification email sent! Check your inbox.");
+      setResendMessage(response.message || "Email verifikasi berhasil dikirim! Silakan periksa kotak masuk Anda.");
     } catch (error) {
       console.error("Resend error:", error);
       if (error instanceof Error) {
         setResendError(error.message);
       } else {
-        setResendError("Failed to resend email. Please try again.");
+        setResendError("Gagal mengirim ulang email. Silakan coba lagi.");
       }
     } finally {
       setIsResending(false);
@@ -80,28 +80,28 @@ export default function VerifyEmail() {
         </div>
 
         <h1 className="mb-2 text-2xl font-semibold text-center text-gray-800 dark:text-white">
-          Verify Your Email
+          Verifikasi Email Anda
         </h1>
 
         <div className="mb-6 text-center">
           <p className="text-gray-600 dark:text-gray-400">
-            We've sent a verification link to:
+            Kami telah mengirimkan tautan verifikasi ke:
           </p>
           <p className="mt-2 font-semibold text-gray-800 dark:text-white">
-            {activeEmail && activeEmail.trim() !== "" ? activeEmail : "your email address"}
+            {activeEmail && activeEmail.trim() !== "" ? activeEmail : "alamat email Anda"}
           </p>
         </div>
 
         {(!activeEmail || activeEmail.trim() === "") && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Email Address
+              Alamat Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Masukkan email Anda"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
@@ -109,7 +109,7 @@ export default function VerifyEmail() {
 
         <div className="p-4 mb-6 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
           <p className="text-sm text-blue-800 dark:text-blue-200">
-            📧 Check your email inbox and click the verification link to activate your account.
+            📧 Periksa kotak masuk email Anda dan klik tautan verifikasi untuk mengaktifkan akun Anda.
           </p>
         </div>
 
@@ -135,26 +135,26 @@ export default function VerifyEmail() {
             isLoading={isResending}
             className="w-full"
           >
-            Resend Email
+            Kirim Ulang Email
           </Button>
 
           <button
             onClick={handleBackToSignIn}
             className="w-full py-2 text-sm font-medium text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
           >
-            Back to Sign In
+            Kembali ke Halaman Masuk
           </button>
         </div>
 
         <div className="mt-6 text-xs text-center text-gray-500 dark:text-gray-400">
           <p>
-            Don't see the email? Check your spam folder or{" "}
+            Tidak menerima email? Periksa folder spam Anda atau{" "}
             <button
               onClick={handleResendEmail}
               disabled={isResending}
               className="text-blue-600 hover:underline dark:text-blue-400"
             >
-              try again
+              coba lagi
             </button>
             .
           </p>

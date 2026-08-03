@@ -57,39 +57,39 @@ export default function PromotionProductList() {
 
   return (
     <>
-      <PageMeta title="Promotion Products" description="Promotion products list page" />
-      <PageBreadcrumb pageTitle="Promotion Products" />
+      <PageMeta title="Produk Promosi" description="Halaman daftar produk yang termasuk dalam promosi" />
+      <PageBreadcrumb pageTitle="Produk Promosi" />
 
       <div className="space-y-6">
         <ComponentCard
-          title="Promotion Products List"
-          linkLabel="Add Promotion Product"
+          title="Daftar Produk Promosi"
+          linkLabel="Tambah Produk Promosi"
           linkTo="/promotion-products/create"
         >
           <div>
             <Input
               id="promotion-product-search"
-              placeholder="Search promotion products by promotion or product variant..."
+              placeholder="Cari produk promosi berdasarkan promosi atau varian produk..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Promotion
+                        Promosi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Product Variant
+                        Varian Produk
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -119,7 +119,7 @@ export default function PromotionProductList() {
                               variant="danger"
                               onClick={handleDeleteClick(item.id, item.promotion?.name || `#${item.id}`)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -143,14 +143,14 @@ export default function PromotionProductList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete promotion product?"
+        title="Hapus produk promosi?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" relation will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Relasi produk promosi "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

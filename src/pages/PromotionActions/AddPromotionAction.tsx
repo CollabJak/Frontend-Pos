@@ -71,14 +71,14 @@ export default function AddPromotionAction() {
 
   return (
     <>
-      <PageMeta title="Add Promotion Action" description="Add promotion action page" />
-      <PageBreadcrumb pageTitle="Add Promotion Action" />
-      <ComponentCard title="Add Promotion Action Form">
+      <PageMeta title="Tambah Aksi Promosi" description="Halaman tambah aksi promosi" />
+      <PageBreadcrumb pageTitle="Tambah Aksi Promosi" />
+      <ComponentCard title="Form Tambah Aksi Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promotion</Label>
+            <Label>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="promotion-action-promotion-options"
@@ -88,7 +88,7 @@ export default function AddPromotionAction() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search promotion..."
+              placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
               optionLabel="name"
               optionValue="id"
@@ -99,7 +99,7 @@ export default function AddPromotionAction() {
           </div>
 
           <div>
-            <Label htmlFor="action-type">Action Type</Label>
+            <Label htmlFor="action-type">Tipe Aksi</Label>
             <select
               {...register("action_type")}
               id="action-type"
@@ -144,7 +144,7 @@ export default function AddPromotionAction() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Adding promotion action..." : "Add Promotion Action"}
+              {isPending ? "Menambahkan aksi promosi..." : "Tambah Aksi Promosi"}
             </Button>
           </div>
         </form>

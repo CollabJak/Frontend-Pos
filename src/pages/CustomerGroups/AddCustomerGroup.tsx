@@ -62,15 +62,15 @@ export default function AddCustomerGroup() {
 
   return (
     <>
-      <PageMeta title="Add Customer Group" description="Add customer group page" />
-      <PageBreadcrumb pageTitle="Add Customer Group" />
-      <ComponentCard title="Add Customer Group Form">
+      <PageMeta title="Tambah Grup Pelanggan" description="Halaman tambah grup pelanggan" />
+      <PageBreadcrumb pageTitle="Tambah Grup Pelanggan" />
+      <ComponentCard title="Form Tambah Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="customer-group-code">Code</Label>
+              <Label htmlFor="customer-group-code">Kode</Label>
               <select
                 {...register("code")}
                 id="customer-group-code"
@@ -86,23 +86,23 @@ export default function AddCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-name">Name</Label>
+              <Label htmlFor="customer-group-name">Nama</Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="customer-group-name"
-                placeholder="Input customer group name"
+                placeholder="Masukkan nama grup pelanggan"
               />
               {errors.name && <p className="text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="customer-group-discount">Discount Percent</Label>
+              <Label htmlFor="customer-group-discount">Persentase Diskon</Label>
               <Input
                 {...register("discount_percent", { valueAsNumber: true })}
                 type="number"
                 id="customer-group-discount"
-                placeholder="Input discount percent"
+                placeholder="Masukkan persentase diskon"
                 step="0.01"
                 min="0"
                 max="100"
@@ -113,14 +113,14 @@ export default function AddCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-description">Description</Label>
+              <Label htmlFor="customer-group-description">Deskripsi</Label>
               <TextArea
                 value={watch("description") || ""}
                 onChange={(value) =>
                   setValue("description", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Optional description"
+                placeholder="Deskripsi opsional"
               />
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -128,7 +128,7 @@ export default function AddCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-default">Default Group</Label>
+              <Label htmlFor="customer-group-default">Grup Default</Label>
               <Checkbox
                 id="customer-group-default"
                 checked={Boolean(watch("is_default"))}
@@ -138,7 +138,7 @@ export default function AddCustomerGroup() {
                     shouldDirty: true,
                   })
                 }
-                label="Set as default customer group"
+                label="Atur sebagai grup pelanggan default"
               />
               {errors.is_default && (
                 <p className="text-red-500">{errors.is_default.message}</p>
@@ -146,7 +146,7 @@ export default function AddCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-active">Active Status</Label>
+              <Label htmlFor="customer-group-active">Status Aktif</Label>
               <Checkbox
                 id="customer-group-active"
                 checked={Boolean(watch("is_active"))}
@@ -156,7 +156,7 @@ export default function AddCustomerGroup() {
                     shouldDirty: true,
                   })
                 }
-                label="Group is active"
+                label="Grup aktif"
               />
               {errors.is_active && (
                 <p className="text-red-500">{errors.is_active.message}</p>
@@ -165,7 +165,7 @@ export default function AddCustomerGroup() {
 
             <div>
               <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Adding Customer Group..." : "Add Customer Group"}
+                {isPending ? "Menambahkan Grup Pelanggan..." : "Tambah Grup Pelanggan"}
               </Button>
             </div>
           </div>

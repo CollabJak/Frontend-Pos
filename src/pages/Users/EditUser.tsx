@@ -168,20 +168,20 @@ export default function EditUser() {
   };
 
   if (isLoading) {
-    return <div className="p-6">Loading...</div>;
+    return <div className="p-6">Memuat data pengguna...</div>;
   }
 
   return (
     <>
       <PageMeta
-        title="Edit User"
-        description="Edit user page"
+        title="Edit Pengguna"
+        description="Halaman edit pengguna"
       />
-      <PageBreadcrumb pageTitle="Edit User" />
-      <ComponentCard title="Edit User Form">
+      <PageBreadcrumb pageTitle="Edit Pengguna" />
+      <ComponentCard title="Form Edit Pengguna">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <Label>Photo</Label>
+            <Label>Foto Profil</Label>
             <FilePond
               files={files as never[]}
               onupdatefiles={(fileItems: unknown[]) => {
@@ -197,13 +197,13 @@ export default function EditUser() {
               }}
               acceptedFileTypes={["image/png", "image/jpeg"]}
               name="files"
-              labelIdle='Drag & Drop or <span class="filepond--label-action">Browse</span>'
+              labelIdle='Klik untuk upload atau <span class="filepond--label-action">drag and drop</span>'
               server={{
                 load: (source, load, error, _progress, abort) => {
                   fetch(source as string)
                     .then((response) => response.blob())
                     .then((blob) => load(blob))
-                    .catch(() => error("Failed to load image"));
+                    .catch(() => error("Gagal memuat gambar"));
 
                   return {
                     abort: () => abort(),
@@ -218,32 +218,32 @@ export default function EditUser() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input {...register("name")} type="text" id="name" placeholder="Enter full name" />
+              <Label htmlFor="name">Nama Lengkap</Label>
+              <Input {...register("name")} type="text" id="name" placeholder="Masukkan nama lengkap" />
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address</Label>
-              <Input {...register("email")} type="email" id="email" placeholder="Enter email address" />
+              <Label htmlFor="email">Email Perusahaan</Label>
+              <Input {...register("email")} type="email" id="email" placeholder="Masukkan alamat email" />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="password">Password (Leave blank to keep current)</Label>
-              <Input {...register("password")} type="password" id="password" placeholder="Enter new password" />
+              <Label htmlFor="password">Kata Sandi (Kosongkan jika tidak diubah)</Label>
+              <Input {...register("password")} type="password" id="password" placeholder="Masukkan kata sandi baru" />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input {...register("phone")} type="text" id="phone" placeholder="Enter phone number" />
+              <Label htmlFor="phone">No. Telepon</Label>
+              <Input {...register("phone")} type="text" id="phone" placeholder="Masukkan nomor telepon" />
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
               )}
@@ -256,21 +256,21 @@ export default function EditUser() {
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isUpdating}>
-              {isUpdating ? "Updating User..." : "Update User"}
+              {isUpdating ? "Menyimpan Perubahan..." : "Simpan Perubahan"}
             </Button>
           </div>
         </form>
       </ComponentCard>
 
       <div className="mt-6">
-        <ComponentCard title="Assign Locations">
+        <ComponentCard title="Penugasan Lokasi Kerja">
           <div className="space-y-6">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Select the locations where this user is allowed to work. You must select exactly one Primary Location.
+              Pilih lokasi toko di mana pengguna ini diperbolehkan bekerja. Anda harus memilih tepat satu Lokasi Utama.
             </p>
 
             {isLoadingOptions || isLoadingAssigned ? (
-              <div className="text-gray-500 text-sm">Loading locations...</div>
+              <div className="text-gray-500 text-sm">Memuat daftar lokasi...</div>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -317,7 +317,7 @@ export default function EditUser() {
                               htmlFor={`primary-loc-${locOption.id}`}
                               className="text-xs text-gray-500 dark:text-gray-400 cursor-pointer"
                             >
-                              Primary
+                              Utama
                             </label>
                           </div>
                         )}
@@ -328,7 +328,7 @@ export default function EditUser() {
 
                 {locationOptions?.length === 0 && (
                   <div className="text-yellow-600 text-sm italic">
-                    No locations found. Please create locations first.
+                    Belum ada lokasi yang dibuat. Silakan buat lokasi toko terlebih dahulu.
                   </div>
                 )}
 
@@ -345,7 +345,7 @@ export default function EditUser() {
                     disabled={isSyncing || selectedLocationIds.length === 0}
                     onClick={handleLocationSubmit(onSaveLocations)}
                   >
-                    {isSyncing ? "Saving Assignments..." : "Save Assignments"}
+                    {isSyncing ? "Menyimpan Penugasan..." : "Simpan Penugasan Lokasi"}
                   </Button>
                 </div>
               </div>

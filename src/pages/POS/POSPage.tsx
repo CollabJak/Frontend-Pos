@@ -80,7 +80,7 @@ export default function POSPage() {
   useEffect(() => {
     if (selectedLocation !== null && !isActiveShiftLoading && !isActiveShiftFetching) {
       if (!activeShiftResponse?.data) {
-        toast.error("You must open a register shift at this location to start selling.", {
+        toast.error("Anda harus membuka shift kasir terlebih dahulu di lokasi ini untuk memulai penjualan.", {
           id: "pos-active-shift-required",
         });
         navigate(`/pos/open-shift?location_id=${selectedLocation}`);
@@ -254,7 +254,7 @@ export default function POSPage() {
   }, [navigate]);
 
   const productsError = productsQuery.error
-    ? resolveErrorMessage(productsQuery.error, "Failed to load products.")
+    ? resolveErrorMessage(productsQuery.error, "Gagal memuat produk.")
     : null;
 
   const checkoutErrorMessage =
@@ -294,13 +294,13 @@ export default function POSPage() {
 
   return (
     <>
-      <PageMeta title="POS" description="Point of sale page" />
-      <PageBreadCrumb pageTitle="POS" />
+      <PageMeta title="Kasir (POS)" description="Halaman kasir penjualan (Point of Sale)" />
+      <PageBreadCrumb pageTitle="Kasir (POS)" />
 
       {selectedLocation && activeShiftResponse?.data && (
         <ActiveShiftWidget
           shift={activeShiftResponse.data}
-          cashierName={user?.name || "Active Cashier"}
+          cashierName={user?.name || "Kasir Aktif"}
           onAddCashMovement={() => setIsAddMovementOpen(true)}
           onCloseShift={() => setIsCloseShiftOpen(true)}
         />
@@ -326,7 +326,7 @@ export default function POSPage() {
                     }}
                     className="p-2.5 rounded-lg border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-300 focus:border-brand-500 focus:ring-brand-500 cursor-pointer"
                   >
-                    <option value="" disabled>Select Store Location</option>
+                    <option value="" disabled>Pilih Lokasi Toko</option>
                     {user.locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
                         {loc.name} {loc.is_primary && "⭐"}
@@ -349,7 +349,7 @@ export default function POSPage() {
                           handleLocationChange(value);
                         }}
                         label=""
-                        placeholder="Switch Store..."
+                        placeholder="Ganti Toko..."
                       />
                     )}
                   />

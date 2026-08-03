@@ -20,8 +20,8 @@ export default function LocationSelect({
   value,
   onChange,
   disabled = false,
-  label = "Location",
-  placeholder = "Search location...",
+  label = "Lokasi",
+  placeholder = "Cari lokasi...",
 }: LocationSelectProps) {
   return (
     <div>

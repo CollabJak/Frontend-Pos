@@ -75,54 +75,54 @@ export default function PromotionList() {
 
   return (
     <>
-      <PageMeta title="Promotions" description="Promotions list page" />
-      <PageBreadcrumb pageTitle="Promotions" />
+      <PageMeta title="Promosi" description="Halaman daftar promosi" />
+      <PageBreadcrumb pageTitle="Promosi" />
 
       <div className="space-y-6">
-        <ComponentCard title="Promotions List" linkLabel="Add Promotion" linkTo="/promotions/create">
+        <ComponentCard title="Daftar Promosi" linkLabel="Tambah Promosi" linkTo="/promotions/create">
           <div>
             <Input
               id="promotion-search"
               type="text"
-              placeholder="Search promotion by code, name, or type..."
+              placeholder="Cari promosi berdasarkan kode, nama, atau tipe..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Code
+                        Kode
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Name
+                        Nama Promosi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Type
+                        Tipe Promosi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Priority
+                        Prioritas
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Stackable
+                        Dapat Digabung
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Start Date
+                        Tanggal Mulai
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        End Date
+                        Tanggal Selesai
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Active
+                        Aktif
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -145,7 +145,7 @@ export default function PromotionList() {
                           {promotion.priority}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {promotion.is_stackable ? "Yes" : "No"}
+                          {promotion.is_stackable ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {formatDate(promotion.start_date)}
@@ -154,7 +154,7 @@ export default function PromotionList() {
                           {formatDate(promotion.end_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {promotion.is_active ? "Yes" : "No"}
+                          {promotion.is_active ? "Ya" : "Tidak"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export default function PromotionList() {
                               variant="danger"
                               onClick={handleDeleteClick(promotion.id, promotion.name)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -194,14 +194,14 @@ export default function PromotionList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete promotion?"
+        title="Hapus promosi?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

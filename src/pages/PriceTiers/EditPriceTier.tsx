@@ -117,19 +117,19 @@ export default function EditPriceTier() {
   };
 
   if (isLoading) {
-    return <p className="p-3">Loading...</p>;
+    return <p className="p-3">Memuat...</p>;
   }
 
   return (
     <>
-      <PageMeta title="Edit Price Tier" description="Edit price tier page" />
-      <PageBreadcrumb pageTitle="Edit Price Tier" />
-      <ComponentCard title="Edit Price Tier Form">
+      <PageMeta title="Edit Tingkat Harga" description="Halaman edit tingkat harga grosir" />
+      <PageBreadcrumb pageTitle="Edit Tingkat Harga" />
+      <ComponentCard title="Form Edit Tingkat Harga">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Product Variant</Label>
+            <Label>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-product-variant-options"
@@ -140,7 +140,7 @@ export default function EditPriceTier() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search product variant..."
+              placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
               optionLabel="name"
               optionValue="id"
@@ -153,7 +153,7 @@ export default function EditPriceTier() {
           </div>
 
           <div>
-            <Label>Customer Group</Label>
+            <Label>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-customer-group-options"
@@ -164,7 +164,7 @@ export default function EditPriceTier() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search customer group..."
+              placeholder="Cari grup pelanggan..."
               fetchOptions={fetchCustomerGroupOptions}
               optionLabel="name"
               optionValue="id"
@@ -177,33 +177,33 @@ export default function EditPriceTier() {
           </div>
 
           <div>
-            <Label htmlFor="min-qty">Min Qty</Label>
+            <Label htmlFor="min-qty">Jumlah Minimal (Min Qty)</Label>
             <Input
               id="min-qty"
               type="number"
               min={0}
               step="0.01"
-              placeholder="Input minimum quantity"
+              placeholder="Masukkan jumlah minimal pembelian"
               {...register("min_qty", { valueAsNumber: true })}
             />
             {errors.min_qty && <p className="text-red-500">{errors.min_qty.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="price">Price</Label>
+            <Label htmlFor="price">Harga</Label>
             <Input
               id="price"
               type="number"
               min={0}
               step="0.01"
-              placeholder="Input price"
+              placeholder="Masukkan harga bertingkat"
               {...register("price", { valueAsNumber: true })}
             />
             {errors.price && <p className="text-red-500">{errors.price.message}</p>}
           </div>
 
           <div>
-            <Label>Location</Label>
+            <Label>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-location-options"
@@ -214,7 +214,7 @@ export default function EditPriceTier() {
                   shouldValidate: true,
                 });
               }}
-              placeholder="Search location..."
+              placeholder="Cari lokasi..."
               fetchOptions={fetchLocationOptions}
               optionLabel="name"
               optionValue="id"
@@ -229,8 +229,8 @@ export default function EditPriceTier() {
           <div>
             <DateTimePicker
               id="start-date"
-              label="Start Date"
-              placeholder="Select start date and time"
+              label="Tanggal Mulai"
+              placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {
                 setValue("start_date", selectedValue, {
@@ -245,8 +245,8 @@ export default function EditPriceTier() {
           <div>
             <DateTimePicker
               id="end-date"
-              label="End Date (Optional)"
-              placeholder="Select end date and time"
+              label="Tanggal Selesai (Opsional)"
+              placeholder="Pilih tanggal dan waktu selesai"
               value={watch("end_date") ?? ""}
               allowClear
               onChange={(selectedValue) => {
@@ -260,7 +260,7 @@ export default function EditPriceTier() {
           </div>
 
           <div>
-            <Label htmlFor="is-active">Active Status</Label>
+            <Label htmlFor="is-active">Status Aktif</Label>
             <Checkbox
               id="is-active"
               checked={Boolean(watch("is_active"))}
@@ -270,14 +270,14 @@ export default function EditPriceTier() {
                   shouldDirty: true,
                 })
               }
-              label="Set as active"
+              label="Atur sebagai aktif"
             />
             {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
           </div>
 
           <div>
             <Button className="w-full" size="sm" type="submit" disabled={isPending}>
-              {isPending ? "Updating price tier..." : "Update Price Tier"}
+              {isPending ? "Memperbarui tingkat harga..." : "Perbarui Tingkat Harga"}
             </Button>
           </div>
         </form>

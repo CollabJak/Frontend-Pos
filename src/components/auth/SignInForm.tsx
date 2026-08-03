@@ -52,17 +52,17 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
-          Back to Home
+          Kembali ke Beranda
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign In
+              Masuk
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              Masukkan email dan kata sandi Anda untuk masuk!
             </p>
           </div>
           <div>
@@ -96,7 +96,7 @@ export default function SignInForm() {
                   fill="#EB4335"
                 />
               </svg>
-                Sign in with Google
+                Masuk dengan Google
               </button>
             </div>
             <div className="relative py-3 sm:py-5">
@@ -105,7 +105,7 @@ export default function SignInForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="p-2 text-gray-400 bg-white dark:bg-gray-900 sm:px-5 sm:py-2">
-                  Or
+                  Atau
                 </span>
               </div>
             </div>
@@ -114,21 +114,21 @@ export default function SignInForm() {
                 {isEmailVerified && (
                   <div className="p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800">
                     <p className="text-sm text-green-800 dark:text-green-200">
-                      ✓ Email verified successfully! Please login with your email and password.
+                      ✓ Email berhasil diverifikasi! Silakan masuk dengan email dan kata sandi Anda.
                     </p>
                   </div>
                 )}
                 {isPasswordReset && (
                   <div className="p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800">
                     <p className="text-sm text-green-800 dark:text-green-200">
-                      Password reset successful. Please sign in with your new password.
+                      Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi baru Anda.
                     </p>
                   </div>
                 )}
                 {errorMessage && (
                   <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
                     <p className="text-sm text-red-800 dark:text-red-200">
-                      ✗ {errorMessage === "invalid_verification_link" ? "Invalid verification link" : errorMessage}
+                      ✗ {errorMessage === "invalid_verification_link" ? "Tautan verifikasi tidak valid" : errorMessage}
                     </p>
                   </div>
                 )}
@@ -140,12 +140,12 @@ export default function SignInForm() {
                 </div>
                 <div>
                   <Label>
-                    Password <span className="text-error-500">*</span>{" "}
+                    Kata Sandi <span className="text-error-500">*</span>{" "}
                   </Label>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      placeholder="Masukkan kata sandi Anda"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -165,19 +165,19 @@ export default function SignInForm() {
                   <div className="flex items-center gap-3">
                     <Checkbox checked={isChecked} onChange={setIsChecked} />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
-                      Keep me logged in
+                      Ingat saya
                     </span>
                   </div>
                   <Link
                     to="/forgot-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
-                    Forgot password?
+                    Lupa kata sandi?
                   </Link>
                 </div>
                 <div>
                   <Button className="w-full" size="sm" type="submit" isLoading={isSubmitting}>
-                    Sign in
+                    Masuk
                   </Button>
                 </div>
               </div>
@@ -185,12 +185,12 @@ export default function SignInForm() {
 
             <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                Don&apos;t have an account? {""}
+                Belum memiliki akun? {""}
                 <Link
                   to="/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
-                  Sign Up
+                  Daftar
                 </Link>
               </p>
             </div>

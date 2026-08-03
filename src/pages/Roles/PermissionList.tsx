@@ -69,41 +69,41 @@ const PermissionList: React.FC = () => {
   return (
     <>
       <PageMeta
-        title="Permissions Management"
-        description="Manage system permissions and RBAC"
+        title="Manajemen Hak Akses"
+        description="Kelola hak akses sistem (permission) dan kontrol akses berbasis peran (RBAC)."
       />
-      <PageBreadcrumb pageTitle="Permissions Management" />
+      <PageBreadcrumb pageTitle="Manajemen Hak Akses" />
 
       <div className="space-y-6">
-        <ComponentCard title="Permissions List">
+        <ComponentCard title="Daftar Hak Akses">
           <div className="flex justify-end mb-4">
             <Button onClick={handleCreate} size="sm">
-              Add New Permission
+              Tambah Hak Akses
             </Button>
           </div>
           <div>
             <Input
-              placeholder="Search permissions by name..."
+              placeholder="Cari hak akses berdasarkan nama..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3 text-sm text-gray-500">Loading...</p>}
+              {isLoading && <p className="p-3 text-sm text-gray-500">Memuat data hak akses...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Name
+                        Nama Hak Akses
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                         Guard
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Actions
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -112,7 +112,7 @@ const PermissionList: React.FC = () => {
                     {permissions && permissions.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
-                          No permissions found.
+                          Tidak ada data hak akses.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -139,7 +139,7 @@ const PermissionList: React.FC = () => {
                                 onClick={() => handleDeleteClick(permission.id, permission.name)}
                               >
                                 <TrashBinIcon className="size-4 mr-1" />
-                                Delete
+                                Hapus
                               </Button>
                             </div>
                           </TableCell>
@@ -170,14 +170,14 @@ const PermissionList: React.FC = () => {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete Permission?"
+        title="Hapus Hak Akses?"
         description={
           pendingDelete
-            ? `Are you sure you want to delete the permission "${pendingDelete.name}"? This action cannot be undone and might break existing RBAC checks.`
-            : "This action cannot be undone."
+            ? `Apakah Anda yakin ingin menghapus hak akses "${pendingDelete.name}"? Tindakan ini tidak dapat dibatalkan dan dapat mengganggu pemeriksaan akses RBAC.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

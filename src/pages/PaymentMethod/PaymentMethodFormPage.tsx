@@ -90,42 +90,54 @@ const PaymentMethodFormPage: React.FC = () => {
         }
     };
 
-    if (isEdit && isFetching) return <div className="p-10 text-center">Loading method data...</div>;
+    const formatTypeButtonText = (type: string) => {
+        switch (type) {
+            case 'bank_transfer': return 'Transfer Bank';
+            case 'qris': return 'QRIS';
+            case 'e_wallet': return 'E-Wallet';
+            case 'cash': return 'Tunai';
+            default: return type.replace('_', ' ').toUpperCase();
+        }
+    };
+
+    if (isEdit && isFetching) return <div className="p-10 text-center">Memuat data metode pembayaran...</div>;
 
     return (
         <>
             <PageMeta
-                title={isEdit ? 'Edit Payment Method' : 'Create Payment Method'}
-                description="Configuration for payment processing."
+                title={isEdit ? 'Edit Metode Pembayaran' : 'Tambah Metode Pembayaran'}
+                description="Konfigurasi pengaturan metode pembayaran."
             />
-            <PageBreadcrumb pageTitle={isEdit ? 'Edit Payment Method' : 'Create Payment Method'} />
+            <PageBreadcrumb pageTitle={isEdit ? 'Edit Metode Pembayaran' : 'Tambah Metode Pembayaran'} />
 
             <div className="space-y-6">
                 <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <ComponentCard title="Method Identity" className="md:col-span-1">
+                        <ComponentCard title="Identitas Metode" className="md:col-span-1">
                             <div className="space-y-4 pt-2">
                                 {isAdmin ? (
                                     <div>
-                                        <Label>Scope</Label>
+                                        <Label>Cakupan (Scope)</Label>
                                         <select
                                             {...register('scope')}
                                             className="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.02] dark:text-white"
                                         >
-                                            <option value="business">Business (POS)</option>
-                                            <option value="system">System (Subscription)</option>
+                                            <option value="business">Bisnis (POS)</option>
+                                            <option value="system">Sistem (Langganan)</option>
                                         </select>
                                         {errors.scope && <p className="text-xs text-red-500 mt-1">{errors.scope.message as any}</p>}
                                     </div>
                                 ) : (
                                     <div className="p-3 bg-gray-50 dark:bg-white/[0.02] rounded-xl">
-                                        <Label className="text-gray-400">Scope</Label>
-                                        <div className="font-bold text-brand-500 capitalize">{selectedScope}</div>
+                                        <Label className="text-gray-400">Cakupan (Scope)</Label>
+                                        <div className="font-bold text-brand-500 capitalize">
+                                            {selectedScope === 'business' ? 'Bisnis (POS)' : selectedScope === 'system' ? 'Sistem (Langganan)' : selectedScope}
+                                        </div>
                                     </div>
                                 )}
 
                                 <div>
-                                    <Label>Method Type</Label>
+                                    <Label>Tipe Pembayaran</Label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {['bank_transfer', 'qris', 'e_wallet', 'cash'].map((type) => (
                                             <button
@@ -137,42 +149,42 @@ const PaymentMethodFormPage: React.FC = () => {
                                                     : 'border-gray-100 dark:border-white/[0.05] text-gray-500 hover:border-gray-200'
                                                     }`}
                                             >
-                                                {type.replace('_', ' ').toUpperCase()}
+                                                {formatTypeButtonText(type)}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="name">Display Name</Label>
+                                    <Label htmlFor="name">Nama Tampilan</Label>
                                     <Input
                                         {...register('name')}
-                                        placeholder="e.g. Bank BCA Operasional"
+                                        placeholder="contoh: Bank BCA Operasional"
                                         error={!!errors.name}
                                         hint={errors.name?.message as any}
                                     />
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="code">Internal Code (Slug)</Label>
+                                    <Label htmlFor="code">Kode Internal (Slug)</Label>
                                     <Input
                                         {...register('code')}
-                                        placeholder="e.g. bca_ops"
+                                        placeholder="contoh: bca_ops"
                                     />
                                 </div>
                             </div>
                         </ComponentCard>
 
-                        <ComponentCard title="Payment Details" className="md:col-span-1">
+                        <ComponentCard title="Detail Pembayaran" className="md:col-span-1">
                             <div className="space-y-4 pt-2">
                                 {selectedType === 'cash' ? (
                                     <div className="py-10 text-center text-gray-500 italic">
-                                        <p>Cash method doesn't need bank accounts or QR codes.</p>
+                                        <p>Metode tunai tidak membutuhkan akun bank atau kode QR.</p>
                                     </div>
                                 ) : selectedType === 'qris' ? (
                                     <div className="space-y-4">
                                         <div>
-                                            <Label>QR Code Image</Label>
+                                            <Label>Gambar Kode QR (QRIS)</Label>
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -192,39 +204,39 @@ const PaymentMethodFormPage: React.FC = () => {
                                                 </div>
                                             )}
                                             {isQrImageRequired && !qrImage && !qrPreview && (
-                                                <p className="text-xs text-gray-500 mt-2">Upload QRIS image before saving this method.</p>
+                                                <p className="text-xs text-gray-500 mt-2">Unggah gambar QRIS sebelum menyimpan metode ini.</p>
                                             )}
                                         </div>
                                         <div>
-                                            <Label htmlFor="provider_name">Provider Name (Optional)</Label>
-                                            <Input {...register('provider_name')} placeholder="e.g. Danamon / GoPay" />
+                                            <Label htmlFor="provider_name">Nama Penyedia / Bank (Opsional)</Label>
+                                            <Input {...register('provider_name')} placeholder="contoh: Danamon / GoPay" />
                                         </div>
                                     </div>
                                 ) : (
                                     <>
                                         <div>
                                             <Label htmlFor="provider_name">
-                                                {selectedType === 'bank_transfer' ? 'Bank Name' : 'E-Wallet Provider'}
+                                                {selectedType === 'bank_transfer' ? 'Nama Bank' : 'Penyedia E-Wallet'}
                                             </Label>
                                             <Input
                                                 {...register('provider_name')}
-                                                placeholder={selectedType === 'bank_transfer' ? 'e.g. BCA' : 'e.g. GoPay'}
+                                                placeholder={selectedType === 'bank_transfer' ? 'contoh: BCA' : 'contoh: GoPay'}
                                                 error={!!errors.provider_name}
                                                 hint={errors.provider_name?.message as any}
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="account_name">Account Holder Name</Label>
+                                            <Label htmlFor="account_name">Nama Pemilik Rekening</Label>
                                             <Input
                                                 {...register('account_name')}
-                                                placeholder="John Doe"
+                                                placeholder="contoh: Budi Santoso"
                                                 error={!!errors.account_name}
                                                 hint={errors.account_name?.message as any}
                                             />
                                         </div>
                                         <div>
                                             <Label htmlFor="account_number">
-                                                {selectedType === 'bank_transfer' ? 'Account Number' : 'Phone Number'}
+                                                {selectedType === 'bank_transfer' ? 'Nomor Rekening' : 'Nomor Telepon / HP'}
                                             </Label>
                                             <Input
                                                 {...register('account_number')}
@@ -238,38 +250,38 @@ const PaymentMethodFormPage: React.FC = () => {
                             </div>
                         </ComponentCard>
 
-                        <ComponentCard title="Configuration & Status" className="md:col-span-2">
+                        <ComponentCard title="Konfigurasi & Status" className="md:col-span-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.02] rounded-2xl">
                                         <div>
-                                            <div className="font-bold dark:text-white text-sm">Active Status</div>
-                                            <div className="text-xs text-gray-500 text-[10px]">Method will be visible to users</div>
+                                            <div className="font-bold dark:text-white text-sm">Status Aktif</div>
+                                            <div className="text-xs text-gray-500 text-[10px]">Metode akan tampil dan dapat digunakan</div>
                                         </div>
                                         <input type="checkbox" {...register('is_active')} className="size-5 rounded accent-brand-500" />
                                     </div>
 
                                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.02] rounded-2xl border-2 border-brand-500/10">
                                         <div>
-                                            <div className="font-bold dark:text-white text-brand-600 text-sm">Default Method</div>
-                                            <div className="text-xs text-gray-500 text-brand-500/70 text-[10px]">Unset other defaults in same scope/type</div>
+                                            <div className="font-bold dark:text-white text-brand-600 text-sm">Metode Utama (Default)</div>
+                                            <div className="text-xs text-gray-500 text-brand-500/70 text-[10px]">Menonaktifkan status utama metode lain dalam tipe/cakupan yang sama</div>
                                         </div>
                                         <input type="checkbox" {...register('is_default')} className="size-5 rounded accent-brand-500" />
                                     </div>
 
                                     <div>
-                                        <Label>Sort Order</Label>
+                                        <Label>Urutan Tampilan</Label>
                                         <Input type="number" {...register('sort_order', { valueAsNumber: true })} />
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <Label>Payment Instructions</Label>
+                                        <Label>Instruksi Pembayaran</Label>
                                         <textarea
                                             {...register('payment_instructions')}
                                             className="w-full h-32 px-4 py-3 rounded-2xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.02] dark:text-white text-sm"
-                                            placeholder="Add steps to pay e.g. Login to m-BCA, select Transfer..."
+                                            placeholder="Masukkan langkah-langkah pembayaran, contoh: Buka aplikasi m-BCA, pilih menu Transfer..."
                                         ></textarea>
                                     </div>
                                 </div>
@@ -281,13 +293,13 @@ const PaymentMethodFormPage: React.FC = () => {
                                     onClick={() => navigate('/payment-methods')}
                                     type="button"
                                 >
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button
                                     type="submit"
                                     isLoading={createMutation.isPending || updateMutation.isPending}
                                 >
-                                    {isEdit ? 'Update Method' : 'Save Method'}
+                                    {isEdit ? 'Simpan Perubahan' : 'Simpan Metode Pembayaran'}
                                 </Button>
                             </div>
                         </ComponentCard>

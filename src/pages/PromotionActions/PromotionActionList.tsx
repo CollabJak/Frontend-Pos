@@ -57,42 +57,42 @@ export default function PromotionActionList() {
 
   return (
     <>
-      <PageMeta title="Promotion Actions" description="Promotion actions list page" />
-      <PageBreadcrumb pageTitle="Promotion Actions" />
+      <PageMeta title="Aksi Promosi" description="Halaman daftar aksi promosi" />
+      <PageBreadcrumb pageTitle="Aksi Promosi" />
 
       <div className="space-y-6">
         <ComponentCard
-          title="Promotion Actions List"
-          linkLabel="Add Promotion Action"
+          title="Daftar Aksi Promosi"
+          linkLabel="Tambah Aksi Promosi"
           linkTo="/promotion-actions/create"
         >
           <div>
             <Input
               id="promotion-action-search"
-              placeholder="Search promotion actions..."
+              placeholder="Cari aksi promosi..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Promotion
+                        Promosi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action Type
+                        Tipe Aksi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action Value
+                        Nilai Aksi
                       </TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -124,7 +124,7 @@ export default function PromotionActionList() {
                               variant="danger"
                               onClick={handleDeleteClick(item.id, item.promotion?.name || `#${item.id}`)}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -148,14 +148,14 @@ export default function PromotionActionList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete promotion action?"
+        title="Hapus aksi promosi?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" action will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Aksi promosi "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

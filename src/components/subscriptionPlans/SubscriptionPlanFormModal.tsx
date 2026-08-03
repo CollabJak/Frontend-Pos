@@ -118,18 +118,18 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-6 lg:p-10">
       <div className="flex flex-col max-h-[85vh] overflow-y-auto pr-2 custom-scrollbar">
         <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-          {initialData ? "Edit Subscription Plan" : "Add New Subscription Plan"}
+          {initialData ? "Edit Paket Langganan" : "Tambah Paket Langganan Baru"}
         </h4>
         <p className="mb-7 text-sm text-gray-500 dark:text-gray-400">
-          Set up advanced plan details, billing, and feature limits.
+          Atur detail paket, siklus penagihan, serta batasan fitur paket.
         </p>
 
         <form onSubmit={handleSubmit(onLocalSubmit as any)} className="flex flex-col gap-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Plan Name</Label>
+              <Label>Nama Paket</Label>
               <Input
-                placeholder="e.g. Pro Monthly"
+                placeholder="contoh: Paket Pro Bulanan"
                 {...register("name")}
                 error={!!errors.name}
                 hint={errors.name?.message as any}
@@ -138,10 +138,10 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
 
             <div>
               <Select
-                label="Billing Cycle"
+                label="Siklus Penagihan"
                 options={[
-                  { value: "monthly", label: "Monthly" },
-                  { value: "yearly", label: "Yearly" },
+                  { value: "monthly", label: "Bulanan" },
+                  { value: "yearly", label: "Tahunan" },
                 ]}
                 value={watch("billing_cycle")}
                 onChange={(val) => setValue("billing_cycle", val as any)}
@@ -156,7 +156,7 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Duration (Days)</Label>
+              <Label>Durasi (Hari)</Label>
               <Input
                 type="number"
                 {...register("duration", { valueAsNumber: true })}
@@ -166,7 +166,7 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
             </div>
 
             <div>
-              <Label>Price</Label>
+              <Label>Harga (Rp)</Label>
               <Input
                 type="number"
                 {...register("price", { valueAsNumber: true })}
@@ -183,14 +183,14 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
                 className="w-5 h-5 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
                 {...register("is_popular")} 
               />
-              <span className="font-medium text-gray-800 dark:text-white/90">Mark as Popular Plan</span>
+              <span className="font-medium text-gray-800 dark:text-white/90">Tandai Sebagai Paket Paling Populer</span>
             </label>
           </div>
 
           <div>
-            <Label>Description</Label>
+            <Label>Deskripsi Ringkas</Label>
             <Input
-              placeholder="Brief description about the plan"
+              placeholder="Deskripsi singkat mengenai paket ini"
               {...register("description")}
               error={!!errors.description}
               hint={errors.description?.message as any}
@@ -199,9 +199,9 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="font-medium text-gray-800 dark:text-white/90">Plan Features & Limits (JSON)</label>
+              <label className="font-medium text-gray-800 dark:text-white/90">Fitur & Batasan Paket (JSON)</label>
               <Button type="button" size="sm" variant="outline" onClick={handleAddFeature}>
-                + Add Feature
+                + Tambah Fitur
               </Button>
             </div>
             {errors.features && (
@@ -214,26 +214,26 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
               {featureRows.map((row, index) => (
                 <div key={index} className="flex flex-col gap-1 p-3 rounded-xl border border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01]">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Feature #{index + 1}</span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fitur #{index + 1}</span>
                     <button 
                       type="button" 
                       onClick={() => handleRemoveFeature(index)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
-                      Remove
+                      Hapus
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
                       <Input
-                        placeholder="Key (e.g. max_locations)"
+                        placeholder="Kunci (contoh: max_locations)"
                         value={row.key}
                         onChange={(e) => handleFeatureChange(index, "key", e.target.value)}
                       />
                     </div>
                     <div className="flex-1">
                       <Input
-                        placeholder="Value (e.g. 5 or true)"
+                        placeholder="Nilai (contoh: 5 atau true)"
                         value={row.value}
                         onChange={(e) => handleFeatureChange(index, "value", e.target.value)}
                       />
@@ -242,17 +242,17 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
                 </div>
               ))}
               {featureRows.length === 0 && (
-                <p className="text-xs text-gray-400 italic">No features defined. Click add to start.</p>
+                <p className="text-xs text-gray-400 italic">Belum ada fitur yang ditambahkan. Klik tambah fitur untuk memulai.</p>
               )}
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-4 mt-4 sticky bottom-0 bg-white dark:bg-gray-900 py-2">
             <Button variant="outline" onClick={onClose} disabled={loading} type="button">
-              Cancel
+              Batal
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : initialData ? "Update Plan" : "Create Plan"}
+              {loading ? "Menyimpan..." : initialData ? "Simpan Perubahan" : "Buat Paket"}
             </Button>
           </div>
         </form>

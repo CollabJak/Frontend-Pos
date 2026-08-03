@@ -55,17 +55,17 @@ export default function PromotionActionValueField({
 
     return (
       <div className="space-y-3">
-        <Label>Action Value</Label>
+        <Label>Nilai Aksi</Label>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <Label htmlFor="free-item-name" className="mb-2">
-              Free Item
+              Item Gratis / Bonus
             </Label>
             <Input
               id="free-item-name"
               type="text"
               value={itemName}
-              placeholder="Input free item name/code"
+              placeholder="Masukkan nama / kode item gratis"
               onChange={(event) =>
                 onChange({
                   item_name: event.target.value,
@@ -76,7 +76,7 @@ export default function PromotionActionValueField({
           </div>
           <div>
             <Label htmlFor="free-item-qty" className="mb-2">
-              Quantity
+              Jumlah
             </Label>
             <Input
               id="free-item-qty"
@@ -84,7 +84,7 @@ export default function PromotionActionValueField({
               min="1"
               step="1"
               value={quantity}
-              placeholder="Input quantity"
+              placeholder="Masukkan jumlah"
               onChange={(event) =>
                 onChange({
                   item_name: itemName,
@@ -105,11 +105,11 @@ export default function PromotionActionValueField({
 
     return (
       <div className="space-y-3">
-        <Label>Action Value</Label>
+        <Label>Nilai Aksi</Label>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <Label htmlFor="bundle-qty" className="mb-2">
-              Bundle Qty
+              Jumlah Paket
             </Label>
             <Input
               id="bundle-qty"
@@ -117,7 +117,7 @@ export default function PromotionActionValueField({
               min="1"
               step="1"
               value={qty}
-              placeholder="Input bundle qty"
+              placeholder="Masukkan jumlah paket"
               onChange={(event) =>
                 onChange({
                   qty: toNumberOrEmpty(event.target.value),
@@ -128,7 +128,7 @@ export default function PromotionActionValueField({
           </div>
           <div>
             <Label htmlFor="bundle-price" className="mb-2">
-              Bundle Price
+              Harga Paket
             </Label>
             <Input
               id="bundle-price"
@@ -136,7 +136,7 @@ export default function PromotionActionValueField({
               min="0"
               step="0.01"
               value={price}
-              placeholder="Input bundle price"
+              placeholder="Masukkan harga paket"
               onChange={(event) =>
                 onChange({
                   qty: toNumberOrEmpty(qty),
@@ -152,24 +152,24 @@ export default function PromotionActionValueField({
   }
 
   const inputLabelMap: Record<ActionType, string> = {
-    discount_percent: "Discount Percent",
-    discount_amount: "Discount Amount",
-    override_price: "Override Price",
-    free_item: "Action Value",
-    cashback: "Cashback Amount",
-    bundle_price: "Action Value",
+    discount_percent: "Persentase Diskon (%)",
+    discount_amount: "Jumlah Diskon (Rp)",
+    override_price: "Harga Khusus / Baru",
+    free_item: "Nilai Aksi",
+    cashback: "Jumlah Cashback",
+    bundle_price: "Nilai Aksi",
   };
 
   return (
     <div className="space-y-3">
-      <Label htmlFor="promotion-action-value">{inputLabelMap[actionType] || "Action Value"}</Label>
+      <Label htmlFor="promotion-action-value">{inputLabelMap[actionType] || "Nilai Aksi"}</Label>
       <Input
         id="promotion-action-value"
         type="number"
         min="0"
         step="0.01"
         value={primaryValue}
-        placeholder="Input action value"
+        placeholder="Masukkan nilai aksi"
         onChange={(event) => onChange({ value: toNumberOrEmpty(event.target.value) })}
       />
       {error && <p className="text-red-500">{error}</p>}

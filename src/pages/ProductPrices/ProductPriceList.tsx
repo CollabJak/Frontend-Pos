@@ -24,11 +24,11 @@ import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
 const PRICE_TYPE_LABELS: Record<ProductPriceType, string> = {
-  sell: "Sell",
-  purchase: "Purchase",
-  wholesale: "Wholesale",
-  cost: "Cost",
-  member: "Member",
+  sell: "Harga Jual",
+  purchase: "Harga Beli",
+  wholesale: "Harga Grosir",
+  cost: "Harga Pokok / Modal",
+  member: "Harga Member",
 };
 
 const formatDate = (value?: string | null) => {
@@ -90,26 +90,26 @@ export default function ProductPriceList() {
 
   return (
     <>
-      <PageMeta title="Product Prices" description="Product pricing list page" />
-      <PageBreadcrumb pageTitle="Product Prices" />
+      <PageMeta title="Harga Produk" description="Halaman daftar harga produk" />
+      <PageBreadcrumb pageTitle="Harga Produk" />
 
       <div className="space-y-6">
         <ComponentCard
-          title="Product Prices List"
-          linkLabel="Add Product Price"
+          title="Daftar Harga Produk"
+          linkLabel="Tambah Harga Produk"
           linkTo="/product-prices/create"
         >
           <div>
             <Input
               id="product-price-search"
-              placeholder="Search product prices by variant name or price type..."
+              placeholder="Cari harga produk berdasarkan varian atau tipe harga..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Loading...</p>}
+              {isLoading && <p className="p-3">Memuat...</p>}
 
               {!isLoading && (
                 <Table className="table-auto">
@@ -119,43 +119,43 @@ export default function ProductPriceList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Variant
+                        Varian Produk
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Price Type
+                        Tipe Harga
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Price
+                        Harga
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Location
+                        Lokasi
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Start Date
+                        Tanggal Mulai
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        End Date
+                        Tanggal Selesai
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Action
+                        Aksi
                       </TableCell>
                     </TableRow>
                   </TableHeader>
@@ -201,7 +201,7 @@ export default function ProductPriceList() {
                                 productPrice.product_variant?.name || `#${productPrice.id}`
                               )}
                             >
-                              Delete
+                              Hapus
                             </Button>
                           </div>
                         </TableCell>
@@ -225,14 +225,14 @@ export default function ProductPriceList() {
 
       <ConfirmDialog
         isOpen={isOpen}
-        title="Delete product price?"
+        title="Hapus harga produk?"
         description={
           pendingDelete
-            ? `This action cannot be undone. "${pendingDelete.name}" pricing will be removed.`
-            : "This action cannot be undone."
+            ? `Tindakan ini tidak dapat dibatalkan. Pengaturan harga "${pendingDelete.name}" akan dihapus.`
+            : "Tindakan ini tidak dapat dibatalkan."
         }
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="Hapus"
+        cancelText="Batal"
         tone="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

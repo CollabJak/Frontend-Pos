@@ -80,7 +80,7 @@ export default function StockAdjustmentForm() {
     if (stockPreview < 0) {
       setError("qty", {
         type: "manual",
-        message: "New stock preview cannot be below zero.",
+        message: "Pratinjau stok baru tidak boleh kurang dari nol.",
       });
       return;
     }
@@ -98,7 +98,7 @@ export default function StockAdjustmentForm() {
       onError: (error) => {
         setError("root", {
           type: "server",
-          message: error.response?.data?.message ?? "Failed to submit stock adjustment.",
+          message: error.response?.data?.message ?? "Gagal mengirim penyesuaian stok.",
         });
       },
     });
@@ -108,7 +108,7 @@ export default function StockAdjustmentForm() {
     mutation.isPending || !locationId || !variantId || !hasValidQty || isInvalidPreview || !isValid;
 
   return (
-    <ComponentCard title="Stock Adjustment">
+    <ComponentCard title="Penyesuaian Stok">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {errors.root?.message && (
           <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/10 dark:text-red-400">
@@ -164,12 +164,12 @@ export default function StockAdjustmentForm() {
 
         {!locationId && (
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Select a location before choosing a product variant.
+            Pilih lokasi terlebih dahulu sebelum memilih varian produk.
           </p>
         )}
 
         {isFetchingStock && variantId && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading stock data...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Memuat data stok...</p>
         )}
 
         <StockInfoPanel
@@ -182,12 +182,12 @@ export default function StockAdjustmentForm() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <Label htmlFor="adjustment-qty">Adjustment Quantity</Label>
+            <Label htmlFor="adjustment-qty">Jumlah Penyesuaian</Label>
             <Input
               id="adjustment-qty"
               type="number"
               step="0.000001"
-              placeholder="e.g. -3 or 5"
+              placeholder="contoh: -3 atau 5"
               error={Boolean(errors.qty)}
               hint={errors.qty?.message}
               {...register("qty", { valueAsNumber: true })}
@@ -195,13 +195,13 @@ export default function StockAdjustmentForm() {
           </div>
 
           <div>
-            <Label htmlFor="adjustment-cost">Cost (Optional)</Label>
+            <Label htmlFor="adjustment-cost">Harga Pokok / Cost (Opsional)</Label>
             <Input
               id="adjustment-cost"
               type="number"
               min="0"
               step="0.000001"
-              placeholder="Input cost if needed"
+              placeholder="Masukkan harga pokok jika diperlukan"
               error={Boolean(errors.cost)}
               hint={errors.cost?.message}
               {...register("cost", {
@@ -212,7 +212,7 @@ export default function StockAdjustmentForm() {
         </div>
 
         <div>
-          <Label htmlFor="adjustment-reason">Reason</Label>
+          <Label htmlFor="adjustment-reason">Alasan Penyesuaian</Label>
           <Controller
             name="reason"
             control={control}
@@ -224,7 +224,7 @@ export default function StockAdjustmentForm() {
                   (clearErrors as (name: string) => void)("root");
                 }}
                 rows={4}
-                placeholder="Write adjustment reason"
+                placeholder="Tuliskan alasan penyesuaian stok (contoh: Barang rusak, Stok opname)"
                 error={Boolean(errors.reason)}
                 hint={errors.reason?.message}
               />
@@ -234,7 +234,7 @@ export default function StockAdjustmentForm() {
 
         <div>
           <Button className="w-full" size="sm" type="submit" disabled={isSubmitDisabled}>
-            {mutation.isPending ? "Submitting adjustment..." : "Submit Adjustment"}
+            {mutation.isPending ? "Mengirim penyesuaian stok..." : "Simpan Penyesuaian Stok"}
           </Button>
         </div>
       </form>
