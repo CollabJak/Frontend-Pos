@@ -26,13 +26,23 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
   const debounceTimersRef = useRef<Map<string, number>>(new Map());
   const bufferedPayloadRef = useRef<Map<string, { variantId: number; locationId: number; qty: number }>>(new Map());
   const refreshingTokenRef = useRef(false);
+  const consecutiveFailuresRef = useRef(0);
+  const backoffTimerRef = useRef<number | null>(null);
+
+  const MAX_AUTH_RETRIES = 3;
 
   useEffect(() => {
     if (!businessId) {
       return;
     }
 
-    const onConnect = () => undefined;
+    const onConnect = () => {
+      consecutiveFailuresRef.current = 0;
+      if (backoffTimerRef.current !== null) {
+        window.clearTimeout(backoffTimerRef.current);
+        backoffTimerRef.current = null;
+      }
+    };
 
     const onStockUpdated = (payload: StockUpdatedPayload) => {
       const eventBusinessId = toPositiveInt(payload.business_id);
@@ -100,44 +110,63 @@ export const useStockRealtime = (businessId: number | null | undefined, selected
         return;
       }
 
+      if (consecutiveFailuresRef.current >= MAX_AUTH_RETRIES) {
+        // eslint-disable-next-line no-console
+        console.warn("[socket-client] Circuit breaker tripped. Stopping automatic token refresh retries.");
+        return;
+      }
+
       if (refreshingTokenRef.current) {
         return;
       }
 
+      consecutiveFailuresRef.current += 1;
       refreshingTokenRef.current = true;
-      void refreshSocketTokenAndReconnect()
-        .catch((refreshError: unknown) => {
-          // eslint-disable-next-line no-console
-          console.error("socket token refresh failed:", refreshError);
-        })
-        .finally(() => {
-          refreshingTokenRef.current = false;
-        });
+
+      const backoffDelay = Math.min(30000, 1000 * Math.pow(2, consecutiveFailuresRef.current - 1));
+
+      if (backoffTimerRef.current !== null) {
+        window.clearTimeout(backoffTimerRef.current);
+      }
+
+      backoffTimerRef.current = window.setTimeout(() => {
+        void refreshSocketTokenAndReconnect()
+          .catch((refreshError: unknown) => {
+            // eslint-disable-next-line no-console
+            console.error("socket token refresh failed:", refreshError);
+          })
+          .finally(() => {
+            refreshingTokenRef.current = false;
+          });
+      }, backoffDelay);
     };
 
     socket.on("connect", onConnect);
     socket.on("stock.updated", onStockUpdated);
     socket.on("connect_error", onConnectError);
 
-    void connectSocketWithToken().catch((error: unknown) => {
-      // eslint-disable-next-line no-console
-      console.error("socket connect failed:", error);
-    });
+    if (!socket.connected) {
+      void connectSocketWithToken().catch((error: unknown) => {
+        // eslint-disable-next-line no-console
+        console.error("socket connect failed:", error);
+      });
+    }
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("stock.updated", onStockUpdated);
       socket.off("connect_error", onConnectError);
 
+      if (backoffTimerRef.current !== null) {
+        window.clearTimeout(backoffTimerRef.current);
+        backoffTimerRef.current = null;
+      }
+
       debounceTimersRef.current.forEach((timerId) => {
         window.clearTimeout(timerId);
       });
       debounceTimersRef.current.clear();
       bufferedPayloadRef.current.clear();
-
-      if (socket.connected) {
-        socket.disconnect();
-      }
     };
   }, [businessId, selectedLocation, deviceId, updateStock]);
 };
