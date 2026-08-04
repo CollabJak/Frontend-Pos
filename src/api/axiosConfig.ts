@@ -18,6 +18,11 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Ignore request cancellation (e.g., component unmount or AbortController abort)
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     const status = error.response?.status;
     const errorCode = error.response?.data?.code;
 
