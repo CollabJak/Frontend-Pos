@@ -59,7 +59,7 @@ export const useCreatePromotionCondition = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["promotion-conditions"] });
-      navigate("/promotion-conditions");
+      navigate("/promotions?tab=conditions");
     },
   });
 };
@@ -83,7 +83,7 @@ export const useUpdatePromotionCondition = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["promotion-conditions"] });
       queryClient.invalidateQueries({ queryKey: ["promotion-condition", id] });
-      navigate("/promotion-conditions");
+      navigate("/promotions?tab=conditions");
     },
   });
 };

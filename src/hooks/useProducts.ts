@@ -71,7 +71,7 @@ export const useCreateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/products");
+      navigate("/products?tab=products");
     },
   });
 };
@@ -116,7 +116,7 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["product", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/products");
+      navigate("/products?tab=products");
     },
   });
 };

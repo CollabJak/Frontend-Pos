@@ -27,7 +27,11 @@ import { PencilIcon } from "../../icons";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function ProductVariantList() {
+export interface ProductVariantListProps {
+  embedded?: boolean;
+}
+
+export default function ProductVariantList({ embedded = false }: ProductVariantListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -111,8 +115,12 @@ export default function ProductVariantList() {
 
   return (
     <>
-      <PageMeta title="Varian Produk" description="Halaman daftar varian produk" />
-      <PageBreadcrumb pageTitle="Varian Produk" />
+      {!embedded && (
+        <>
+          <PageMeta title="Varian Produk" description="Halaman daftar varian produk" />
+          <PageBreadcrumb pageTitle="Varian Produk" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard

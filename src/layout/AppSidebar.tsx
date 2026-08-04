@@ -12,6 +12,7 @@ import {
   DollarLineIcon,
   TaskIcon,
   CalendarIcon,
+  PageIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../hooks/useAuth";
@@ -36,26 +37,19 @@ const navItems: NavItem[] = [
   {
     icon: <BoxIcon />,
     name: "Produk",
-    permissions: ["product.view"],
+    permissions: ["product.view", "product_variant.view", "product_price.view"],
     subItems: [
-      { name: "Kategori", path: "/categories", pro: false, permissions: ["category.view"] },
-      { name: "Satuan", path: "/units", pro: false, permissions: ["unit.view"] },
-      { name: "Konversi Satuan", path: "/unit-conversions", pro: false, permissions: ["unit_conversion.view"] },
-      { name: "Pemasok", path: "/suppliers", pro: false, permissions: ["supplier.view"] },
-      { name: "Grup Pelanggan", path: "/customer-groups", pro: false, permissions: ["customer_group.view"] },
-      { name: "Harga Grup Pelanggan", path: "/customer-group-prices", pro: false, permissions: ["customer_group_price.view"] },
-      { name: "Tingkat Harga", path: "/price-tiers", pro: false, permissions: ["price_tier.view"] },
-      { name: "Promosi", path: "/promotions", pro: false, permissions: ["promotion.view"] },
-      { name: "Kondisi Promosi", path: "/promotion-conditions", pro: false, permissions: ["promotion_condition.view"] },
-      { name: "Aksi Promosi", path: "/promotion-actions", pro: false, permissions: ["promotion_action.view"] },
-      { name: "Produk Promosi", path: "/promotion-products", pro: false, permissions: ["promotion_product.view"] },
-      { name: "Lokasi", path: "/locations", pro: false, permissions: ["location.view"] },
-      { name: "Merek", path: "/brands", pro: false, permissions: ["brand.view"] },
-      { name: "Produk", path: "/products", pro: false, permissions: ["product.view"] },
-      { name: "Varian Produk", path: "/product-variants", pro: false, permissions: ["product_variant.view"] },
-      { name: "Harga Produk", path: "/product-prices", pro: false, permissions: ["product_price.view"] },
-      { name: "Atribut", path: "/atributes", pro: false, permissions: ["atribute.view"] }
+      { name: "Manajemen Satuan", path: "/units", pro: false, permissions: ["unit.view", "unit_conversion.view"] },
+      { name: "Grup Pelanggan", path: "/customer-groups", pro: false, permissions: ["customer_group.view", "customer_group_price.view"] },
+      { name: "Manajemen Promosi", path: "/promotions", pro: false, permissions: ["promotion.view", "promotion_condition.view", "promotion_action.view", "promotion_product.view"] },
+      { name: "Manajemen Produk", path: "/products", pro: false, permissions: ["product.view", "product_variant.view", "product_price.view", "price_tier.view", "category.view", "supplier.view", "brand.view", "atribute.view"] }
     ],
+  },
+  {
+    icon: <PageIcon />,
+    name: "Lokasi",
+    path: "/locations",
+    permissions: ["location.view"],
   },
 
   {

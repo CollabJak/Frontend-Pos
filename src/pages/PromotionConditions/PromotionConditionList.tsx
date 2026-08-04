@@ -22,7 +22,11 @@ import {
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function PromotionConditionList() {
+export interface PromotionConditionListProps {
+  embedded?: boolean;
+}
+
+export default function PromotionConditionList({ embedded = false }: PromotionConditionListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 500);
@@ -57,8 +61,12 @@ export default function PromotionConditionList() {
 
   return (
     <>
-      <PageMeta title="Syarat Promosi" description="Halaman daftar syarat promosi" />
-      <PageBreadcrumb pageTitle="Syarat Promosi" />
+      {!embedded && (
+        <>
+          <PageMeta title="Syarat Promosi" description="Halaman daftar syarat promosi" />
+          <PageBreadcrumb pageTitle="Syarat Promosi" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard

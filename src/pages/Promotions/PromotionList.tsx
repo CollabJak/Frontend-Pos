@@ -40,7 +40,11 @@ const formatDate = (value?: string | null) => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-export default function PromotionList() {
+export interface PromotionListProps {
+  embedded?: boolean;
+}
+
+export default function PromotionList({ embedded = false }: PromotionListProps) {
   const [page, setPage] = useState(1);
   const { mutate: deletePromotion } = useDeletePromotion();
   const { isOpen, openModal, closeModal } = useModal();
@@ -75,8 +79,12 @@ export default function PromotionList() {
 
   return (
     <>
-      <PageMeta title="Promosi" description="Halaman daftar promosi" />
-      <PageBreadcrumb pageTitle="Promosi" />
+      {!embedded && (
+        <>
+          <PageMeta title="Promosi" description="Halaman daftar promosi" />
+          <PageBreadcrumb pageTitle="Promosi" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Daftar Promosi" linkLabel="Tambah Promosi" linkTo="/promotions/create">

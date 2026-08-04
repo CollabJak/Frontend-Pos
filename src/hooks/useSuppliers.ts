@@ -53,7 +53,7 @@ export const useCreateSupplier = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/suppliers");
+      navigate("/products?tab=suppliers");
     },
   });
 };
@@ -75,7 +75,7 @@ export const useUpdateSupplier = () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] });
       queryClient.invalidateQueries({ queryKey: ["supplier", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/suppliers");
+      navigate("/products?tab=suppliers");
     },
   });
 };

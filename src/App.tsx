@@ -25,31 +25,27 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import RecentTransactionsPage from "./pages/Dashboard/RecentTransactionsPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import CategoryList from "./pages/Categories/CategoryList";
 import AddCategory from "./pages/Categories/AddCategory";
 import EditCategory from "./pages/Categories/EditCategory";
-import UnitList from "./pages/Units/UnitList";
+import UnitManagementPage from "./pages/Units/UnitManagementPage";
 import AddUnit from "./pages/Units/AddUnit";
 import EditUnit from "./pages/Units/EditUnit";
-import SupplierList from "./pages/Suppliers/SupllierList";
 import AddSupplier from "./pages/Suppliers/AddSupplier";
 import EditSupplier from "./pages/Suppliers/EditSupplier";
-import CustomerGroupList from "./pages/CustomerGroups/CustomerGroupList";
+import CustomerGroupManagementPage from "./pages/CustomerGroups/CustomerGroupManagementPage";
 import AddCustomerGroup from "./pages/CustomerGroups/AddCustomerGroup";
 import EditCustomerGroup from "./pages/CustomerGroups/EditCustomerGroup";
 import CustomerGroupPriceList from "./pages/CustomerGroupPrices/CustomerGroupPriceList";
 import AddCustomerGroupPrice from "./pages/CustomerGroupPrices/AddCustomerGroupPrice";
 import EditCustomerGroupPrice from "./pages/CustomerGroupPrices/EditCustomerGroupPrice";
-import BrandList from "./pages/Brands/BrandList";
 import AddBrand from "./pages/Brands/AddBrand";
 import EditBrand from "./pages/Brands/EditBrand";
-import ProductList from "./pages/Products/ProductList";
+import ProductManagementPage from "./pages/Products/ProductManagementPage";
 import AddProduct from "./pages/Products/AddProduct";
 import EditProduct from "./pages/Products/EditProduct";
 import UnitConversionList from "./pages/UnitConversions/UnitConversionList";
 import AddUnitConversion from "./pages/UnitConversions/AddUnitConversion";
 import EditUnitConversion from "./pages/UnitConversions/EditUnitConversion";
-import AtributeList from "./pages/Atributes/AtributeList";
 import AddAtribute from "./pages/Atributes/AddAtribute";
 import EditAtribute from "./pages/Atributes/EditAtribute";
 import ProductVariantList from "./pages/ProductVariants/ProductVariantList";
@@ -58,10 +54,9 @@ import EditProductVariant from "./pages/ProductVariants/EditProductVariant";
 import ProductPriceList from "./pages/ProductPrices/ProductPriceList";
 import AddProductPrice from "./pages/ProductPrices/AddProductPrice";
 import EditProductPrice from "./pages/ProductPrices/EditProductPrice";
-import PriceTierList from "./pages/PriceTiers/PriceTierList";
 import AddPriceTier from "./pages/PriceTiers/AddPriceTier";
 import EditPriceTier from "./pages/PriceTiers/EditPriceTier";
-import PromotionList from "./pages/Promotions/PromotionList";
+import PromotionManagementPage from "./pages/Promotions/PromotionManagementPage";
 import AddPromotion from "./pages/Promotions/AddPromotion";
 import EditPromotion from "./pages/Promotions/EditPromotion";
 import PromotionConditionList from "./pages/PromotionConditions/PromotionConditionList";
@@ -153,56 +148,52 @@ export default function App() {
 
               {/* Master Data Permissions */}
               <Route element={<ProtectedRoute allowedPermissions={["category.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/categories" element={<CategoryList />} />
                 <Route path="/categories/create" element={<AddCategory />} />
                 <Route path="/categories/edit/:id" element={<EditCategory />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["unit.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["unit.view", "unit_conversion.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/units" element={<UnitManagementPage />} />
+              </Route>
 
-                <Route path="/units" element={<UnitList />} />
+              <Route element={<ProtectedRoute allowedPermissions={["unit.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/units/create" element={<AddUnit />} />
                 <Route path="/units/edit/:id" element={<EditUnit />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["unit_conversion.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/unit-conversions" element={<UnitConversionList />} />
                 <Route path="/unit-conversions/create" element={<AddUnitConversion />} />
                 <Route path="/unit-conversions/edit/:id" element={<EditUnitConversion />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["supplier.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/suppliers" element={<SupplierList />} />
                 <Route path="/suppliers/create" element={<AddSupplier />} />
                 <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view", "customer_group_price.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/customer-groups" element={<CustomerGroupManagementPage />} />
+              </Route>
 
-                <Route path="/customer-groups" element={<CustomerGroupList />} />
+              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/customer-groups/create" element={<AddCustomerGroup />} />
                 <Route path="/customer-groups/edit/:id" element={<EditCustomerGroup />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["customer_group_price.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/customer-group-prices" element={<CustomerGroupPriceList />} />
                 <Route path="/customer-group-prices/create" element={<AddCustomerGroupPrice />} />
                 <Route path="/customer-group-prices/edit/:id" element={<EditCustomerGroupPrice />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["location.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/locations" element={<LocationList />} />
                 <Route path="/locations/create" element={<AddLocation />} />
                 <Route path="/locations/edit/:id" element={<EditLocation />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["inventory.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/inventory" element={<InventoryList />} />
                 <Route path="/inventory/orphaned" element={<InventoryOrphanedList />} />
                 <Route path="/inventory/movements" element={<InventoryMovements />} />
@@ -211,71 +202,64 @@ export default function App() {
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["brand.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/brands" element={<BrandList />} />
                 <Route path="/brands/create" element={<AddBrand />} />
                 <Route path="/brands/edit/:id" element={<EditBrand />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["product.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["product.view", "product_variant.view", "product_price.view", "price_tier.view", "category.view", "supplier.view", "brand.view", "atribute.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/products" element={<ProductManagementPage />} />
+              </Route>
 
-                <Route path="/products" element={<ProductList />} />
+              <Route element={<ProtectedRoute allowedPermissions={["product.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/products/create" element={<AddProduct />} />
                 <Route path="/products/edit/:id" element={<EditProduct />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["product_variant.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/product-variants" element={<ProductVariantList />} />
                 <Route path="/product-variants/create" element={<AddProductVariant />} />
                 <Route path="/product-variants/edit/:id" element={<EditProductVariant />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["product_price.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/product-prices" element={<ProductPriceList />} />
                 <Route path="/product-prices/create" element={<AddProductPrice />} />
                 <Route path="/product-prices/edit/:id" element={<EditProductPrice />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["price_tier.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/price-tiers" element={<PriceTierList />} />
                 <Route path="/price-tiers/create" element={<AddPriceTier />} />
                 <Route path="/price-tiers/edit/:id" element={<EditPriceTier />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["promotion.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["promotion.view", "promotion_condition.view", "promotion_action.view", "promotion_product.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/promotions" element={<PromotionManagementPage />} />
+              </Route>
 
-                <Route path="/promotions" element={<PromotionList />} />
+              <Route element={<ProtectedRoute allowedPermissions={["promotion.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/promotions/create" element={<AddPromotion />} />
                 <Route path="/promotions/edit/:id" element={<EditPromotion />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["promotion_condition.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/promotion-conditions" element={<PromotionConditionList />} />
                 <Route path="/promotion-conditions/create" element={<AddPromotionCondition />} />
                 <Route path="/promotion-conditions/edit/:id" element={<EditPromotionCondition />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["promotion_action.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/promotion-actions" element={<PromotionActionList />} />
                 <Route path="/promotion-actions/create" element={<AddPromotionAction />} />
                 <Route path="/promotion-actions/edit/:id" element={<EditPromotionAction />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["promotion_product.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
                 <Route path="/promotion-products" element={<PromotionProductList />} />
                 <Route path="/promotion-products/create" element={<AddPromotionProduct />} />
                 <Route path="/promotion-products/edit/:id" element={<EditPromotionProduct />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["atribute.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
-
-                <Route path="/atributes" element={<AtributeList />} />
                 <Route path="/atributes/create" element={<AddAtribute />} />
                 <Route path="/atributes/edit/:id" element={<EditAtribute />} />
               </Route>

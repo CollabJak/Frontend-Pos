@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
-export default function UnitList() {
+export interface UnitListProps {
+  embedded?: boolean;
+}
+
+export default function UnitList({ embedded = false }: UnitListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -55,11 +59,15 @@ export default function UnitList() {
 
   return (
     <>
-      <PageMeta
-        title="Satuan Produk"
-        description="Halaman daftar satuan produk"
-      />
-      <PageBreadcrumb pageTitle="Satuan Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Satuan Produk"
+            description="Halaman daftar satuan produk"
+          />
+          <PageBreadcrumb pageTitle="Satuan Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Satuan Produk" linkLabel="Tambah Satuan" linkTo="/units/create">
           <div>

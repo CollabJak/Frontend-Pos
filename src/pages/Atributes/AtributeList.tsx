@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function AtributeList() {
+export interface AtributeListProps {
+  embedded?: boolean;
+}
+
+export default function AtributeList({ embedded = false }: AtributeListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 500);
@@ -52,11 +56,15 @@ export default function AtributeList() {
 
   return (
     <>
-      <PageMeta
-        title="Atribut Produk"
-        description="Halaman daftar atribut produk"
-      />
-      <PageBreadcrumb pageTitle="Atribut Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Atribut Produk"
+            description="Halaman daftar atribut produk"
+          />
+          <PageBreadcrumb pageTitle="Atribut Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Atribut Produk" linkLabel="Tambah Atribut" linkTo="/atributes/create">
           <div>

@@ -70,7 +70,7 @@ export const useCreateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/categories");
+      navigate("/products?tab=categories");
 
     },
   });
@@ -110,7 +110,7 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["category", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/categories");
+      navigate("/products?tab=categories");
 
     },
   });

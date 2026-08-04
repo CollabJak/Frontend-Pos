@@ -48,7 +48,7 @@ export const useCreateCustomerGroup = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] });
-      navigate("/customer-groups");
+      navigate("/customer-groups?tab=groups");
     },
   });
 };
@@ -69,7 +69,7 @@ export const useUpdateCustomerGroup = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] });
       queryClient.invalidateQueries({ queryKey: ["customer-group", id] });
-      navigate("/customer-groups");
+      navigate("/customer-groups?tab=groups");
     },
   });
 };

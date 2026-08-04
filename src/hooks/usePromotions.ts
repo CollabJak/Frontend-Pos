@@ -55,7 +55,7 @@ export const useCreatePromotion = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["promotions"] });
-      navigate("/promotions");
+      navigate("/promotions?tab=promotions");
     },
   });
 };
@@ -76,7 +76,7 @@ export const useUpdatePromotion = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["promotions"] });
       queryClient.invalidateQueries({ queryKey: ["promotion", id] });
-      navigate("/promotions");
+      navigate("/promotions?tab=promotions");
     },
   });
 };

@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
-export default function CategoryList() {
+export interface CategoryListProps {
+  embedded?: boolean;
+}
+
+export default function CategoryList({ embedded = false }: CategoryListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -55,11 +59,15 @@ export default function CategoryList() {
 
   return (
     <>
-      <PageMeta
-        title="Kategori Produk"
-        description="Halaman daftar kategori produk"
-      />
-      <PageBreadcrumb pageTitle="Kategori Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Kategori Produk"
+            description="Halaman daftar kategori produk"
+          />
+          <PageBreadcrumb pageTitle="Kategori Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Kategori Produk" linkLabel="Tambah Kategori" linkTo="/categories/create">
           <div>

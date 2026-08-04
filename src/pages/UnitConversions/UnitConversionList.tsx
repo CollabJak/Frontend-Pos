@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
-export default function UnitConversionList() {
+export interface UnitConversionListProps {
+  embedded?: boolean;
+}
+
+export default function UnitConversionList({ embedded = false }: UnitConversionListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -55,11 +59,15 @@ export default function UnitConversionList() {
 
   return (
     <>
-      <PageMeta
-        title="Konversi Satuan Produk"
-        description="Halaman daftar konversi satuan produk"
-      />
-      <PageBreadcrumb pageTitle="Konversi Satuan Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Konversi Satuan Produk"
+            description="Halaman daftar konversi satuan produk"
+          />
+          <PageBreadcrumb pageTitle="Konversi Satuan Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Konversi Satuan Produk" linkLabel="Tambah Konversi Satuan" linkTo="/unit-conversions/create">
           <div>

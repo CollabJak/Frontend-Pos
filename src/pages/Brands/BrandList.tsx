@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function BrandList() {
+export interface BrandListProps {
+  embedded?: boolean;
+}
+
+export default function BrandList({ embedded = false }: BrandListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -52,11 +56,15 @@ export default function BrandList() {
 
   return (
     <>
-      <PageMeta
-        title="Merek Produk"
-        description="Halaman daftar merek produk"
-      />
-      <PageBreadcrumb pageTitle="Merek Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Merek Produk"
+            description="Halaman daftar merek produk"
+          />
+          <PageBreadcrumb pageTitle="Merek Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Merek Produk" linkLabel="Tambah Merek" linkTo="/brands/create">
           <div>
