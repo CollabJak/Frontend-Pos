@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
-export default function SupplierList() {
+export interface SupplierListProps {
+  embedded?: boolean;
+}
+
+export default function SupplierList({ embedded = false }: SupplierListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -55,11 +59,15 @@ export default function SupplierList() {
 
   return (
     <>
-      <PageMeta
-        title="Pemasok Produk"
-        description="Halaman daftar pemasok produk"
-      />
-      <PageBreadcrumb pageTitle="Pemasok Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Pemasok Produk"
+            description="Halaman daftar pemasok produk"
+          />
+          <PageBreadcrumb pageTitle="Pemasok Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Pemasok Produk" linkLabel="Tambah Pemasok" linkTo="/suppliers/create">
           <div>

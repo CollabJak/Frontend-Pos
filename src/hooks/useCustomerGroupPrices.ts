@@ -65,7 +65,7 @@ export const useCreateCustomerGroupPrice = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-group-prices"] });
-      navigate("/customer-group-prices");
+      navigate("/customer-groups?tab=prices");
     },
   });
 };
@@ -89,7 +89,7 @@ export const useUpdateCustomerGroupPrice = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["customer-group-prices"] });
       queryClient.invalidateQueries({ queryKey: ["customer-group-price", id] });
-      navigate("/customer-group-prices");
+      navigate("/customer-groups?tab=prices");
     },
   });
 };

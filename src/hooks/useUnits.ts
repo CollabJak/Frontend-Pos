@@ -54,7 +54,7 @@ export const useCreateUnit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/units");
+      navigate("/units?tab=units");
     },
   });
 };
@@ -76,7 +76,7 @@ export const useUpdateUnit = () => {
       queryClient.invalidateQueries({ queryKey: ["units"] });
       queryClient.invalidateQueries({ queryKey: ["unit", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/units");
+      navigate("/units?tab=units");
     },
   });
 };

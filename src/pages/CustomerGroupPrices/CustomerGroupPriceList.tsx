@@ -43,7 +43,11 @@ const formatDate = (value?: string | null) => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-export default function CustomerGroupPriceList() {
+export interface CustomerGroupPriceListProps {
+  embedded?: boolean;
+}
+
+export default function CustomerGroupPriceList({ embedded = false }: CustomerGroupPriceListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -81,8 +85,12 @@ export default function CustomerGroupPriceList() {
 
   return (
     <>
-      <PageMeta title="Harga Grup Pelanggan" description="Halaman daftar harga grup pelanggan" />
-      <PageBreadcrumb pageTitle="Harga Grup Pelanggan" />
+      {!embedded && (
+        <>
+          <PageMeta title="Harga Grup Pelanggan" description="Halaman daftar harga grup pelanggan" />
+          <PageBreadcrumb pageTitle="Harga Grup Pelanggan" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard

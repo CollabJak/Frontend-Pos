@@ -19,7 +19,11 @@ import { useDeleteCustomerGroup, useFetchCustomerGroups } from "../../hooks/useC
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 
-export default function CustomerGroupList() {
+export interface CustomerGroupListProps {
+  embedded?: boolean;
+}
+
+export default function CustomerGroupList({ embedded = false }: CustomerGroupListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -58,8 +62,12 @@ export default function CustomerGroupList() {
 
   return (
     <>
-      <PageMeta title="Grup Pelanggan" description="Halaman daftar grup pelanggan" />
-      <PageBreadcrumb pageTitle="Grup Pelanggan" />
+      {!embedded && (
+        <>
+          <PageMeta title="Grup Pelanggan" description="Halaman daftar grup pelanggan" />
+          <PageBreadcrumb pageTitle="Grup Pelanggan" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Daftar Grup Pelanggan" linkLabel="Tambah Grup Pelanggan" linkTo="/customer-groups/create">

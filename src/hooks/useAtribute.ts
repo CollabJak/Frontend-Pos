@@ -50,7 +50,7 @@ export const useCreateAtribute = () => {
       queryClient.invalidateQueries({ queryKey: ["atribute"] });
       queryClient.invalidateQueries({ queryKey: ["atributes"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/atributes");
+      navigate("/products?tab=attributes");
     },
   });
 };
@@ -72,7 +72,7 @@ export const useUpdateAtribute = () => {
       queryClient.invalidateQueries({ queryKey: ["atributes"] });
       queryClient.invalidateQueries({ queryKey: ["atribute", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/atributes");
+      navigate("/products?tab=attributes");
     },
   });
 };

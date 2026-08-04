@@ -49,7 +49,7 @@ export const useCreateBrand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/brands");
+      navigate("/products?tab=brands");
     },
   });
 };
@@ -71,7 +71,7 @@ export const useUpdateBrand = () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] });
       queryClient.invalidateQueries({ queryKey: ["brand", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/brands");
+      navigate("/products?tab=brands");
     },
   });
 };

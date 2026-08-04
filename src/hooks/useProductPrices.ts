@@ -62,7 +62,7 @@ export const useCreateProductPrice = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-prices"] });
-      navigate("/product-prices");
+      navigate("/products?tab=prices");
     },
   });
 };
@@ -86,7 +86,7 @@ export const useUpdateProductPrice = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["product-prices"] });
       queryClient.invalidateQueries({ queryKey: ["product-price", id] });
-      navigate("/product-prices");
+      navigate("/products?tab=prices");
     },
   });
 };

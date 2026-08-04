@@ -52,7 +52,11 @@ const formatDate = (value?: string | null) => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-export default function ProductPriceList() {
+export interface ProductPriceListProps {
+  embedded?: boolean;
+}
+
+export default function ProductPriceList({ embedded = false }: ProductPriceListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -90,8 +94,12 @@ export default function ProductPriceList() {
 
   return (
     <>
-      <PageMeta title="Harga Produk" description="Halaman daftar harga produk" />
-      <PageBreadcrumb pageTitle="Harga Produk" />
+      {!embedded && (
+        <>
+          <PageMeta title="Harga Produk" description="Halaman daftar harga produk" />
+          <PageBreadcrumb pageTitle="Harga Produk" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard

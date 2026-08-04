@@ -19,7 +19,11 @@ import { useModal } from "../../hooks/useModal";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function ProductList() {
+export interface ProductListProps {
+  embedded?: boolean;
+}
+
+export default function ProductList({ embedded = false }: ProductListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -52,11 +56,15 @@ export default function ProductList() {
 
   return (
     <>
-      <PageMeta
-        title="Produk"
-        description="Halaman daftar produk"
-      />
-      <PageBreadcrumb pageTitle="Produk" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Produk"
+            description="Halaman daftar produk"
+          />
+          <PageBreadcrumb pageTitle="Produk" />
+        </>
+      )}
       <div className="space-y-6">
         <ComponentCard title="Daftar Produk" linkLabel="Tambah Produk" linkTo="/products/create">
           <div>

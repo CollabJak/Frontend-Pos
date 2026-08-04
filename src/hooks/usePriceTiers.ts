@@ -55,7 +55,7 @@ export const useCreatePriceTier = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["price-tiers"] });
-      navigate("/price-tiers");
+      navigate("/products?tab=tiers");
     },
   });
 };
@@ -76,7 +76,7 @@ export const useUpdatePriceTier = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["price-tiers"] });
       queryClient.invalidateQueries({ queryKey: ["price-tier", id] });
-      navigate("/price-tiers");
+      navigate("/products?tab=tiers");
     },
   });
 };

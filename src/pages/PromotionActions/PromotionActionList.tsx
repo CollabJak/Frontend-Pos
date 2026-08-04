@@ -22,7 +22,11 @@ import {
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
 
-export default function PromotionActionList() {
+export interface PromotionActionListProps {
+  embedded?: boolean;
+}
+
+export default function PromotionActionList({ embedded = false }: PromotionActionListProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 500);
@@ -57,8 +61,12 @@ export default function PromotionActionList() {
 
   return (
     <>
-      <PageMeta title="Aksi Promosi" description="Halaman daftar aksi promosi" />
-      <PageBreadcrumb pageTitle="Aksi Promosi" />
+      {!embedded && (
+        <>
+          <PageMeta title="Aksi Promosi" description="Halaman daftar aksi promosi" />
+          <PageBreadcrumb pageTitle="Aksi Promosi" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard

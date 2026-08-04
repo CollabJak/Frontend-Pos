@@ -46,7 +46,7 @@ export const useCreateProductVariant = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-variants"] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/product-variants");
+      navigate("/products?tab=variants");
     },
   });
 };
@@ -79,7 +79,7 @@ export const useUpdateProductVariant = () => {
       queryClient.invalidateQueries({ queryKey: ["product-variants"] });
       queryClient.invalidateQueries({ queryKey: ["product-variant", id] });
       queryClient.invalidateQueries({ queryKey: ["async-options"] });
-      navigate("/product-variants");
+      navigate("/products?tab=variants");
     },
   });
 };

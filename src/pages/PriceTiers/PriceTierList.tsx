@@ -40,7 +40,11 @@ const formatDate = (value?: string | null) => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-export default function PriceTierList() {
+export interface PriceTierListProps {
+  embedded?: boolean;
+}
+
+export default function PriceTierList({ embedded = false }: PriceTierListProps) {
   const [page, setPage] = useState(1);
   const { mutate: deletePriceTier } = useDeletePriceTier();
   const { isOpen, openModal, closeModal } = useModal();
@@ -75,8 +79,12 @@ export default function PriceTierList() {
 
   return (
     <>
-      <PageMeta title="Tingkat Harga (Price Tiers)" description="Halaman daftar tingkat harga grosir" />
-      <PageBreadcrumb pageTitle="Tingkat Harga (Price Tiers)" />
+      {!embedded && (
+        <>
+          <PageMeta title="Tingkat Harga (Price Tiers)" description="Halaman daftar tingkat harga grosir" />
+          <PageBreadcrumb pageTitle="Tingkat Harga (Price Tiers)" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Daftar Tingkat Harga (Price Tiers)" linkLabel="Tambah Tingkat Harga" linkTo="/price-tiers/create">
