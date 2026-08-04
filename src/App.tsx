@@ -24,7 +24,8 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import RecentTransactionsPage from "./pages/Dashboard/RecentTransactionsPage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/queryClient";
 import AddCategory from "./pages/Categories/AddCategory";
 import EditCategory from "./pages/Categories/EditCategory";
 import UnitManagementPage from "./pages/Units/UnitManagementPage";
@@ -106,8 +107,6 @@ import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
 import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-
-const queryClient = new QueryClient();
 
 export default function App() {
   return (
