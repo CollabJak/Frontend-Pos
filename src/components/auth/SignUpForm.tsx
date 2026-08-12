@@ -14,6 +14,7 @@ import { z } from "zod";
 import { useAuth } from "../../hooks/useAuth";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import Button from "../ui/button/Button";
+import { ApiValidationError } from "../../utils/apiError";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -21,14 +22,24 @@ type FilePondItem = { file?: File };
 
 const signUpSchema = z
   .object({
-    name: z.string().min(1, "Nama wajib diisi").max(255),
-    email: z.string().email("Alamat email tidak valid"),
-    phone: z.string().min(1, "Nomor telepon wajib diisi").max(20),
-    password: z.string().min(8, "Kata sandi minimal 8 karakter"),
-    passwordConfirmation: z.string().min(8, "Konfirmasi kata sandi Anda"),
+    name: z.string().min(1, "Nama lengkap wajib diisi").max(255, "Nama lengkap maksimal 255 karakter"),
+    email: z
+      .string()
+      .min(1, "Alamat email wajib diisi")
+      .email("Format email tidak valid (contoh: nama@domain.com)"),
+    phone: z.string().min(1, "Nomor telepon wajib diisi").max(20, "Nomor telepon maksimal 20 karakter"),
+    password: z
+      .string()
+      .min(1, "Kata sandi wajib diisi")
+      .min(12, "Kata sandi minimal 12 karakter")
+      .regex(/[A-Z]/, "Kata sandi harus mengombinasikan huruf besar (kapital)")
+      .regex(/[a-z]/, "Kata sandi harus mengombinasikan huruf kecil")
+      .regex(/[0-9]/, "Kata sandi harus mengandung minimal satu angka (0-9)")
+      .regex(/[^A-Za-z0-9]/, "Kata sandi harus mengandung minimal satu karakter simbol (contoh: @, #, $, !)"),
+    passwordConfirmation: z.string().min(1, "Konfirmasi kata sandi wajib diisi"),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
-    message: "Kata sandi tidak cocok",
+    message: "Konfirmasi kata sandi tidak cocok",
     path: ["passwordConfirmation"],
   });
 
@@ -47,6 +58,7 @@ export default function SignUpForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -55,6 +67,7 @@ export default function SignUpForm() {
   const onSubmit = async (data: SignUpFormData) => {
     setIsSubmitting(true);
     setServerError(null);
+    setPhotoError(null);
     try {
       const firstItem = files[0] as FilePondItem | undefined;
       const file = firstItem?.file || null;
@@ -68,8 +81,31 @@ export default function SignUpForm() {
         data.passwordConfirmation
       );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Pendaftaran gagal";
-      setServerError(errorMessage);
+      if (error instanceof ApiValidationError) {
+        let hasFieldError = false;
+        Object.entries(error.errors).forEach(([field, messages]) => {
+          const message = messages[0];
+          if (!message) return;
+
+          if (field === "photo") {
+            setPhotoError(message);
+            hasFieldError = true;
+          } else if (field === "password_confirmation") {
+            setError("passwordConfirmation", { type: "server", message });
+            hasFieldError = true;
+          } else if (field === "name" || field === "email" || field === "phone" || field === "password") {
+            setError(field, { type: "server", message });
+            hasFieldError = true;
+          }
+        });
+
+        if (!hasFieldError) {
+          setServerError(error.message);
+        }
+      } else {
+        const errorMessage = error instanceof Error ? error.message : "Pendaftaran gagal";
+        setServerError(errorMessage);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -153,7 +189,7 @@ export default function SignUpForm() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-5">
               {serverError && (
-                <div className="p-3 text-sm text-error-500 bg-error-50 rounded-lg">
+                <div className="p-3 text-sm text-error-500 bg-error-50 rounded-lg dark:bg-error-950/30 dark:border dark:border-error-800">
                   {serverError}
                 </div>
               )}
@@ -166,11 +202,10 @@ export default function SignUpForm() {
                   type="text"
                   id="name"
                   placeholder="Masukkan nama lengkap Anda"
+                  error={!!errors.name}
+                  hint={errors.name?.message}
                   {...register("name")}
                 />
-                {errors.name && (
-                  <p className="mt-2 text-sm text-error-500">{errors.name.message}</p>
-                )}
               </div>
               {/* <!-- Email --> */}
               <div>
@@ -181,11 +216,10 @@ export default function SignUpForm() {
                   type="email"
                   id="email"
                   placeholder="Masukkan email Anda"
+                  error={!!errors.email}
+                  hint={errors.email?.message}
                   {...register("email")}
                 />
-                {errors.email && (
-                  <p className="mt-2 text-sm text-error-500">{errors.email.message}</p>
-                )}
               </div>
               {/* Phone */}
               <div>
@@ -196,11 +230,10 @@ export default function SignUpForm() {
                   type="text"
                   id="phone"
                   placeholder="Masukkan nomor telepon Anda"
+                  error={!!errors.phone}
+                  hint={errors.phone?.message}
                   {...register("phone")}
                 />
-                {errors.phone && (
-                  <p className="mt-2 text-sm text-error-500">{errors.phone.message}</p>
-                )}
               </div>
               {/* Photo */}
               <div>
@@ -235,6 +268,8 @@ export default function SignUpForm() {
                   <Input
                     placeholder="Masukkan kata sandi Anda"
                     type={showPassword ? "text" : "password"}
+                    error={!!errors.password}
+                    hint={errors.password?.message}
                     {...register("password")}
                   />
                   <span
@@ -248,8 +283,10 @@ export default function SignUpForm() {
                     )}
                   </span>
                 </div>
-                {errors.password && (
-                  <p className="mt-2 text-sm text-error-500">{errors.password.message}</p>
+                {!errors.password && (
+                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    Minimal 12 karakter, mengombinasikan huruf besar, huruf kecil, angka, dan simbol (contoh: @, #, $, !).
+                  </p>
                 )}
               </div>
               {/* <!-- Confirm Password --> */}
@@ -261,6 +298,8 @@ export default function SignUpForm() {
                   <Input
                     placeholder="Konfirmasi kata sandi Anda"
                     type={showPasswordConfirmation ? "text" : "password"}
+                    error={!!errors.passwordConfirmation}
+                    hint={errors.passwordConfirmation?.message}
                     {...register("passwordConfirmation")}
                   />
                   <span
@@ -274,9 +313,6 @@ export default function SignUpForm() {
                     )}
                   </span>
                 </div>
-                {errors.passwordConfirmation && (
-                  <p className="mt-2 text-sm text-error-500">{errors.passwordConfirmation.message}</p>
-                )}
               </div>
               {/* <!-- Button --> */}
               <div>

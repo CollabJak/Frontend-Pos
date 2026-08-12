@@ -3,8 +3,11 @@ import apiClient from "./axiosConfig";
 import { User } from "../types/types";
 import { runtimeConfig } from "../utils/runtimeConfig";
 
+import { ApiValidationError } from "../utils/apiError";
+
 const SANCTUM_BASE_URL = runtimeConfig.apiBaseSanctum;
 let csrfCookieRequest: Promise<void> | null = null;
+
 
 const ensureCsrfCookie = async (): Promise<void> => {
   if (csrfCookieRequest) {
@@ -58,13 +61,20 @@ export const authService = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      });
+        silent: true,
+      } as Record<string, unknown>);
       return data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        throw new Error(error.response?.data?.message || "Registration failed.");
+        if (error.response?.status === 422 && error.response?.data?.errors) {
+          throw new ApiValidationError(
+            error.response.data.message || "Validasi gagal",
+            error.response.data.errors
+          );
+        }
+        throw new Error(error.response?.data?.message || "Pendaftaran gagal.");
       }
-      throw new Error("Unexpected error. Please try again.");
+      throw new Error("Terjadi kesalahan. Silakan coba lagi.");
     }
   },
 
