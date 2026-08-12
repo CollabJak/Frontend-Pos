@@ -122,6 +122,9 @@ export default function ResetPasswordForm() {
                   )}
                 </span>
               </div>
+              <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                Minimal 12 karakter, mengombinasikan huruf besar, huruf kecil, angka, dan simbol (contoh: @, #, $, !).
+              </p>
             </div>
 
             <div>

@@ -20,7 +20,10 @@ export default function ForgotPasswordForm() {
 
     try {
       const response = await authService.forgotPassword({ email });
-      setSuccessMessage(response.message || "Tautan atur ulang kata sandi berhasil dikirim.");
+      setSuccessMessage(
+        response.message ||
+          "Jika akun terdaftar dan menggunakan kata sandi, tautan atur ulang kata sandi telah dikirim ke email Anda."
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : "Gagal mengirim tautan atur ulang kata sandi.";
       setErrorMessage(message);
@@ -81,6 +84,16 @@ export default function ForgotPasswordForm() {
             Kirim Tautan Atur Ulang
           </Button>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Catatan: Jika Anda mendaftar menggunakan akun Google, Anda tidak memerlukan kata sandi. Silakan gunakan tombol{" "}
+            <Link to="/signin" className="font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400">
+              Masuk dengan Google
+            </Link>{" "}
+            di halaman masuk.
+          </p>
+        </div>
       </div>
     </div>
   );
