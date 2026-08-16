@@ -8,5 +8,5 @@ export const toInventoryAdjustmentPayload = (
   location_id: values.location_id,
   qty: values.qty,
   reason: values.reason.trim(),
-  ...(values.cost !== undefined ? { cost: values.cost } : {}),
+  ...(values.cost != null ? { cost: values.cost } : {}),
 });

@@ -72,7 +72,7 @@ export interface InventoryAdjustmentPayload {
   location_id: number;
   qty: number;
   reason: string;
-  cost?: number;
+  cost?: number | null;
 }
 
 export interface InventorySummary {
