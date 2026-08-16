@@ -90,7 +90,6 @@ const BulkAssignForm: React.FC = () => {
   ];
 
   const shiftSelectOptions = [
-    { value: "", label: "Pilih Shift" },
     ...shiftOptions.map((shift: any) => ({
       value: shift.id.toString(),
       label: shift.name,
