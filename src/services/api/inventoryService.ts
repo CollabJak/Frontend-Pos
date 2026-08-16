@@ -13,6 +13,7 @@ interface InventoryListParams {
   page?: number;
   search?: string;
   locationId?: number | null;
+  locationType?: string | null;
 }
 
 interface InventoryBatchesParams {
@@ -33,12 +34,14 @@ export const fetchInventoryList = async ({
   page = 1,
   search,
   locationId,
+  locationType,
 }: InventoryListParams): Promise<PaginatedApiResponse<InventoryListItem>> => {
   const response = await apiClient.get("/inventory", {
     params: {
       page,
       ...(search ? { search } : {}),
       ...(locationId ? { location_id: locationId } : {}),
+      ...(locationType ? { location_type: locationType } : {}),
     },
   });
 
