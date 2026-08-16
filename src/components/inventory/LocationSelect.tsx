@@ -10,6 +10,7 @@ interface LocationSelectProps {
   disabled?: boolean;
   label?: string;
   placeholder?: string;
+  required?: boolean;
 }
 
 const fetchLocationOptions = createOptionsFetcher<SelectOption>({
@@ -22,10 +23,11 @@ export default function LocationSelect({
   disabled = false,
   label = "Lokasi",
   placeholder = "Cari lokasi...",
+  required = false,
 }: LocationSelectProps) {
   return (
     <div>
-      <Label>{label}</Label>
+      <Label required={required}>{label}</Label>
       <AsyncSearchSelect<SelectOption>
         label=""
         value={value}

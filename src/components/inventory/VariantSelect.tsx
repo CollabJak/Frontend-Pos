@@ -13,6 +13,7 @@ interface VariantSelectProps {
   locationId?: number | null;
   label?: string;
   placeholder?: string;
+  required?: boolean;
 }
 
 export default function VariantSelect({
@@ -22,6 +23,7 @@ export default function VariantSelect({
   locationId = null,
   label = "Varian Produk",
   placeholder = "Cari varian produk...",
+  required = false,
 }: VariantSelectProps) {
   const fetchVariantOptions = async (params: {
     limit: number;
@@ -52,7 +54,7 @@ export default function VariantSelect({
 
   return (
     <div>
-      <Label>{label}</Label>
+      <Label required={required}>{label}</Label>
       <AsyncSearchSelect<SelectOption>
         label=""
         value={value}
