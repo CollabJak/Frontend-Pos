@@ -2,13 +2,13 @@ import { z } from "zod";
 
 const optionalPositiveNumber = z.preprocess(
   (value) => {
-    if (value === "" || value === null || value === undefined) {
+    if (value === "" || value === null || value === undefined || (typeof value === "number" && Number.isNaN(value))) {
       return undefined;
     }
 
     return value;
   },
-  z.coerce.number().positive("Cost must be greater than zero").optional()
+  z.coerce.number().min(0, "Harga pokok tidak boleh kurang dari nol").optional().nullable()
 );
 
 export const stockAdjustmentSchema = z.object({

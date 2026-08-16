@@ -123,6 +123,7 @@ export default function StockAdjustmentForm() {
             render={({ field }) => (
               <div>
                 <LocationSelect
+                  required
                   value={field.value > 0 ? field.value : null}
                   onChange={(value) => {
                     field.onChange(value ?? 0);
@@ -144,6 +145,7 @@ export default function StockAdjustmentForm() {
             render={({ field }) => (
               <div>
                 <VariantSelect
+                  required
                   value={field.value > 0 ? field.value : null}
                   locationId={locationId}
                   onChange={(value) => {
@@ -182,7 +184,7 @@ export default function StockAdjustmentForm() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <Label htmlFor="adjustment-qty">Jumlah Penyesuaian</Label>
+            <Label htmlFor="adjustment-qty" required>Jumlah Penyesuaian</Label>
             <Input
               id="adjustment-qty"
               type="number"
@@ -195,7 +197,7 @@ export default function StockAdjustmentForm() {
           </div>
 
           <div>
-            <Label htmlFor="adjustment-cost">Harga Pokok / Cost (Opsional)</Label>
+            <Label htmlFor="adjustment-cost">Harga Pokok / Cost</Label>
             <Input
               id="adjustment-cost"
               type="number"
@@ -212,7 +214,7 @@ export default function StockAdjustmentForm() {
         </div>
 
         <div>
-          <Label htmlFor="adjustment-reason">Alasan Penyesuaian</Label>
+          <Label htmlFor="adjustment-reason" required>Alasan Penyesuaian</Label>
           <Controller
             name="reason"
             control={control}
