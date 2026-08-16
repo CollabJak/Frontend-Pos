@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -16,7 +16,6 @@ import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { useInventoryList } from "../../hooks/useInventoryList";
 import { InventoryListItem } from "../../types/types";
 
@@ -65,30 +64,43 @@ const resolveAvailable = (row: InventoryListItem): string => {
   return `${qtyOnHand - qtyReserved}`;
 };
 
+const LOCATION_TYPE_OPTIONS = ["store", "warehouse", "pos", "hq"] as const;
+
 export default function InventoryList() {
   const [page, setPage] = useState(1);
   const [productSearch, setProductSearch] = useState("");
   const [locationId, setLocationId] = useState<number | null>(null);
+  const [locationType, setLocationType] = useState<string | null>(null);
 
-  const debouncedSearch = useDebouncedValue(productSearch.trim(), 400);
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedLocationId, setAppliedLocationId] = useState<number | null>(null);
+  const [appliedLocationType, setAppliedLocationType] = useState<string | null>(null);
 
-  const { data, isLoading } = useInventoryList({
+  const { data, isLoading, isFetching } = useInventoryList({
     page,
-    search: debouncedSearch || undefined,
-    locationId,
+    search: appliedSearch || undefined,
+    locationId: appliedLocationId,
+    locationType: appliedLocationType,
   });
 
   const fetchLocationOptions = createOptionsFetcher<SelectOption>({
     endpoint: "/options/locations",
   });
 
-  useEffect(() => {
+  const handleSearch = () => {
+    setAppliedSearch(productSearch.trim());
+    setAppliedLocationId(locationId);
+    setAppliedLocationType(locationType);
     setPage(1);
-  }, [debouncedSearch, locationId]);
+  };
 
   const handleResetFilters = () => {
     setProductSearch("");
     setLocationId(null);
+    setLocationType(null);
+    setAppliedSearch("");
+    setAppliedLocationId(null);
+    setAppliedLocationType(null);
     setPage(1);
   };
 
@@ -99,7 +111,7 @@ export default function InventoryList() {
 
       <div className="space-y-6">
         <ComponentCard title="Ringkasan Stok Inventaris">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
               <Label htmlFor="inventory-product-search">Cari Produk</Label>
               <Input
@@ -108,6 +120,11 @@ export default function InventoryList() {
                 placeholder="Cari berdasarkan nama produk..."
                 value={productSearch}
                 onChange={(event) => setProductSearch(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
               />
             </div>
 
@@ -128,8 +145,41 @@ export default function InventoryList() {
               />
             </div>
 
-            <div className="flex items-end">
-              <Button variant="outline" onClick={handleResetFilters}>
+            <div>
+              <Label htmlFor="inventory-location-type-filter">Filter Tipe Lokasi</Label>
+              <select
+                id="inventory-location-type-filter"
+                value={locationType ?? ""}
+                onChange={(e) => setLocationType(e.target.value ? e.target.value : null)}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              >
+                <option value="">Semua Tipe Lokasi</option>
+                {LOCATION_TYPE_OPTIONS.map((type) => (
+                  <option
+                    key={type}
+                    value={type}
+                    className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
+                  >
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-end gap-2">
+              <Button
+                variant="primary"
+                onClick={handleSearch}
+                isLoading={isFetching}
+                disabled={isFetching}
+              >
+                Cari
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleResetFilters}
+                disabled={isFetching}
+              >
                 Reset Filter
               </Button>
             </div>
@@ -137,9 +187,9 @@ export default function InventoryList() {
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
-              {isLoading && <p className="p-3">Memuat...</p>}
+              {(isLoading || isFetching) && <p className="p-3 text-sm text-gray-500">Memuat stok inventaris...</p>}
 
-              {!isLoading && (
+              {!isLoading && !isFetching && (
                 <Table className="table-auto">
                   <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
