@@ -24,6 +24,8 @@ export default function BusinessList() {
   const { isOpen, openModal, closeModal } = useModal();
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
 
+  const hasBusinessData = Boolean(data?.data && data.data.length > 0);
+
   const handleDeleteClick = (id: number, name: string) => () => {
     setPendingDelete({ id, name });
     openModal();
@@ -50,7 +52,11 @@ export default function BusinessList() {
       <PageBreadcrumb pageTitle="Daftar Bisnis" />
 
       <div className="space-y-6">
-        <ComponentCard title="Daftar Bisnis" linkLabel="Tambah Bisnis" linkTo="/businesses/create">
+        <ComponentCard
+          title="Daftar Bisnis"
+          linkLabel={!hasBusinessData ? "Tambah Bisnis" : undefined}
+          linkTo={!hasBusinessData ? "/businesses/create" : undefined}
+        >
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
               {isLoading && <p className="p-3">Memuat data...</p>}
@@ -109,13 +115,15 @@ export default function BusinessList() {
                               <PencilIcon className="size-5" />
                               Edit
                             </Link>
-                            <Button
-                              size="sm"
-                              variant="danger"
-                              onClick={handleDeleteClick(business.id, business.name)}
-                            >
-                              Hapus
-                            </Button>
+                            {!hasBusinessData && (
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                onClick={handleDeleteClick(business.id, business.name)}
+                              >
+                                Hapus
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

@@ -10,8 +10,8 @@ interface FetchBusinessesParams {
 
 const normalizePayload = (payload: CreateBusinessPayload | UpdateBusinessPayload) => ({
   ...payload,
-  phone: payload.phone && payload.phone.trim() !== "" ? payload.phone : null,
-  address: payload.address && payload.address.trim() !== "" ? payload.address : null,
+  phone: typeof payload.phone === "string" ? payload.phone.trim() : payload.phone,
+  address: typeof payload.address === "string" ? payload.address.trim() : payload.address,
 });
 
 export const useFetchBusinesses = ({ page = 1 }: FetchBusinessesParams) => {

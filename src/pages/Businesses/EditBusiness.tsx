@@ -93,7 +93,7 @@ export default function EditBusiness() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="business-name">Nama Bisnis</Label>
+              <Label htmlFor="business-name" required>Nama Bisnis</Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -104,7 +104,7 @@ export default function EditBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-code">Kode Bisnis</Label>
+              <Label htmlFor="business-code" required>Kode Bisnis</Label>
               <Input
                 {...register("code")}
                 type="text"
@@ -115,7 +115,7 @@ export default function EditBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-email">Email Perusahaan</Label>
+              <Label htmlFor="business-email" required>Email Perusahaan</Label>
               <Input
                 {...register("email")}
                 type="email"
@@ -126,31 +126,31 @@ export default function EditBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-phone">No. Telepon (Opsional)</Label>
+              <Label htmlFor="business-phone" required>No. Telepon</Label>
               <Input
                 {...register("phone")}
                 type="text"
                 id="business-phone"
-                placeholder="Masukkan nomor telepon (opsional)"
+                placeholder="Masukkan nomor telepon"
               />
               {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-address">Alamat Lengkap</Label>
+              <Label htmlFor="business-address" required>Alamat Lengkap</Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Masukkan alamat lengkap bisnis (opsional)"
+                placeholder="Masukkan alamat lengkap bisnis"
               />
               {errors.address && <p className="text-red-500">{errors.address.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="business-active">Status Aktif</Label>
+              <Label htmlFor="business-active" required>Status Aktif</Label>
               <Checkbox
                 id="business-active"
                 checked={Boolean(watch("is_active"))}

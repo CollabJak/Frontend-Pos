@@ -3,20 +3,20 @@ import { z } from "zod";
 const requiredString = (message: string) => z.string().trim().min(1, message);
 
 export const businessSchema = z.object({
-  name: z.string().min(1, "Business name is required").max(255, "Business name is too long"),
-  code: z.string().min(1, "Business code is required").max(255, "Business code is too long"),
-  email: z.string().min(1, "Business email is required").email("Business email is invalid"),
-  phone: z.string().optional().or(z.literal("")),
-  address: z.string().optional().or(z.literal("")),
+  name: requiredString("Nama bisnis wajib diisi").max(255, "Nama bisnis terlalu panjang"),
+  code: requiredString("Kode bisnis wajib diisi").max(255, "Kode bisnis terlalu panjang"),
+  email: requiredString("Email bisnis wajib diisi").email("Format email bisnis tidak valid"),
+  phone: requiredString("No. telepon wajib diisi").max(50, "No. telepon terlalu panjang"),
+  address: requiredString("Alamat lengkap wajib diisi"),
   is_active: z.boolean(),
 });
 
 export const createBusinessSchema = z.object({
-  name: requiredString("Business name is required").max(255, "Business name is too long"),
-  code: requiredString("Business code is required").max(255, "Business code is too long"),
-  email: requiredString("Business email is required").email("Business email is invalid"),
-  phone: requiredString("Business phone is required").max(50, "Business phone is too long"),
-  address: requiredString("Business address is required"),
+  name: requiredString("Nama bisnis wajib diisi").max(255, "Nama bisnis terlalu panjang"),
+  code: requiredString("Kode bisnis wajib diisi").max(255, "Kode bisnis terlalu panjang"),
+  email: requiredString("Email bisnis wajib diisi").email("Format email bisnis tidak valid"),
+  phone: requiredString("No. telepon wajib diisi").max(50, "No. telepon terlalu panjang"),
+  address: requiredString("Alamat lengkap wajib diisi"),
   is_active: z.boolean(),
 });
 

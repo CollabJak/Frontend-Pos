@@ -7,7 +7,7 @@ import TextArea from "../../components/form/input/TextArea";
 import Checkbox from "../../components/form/input/Checkbox";
 import Button from "../../components/ui/button/Button";
 import { createBusinessSchema, CreateBusinessFormData } from "../../Schemas/businessSchema";
-import { useCreateBusiness } from "../../hooks/useBusinesses";
+import { useCreateBusiness, useFetchBusinesses } from "../../hooks/useBusinesses";
 import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,9 +18,10 @@ import { Navigate } from "react-router-dom";
 export default function AddBusiness() {
   const { user } = useAuth();
   const { mutate: createBusiness, isPending } = useCreateBusiness();
+  const { data: businessData, isLoading: isFetchingBusinesses } = useFetchBusinesses({ page: 1 });
 
   const isManager = user?.roles?.includes("manager");
-  const alreadyHasBusiness = isManager && user?.business_id != null;
+  const alreadyHasBusiness = (isManager && user?.business_id != null) || Boolean(businessData?.data && businessData.data.length > 0);
 
   const {
     register,
@@ -40,6 +41,10 @@ export default function AddBusiness() {
       is_active: true,
     },
   });
+
+  if (isFetchingBusinesses) {
+    return <p className="p-3">Memuat data...</p>;
+  }
 
   if (alreadyHasBusiness) {
     return <Navigate to="/businesses" replace />;
@@ -85,7 +90,7 @@ export default function AddBusiness() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="business-name">Nama Bisnis</Label>
+              <Label htmlFor="business-name" required>Nama Bisnis</Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -96,7 +101,7 @@ export default function AddBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-code">Kode Bisnis</Label>
+              <Label htmlFor="business-code" required>Kode Bisnis</Label>
               <Input
                 {...register("code")}
                 type="text"
@@ -107,7 +112,7 @@ export default function AddBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-email">Email Perusahaan</Label>
+              <Label htmlFor="business-email" required>Email Perusahaan</Label>
               <Input
                 {...register("email")}
                 type="email"
@@ -118,7 +123,7 @@ export default function AddBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-phone">No. Telepon (Opsional)</Label>
+              <Label htmlFor="business-phone" required>No. Telepon</Label>
               <Input
                 {...register("phone")}
                 type="text"
@@ -129,7 +134,7 @@ export default function AddBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-address">Alamat Lengkap</Label>
+              <Label htmlFor="business-address" required>Alamat Lengkap</Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
@@ -142,7 +147,7 @@ export default function AddBusiness() {
             </div>
 
             <div>
-              <Label htmlFor="business-active">Status Aktif</Label>
+              <Label htmlFor="business-active" required>Status Aktif</Label>
               <Checkbox
                 id="business-active"
                 checked={Boolean(watch("is_active"))}
