@@ -254,12 +254,13 @@ export default function OverrideModal({
           {activeTab === "reschedule" && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
+                <Label>Shift Baru</Label>
                 <Controller
                   name="new_shift_id"
                   control={control}
                   render={({ field }) => (
                     <AsyncSearchSelect<OptionDto>
-                      label="Shift Baru"
+                      label=""
                       value={field.value}
                       displayValue={newShiftLabel}
                       onChange={(value, option) => {
@@ -294,12 +295,13 @@ export default function OverrideModal({
 
           {activeTab === "emergency" && (
             <div className="space-y-1">
+              <Label required>Karyawan Pengganti</Label>
               <Controller
                 name="replacement_user_id"
                 control={control}
                 render={({ field }) => (
                   <AsyncSearchSelect<OptionDto>
-                    label="Karyawan Pengganti"
+                    label=""
                     value={field.value}
                     displayValue={replacementUserLabel}
                     onChange={(value, option) => {
@@ -331,12 +333,13 @@ export default function OverrideModal({
                 </div>
               </div>
               <div className="space-y-1">
+                <Label required>Karyawan untuk Ditukar</Label>
                 <Controller
                   name="swap_user_id"
                   control={control}
                   render={({ field }) => (
                     <AsyncSearchSelect<OptionDto>
-                      label="Karyawan untuk Ditukar"
+                      label=""
                       value={field.value}
                       displayValue={swapUserLabel}
                       onChange={(value, option) => {
@@ -386,12 +389,13 @@ export default function OverrideModal({
           {activeTab === "overtime" && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
+                <Label required>Shift Lembur</Label>
                 <Controller
                   name="overtime_shift_id"
                   control={control}
                   render={({ field }) => (
                     <AsyncSearchSelect<OptionDto>
-                      label="Shift Lembur"
+                      label=""
                       value={field.value}
                       displayValue={overtimeShiftLabel}
                       onChange={(value, option) => {
@@ -411,7 +415,7 @@ export default function OverrideModal({
                 )}
               </div>
               <div>
-                <Label>Tanggal Lembur</Label>
+                <Label required>Tanggal Lembur</Label>
                 <input
                   type="date"
                   {...register("overtime_date")}
@@ -425,7 +429,7 @@ export default function OverrideModal({
           )}
 
           <div>
-            <Label>Alasan</Label>
+            <Label required>Alasan</Label>
             <Controller
               name="reason"
               control={control}

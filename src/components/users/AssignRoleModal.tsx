@@ -79,7 +79,9 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <Label htmlFor="role">Pilih Peran</Label>
+          <Label htmlFor="role" required>
+            Pilih Peran
+          </Label>
           <Controller
             name="role"
             control={control}

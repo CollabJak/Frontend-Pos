@@ -80,7 +80,7 @@ export default function AddPromotionCondition() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promosi</Label>
+            <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="promotion-condition-promotion-options"
@@ -101,7 +101,9 @@ export default function AddPromotionCondition() {
           </div>
 
           <div>
-            <Label htmlFor="condition-type">Tipe Syarat</Label>
+            <Label htmlFor="condition-type" required>
+              Tipe Syarat
+            </Label>
             <select
               {...register("condition_type")}
               id="condition-type"
@@ -117,7 +119,9 @@ export default function AddPromotionCondition() {
           </div>
 
           <div>
-            <Label htmlFor="condition-operator">Operator Syarat</Label>
+            <Label htmlFor="condition-operator" required>
+              Operator Syarat
+            </Label>
             <select
               {...register("condition_operator")}
               id="condition-operator"

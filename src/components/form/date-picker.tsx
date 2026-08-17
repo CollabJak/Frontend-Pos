@@ -17,6 +17,7 @@ type PropsType = {
   label?: string;
   placeholder?: string;
   error?: string;
+  required?: boolean;
 };
 
 export default function DatePicker({
@@ -28,6 +29,7 @@ export default function DatePicker({
   defaultDate,
   placeholder,
   error,
+  required = false,
 }: PropsType) {
   useEffect(() => {
     const plugins = [];
@@ -68,7 +70,11 @@ export default function DatePicker({
 
   return (
     <div>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && (
+        <Label htmlFor={id} required={required}>
+          {label}
+        </Label>
+      )}
 
       <div className="relative">
         <input

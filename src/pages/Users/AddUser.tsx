@@ -5,6 +5,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import { EyeIcon, EyeCloseIcon } from "../../icons";
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
@@ -12,7 +13,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import {
   UserFormData,
-  userSchema,
+  createUserSchema,
 } from "../../Schemas/userSchema";
 import { useCreateUser } from "../../hooks/useUsers";
 import { ApiErrorResponse } from "../../types/types";
@@ -24,6 +25,7 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddUser() {
   const { mutate: createUser, isPending } = useCreateUser();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [files, setFiles] = useState<unknown[]>([]);
   type FilePondItem = { file?: File };
@@ -35,7 +37,7 @@ export default function AddUser() {
     setValue,
     formState: { errors },
   } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -103,32 +105,79 @@ export default function AddUser() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="name">Nama Lengkap</Label>
-              <Input {...register("name")} type="text" id="name" placeholder="Masukkan nama lengkap" />
+              <Label htmlFor="name" required>
+                Nama Lengkap
+              </Label>
+              <Input
+                {...register("name")}
+                type="text"
+                id="name"
+                placeholder="Masukkan nama lengkap"
+                error={!!errors.name}
+              />
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="email">Email Perusahaan</Label>
-              <Input {...register("email")} type="email" id="email" placeholder="Masukkan alamat email" />
+              <Label htmlFor="email" required>
+                Email Perusahaan
+              </Label>
+              <Input
+                {...register("email")}
+                type="email"
+                id="email"
+                placeholder="Masukkan alamat email"
+                error={!!errors.email}
+              />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="password">Kata Sandi</Label>
-              <Input {...register("password")} type="password" id="password" placeholder="Masukkan kata sandi" />
+              <Label htmlFor="password" required>
+                Kata Sandi
+              </Label>
+              <div className="relative">
+                <Input
+                  {...register("password")}
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="Masukkan kata sandi"
+                  error={!!errors.password}
+                  className="pr-11"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                >
+                  {showPassword ? (
+                    <EyeIcon className="fill-gray-500 dark:fill-gray-400 text-gray-500 dark:text-gray-400 size-5" />
+                  ) : (
+                    <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 text-gray-500 dark:text-gray-400 size-5" />
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="phone">No. Telepon</Label>
-              <Input {...register("phone")} type="text" id="phone" placeholder="Masukkan nomor telepon" />
+              <Label htmlFor="phone" required>
+                No. Telepon
+              </Label>
+              <Input
+                {...register("phone")}
+                type="text"
+                id="phone"
+                placeholder="Masukkan nomor telepon"
+                error={!!errors.phone}
+              />
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
               )}

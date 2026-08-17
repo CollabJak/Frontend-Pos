@@ -12,6 +12,7 @@ type DateTimePickerProps = {
   onChange?: (value: string) => void;
   enableTime?: boolean;
   allowClear?: boolean;
+  required?: boolean;
 };
 
 export default function DateTimePicker({
@@ -22,6 +23,7 @@ export default function DateTimePicker({
   onChange,
   enableTime = true,
   allowClear = false,
+  required = false,
 }: DateTimePickerProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pickerRef = useRef<flatpickr.Instance | null>(null);
@@ -91,7 +93,11 @@ export default function DateTimePicker({
 
   return (
     <div>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && (
+        <Label htmlFor={id} required={required}>
+          {label}
+        </Label>
+      )}
 
       <div className="relative">
         <input

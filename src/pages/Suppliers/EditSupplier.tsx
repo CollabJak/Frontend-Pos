@@ -79,7 +79,9 @@ export default function EditSupplier() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="supplier-name">Nama Pemasok</Label>
+              <Label htmlFor="supplier-name" required>
+                Nama Pemasok
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -92,7 +94,9 @@ export default function EditSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-contact_person">Nama Penanggung Jawab (CP)</Label>
+              <Label htmlFor="supplier-contact_person" required>
+                Nama Penanggung Jawab (CP)
+              </Label>
               <Input
                 {...register("contact_person")}
                 type="text"
@@ -105,7 +109,9 @@ export default function EditSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-phone">Telepon Pemasok</Label>
+              <Label htmlFor="supplier-phone" required>
+                Telepon Pemasok
+              </Label>
               <Input
                 {...register("phone")}
                 type="number"
@@ -118,7 +124,9 @@ export default function EditSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-email">Email Pemasok</Label>
+              <Label htmlFor="supplier-email" required>
+                Email Pemasok
+              </Label>
               <Input
                 {...register("email")}
                 type="email"
@@ -131,14 +139,16 @@ export default function EditSupplier() {
             </div>
 
             <div>
-              <Label htmlFor="supplier-description">Alamat Pemasok</Label>
+              <Label htmlFor="supplier-description" required>
+                Alamat Pemasok
+              </Label>
               <TextArea
                 value={watch("address") || ""}
                 onChange={(value) =>
                   setValue("address", value, { shouldValidate: true })
                 }
                 rows={3}
-                placeholder="Alamat opsional"
+                placeholder="Masukkan alamat pemasok"
               />
               {errors.address && (
                 <p className="text-red-500">{errors.address.message}</p>

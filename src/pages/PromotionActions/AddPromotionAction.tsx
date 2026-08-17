@@ -78,7 +78,7 @@ export default function AddPromotionAction() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promosi</Label>
+            <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="promotion-action-promotion-options"
@@ -99,7 +99,9 @@ export default function AddPromotionAction() {
           </div>
 
           <div>
-            <Label htmlFor="action-type">Tipe Aksi</Label>
+            <Label htmlFor="action-type" required>
+              Tipe Aksi
+            </Label>
             <select
               {...register("action_type")}
               id="action-type"

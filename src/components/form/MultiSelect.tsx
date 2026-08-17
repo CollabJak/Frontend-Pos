@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
+import Label from "./Label";
 
 interface Option {
   value: string;
@@ -14,6 +15,7 @@ interface MultiSelectProps {
   onChange?: (selected: string[]) => void;
   disabled?: boolean;
   placeholder?: string;
+  required?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -24,6 +26,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   disabled = false,
   placeholder = "Select options",
+  required = false,
 }) => {
   const isControlled = value !== undefined;
   const [internalSelected, setInternalSelected] =
@@ -105,12 +108,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div className="w-full" ref={dropdownRef}>
-      <label
-        className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-        id={`${label}-label`}
-      >
+      <Label id={`${label}-label`} required={required}>
         {label}
-      </label>
+      </Label>
 
       <div className="relative z-20 inline-block w-full">
         <div className="relative flex flex-col items-center">

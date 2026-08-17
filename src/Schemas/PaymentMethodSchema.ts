@@ -7,13 +7,17 @@ type PaymentMethodSchemaOptions = {
 const isFileLike = (value: unknown) => typeof File !== 'undefined' && value instanceof File;
 
 export const createPaymentMethodSchema = (options: PaymentMethodSchemaOptions = {}) => z.object({
-    scope: z.enum(['system', 'business']),
-    type: z.enum(['qris', 'bank_transfer', 'e_wallet', 'cash']),
-    name: z.string().min(1, 'Name is required').max(255),
-    code: z.string().max(255).optional(),
-    provider_name: z.string().max(255).optional(),
-    account_name: z.string().max(255).optional(),
-    account_number: z.string().max(255).optional(),
+    scope: z.enum(['system', 'business'], {
+        message: 'Cakupan wajib dipilih',
+    }),
+    type: z.enum(['qris', 'bank_transfer', 'e_wallet', 'cash'], {
+        message: 'Tipe pembayaran wajib dipilih',
+    }),
+    name: z.string().min(1, 'Nama metode wajib diisi').max(255, 'Nama metode maksimal 255 karakter'),
+    code: z.string().max(255, 'Kode maksimal 255 karakter').optional(),
+    provider_name: z.string().max(255, 'Nama penyedia maksimal 255 karakter').optional(),
+    account_name: z.string().max(255, 'Nama pemilik rekening maksimal 255 karakter').optional(),
+    account_number: z.string().max(255, 'Nomor rekening / telepon maksimal 255 karakter').optional(),
     description: z.string().optional(),
     payment_instructions: z.string().optional(),
     qr_image: z.any().optional(),
@@ -25,7 +29,7 @@ export const createPaymentMethodSchema = (options: PaymentMethodSchemaOptions = 
     if (data.type === 'qris' && !options.hasExistingQrImage && !isFileLike(data.qr_image)) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "QR Code Image is required",
+            message: "Gambar QRIS wajib diunggah",
             path: ["qr_image"]
         });
     }
@@ -34,21 +38,21 @@ export const createPaymentMethodSchema = (options: PaymentMethodSchemaOptions = 
         if (!data.provider_name || data.provider_name.trim() === '') {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: data.type === 'bank_transfer' ? "Bank Name is required" : "E-Wallet Provider is required",
+                message: data.type === 'bank_transfer' ? "Nama bank wajib diisi" : "Penyedia e-wallet wajib diisi",
                 path: ["provider_name"]
             });
         }
         if (!data.account_name || data.account_name.trim() === '') {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "Account Holder Name is required",
+                message: "Nama pemilik rekening wajib diisi",
                 path: ["account_name"]
             });
         }
         if (!data.account_number || data.account_number.trim() === '') {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: data.type === 'bank_transfer' ? "Account Number is required" : "Phone Number is required",
+                message: data.type === 'bank_transfer' ? "Nomor rekening wajib diisi" : "Nomor telepon / HP wajib diisi",
                 path: ["account_number"]
             });
         }

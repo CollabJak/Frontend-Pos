@@ -63,12 +63,15 @@ export default function SubscriptionPlanForm() {
         openConfirm();
     };
 
-    const onFormSubmit = (formData: any) => {
+    const onFormSubmit = (formData: any, onErrorCallback?: (error: any) => void) => {
         upsertSubscriptionPlan(
             { id: selectedPlan?.id, data: formData },
             {
                 onSuccess: () => {
                     setIsFormOpen(false);
+                },
+                onError: (error) => {
+                    onErrorCallback?.(error);
                 },
             }
         );

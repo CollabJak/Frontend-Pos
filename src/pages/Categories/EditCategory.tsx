@@ -152,7 +152,9 @@ export default function EditCategory() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="category">Kategori</Label>
+              <Label htmlFor="category" required>
+                Kategori
+              </Label>
               <Input {...register("name")} type="text" id="category" placeholder="Masukkan kategori" />
               <div>
                 {errors.name && (

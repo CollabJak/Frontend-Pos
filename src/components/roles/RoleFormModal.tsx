@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
+import Label from "../form/Label";
 import { Role } from "../../types/types";
 
 interface RoleFormModalProps {
@@ -46,9 +47,7 @@ const RoleFormModal: React.FC<RoleFormModalProps> = ({
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Nama Peran
-            </label>
+            <Label required>Nama Peran</Label>
             <input
               type="text"
               placeholder="contoh: Manajer Penjualan"

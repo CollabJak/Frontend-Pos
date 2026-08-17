@@ -83,7 +83,9 @@ export default function AddUnitConversion() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-variant-name">Varian Produk</Label>
+              <Label htmlFor="product-variant-name" required>
+                Varian Produk
+              </Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-product-variant-options"
@@ -106,7 +108,7 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label>Dari Satuan</Label>
+              <Label required>Dari Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-from-unit-options"
@@ -129,7 +131,7 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label>Ke Satuan</Label>
+              <Label required>Ke Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="unit-conversion-to-unit-options"
@@ -152,7 +154,9 @@ export default function AddUnitConversion() {
             </div>
 
             <div>
-              <Label htmlFor="unit-conversion-multiplier">Pengali</Label>
+              <Label htmlFor="unit-conversion-multiplier" required>
+                Pengali
+              </Label>
               <Input
                 {...register("multiplier", { valueAsNumber: true })}
                 type="number"

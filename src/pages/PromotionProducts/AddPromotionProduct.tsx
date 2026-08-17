@@ -74,7 +74,7 @@ export default function AddPromotionProduct() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Promosi</Label>
+            <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("promotion_id") || null}
@@ -94,7 +94,7 @@ export default function AddPromotionProduct() {
           </div>
 
           <div>
-            <Label>Varian Produk</Label>
+            <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               value={watch("product_variant_id") || null}

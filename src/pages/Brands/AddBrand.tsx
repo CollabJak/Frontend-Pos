@@ -59,7 +59,9 @@ export default function AddBrand() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="brand-name">Nama Merek</Label>
+              <Label htmlFor="brand-name" required>
+                Nama Merek
+              </Label>
               <Input
                 {...register("name")}
                 type="text"

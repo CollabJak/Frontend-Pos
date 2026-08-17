@@ -55,10 +55,10 @@ export default function PromotionActionValueField({
 
     return (
       <div className="space-y-3">
-        <Label>Nilai Aksi</Label>
+        <Label required>Nilai Aksi</Label>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <Label htmlFor="free-item-name" className="mb-2">
+            <Label htmlFor="free-item-name" className="mb-2" required>
               Item Gratis / Bonus
             </Label>
             <Input
@@ -75,7 +75,7 @@ export default function PromotionActionValueField({
             />
           </div>
           <div>
-            <Label htmlFor="free-item-qty" className="mb-2">
+            <Label htmlFor="free-item-qty" className="mb-2" required>
               Jumlah
             </Label>
             <Input
@@ -105,10 +105,10 @@ export default function PromotionActionValueField({
 
     return (
       <div className="space-y-3">
-        <Label>Nilai Aksi</Label>
+        <Label required>Nilai Aksi</Label>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <Label htmlFor="bundle-qty" className="mb-2">
+            <Label htmlFor="bundle-qty" className="mb-2" required>
               Jumlah Paket
             </Label>
             <Input
@@ -127,7 +127,7 @@ export default function PromotionActionValueField({
             />
           </div>
           <div>
-            <Label htmlFor="bundle-price" className="mb-2">
+            <Label htmlFor="bundle-price" className="mb-2" required>
               Harga Paket
             </Label>
             <Input
@@ -162,7 +162,9 @@ export default function PromotionActionValueField({
 
   return (
     <div className="space-y-3">
-      <Label htmlFor="promotion-action-value">{inputLabelMap[actionType] || "Nilai Aksi"}</Label>
+      <Label htmlFor="promotion-action-value" required>
+        {inputLabelMap[actionType] || "Nilai Aksi"}
+      </Label>
       <Input
         id="promotion-action-value"
         type="number"

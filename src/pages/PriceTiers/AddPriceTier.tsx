@@ -81,7 +81,7 @@ export default function AddPriceTier() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Varian Produk</Label>
+            <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-product-variant-options"
@@ -104,7 +104,7 @@ export default function AddPriceTier() {
           </div>
 
           <div>
-            <Label>Grup Pelanggan</Label>
+            <Label required>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-customer-group-options"
@@ -127,7 +127,9 @@ export default function AddPriceTier() {
           </div>
 
           <div>
-            <Label htmlFor="min-qty">Jumlah Minimal (Min Qty)</Label>
+            <Label htmlFor="min-qty" required>
+              Jumlah Minimal (Min Qty)
+            </Label>
             <Input
               id="min-qty"
               type="number"
@@ -140,7 +142,9 @@ export default function AddPriceTier() {
           </div>
 
           <div>
-            <Label htmlFor="price">Harga</Label>
+            <Label htmlFor="price" required>
+              Harga
+            </Label>
             <Input
               id="price"
               type="number"
@@ -153,7 +157,7 @@ export default function AddPriceTier() {
           </div>
 
           <div>
-            <Label>Lokasi</Label>
+            <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="price-tier-location-options"
@@ -179,6 +183,7 @@ export default function AddPriceTier() {
             <DateTimePicker
               id="start-date"
               label="Tanggal Mulai"
+              required
               placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {

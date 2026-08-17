@@ -83,7 +83,7 @@ export default function AddCustomerGroupPrice() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Varian Produk</Label>
+            <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-product-variant-options"
@@ -106,7 +106,7 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label>Grup Pelanggan</Label>
+            <Label required>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-customer-group-options"
@@ -129,7 +129,9 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price">Harga</Label>
+            <Label htmlFor="price" required>
+              Harga
+            </Label>
             <Input
               id="price"
               type="number"
@@ -142,7 +144,7 @@ export default function AddCustomerGroupPrice() {
           </div>
 
           <div>
-            <Label>Lokasi</Label>
+            <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="customer-group-price-location-options"
@@ -168,6 +170,7 @@ export default function AddCustomerGroupPrice() {
             <DateTimePicker
               id="start-date"
               label="Tanggal Mulai"
+              required
               placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {

@@ -113,7 +113,7 @@ const RotationAssignForm: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <Label>Nama Batch Jadwal</Label>
+          <Label required>Nama Batch Jadwal</Label>
           <Input
             placeholder="Contoh: Jadwal Rotasi Divisi Security - Juni"
             {...register("batch_name")}
@@ -130,6 +130,7 @@ const RotationAssignForm: React.FC = () => {
             render={({ field }) => (
               <MultiSelect
                 label="Pilih Karyawan"
+                required
                 placeholder="Pilih satu atau lebih karyawan"
                 options={userOptions}
                 value={field.value.map(String)}
@@ -149,6 +150,7 @@ const RotationAssignForm: React.FC = () => {
             render={({ field }) => (
               <Select
                 label="Pilih Pola Rotasi"
+                required
                 options={rotationSelectOptions}
                 value={field.value?.toString() || ""}
                 onChange={(val) => field.onChange(Number(val))}
@@ -180,6 +182,7 @@ const RotationAssignForm: React.FC = () => {
             <DatePicker
               id="rotation_start_date"
               label="Tanggal Mulai"
+              required
               placeholder="Pilih tanggal mulai"
               defaultDate={field.value}
               onChange={([date]) => field.onChange(formatDateToYYYYMMDD(date))}
@@ -195,6 +198,7 @@ const RotationAssignForm: React.FC = () => {
             <DatePicker
               id="rotation_end_date"
               label="Tanggal Selesai"
+              required
               placeholder="Pilih tanggal selesai"
               defaultDate={field.value}
               onChange={([date]) => field.onChange(formatDateToYYYYMMDD(date))}

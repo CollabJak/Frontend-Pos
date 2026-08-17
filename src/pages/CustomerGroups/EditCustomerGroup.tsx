@@ -93,7 +93,9 @@ export default function EditCustomerGroup() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="customer-group-code">Kode</Label>
+              <Label htmlFor="customer-group-code" required>
+                Kode
+              </Label>
               <select
                 {...register("code")}
                 id="customer-group-code"
@@ -109,7 +111,9 @@ export default function EditCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-name">Nama</Label>
+              <Label htmlFor="customer-group-name" required>
+                Nama
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -120,7 +124,9 @@ export default function EditCustomerGroup() {
             </div>
 
             <div>
-              <Label htmlFor="customer-group-discount">Persentase Diskon</Label>
+              <Label htmlFor="customer-group-discount" required>
+                Persentase Diskon
+              </Label>
               <Input
                 {...register("discount_percent", { valueAsNumber: true })}
                 type="number"

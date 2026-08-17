@@ -10,14 +10,14 @@ export const promotionActionTypeValues = [
 ] as const;
 
 export const promotionActionSchema = z.object({
-  promotion_id: z.number().int().min(1, "Promotion is required"),
+  promotion_id: z.number().int().min(1, "Promosi wajib dipilih"),
   action_type: z.enum(promotionActionTypeValues, {
-    message: "Action type is required",
+    message: "Tipe aksi wajib dipilih",
   }),
   action_value: z
     .record(z.string(), z.unknown())
     .refine((value) => Object.keys(value).length > 0, {
-      message: "Action value is required",
+      message: "Nilai aksi wajib diisi",
     }),
 });
 
