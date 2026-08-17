@@ -95,12 +95,14 @@ export interface EmployeeSchedule {
   schedule_date: string;
   status: ScheduleStatus;
   is_day_off: boolean;
+  is_holiday?: boolean;
   day_off_note: string | null;
   override_type: OverrideType;
   published_at: string | null;
   user?: User;
   shift?: Shift;
   snapshot?: ScheduleSnapshot;
+  attendance?: any;
   created_at: string;
   updated_at: string;
 }

@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../api/axiosConfig";
+import { AttendanceRecord } from "../../types/attendance";
+import { EmployeeSchedule } from "../../types/scheduling";
 
 export const useEnrollFace = () => {
   const queryClient = useQueryClient();
@@ -12,6 +14,7 @@ export const useEnrollFace = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attendance_history"] });
+      queryClient.invalidateQueries({ queryKey: ["face_enrollment"] });
     },
   });
 };
@@ -37,7 +40,7 @@ export const useGetTodayAttendance = () => {
     queryKey: ["attendance_today"],
     queryFn: async () => {
       const { data } = await apiClient.get("/attendance/today");
-      return data.data;
+      return data.data as AttendanceRecord;
     },
   });
 };
@@ -47,7 +50,7 @@ export const useGetAttendanceHistory = (params?: { start_date?: string; end_date
     queryKey: ["attendance_history", params],
     queryFn: async () => {
       const { data } = await apiClient.get("/attendance/history", { params });
-      return data.data;
+      return data.data as AttendanceRecord[];
     },
   });
 };
@@ -59,5 +62,17 @@ export const useGetFaceEnrollment = () => {
       const { data } = await apiClient.get("/attendance/face");
       return data.data;
     },
+  });
+};
+
+export const useGetMySchedules = (params: { month: string }) => {
+  return useQuery({
+    queryKey: ["my_schedules", params.month],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/schedules/my", { params });
+      return data.data as EmployeeSchedule[];
+    },
+    enabled: !!params.month,
+    staleTime: 5 * 60 * 1000,
   });
 };
