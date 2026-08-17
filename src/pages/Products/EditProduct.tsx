@@ -19,11 +19,12 @@ import 'filepond/dist/filepond.min.css';
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function EditProduct() {
+  const navigate = useNavigate();
   const {id} = useParams<{id : string}>();
   const { data: product, isLoading } = useFetchProduct(Number(id));
   const { mutate: updateProduct, isPending } = useUpdateProduct();
@@ -113,7 +114,10 @@ export default function EditProduct() {
   return (
     <>
       <PageMeta title="Edit Produk" description="Halaman edit produk" />
-      <PageBreadcrumb pageTitle="Edit Produk" />
+      <PageBreadcrumb
+        pageTitle="Edit Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=products" }]}
+      />
       <ComponentCard title="Form Edit Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -296,8 +300,17 @@ export default function EditProduct() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=products")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui produk..." : "Perbarui Produk"}
               </Button>
             </div>

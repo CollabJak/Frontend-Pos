@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import { 
   useGetTodayAttendance, 
   useGetAttendanceHistory,
@@ -234,6 +235,10 @@ const AttendanceHistoryPage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <PageBreadcrumb
+        pageTitle="Riwayat Kehadiran"
+        breadcrumbs={[{ label: "Absensi" }]}
+      />
       {/* Top Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
          <MetricCard 

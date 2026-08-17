@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -51,6 +51,7 @@ const toDateTimeLocal = (value?: string | null): string => {
 };
 
 export default function EditCustomerGroupPrice() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const customerGroupPriceId = Number(id);
   const { data: customerGroupPrice, isLoading } = useFetchCustomerGroupPrice(customerGroupPriceId);
@@ -127,7 +128,10 @@ export default function EditCustomerGroupPrice() {
   return (
     <>
       <PageMeta title="Edit Harga Grup Pelanggan" description="Halaman edit harga grup pelanggan" />
-      <PageBreadcrumb pageTitle="Edit Harga Grup Pelanggan" />
+      <PageBreadcrumb
+        pageTitle="Edit Harga Grup Pelanggan"
+        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups?tab=prices" }]}
+      />
       <ComponentCard title="Form Edit Harga Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -273,8 +277,17 @@ export default function EditCustomerGroupPrice() {
             {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/customer-groups?tab=prices")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Memperbarui harga grup pelanggan..." : "Perbarui Harga Grup Pelanggan"}
             </Button>
           </div>

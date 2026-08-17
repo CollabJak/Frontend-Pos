@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -55,6 +55,7 @@ const toDateTimeLocal = (value?: string | null): string => {
 };
 
 export default function EditProductPrice() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const productPriceId = Number(id);
   const { data: productPrice, isLoading } = useFetchProductPrice(productPriceId);
@@ -129,7 +130,10 @@ export default function EditProductPrice() {
   return (
     <>
       <PageMeta title="Edit Harga Produk" description="Halaman edit harga produk" />
-      <PageBreadcrumb pageTitle="Edit Harga Produk" />
+      <PageBreadcrumb
+        pageTitle="Edit Harga Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=prices" }]}
+      />
       <ComponentCard title="Form Edit Harga Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -259,8 +263,17 @@ export default function EditProductPrice() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/products?tab=prices")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Memperbarui harga produk..." : "Perbarui Harga Produk"}
             </Button>
           </div>

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -19,6 +20,7 @@ import {
 type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddPromotionAction() {
+  const navigate = useNavigate();
   const { mutate: createPromotionAction, isPending } = useCreatePromotionAction();
 
   const {
@@ -72,7 +74,10 @@ export default function AddPromotionAction() {
   return (
     <>
       <PageMeta title="Tambah Aksi Promosi" description="Halaman tambah aksi promosi" />
-      <PageBreadcrumb pageTitle="Tambah Aksi Promosi" />
+      <PageBreadcrumb
+        pageTitle="Tambah Aksi Promosi"
+        breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions?tab=actions" }]}
+      />
       <ComponentCard title="Form Tambah Aksi Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -144,8 +149,17 @@ export default function AddPromotionAction() {
             error={actionValueError}
           />
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/promotions?tab=actions")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan aksi promosi..." : "Tambah Aksi Promosi"}
             </Button>
           </div>

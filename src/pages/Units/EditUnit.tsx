@@ -11,10 +11,11 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function EditUnit() {
+  const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   const { data: unitData, isLoading: isUnitLoading } = useFetchUnit(Number(id));
   const { mutate: updateUnit, isPending } = useUpdateUnit();
@@ -78,7 +79,10 @@ export default function EditUnit() {
   return (
     <>
       <PageMeta title="Edit Satuan" description="Halaman edit satuan produk" />
-      <PageBreadcrumb pageTitle="Edit Satuan" />
+      <PageBreadcrumb
+        pageTitle="Edit Satuan"
+        breadcrumbs={[{ label: "Manajemen Satuan", path: "/units?tab=units" }]}
+      />
       <ComponentCard title="Form Edit Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -128,8 +132,17 @@ export default function EditUnit() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/units?tab=units")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui Satuan..." : "Perbarui Satuan"}
               </Button>
             </div>

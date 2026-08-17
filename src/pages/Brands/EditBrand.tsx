@@ -11,10 +11,11 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { BrandFormData,  BrandSchema } from "../../Schemas/brandSchema";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function EditBrand() {
+  const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   const {data: brandData, isLoading} = useFetchBrand(Number(id));
   const { mutate: createBrand, isPending } = useUpdateBrand();
@@ -69,7 +70,10 @@ export default function EditBrand() {
   return (
     <>
       <PageMeta title="Edit Merek" description="Halaman edit merek produk" />
-      <PageBreadcrumb pageTitle="Edit Merek" />
+      <PageBreadcrumb
+        pageTitle="Edit Merek"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=brands" }]}
+      />
       <ComponentCard title="Form Edit Merek">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -119,8 +123,17 @@ export default function EditBrand() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=brands")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui Merek..." : "Perbarui Merek"}
               </Button>
             </div>

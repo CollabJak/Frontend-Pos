@@ -10,8 +10,10 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AtributeFormData,  AtributeSchema } from "../../Schemas/atributeSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function AddAtribute() {
+  const navigate = useNavigate();
   const { mutate: createAtribute, isPending } = useCreateAtribute();
 
   const {
@@ -50,7 +52,10 @@ export default function AddAtribute() {
   return (
     <>
       <PageMeta title="Tambah Atribut" description="Halaman tambah atribut produk" />
-      <PageBreadcrumb pageTitle="Tambah Atribut" />
+      <PageBreadcrumb
+        pageTitle="Tambah Atribut"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=attributes" }]}
+      />
       <ComponentCard title="Form Tambah Atribut">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -70,8 +75,17 @@ export default function AddAtribute() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=attributes")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan atribut..." : "Tambah Atribut"}
               </Button>
             </div>

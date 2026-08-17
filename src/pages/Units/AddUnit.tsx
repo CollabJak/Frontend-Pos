@@ -11,8 +11,10 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 export default function AddUnit() {
+  const navigate = useNavigate();
   const { mutate: createUnit, isPending } = useCreateUnit();
 
   const {
@@ -59,7 +61,10 @@ export default function AddUnit() {
   return (
     <>
       <PageMeta title="Tambah Satuan" description="Halaman tambah satuan produk baru" />
-      <PageBreadcrumb pageTitle="Tambah Satuan" />
+      <PageBreadcrumb
+        pageTitle="Tambah Satuan"
+        breadcrumbs={[{ label: "Manajemen Satuan", path: "/units?tab=units" }]}
+      />
       <ComponentCard title="Form Tambah Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -109,8 +114,17 @@ export default function AddUnit() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/units?tab=units")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Satuan..." : "Tambah Satuan"}
               </Button>
             </div>

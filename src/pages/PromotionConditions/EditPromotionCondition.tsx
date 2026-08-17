@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -32,6 +32,7 @@ const toConditionValueObject = (value: unknown): Record<string, unknown> => {
 };
 
 export default function EditPromotionCondition() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const promotionConditionId = Number(id);
   const { data: promotionCondition, isLoading } = useFetchPromotionCondition(promotionConditionId);
@@ -107,7 +108,10 @@ export default function EditPromotionCondition() {
   return (
     <>
       <PageMeta title="Edit Syarat Promosi" description="Halaman edit syarat promosi" />
-      <PageBreadcrumb pageTitle="Edit Syarat Promosi" />
+      <PageBreadcrumb
+        pageTitle="Edit Syarat Promosi"
+        breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions?tab=conditions" }]}
+      />
       <ComponentCard title="Form Edit Syarat Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -185,8 +189,17 @@ export default function EditPromotionCondition() {
             error={conditionValueError}
           />
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/promotions?tab=conditions")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Memperbarui syarat promosi..." : "Perbarui Syarat Promosi"}
             </Button>
           </div>

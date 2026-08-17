@@ -15,8 +15,10 @@ import {
   unitConversionSchema,
 } from "../../Schemas/unitConversionSchema";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
+import { useNavigate } from "react-router-dom";
 
 export default function AddUnitConversion() {
+  const navigate = useNavigate();
   const { mutate: createUnitConversion, isPending } = useCreateUnitConversion();
   
   const fetchProductVariantOptions = createOptionsFetcher<OptionDto>({
@@ -76,7 +78,10 @@ export default function AddUnitConversion() {
   return (
     <>
       <PageMeta title="Tambah Konversi Satuan" description="Halaman tambah konversi satuan produk baru" />
-      <PageBreadcrumb pageTitle="Tambah Konversi Satuan" />
+      <PageBreadcrumb
+        pageTitle="Tambah Konversi Satuan"
+        breadcrumbs={[{ label: "Manajemen Satuan", path: "/units?tab=conversions" }]}
+      />
       <ComponentCard title="Form Tambah Konversi Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -168,8 +173,17 @@ export default function AddUnitConversion() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/units?tab=conversions")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan konversi satuan..." : "Tambah Konversi Satuan"}
               </Button>
             </div>

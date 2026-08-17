@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -31,6 +31,7 @@ import VariantLocationMapping from "../../components/product-variants/VariantLoc
 type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function EditProductVariant() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const variantId = Number(id);
   const { data: productVariant, isLoading } = useFetchProductVariant(variantId);
@@ -141,7 +142,10 @@ export default function EditProductVariant() {
   return (
     <>
       <PageMeta title="Edit Varian Produk" description="Halaman edit varian produk" />
-      <PageBreadcrumb pageTitle="Edit Varian Produk" />
+      <PageBreadcrumb
+        pageTitle="Edit Varian Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=variants" }]}
+      />
       <div className="mb-6 inline-flex rounded-lg border border-gray-200 p-1 dark:border-gray-800">
         <button
           type="button"
@@ -377,8 +381,17 @@ export default function EditProductVariant() {
             )}
           </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=variants")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui varian produk..." : "Perbarui Varian Produk"}
               </Button>
             </div>

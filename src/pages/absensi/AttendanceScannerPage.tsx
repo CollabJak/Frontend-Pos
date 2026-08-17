@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import {
   useAttendanceMutation,
   useGetTodayAttendance
@@ -127,6 +128,10 @@ const AttendanceScannerPage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-8">
+      <PageBreadcrumb
+        pageTitle="Scanner Kehadiran"
+        breadcrumbs={[{ label: "Absensi" }]}
+      />
       {/* Hidden canvas for capturing frames */}
       <canvas ref={canvasRef} className="hidden" />
 

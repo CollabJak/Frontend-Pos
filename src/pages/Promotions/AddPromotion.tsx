@@ -12,8 +12,10 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 export default function AddPromotion() {
+  const navigate = useNavigate();
   const { mutate: createPromotion, isPending } = useCreatePromotion();
 
   const {
@@ -65,7 +67,10 @@ export default function AddPromotion() {
   return (
     <>
       <PageMeta title="Tambah Promosi" description="Halaman tambah promosi" />
-      <PageBreadcrumb pageTitle="Tambah Promosi" />
+      <PageBreadcrumb
+        pageTitle="Tambah Promosi"
+        breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions?tab=promotions" }]}
+      />
       <ComponentCard title="Form Tambah Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -191,8 +196,17 @@ export default function AddPromotion() {
               {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/promotions?tab=promotions")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Promosi..." : "Tambah Promosi"}
               </Button>
             </div>

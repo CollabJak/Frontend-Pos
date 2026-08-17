@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -20,6 +21,7 @@ import {
 type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddPromotionCondition() {
+  const navigate = useNavigate();
   const { mutate: createPromotionCondition, isPending } = useCreatePromotionCondition();
 
   const {
@@ -74,7 +76,10 @@ export default function AddPromotionCondition() {
   return (
     <>
       <PageMeta title="Tambah Syarat Promosi" description="Halaman tambah syarat promosi" />
-      <PageBreadcrumb pageTitle="Tambah Syarat Promosi" />
+      <PageBreadcrumb
+        pageTitle="Tambah Syarat Promosi"
+        breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions?tab=conditions" }]}
+      />
       <ComponentCard title="Form Tambah Syarat Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -151,8 +156,17 @@ export default function AddPromotionCondition() {
             error={conditionValueError}
           />
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/promotions?tab=conditions")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan syarat promosi..." : "Tambah Syarat Promosi"}
             </Button>
           </div>

@@ -12,6 +12,7 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { ProductFormData, productSchema, productStatuses } from "../../Schemas/productSchema";
 import { fetchBrandOptions, fetchCategoryOptions, fetchUnitOptions, OptionDto } from "../../api/options";
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -23,6 +24,7 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddProduct() {
+  const navigate = useNavigate();
   const { mutate: createProduct, isPending } = useCreateProduct();
   const [files, setFiles] = useState<unknown[]>([]);
   type FilePondItem = { file?: File };
@@ -76,7 +78,10 @@ export default function AddProduct() {
   return (
     <>
       <PageMeta title="Tambah Produk" description="Halaman tambah produk baru" />
-      <PageBreadcrumb pageTitle="Tambah Produk" />
+      <PageBreadcrumb
+        pageTitle="Tambah Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=products" }]}
+      />
       <ComponentCard title="Form Tambah Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -231,8 +236,17 @@ export default function AddProduct() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=products")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan produk..." : "Tambah Produk"}
               </Button>
             </div>
