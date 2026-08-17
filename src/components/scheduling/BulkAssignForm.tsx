@@ -82,7 +82,6 @@ const BulkAssignForm: React.FC = () => {
   }));
 
   const locationOptions = [
-    { value: "", label: "Pilih Lokasi (Opsional)" },
     ...locationOptionsData.map((loc) => ({
       value: loc.id.toString(),
       label: loc.name,

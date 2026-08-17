@@ -72,10 +72,10 @@ const navItems: NavItem[] = [
   {
     icon: <TaskIcon />,
     name: "Absensi",
-    permissions: ["absensi.view"],
+    permissions: ["absensi.view", "absensi.checkin", "absensi.checkout", "absensi.enroll"],
     subItems: [
-      { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.view"] },
-      { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.view"] },
+      { name: "Pendaftaran Wajah", path: "/absensi/register", pro: false, permissions: ["absensi.enroll"] },
+      { name: "Scanner Kehadiran", path: "/absensi/scanner", pro: false, permissions: ["absensi.checkin", "absensi.checkout"] },
       { name: "Riwayat Kehadiran", path: "/absensi/history", pro: false, permissions: ["absensi.view"] },
     ],
   },

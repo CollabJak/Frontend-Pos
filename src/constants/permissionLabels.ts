@@ -1,6 +1,10 @@
 export const PERMISSION_LABELS: Record<string, string> = {
   // Absensi & Enrollment
-  "absensi.view": "Melihat & Mengakses Absensi Wajah",
+  "absensi.view": "Melihat Ringkasan Kehadiran Mandiri",
+  "absensi.enroll": "Pendaftaran & Update Wajah (Biometrik)",
+  "absensi.checkin": "Melakukan Check-in Kehadiran",
+  "absensi.checkout": "Melakukan Check-out Kehadiran",
+  "absensi.history.all": "Melihat Riwayat Kehadiran Seluruh Karyawan",
 
   // Atribut
   "atribute.view": "Melihat Atribut Produk",

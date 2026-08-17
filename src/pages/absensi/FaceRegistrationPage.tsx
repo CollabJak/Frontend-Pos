@@ -6,12 +6,12 @@ import {
   faceRegistrationSchema,
   FaceRegistrationFormValues,
 } from "../../Schemas/absensiSchema";
-import { useEnrollFace } from "../../hooks/api/useAbsensi";
+import { useEnrollFace, useGetFaceEnrollment } from "../../hooks/api/useAbsensi";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "../../components/ui/button/Button";
 import InputField from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
-import { UserCircleIcon, PlusIcon, InfoIcon } from "../../icons";
+import { UserCircleIcon, PlusIcon, InfoIcon, CheckCircleIcon } from "../../icons";
 
 const FaceRegistrationPage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,8 +19,14 @@ const FaceRegistrationPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isReEnrolling, setIsReEnrolling] = useState(false);
+
+  const { data: faceEnrollment } = useGetFaceEnrollment();
   const { mutateAsync: enrollFace, isPending } = useEnrollFace();
-  
+
+  const registeredImage = faceEnrollment?.image;
+  const hasExistingEnrollment = !!registeredImage;
+  const showCameraView = !hasExistingEnrollment || isReEnrolling;
 
   const {
     register,
@@ -66,7 +72,13 @@ const FaceRegistrationPage: React.FC = () => {
     return null;
   }, []);
 
+  // Manage Camera Life Cycle strictly when showCameraView is true
   useEffect(() => {
+    if (!showCameraView) {
+      setIsCameraActive(false);
+      return;
+    }
+
     let stream: MediaStream | null = null;
     const startCamera = async () => {
       try {
@@ -80,16 +92,16 @@ const FaceRegistrationPage: React.FC = () => {
         setIsCameraActive(false);
       }
     };
+
     startCamera();
+
     return () => {
       if (stream) {
-        stream.getTracks().forEach((track) => {
-          track.stop();
-        });
+        stream.getTracks().forEach((track) => track.stop());
         setIsCameraActive(false);
       }
     };
-  }, []);
+  }, [showCameraView]);
 
   const onSubmit = async (data: FaceRegistrationFormValues) => {
     try {
@@ -100,6 +112,7 @@ const FaceRegistrationPage: React.FC = () => {
       formData.append("face_image", data.face_image);
 
       await enrollFace(formData);
+      setIsReEnrolling(false);
       navigate("/absensi/scanner");
     } catch (error) {
       console.error("Enrollment failed:", error);
@@ -113,7 +126,6 @@ const FaceRegistrationPage: React.FC = () => {
       return;
     }
     
-    // Set field value manually then trigger submit
     setValue("face_image", file);
     handleSubmit(onSubmit)();
   };
@@ -130,41 +142,71 @@ const FaceRegistrationPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Camera and Form */}
+        {/* Left Column: Camera / Registered Image Preview and Form */}
         <div className="lg:col-span-8 space-y-6">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-theme-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="p-6 space-y-6">
-              {/* Camera Area */}
+              
+              {/* Display Area: Image Preview OR Camera Stream */}
               <div className="relative aspect-video bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden group border border-gray-100 dark:border-gray-700">
+                
+                {/* Status Indicator Badge */}
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-3 py-1.5 rounded-full z-10">
-                  <span className={`w-2 h-2 rounded-full ${isCameraActive ? "bg-success-500 animate-pulse" : "bg-error-500"}`} />
-                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    {isCameraActive ? "Kamera Aktif" : "Kamera Tidak Aktif"}
-                  </span>
+                  {showCameraView ? (
+                    <>
+                      <span className={`w-2 h-2 rounded-full ${isCameraActive ? "bg-success-500 animate-pulse" : "bg-error-500"}`} />
+                      <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        {isCameraActive ? "Kamera Aktif" : "Memuat Kamera..."}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircleIcon className="size-4 text-success-500" />
+                      <span className="text-xs font-semibold text-success-700 dark:text-success-400 uppercase tracking-wider">
+                        Wajah Sudah Terdaftar
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                {/* Real Camera Feed */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-72 h-72 border-2 border-brand-500/30 rounded-3xl relative">
-                      <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-brand-500 rounded-tl-3xl -mt-1 -ml-1" />
-                      <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-brand-500 rounded-tr-3xl -mt-1 -mr-1" />
-                      <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-brand-500 rounded-bl-3xl -mb-1 -ml-1" />
-                      <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-brand-500 rounded-br-3xl -mb-1 -mr-1" />
-
-                      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                        <UserCircleIcon className="size-48 text-brand-500" />
+                {/* Content: Show Registered Image OR Real Camera Feed */}
+                {!showCameraView && registeredImage ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-950">
+                    <img
+                      src={registeredImage}
+                      alt="Wajah Terdaftar"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6">
+                      <div className="text-white space-y-1">
+                        <p className="text-sm font-semibold">{user?.name}</p>
+                        <p className="text-xs text-gray-300">Foto Biometrik Aktif</p>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-72 h-72 border-2 border-brand-500/30 rounded-3xl relative">
+                        <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-brand-500 rounded-tl-3xl -mt-1 -ml-1" />
+                        <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-brand-500 rounded-tr-3xl -mt-1 -mr-1" />
+                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-brand-500 rounded-bl-3xl -mb-1 -ml-1" />
+                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-brand-500 rounded-br-3xl -mb-1 -mr-1" />
+
+                        <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                          <UserCircleIcon className="size-48 text-brand-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Instructions Alert */}
@@ -178,7 +220,7 @@ const FaceRegistrationPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Form Section */}
+              {/* Form Section & Dynamic Actions */}
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -211,21 +253,49 @@ const FaceRegistrationPage: React.FC = () => {
                   </p>
                 )}
 
-                <Button
-                  onClick={handleCaptureAndEnroll}
-                  className="w-full py-4 text-base font-bold tracking-wide"
-                  startIcon={<PlusIcon className="size-5" />}
-                  disabled={isPending}
-                >
-                  {isPending ? "MENDAFTARKAN WAJAH..." : "AMBIL FOTO & DAFTARKAN WAJAH"}
-                </Button>
+                {/* Actions: Show "Perbarui Wajah" if preview mode, OR "Ambil Foto & Daftarkan" if camera mode */}
+                {!showCameraView ? (
+                  <Button
+                    type="button"
+                    onClick={() => setIsReEnrolling(true)}
+                    className="w-full py-4 text-base font-bold tracking-wide"
+                    startIcon={<PlusIcon className="size-5" />}
+                  >
+                    PERBARUI WAJAH (AMBIL FOTO ULANG)
+                  </Button>
+                ) : (
+                  <div className="flex gap-3">
+                    {hasExistingEnrollment && (
+                      <button
+                        type="button"
+                        onClick={() => setIsReEnrolling(false)}
+                        className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-xl transition-colors"
+                        disabled={isPending}
+                      >
+                        Batal
+                      </button>
+                    )}
+                    <Button
+                      type="button"
+                      onClick={handleCaptureAndEnroll}
+                      className="flex-1 py-4 text-base font-bold tracking-wide"
+                      startIcon={<PlusIcon className="size-5" />}
+                      disabled={isPending || !isCameraActive}
+                    >
+                      {isPending
+                        ? "MENDAFTARKAN WAJAH..."
+                        : hasExistingEnrollment
+                        ? "SIMPAN PEMBARUAN WAJAH"
+                        : "AMBIL FOTO & DAFTARKAN WAJAH"}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
 
-
-        {/* Right Column: Recent Activity Info */}
+        {/* Right Column: Information & Navigation */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-theme-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
@@ -235,27 +305,30 @@ const FaceRegistrationPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-                <div className="flex gap-4">
-                    <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">1</div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Data profil karyawan (Nama & Email) otomatis terisi dari akun sesi login Anda.
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">2</div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Posisikan wajah pada kamera, lalu tekan tombol <b>Ambil Foto & Daftarkan Wajah</b>.
-                    </p>
-                </div>
-                <div className="flex gap-4">
-                    <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">3</div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Setelah berhasil terdaftar, Anda dapat langsung melakukan absensi pada pemindai wajah.
-                    </p>
-                </div>
+              <div className="flex gap-4">
+                <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">1</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  Data profil karyawan (Nama & Email) otomatis terisi dari akun sesi login Anda.
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">2</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  Jika sudah pernah terdaftar, foto terdaftar ditampilkan. Klik <b>Perbarui Wajah</b> untuk membuka kamera dan mendaftar ulang.
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <div className="size-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shrink-0">3</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  Setelah berhasil terdaftar, Anda dapat langsung melakukan absensi pada pemindai wajah.
+                </p>
+              </div>
             </div>
 
-            <button onClick={() => navigate('/absensi/scanner')} className="w-full mt-10 py-3 text-sm font-bold text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-xl transition-colors uppercase tracking-widest border border-brand-100 dark:border-brand-500/20">
+            <button
+              onClick={() => navigate('/absensi/scanner')}
+              className="w-full mt-10 py-3 text-sm font-bold text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-xl transition-colors uppercase tracking-widest border border-brand-100 dark:border-brand-500/20"
+            >
               Buka Pemindai Absensi
             </button>
           </div>
