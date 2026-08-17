@@ -1,17 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../api/axiosConfig";
 import { AxiosError } from "axios";
-import { ApiErrorResponse, Role } from "../types/types";
+import { ApiErrorResponse, Role, User } from "../types/types";
 import { AssignRoleFormData } from "../Schemas/userRoleSchema";
 
-export const useFetchUserRoles = (userId: number) => {
+export const useFetchUserRoles = (userId?: number) => {
   return useQuery<{ user_id: number; roles: Role[] }, AxiosError>({
     queryKey: ["user-roles", userId],
     queryFn: async () => {
+      if (typeof userId !== "number") {
+        throw new Error("User ID is required");
+      }
+
       const response = await apiClient.get(`/users/${userId}/roles`);
       return response.data.data;
     },
-    enabled: !!userId,
+    enabled: typeof userId === "number",
   });
 };
 
@@ -28,7 +32,7 @@ export const useFetchAssignableRoleOptions = () => {
 export const useAssignRole = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<any, AxiosError<ApiErrorResponse>, AssignRoleFormData>({
+  return useMutation<User, AxiosError<ApiErrorResponse>, AssignRoleFormData>({
     mutationFn: async (payload: AssignRoleFormData) => {
       const response = await apiClient.post("/users/roles", payload);
       return response.data.data;

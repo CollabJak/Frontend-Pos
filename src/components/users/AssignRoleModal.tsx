@@ -18,13 +18,12 @@ interface AssignRoleModalProps {
 
 const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user }) => {
   const { data: roles, isLoading: rolesLoading } = useFetchAssignableRoleOptions();
-  const { data: userRolesData, isLoading: userRolesLoading } = useFetchUserRoles(user?.id || 0);
+  const { data: userRolesData, isLoading: userRolesLoading } = useFetchUserRoles(user?.id);
   const { mutate: assignRole, isPending } = useAssignRole();
 
   const {
     control,
     handleSubmit,
-    setValue,
     setError,
     formState: { errors },
     reset,
@@ -37,15 +36,24 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
   });
 
   useEffect(() => {
-    if (user && isOpen) {
-      setValue("user_id", user.id);
-      if (userRolesData?.roles && userRolesData.roles.length > 0) {
-        setValue("role", userRolesData.roles[0].name);
-      } else {
-        setValue("role", "");
-      }
+    if (!user || !isOpen) {
+      reset({ user_id: 0, role: "" });
+      return;
     }
-  }, [user, userRolesData, setValue, isOpen]);
+
+    reset({ user_id: user.id, role: "" });
+  }, [user, isOpen, reset]);
+
+  useEffect(() => {
+    if (!user || !isOpen || userRolesData?.user_id !== user.id) {
+      return;
+    }
+
+    reset({
+      user_id: user.id,
+      role: userRolesData.roles[0]?.name ?? "",
+    });
+  }, [user, userRolesData, isOpen, reset]);
 
   const onSubmit = (data: AssignRoleFormData) => {
     assignRole(data, {
@@ -89,8 +97,9 @@ const AssignRoleModal: React.FC<AssignRoleModalProps> = ({ isOpen, onClose, user
               <Select
                 {...field}
                 options={roles?.map((r) => ({ value: r.name, label: r.name })) || []}
-                placeholder="Pilih peran pengguna"
+                placeholder={userRolesLoading ? "Memuat peran..." : "Pilih peran pengguna"}
                 className={errors.role ? "border-red-500" : ""}
+                disabled={rolesLoading || userRolesLoading}
               />
             )}
           />
