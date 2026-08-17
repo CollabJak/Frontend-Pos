@@ -13,9 +13,10 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function AddBusiness() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { mutate: createBusiness, isPending } = useCreateBusiness();
   const { data: businessData, isLoading: isFetchingBusinesses } = useFetchBusinesses({ page: 1 });
@@ -83,7 +84,10 @@ export default function AddBusiness() {
   return (
     <>
       <PageMeta title="Tambah Bisnis" description="Halaman tambah bisnis baru" />
-      <PageBreadcrumb pageTitle="Tambah Bisnis" />
+      <PageBreadcrumb
+        pageTitle="Tambah Bisnis"
+        breadcrumbs={[{ label: "Daftar Bisnis", path: "/businesses" }]}
+      />
       <ComponentCard title="Form Tambah Bisnis">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -162,8 +166,17 @@ export default function AddBusiness() {
               {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/businesses")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Bisnis..." : "Tambah Bisnis"}
               </Button>
             </div>

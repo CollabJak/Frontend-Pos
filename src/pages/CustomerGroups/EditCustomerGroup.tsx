@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AxiosError } from "axios";
@@ -16,6 +16,7 @@ import { useFetchCustomerGroup, useUpdateCustomerGroup } from "../../hooks/useCu
 import { ApiErrorResponse } from "../../types/types";
 
 export default function EditCustomerGroup() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const customerGroupId = Number(id);
   const { data: customerGroup, isLoading } = useFetchCustomerGroup(customerGroupId);
@@ -86,7 +87,10 @@ export default function EditCustomerGroup() {
   return (
     <>
       <PageMeta title="Edit Grup Pelanggan" description="Halaman edit grup pelanggan" />
-      <PageBreadcrumb pageTitle="Edit Grup Pelanggan" />
+      <PageBreadcrumb
+        pageTitle="Edit Grup Pelanggan"
+        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups?tab=groups" }]}
+      />
       <ComponentCard title="Form Edit Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -192,8 +196,17 @@ export default function EditCustomerGroup() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/customer-groups?tab=groups")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui Grup Pelanggan..." : "Perbarui Grup Pelanggan"}
               </Button>
             </div>

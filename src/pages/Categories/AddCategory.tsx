@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -24,6 +25,7 @@ import { useForm } from "react-hook-form";
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddCategory() {
+  const navigate = useNavigate();
   const { mutate: createCategory, isPending } = useCreateCategory();
 
   const [files, setFiles] = useState<unknown[]>([]);
@@ -76,7 +78,10 @@ export default function AddCategory() {
         title="Tambah Kategori Produk"
         description="Halaman tambah kategori produk baru"
       />
-      <PageBreadcrumb pageTitle="Tambah Kategori Produk" />
+      <PageBreadcrumb
+        pageTitle="Tambah Kategori Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=categories" }]}
+      />
       <ComponentCard title="Form Tambah Kategori">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
@@ -141,8 +146,17 @@ export default function AddCategory() {
                 )}
               </div>
             </div>
-            <div>
-              <Button className="w-full" size="sm" type="submit">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=categories")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit">
                 { isPending ? "Menambahkan Kategori..." : "Tambah Kategori" }
               </Button>
             </div>

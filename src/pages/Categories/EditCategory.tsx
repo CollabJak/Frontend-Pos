@@ -20,11 +20,12 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function EditCategory() {
+  const navigate = useNavigate();
   const {id} =  useParams<{id : string}>();
   const {data: category, isLoading} = useFetchCategory(Number(id));
   const { mutate: updateCategory, isPending: isUpdating } = useUpdateCategory();
@@ -106,7 +107,10 @@ export default function EditCategory() {
         title="Edit Kategori Produk"
         description="Halaman edit kategori produk"
       />
-      <PageBreadcrumb pageTitle="Edit Kategori Produk" />
+      <PageBreadcrumb
+        pageTitle="Edit Kategori Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=categories" }]}
+      />
       <ComponentCard title="Form Edit Kategori">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FilePond
@@ -190,8 +194,17 @@ export default function EditCategory() {
                 )}
               </div>
             </div>
-            <div>
-              <Button className="w-full" size="sm" type="submit">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=categories")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit">
                 { isUpdating ? "Memperbarui Kategori..." : "Perbarui Kategori" }
               </Button>
             </div>

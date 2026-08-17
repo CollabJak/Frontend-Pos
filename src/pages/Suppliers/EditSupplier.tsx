@@ -11,10 +11,11 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { SupplierFormData,  supplierSchema } from "../../Schemas/supplierSchema";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function EditSupplier() {
+  const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   const { data: supplier, isLoading } = useFetchSupplier(Number(id));
   const { mutate: updateSupplier, isPending } = useUpdateSupplier();
@@ -73,7 +74,10 @@ export default function EditSupplier() {
   return (
     <>
       <PageMeta title="Edit Pemasok" description="Halaman edit pemasok produk" />
-      <PageBreadcrumb pageTitle="Edit Pemasok" />
+      <PageBreadcrumb
+        pageTitle="Edit Pemasok"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=suppliers" }]}
+      />
       <ComponentCard title="Form Edit Pemasok">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -155,8 +159,17 @@ export default function EditSupplier() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=suppliers")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui Pemasok..." : "Perbarui Pemasok"}
               </Button>
             </div>

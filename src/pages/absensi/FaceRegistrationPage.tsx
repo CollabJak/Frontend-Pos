@@ -8,6 +8,7 @@ import {
 } from "../../Schemas/absensiSchema";
 import { useEnrollFace, useGetFaceEnrollment } from "../../hooks/api/useAbsensi";
 import { useAuth } from "../../hooks/useAuth";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import Button from "../../components/ui/button/Button";
 import InputField from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
@@ -133,6 +134,11 @@ const FaceRegistrationPage: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       <canvas ref={canvasRef} className="hidden" />
+
+      <PageBreadcrumb
+        pageTitle="Pendaftaran Wajah"
+        breadcrumbs={[{ label: "Absensi" }]}
+      />
       
       <div className="flex flex-col gap-1">
         <h1 className="text-title-sm font-bold text-gray-900 dark:text-white">Pendaftaran Wajah (Biometrik Absensi)</h1>

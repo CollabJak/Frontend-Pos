@@ -15,10 +15,11 @@ import {
   unitConversionSchema,
 } from "../../Schemas/unitConversionSchema";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useEffect } from "react";
 
 export default function EditUnitConversion() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: unitConversion, isLoading } = useFetchUnitConversion(Number(id));
 
@@ -98,7 +99,10 @@ export default function EditUnitConversion() {
   return (
     <>
       <PageMeta title="Edit Konversi Satuan" description="Halaman edit konversi satuan produk" />
-      <PageBreadcrumb pageTitle="Edit Konversi Satuan" />
+      <PageBreadcrumb
+        pageTitle="Edit Konversi Satuan"
+        breadcrumbs={[{ label: "Manajemen Satuan", path: "/units?tab=conversions" }]}
+      />
       <ComponentCard title="Form Edit Konversi Satuan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -193,8 +197,17 @@ export default function EditUnitConversion() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/units?tab=conversions")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Memperbarui konversi satuan..." : "Perbarui Konversi Satuan"}
               </Button>
             </div>

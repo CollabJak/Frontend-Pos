@@ -20,10 +20,12 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddUser() {
+  const navigate = useNavigate();
   const { mutate: createUser, isPending } = useCreateUser();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -76,7 +78,10 @@ export default function AddUser() {
         title="Tambah Pengguna"
         description="Halaman tambah pengguna baru"
       />
-      <PageBreadcrumb pageTitle="Tambah Pengguna" />
+      <PageBreadcrumb
+        pageTitle="Tambah Pengguna"
+        breadcrumbs={[{ label: "Daftar Pengguna", path: "/users" }]}
+      />
       <ComponentCard title="Form Tambah Pengguna">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
@@ -188,8 +193,17 @@ export default function AddUser() {
             <p className="text-red-500 text-sm">{errors.root.message}</p>
           )}
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/users")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan Pengguna..." : "Tambah Pengguna"}
             </Button>
           </div>

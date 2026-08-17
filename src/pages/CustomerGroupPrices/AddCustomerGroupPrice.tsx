@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -26,6 +27,7 @@ import { customerGroupPriceSchema } from "../../Schemas/customerGroupPriceSchema
 type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddCustomerGroupPrice() {
+  const navigate = useNavigate();
   const { mutate: createCustomerGroupPrice, isPending } = useCreateCustomerGroupPrice();
 
   const {
@@ -77,7 +79,10 @@ export default function AddCustomerGroupPrice() {
   return (
     <>
       <PageMeta title="Tambah Harga Grup Pelanggan" description="Halaman tambah harga grup pelanggan" />
-      <PageBreadcrumb pageTitle="Tambah Harga Grup Pelanggan" />
+      <PageBreadcrumb
+        pageTitle="Tambah Harga Grup Pelanggan"
+        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups?tab=prices" }]}
+      />
       <ComponentCard title="Form Tambah Harga Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -220,8 +225,17 @@ export default function AddCustomerGroupPrice() {
             {errors.is_active && <p className="text-red-500">{errors.is_active.message}</p>}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/customer-groups?tab=prices")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan harga grup pelanggan..." : "Tambah Harga Grup Pelanggan"}
             </Button>
           </div>

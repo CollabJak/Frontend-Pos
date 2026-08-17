@@ -11,8 +11,10 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { BrandFormData,  BrandSchema } from "../../Schemas/brandSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function AddBrand() {
+  const navigate = useNavigate();
   const { mutate: createBrand, isPending } = useCreateBrand();
 
   const {
@@ -53,7 +55,10 @@ export default function AddBrand() {
   return (
     <>
       <PageMeta title="Tambah Merek" description="Halaman tambah merek produk" />
-      <PageBreadcrumb pageTitle="Tambah Merek" />
+      <PageBreadcrumb
+        pageTitle="Tambah Merek"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=brands" }]}
+      />
       <ComponentCard title="Form Tambah Merek">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -88,8 +93,17 @@ export default function AddBrand() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=brands")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Merek..." : "Tambah Merek"}
               </Button>
             </div>

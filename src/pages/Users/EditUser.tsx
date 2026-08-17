@@ -22,11 +22,12 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function EditUser() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: user, isLoading } = useFetchUser(Number(id));
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
@@ -179,7 +180,10 @@ export default function EditUser() {
         title="Edit Pengguna"
         description="Halaman edit pengguna"
       />
-      <PageBreadcrumb pageTitle="Edit Pengguna" />
+      <PageBreadcrumb
+        pageTitle="Edit Pengguna"
+        breadcrumbs={[{ label: "Daftar Pengguna", path: "/users" }]}
+      />
       <ComponentCard title="Form Edit Pengguna">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
@@ -301,8 +305,17 @@ export default function EditUser() {
             <p className="text-red-500 text-sm">{errors.root.message}</p>
           )}
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isUpdating}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/users")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isUpdating}>
               {isUpdating ? "Menyimpan Perubahan..." : "Simpan Perubahan"}
             </Button>
           </div>

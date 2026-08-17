@@ -11,8 +11,10 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { SupplierFormData,  supplierSchema } from "../../Schemas/supplierSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function AddSupplier() {
+  const navigate = useNavigate();
   const { mutate: createSupplier, isPending } = useCreateSupplier();
 
   const {
@@ -53,7 +55,10 @@ export default function AddSupplier() {
   return (
     <>
       <PageMeta title="Tambah Pemasok" description="Halaman tambah pemasok produk baru" />
-      <PageBreadcrumb pageTitle="Tambah Pemasok" />
+      <PageBreadcrumb
+        pageTitle="Tambah Pemasok"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=suppliers" }]}
+      />
       <ComponentCard title="Form Tambah Pemasok">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -135,8 +140,17 @@ export default function AddSupplier() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/products?tab=suppliers")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Pemasok..." : "Tambah Pemasok"}
               </Button>
             </div>

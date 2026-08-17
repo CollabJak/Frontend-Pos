@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -15,6 +16,7 @@ import { promotionProductSchema } from "../../Schemas/promotionProductSchema";
 type SelectOption = OptionDto & Record<string, unknown>;
 
 export default function AddPromotionProduct() {
+  const navigate = useNavigate();
   const { mutate: createPromotionProduct, isPending } = useCreatePromotionProduct();
 
   const fetchPromotionOptions = createOptionsFetcher<SelectOption>({
@@ -68,7 +70,10 @@ export default function AddPromotionProduct() {
   return (
     <>
       <PageMeta title="Tambah Produk Promosi" description="Halaman tambah produk ke dalam promosi" />
-      <PageBreadcrumb pageTitle="Tambah Produk Promosi" />
+      <PageBreadcrumb
+        pageTitle="Tambah Produk Promosi"
+        breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions?tab=products" }]}
+      />
       <ComponentCard title="Form Tambah Produk Promosi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -115,8 +120,17 @@ export default function AddPromotionProduct() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/promotions?tab=products")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan produk promosi..." : "Tambah Produk Promosi"}
             </Button>
           </div>

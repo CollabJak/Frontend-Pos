@@ -125,7 +125,10 @@ const PaymentMethodFormPage: React.FC = () => {
                 title={isEdit ? 'Edit Metode Pembayaran' : 'Tambah Metode Pembayaran'}
                 description="Konfigurasi pengaturan metode pembayaran."
             />
-            <PageBreadcrumb pageTitle={isEdit ? 'Edit Metode Pembayaran' : 'Tambah Metode Pembayaran'} />
+            <PageBreadcrumb
+                pageTitle={isEdit ? 'Edit Metode Pembayaran' : 'Tambah Metode Pembayaran'}
+                breadcrumbs={[{ label: "Metode Pembayaran", path: "/payment-methods" }]}
+            />
 
             <div className="space-y-6">
                 <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
@@ -322,16 +325,20 @@ const PaymentMethodFormPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 dark:border-white/[0.05] pt-6">
+                            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end border-t border-gray-100 dark:border-white/[0.05] pt-6">
                                 <Button
                                     variant="outline"
+                                    size="sm"
                                     onClick={() => navigate('/payment-methods')}
                                     type="button"
+                                    className="w-full sm:w-auto"
                                 >
-                                    Batal
+                                    Kembali
                                 </Button>
                                 <Button
                                     type="submit"
+                                    size="sm"
+                                    className="w-full sm:w-auto"
                                     isLoading={createMutation.isPending || updateMutation.isPending}
                                 >
                                     {isEdit ? 'Simpan Perubahan' : 'Simpan Metode Pembayaran'}

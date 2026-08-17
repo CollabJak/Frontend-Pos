@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -26,6 +26,7 @@ const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
 ];
 
 export default function EditLocation() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const locationId = Number(id);
 
@@ -132,7 +133,10 @@ export default function EditLocation() {
   return (
     <>
       <PageMeta title="Edit Lokasi" description="Halaman edit lokasi bisnis" />
-      <PageBreadcrumb pageTitle="Edit Lokasi" />
+      <PageBreadcrumb
+        pageTitle="Edit Lokasi"
+        breadcrumbs={[{ label: "Lokasi", path: "/locations" }]}
+      />
       <ComponentCard title="Form Edit Lokasi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -198,8 +202,17 @@ export default function EditLocation() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/locations")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Memperbarui lokasi..." : "Perbarui Lokasi"}
             </Button>
           </div>

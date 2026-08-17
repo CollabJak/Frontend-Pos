@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -23,6 +24,7 @@ const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
 ];
 
 export default function AddLocation() {
+  const navigate = useNavigate();
   const { mutate: createLocation, isPending } = useCreateLocation();
 
   const {
@@ -70,7 +72,10 @@ export default function AddLocation() {
   return (
     <>
       <PageMeta title="Tambah Lokasi" description="Halaman tambah lokasi bisnis" />
-      <PageBreadcrumb pageTitle="Tambah Lokasi" />
+      <PageBreadcrumb
+        pageTitle="Tambah Lokasi"
+        breadcrumbs={[{ label: "Lokasi", path: "/locations" }]}
+      />
       <ComponentCard title="Form Tambah Lokasi">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -135,8 +140,17 @@ export default function AddLocation() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/locations")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan lokasi..." : "Tambah Lokasi"}
             </Button>
           </div>

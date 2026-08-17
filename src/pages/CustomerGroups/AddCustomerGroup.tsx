@@ -12,8 +12,10 @@ import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 export default function AddCustomerGroup() {
+  const navigate = useNavigate();
   const { mutate: createCustomerGroup, isPending } = useCreateCustomerGroup();
 
   const {
@@ -63,7 +65,10 @@ export default function AddCustomerGroup() {
   return (
     <>
       <PageMeta title="Tambah Grup Pelanggan" description="Halaman tambah grup pelanggan" />
-      <PageBreadcrumb pageTitle="Tambah Grup Pelanggan" />
+      <PageBreadcrumb
+        pageTitle="Tambah Grup Pelanggan"
+        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups?tab=groups" }]}
+      />
       <ComponentCard title="Form Tambah Grup Pelanggan">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -169,8 +174,17 @@ export default function AddCustomerGroup() {
               )}
             </div>
 
-            <div>
-              <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <Button
+                className="w-full sm:w-auto"
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/customer-groups?tab=groups")}
+              >
+                Kembali
+              </Button>
+              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
                 {isPending ? "Menambahkan Grup Pelanggan..." : "Tambah Grup Pelanggan"}
               </Button>
             </div>

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
@@ -29,6 +30,7 @@ const PRICE_TYPE_OPTIONS: Array<{ value: ProductPriceType; label: string }> = [
 ];
 
 export default function AddProductPrice() {
+  const navigate = useNavigate();
   const { mutate: createProductPrice, isPending } = useCreateProductPrice();
 
   const {
@@ -79,7 +81,10 @@ export default function AddProductPrice() {
   return (
     <>
       <PageMeta title="Tambah Harga Produk" description="Halaman tambah harga produk" />
-      <PageBreadcrumb pageTitle="Tambah Harga Produk" />
+      <PageBreadcrumb
+        pageTitle="Tambah Harga Produk"
+        breadcrumbs={[{ label: "Manajemen Produk", path: "/products?tab=prices" }]}
+      />
       <ComponentCard title="Form Tambah Harga Produk">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
@@ -207,8 +212,17 @@ export default function AddProductPrice() {
             )}
           </div>
 
-          <div>
-            <Button className="w-full" size="sm" type="submit" disabled={isPending}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              variant="outline"
+              type="button"
+              onClick={() => navigate("/products?tab=prices")}
+            >
+              Kembali
+            </Button>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
               {isPending ? "Menambahkan harga produk..." : "Tambah Harga Produk"}
             </Button>
           </div>
