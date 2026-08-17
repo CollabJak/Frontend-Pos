@@ -127,7 +127,7 @@ export default function AddUser() {
 
             <div>
               <Label htmlFor="email" required>
-                Email Perusahaan
+                Email
               </Label>
               <Input
                 {...register("email")}

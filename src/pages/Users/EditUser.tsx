@@ -241,7 +241,7 @@ export default function EditUser() {
 
             <div>
               <Label htmlFor="email" required>
-                Email Perusahaan
+                Email
               </Label>
               <Input
                 {...register("email")}
