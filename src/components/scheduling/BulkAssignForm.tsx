@@ -111,7 +111,7 @@ const BulkAssignForm: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <Label>Nama Batch Jadwal</Label>
+          <Label required>Nama Batch Jadwal</Label>
           <Input
             placeholder="Contoh: Jadwal Juni 2026 - Kasir"
             {...register("batch_name")}
@@ -128,6 +128,7 @@ const BulkAssignForm: React.FC = () => {
             render={({ field }) => (
               <MultiSelect
                 label="Pilih Karyawan"
+                required
                 placeholder="Pilih satu atau lebih karyawan"
                 options={userOptions}
                 value={field.value.map(String)}
@@ -147,6 +148,7 @@ const BulkAssignForm: React.FC = () => {
             render={({ field }) => (
               <Select
                 label="Pilih Shift"
+                required
                 options={shiftSelectOptions}
                 value={field.value?.toString() || ""}
                 onChange={(val) => field.onChange(Number(val))}
@@ -178,6 +180,7 @@ const BulkAssignForm: React.FC = () => {
             <DatePicker
               id="start_date"
               label="Tanggal Mulai"
+              required
               placeholder="Pilih tanggal mulai"
               defaultDate={field.value}
               onChange={([date]) => field.onChange(formatDateToYYYYMMDD(date))}
@@ -193,6 +196,7 @@ const BulkAssignForm: React.FC = () => {
             <DatePicker
               id="end_date"
               label="Tanggal Selesai"
+              required
               placeholder="Pilih tanggal selesai"
               defaultDate={field.value}
               onChange={([date]) => field.onChange(formatDateToYYYYMMDD(date))}

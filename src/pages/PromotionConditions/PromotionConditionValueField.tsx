@@ -130,13 +130,13 @@ export default function PromotionConditionValueField({
 
   return (
     <div className="space-y-3">
-      <Label>Condition Value</Label>
+      <Label required>Nilai Syarat</Label>
 
       {isTimeRange && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <Label htmlFor="condition-time-start" className="mb-2">
-              Start Time
+            <Label htmlFor="condition-time-start" className="mb-2" required>
+              Waktu Mulai
             </Label>
             <Input
               id="condition-time-start"
@@ -151,8 +151,8 @@ export default function PromotionConditionValueField({
             />
           </div>
           <div>
-            <Label htmlFor="condition-time-end" className="mb-2">
-              End Time
+            <Label htmlFor="condition-time-end" className="mb-2" required>
+              Waktu Selesai
             </Label>
             <Input
               id="condition-time-end"
@@ -208,8 +208,8 @@ export default function PromotionConditionValueField({
       {!isTimeRange && !isWeekday && isBetween && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <Label htmlFor="condition-between-min" className="mb-2">
-              Minimum
+            <Label htmlFor="condition-between-min" className="mb-2" required>
+              Nilai Minimal
             </Label>
             <Input
               id="condition-between-min"
@@ -225,8 +225,8 @@ export default function PromotionConditionValueField({
             />
           </div>
           <div>
-            <Label htmlFor="condition-between-max" className="mb-2">
-              Maximum
+            <Label htmlFor="condition-between-max" className="mb-2" required>
+              Nilai Maksimal
             </Label>
             <Input
               id="condition-between-max"
@@ -258,10 +258,10 @@ export default function PromotionConditionValueField({
                   addListValue();
                 }
               }}
-              placeholder="Type a value, then Add. You can also paste comma-separated values."
+              placeholder="Ketik nilai lalu Tambah. Anda juga dapat menempelkan nilai yang dipisahkan koma."
             />
             <Button type="button" size="sm" variant="outline" onClick={addListValue}>
-              Add
+              Tambah
             </Button>
           </div>
           {listValues.length > 0 && (
@@ -289,7 +289,7 @@ export default function PromotionConditionValueField({
           onChange={(event) =>
             onChange({ value: toPrimitiveValue(event.target.value, useNumericValue) })
           }
-          placeholder={useNumericValue ? "Enter numeric value" : "Enter condition value"}
+          placeholder={useNumericValue ? "Masukkan nilai angka" : "Masukkan nilai syarat"}
         />
       )}
 

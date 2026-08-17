@@ -72,7 +72,9 @@ export default function AddPromotion() {
 
           <div className="space-y-6">
             <div>
-              <Label htmlFor="promotion-code">Kode Promosi</Label>
+              <Label htmlFor="promotion-code" required>
+                Kode Promosi
+              </Label>
               <Input
                 {...register("code")}
                 type="text"
@@ -83,7 +85,9 @@ export default function AddPromotion() {
             </div>
 
             <div>
-              <Label htmlFor="promotion-name">Nama Promosi</Label>
+              <Label htmlFor="promotion-name" required>
+                Nama Promosi
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -94,7 +98,9 @@ export default function AddPromotion() {
             </div>
 
             <div>
-              <Label htmlFor="promotion-type">Tipe Promosi</Label>
+              <Label htmlFor="promotion-type" required>
+                Tipe Promosi
+              </Label>
               <Input
                 {...register("type")}
                 type="text"
@@ -105,7 +111,9 @@ export default function AddPromotion() {
             </div>
 
             <div>
-              <Label htmlFor="promotion-priority">Prioritas</Label>
+              <Label htmlFor="promotion-priority" required>
+                Prioritas
+              </Label>
               <Input
                 {...register("priority", { valueAsNumber: true })}
                 type="number"
@@ -119,6 +127,7 @@ export default function AddPromotion() {
               <DateTimePicker
                 id="promotion-start-date"
                 label="Tanggal Mulai"
+                required
                 placeholder="Pilih tanggal dan waktu mulai"
                 value={watch("start_date")}
                 onChange={(selectedValue) => {

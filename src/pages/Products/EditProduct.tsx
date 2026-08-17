@@ -166,7 +166,9 @@ export default function EditProduct() {
           </div>
           <div className="space-y-6">
             <div>
-              <Label htmlFor="product-name">Nama Produk</Label>
+              <Label htmlFor="product-name" required>
+                Nama Produk
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -192,7 +194,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Kategori</Label>
+              <Label required>Kategori</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-category-options"
@@ -216,7 +218,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Merek</Label>
+              <Label required>Merek</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-brand-options"
@@ -240,7 +242,7 @@ export default function EditProduct() {
             </div>
 
             <div>
-              <Label>Satuan</Label>
+              <Label required>Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
                 keyName="product-unit-options"

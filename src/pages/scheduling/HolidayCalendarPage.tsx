@@ -280,7 +280,9 @@ export default function HolidayCalendarPage() {
         <h3 className="mb-6 text-xl font-bold text-gray-800 dark:text-white/90">{selectedHoliday ? "Edit Hari Libur" : "Tambah Hari Libur"}</h3>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
-            <Label htmlFor="h-name">Nama Libur</Label>
+            <Label htmlFor="h-name" required>
+              Nama Libur
+            </Label>
             <Input id="h-name" {...register("name")} error={!!errors.name?.message} hint={errors.name?.message} placeholder="Contoh: Idul Fitri" />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -288,13 +290,16 @@ export default function HolidayCalendarPage() {
               <DatePicker
                 id="h-date"
                 label="Tanggal"
+                required
                 defaultDate={watch("holiday_date")}
                 onChange={(_, dateStr) => setValue("holiday_date", dateStr)}
                 error={errors.holiday_date?.message}
               />
             </div>
             <div>
-              <Label htmlFor="h-type">Tipe</Label>
+              <Label htmlFor="h-type" required>
+                Tipe
+              </Label>
               <Select
                 value={holidayType}
                 onChange={(value) => setValue("type", value as any)}
@@ -308,7 +313,9 @@ export default function HolidayCalendarPage() {
           </div>
           {holidayType === "location" && (
             <div>
-              <Label htmlFor="h-loc">Lokasi</Label>
+              <Label htmlFor="h-loc" required>
+                Lokasi
+              </Label>
               <Select
                 value={watch("location_id")?.toString() || ""}
                 onChange={(value) => setValue("location_id", parseInt(value))}
@@ -385,7 +392,9 @@ export default function HolidayCalendarPage() {
 
                   <div className="grid gap-4 lg:grid-cols-12">
                     <div className="lg:col-span-4">
-                      <Label htmlFor={`batch-name-${field.id}`}>Nama Libur</Label>
+                      <Label htmlFor={`batch-name-${field.id}`} required>
+                        Nama Libur
+                      </Label>
                       <Input
                         id={`batch-name-${field.id}`}
                         {...registerBatch(`holidays.${index}.name`)}
@@ -398,13 +407,16 @@ export default function HolidayCalendarPage() {
                       <DatePicker
                         id={`batch-date-${field.id}`}
                         label="Tanggal"
+                        required
                         defaultDate={watchBatch(`holidays.${index}.holiday_date`)}
                         onChange={(_, dateStr) => setBatchValue(`holidays.${index}.holiday_date`, dateStr, { shouldValidate: true })}
                         error={rowErrors?.holiday_date?.message}
                       />
                     </div>
                     <div className="lg:col-span-3">
-                      <Label htmlFor={`batch-type-${field.id}`}>Tipe</Label>
+                      <Label htmlFor={`batch-type-${field.id}`} required>
+                        Tipe
+                      </Label>
                       <Select
                         value={rowType}
                         onChange={(value) => {
@@ -436,7 +448,9 @@ export default function HolidayCalendarPage() {
 
                   {rowType === "location" && (
                     <div className="mt-4">
-                      <Label htmlFor={`batch-location-${field.id}`}>Lokasi</Label>
+                      <Label htmlFor={`batch-location-${field.id}`} required>
+                        Lokasi
+                      </Label>
                       <Select
                         value={getLocationIdValue(index)}
                         placeholder="Pilih lokasi"

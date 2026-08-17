@@ -28,7 +28,7 @@ const PaymentMethodFormPage: React.FC = () => {
         [hasExistingQrImage]
     );
 
-    const { register, handleSubmit, watch, setValue, clearErrors, formState: { errors } } = useForm<any>({
+    const { register, handleSubmit, watch, setValue, setError, clearErrors, formState: { errors } } = useForm<any>({
         resolver: zodResolver(paymentMethodSchema),
         defaultValues: {
             scope: isAdmin ? 'system' : 'business',
@@ -83,10 +83,27 @@ const PaymentMethodFormPage: React.FC = () => {
     };
 
     const onSubmit = (data: PaymentMethodSchemaType) => {
+        const onError = (error: any) => {
+            if (error.response?.status === 422) {
+                const serverErrors = error.response.data.errors;
+                if (serverErrors) {
+                    Object.keys(serverErrors).forEach((key) => {
+                        setError(key as any, {
+                            type: 'server',
+                            message: serverErrors[key][0],
+                        });
+                    });
+                }
+                if (error.response.data.message) {
+                    setError('root', { type: 'server', message: error.response.data.message });
+                }
+            }
+        };
+
         if (isEdit) {
-            updateMutation.mutate(data as any);
+            updateMutation.mutate(data as any, { onError });
         } else {
-            createMutation.mutate(data as any);
+            createMutation.mutate(data as any, { onError });
         }
     };
 
@@ -112,12 +129,13 @@ const PaymentMethodFormPage: React.FC = () => {
 
             <div className="space-y-6">
                 <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
+                    {errors.root && <p className="text-sm text-red-500">{errors.root.message}</p>}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <ComponentCard title="Identitas Metode" className="md:col-span-1">
                             <div className="space-y-4 pt-2">
                                 {isAdmin ? (
                                     <div>
-                                        <Label>Cakupan (Scope)</Label>
+                                        <Label required>Cakupan (Scope)</Label>
                                         <select
                                             {...register('scope')}
                                             className="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.02] dark:text-white"
@@ -137,7 +155,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                 )}
 
                                 <div>
-                                    <Label>Tipe Pembayaran</Label>
+                                    <Label required>Tipe Pembayaran</Label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {['bank_transfer', 'qris', 'e_wallet', 'cash'].map((type) => (
                                             <button
@@ -156,8 +174,11 @@ const PaymentMethodFormPage: React.FC = () => {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="name">Nama Tampilan</Label>
+                                    <Label htmlFor="name" required>
+                                        Nama Tampilan
+                                    </Label>
                                     <Input
+                                        id="name"
                                         {...register('name')}
                                         placeholder="contoh: Bank BCA Operasional"
                                         error={!!errors.name}
@@ -168,8 +189,11 @@ const PaymentMethodFormPage: React.FC = () => {
                                 <div>
                                     <Label htmlFor="code">Kode Internal (Slug)</Label>
                                     <Input
+                                        id="code"
                                         {...register('code')}
                                         placeholder="contoh: bca_ops"
+                                        error={!!errors.code}
+                                        hint={errors.code?.message as any}
                                     />
                                 </div>
                             </div>
@@ -184,7 +208,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                 ) : selectedType === 'qris' ? (
                                     <div className="space-y-4">
                                         <div>
-                                            <Label>Gambar Kode QR (QRIS)</Label>
+                                            <Label required={isQrImageRequired}>Gambar Kode QR (QRIS)</Label>
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -209,16 +233,23 @@ const PaymentMethodFormPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <Label htmlFor="provider_name">Nama Penyedia / Bank (Opsional)</Label>
-                                            <Input {...register('provider_name')} placeholder="contoh: Danamon / GoPay" />
+                                            <Input
+                                                id="provider_name"
+                                                {...register('provider_name')}
+                                                placeholder="contoh: Danamon / GoPay"
+                                                error={!!errors.provider_name}
+                                                hint={errors.provider_name?.message as any}
+                                            />
                                         </div>
                                     </div>
                                 ) : (
                                     <>
                                         <div>
-                                            <Label htmlFor="provider_name">
+                                            <Label htmlFor="provider_name" required>
                                                 {selectedType === 'bank_transfer' ? 'Nama Bank' : 'Penyedia E-Wallet'}
                                             </Label>
                                             <Input
+                                                id="provider_name"
                                                 {...register('provider_name')}
                                                 placeholder={selectedType === 'bank_transfer' ? 'contoh: BCA' : 'contoh: GoPay'}
                                                 error={!!errors.provider_name}
@@ -226,8 +257,11 @@ const PaymentMethodFormPage: React.FC = () => {
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="account_name">Nama Pemilik Rekening</Label>
+                                            <Label htmlFor="account_name" required>
+                                                Nama Pemilik Rekening
+                                            </Label>
                                             <Input
+                                                id="account_name"
                                                 {...register('account_name')}
                                                 placeholder="contoh: Budi Santoso"
                                                 error={!!errors.account_name}
@@ -235,10 +269,11 @@ const PaymentMethodFormPage: React.FC = () => {
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="account_number">
+                                            <Label htmlFor="account_number" required>
                                                 {selectedType === 'bank_transfer' ? 'Nomor Rekening' : 'Nomor Telepon / HP'}
                                             </Label>
                                             <Input
+                                                id="account_number"
                                                 {...register('account_number')}
                                                 placeholder="123456789"
                                                 error={!!errors.account_number}

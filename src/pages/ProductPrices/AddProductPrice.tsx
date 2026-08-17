@@ -85,7 +85,7 @@ export default function AddProductPrice() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Varian Produk</Label>
+            <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="product-price-product-variant-options"
@@ -108,7 +108,9 @@ export default function AddProductPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price-type">Tipe Harga</Label>
+            <Label htmlFor="price-type" required>
+              Tipe Harga
+            </Label>
             <select
               id="price-type"
               {...register("price_type")}
@@ -130,7 +132,9 @@ export default function AddProductPrice() {
           </div>
 
           <div>
-            <Label htmlFor="price">Harga</Label>
+            <Label htmlFor="price" required>
+              Harga
+            </Label>
             <Input
               id="price"
               type="number"
@@ -143,7 +147,7 @@ export default function AddProductPrice() {
           </div>
 
           <div>
-            <Label>Lokasi</Label>
+            <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
               keyName="product-price-location-options"
@@ -169,6 +173,7 @@ export default function AddProductPrice() {
             <DateTimePicker
               id="start-date"
               label="Tanggal Mulai"
+              required
               placeholder="Pilih tanggal dan waktu mulai"
               value={watch("start_date")}
               onChange={(selectedValue) => {

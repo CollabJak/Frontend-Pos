@@ -138,7 +138,9 @@ export default function EditLocation() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label htmlFor="location-name">Nama Lokasi</Label>
+            <Label htmlFor="location-name" required>
+              Nama Lokasi
+            </Label>
             <Input
               {...register("name")}
               type="text"
@@ -149,7 +151,9 @@ export default function EditLocation() {
           </div>
 
           <div>
-            <Label htmlFor="location-type">Tipe Lokasi</Label>
+            <Label htmlFor="location-type" required>
+              Tipe Lokasi
+            </Label>
             <select
               id="location-type"
               {...register("type")}

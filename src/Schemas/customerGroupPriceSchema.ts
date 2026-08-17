@@ -2,11 +2,13 @@ import { z } from "zod";
 
 export const customerGroupPriceSchema = z
   .object({
-    product_variant_id: z.number().int().min(1, "Product variant is required"),
-    customer_group_id: z.number().int().min(1, "Customer group is required"),
-    price: z.number().min(0, "Price must be at least 0"),
-    location_id: z.number().int().min(1, "Location is required"),
-    start_date: z.string().min(1, "Start date is required"),
+    product_variant_id: z.number().int().min(1, "Varian produk wajib dipilih"),
+    customer_group_id: z.number().int().min(1, "Grup pelanggan wajib dipilih"),
+    price: z
+      .number({ message: "Harga harus berupa angka" })
+      .min(0, "Harga minimal 0"),
+    location_id: z.number().int().min(1, "Lokasi wajib dipilih"),
+    start_date: z.string().min(1, "Tanggal mulai wajib diisi"),
     end_date: z.string().optional(),
     is_active: z.boolean(),
   })
@@ -15,7 +17,7 @@ export const customerGroupPriceSchema = z
     if (Number.isNaN(startDate.getTime())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Start date is invalid",
+        message: "Format tanggal mulai tidak valid",
         path: ["start_date"],
       });
     }
@@ -28,7 +30,7 @@ export const customerGroupPriceSchema = z
     if (Number.isNaN(endDate.getTime())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "End date is invalid",
+        message: "Format tanggal selesai tidak valid",
         path: ["end_date"],
       });
       return;
@@ -37,7 +39,7 @@ export const customerGroupPriceSchema = z
     if (endDate < startDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "End date must be after or equal to start date",
+        message: "Tanggal selesai harus sama atau setelah tanggal mulai",
         path: ["end_date"],
       });
     }

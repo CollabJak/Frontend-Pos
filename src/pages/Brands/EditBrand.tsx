@@ -75,12 +75,15 @@ export default function EditBrand() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="brand-name">Nama Merek</Label>
+              <Label htmlFor="brand-name" required>
+                Nama Merek
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
                 id="brand-name"
                 placeholder="Masukkan nama merek"
+                error={!!errors.name}
               />
               {errors.name && (
                 <p className="text-red-500">{errors.name.message}</p>
@@ -94,6 +97,7 @@ export default function EditBrand() {
                 type="text"
                 id="brand-code"
                 placeholder="Masukkan kode merek"
+                disabled
               />
               {errors.code && (
                 <p className="text-red-500">{errors.code.message}</p>

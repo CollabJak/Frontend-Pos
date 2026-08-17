@@ -84,7 +84,9 @@ export default function EditUnit() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
           <div className="space-y-6">
             <div>
-              <Label htmlFor="unit-name">Nama Satuan</Label>
+              <Label htmlFor="unit-name" required>
+                Nama Satuan
+              </Label>
               <Input
                 {...register("name")}
                 type="text"
@@ -97,7 +99,9 @@ export default function EditUnit() {
             </div>
 
             <div>
-              <Label htmlFor="unit-symbol">Simbol Satuan</Label>
+              <Label htmlFor="unit-symbol" required>
+                Simbol Satuan
+              </Label>
               <Input
                 {...register("symbol")}
                 type="text"

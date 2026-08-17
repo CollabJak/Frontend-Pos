@@ -134,7 +134,9 @@ export default function ShiftFormModal({
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <Label htmlFor="name">Nama Shift</Label>
+            <Label htmlFor="name" required>
+              Nama Shift
+            </Label>
             <Input
               id="name"
               {...register("name")}
@@ -144,7 +146,9 @@ export default function ShiftFormModal({
           </div>
 
           <div>
-            <Label htmlFor="color">Warna Label</Label>
+            <Label htmlFor="color" required>
+              Warna Label
+            </Label>
             <Controller
               control={control}
               name="color"
@@ -173,7 +177,9 @@ export default function ShiftFormModal({
           </div>
 
           <div>
-            <Label htmlFor="check_in_time">Jam Masuk</Label>
+            <Label htmlFor="check_in_time" required>
+              Jam Masuk
+            </Label>
             <Controller
               control={control}
               name="check_in_time"
@@ -188,7 +194,9 @@ export default function ShiftFormModal({
           </div>
 
           <div>
-            <Label htmlFor="check_out_time">Jam Pulang</Label>
+            <Label htmlFor="check_out_time" required>
+              Jam Pulang
+            </Label>
             <Controller
               control={control}
               name="check_out_time"
@@ -302,7 +310,9 @@ export default function ShiftFormModal({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Mulai</Label>
+                  <Label className="text-xs" required>
+                    Mulai
+                  </Label>
                   <Controller
                     control={control}
                     name={`break_times.${index}.break_start`}
@@ -316,7 +326,9 @@ export default function ShiftFormModal({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Selesai</Label>
+                  <Label className="text-xs" required>
+                    Selesai
+                  </Label>
                   <Controller
                     control={control}
                     name={`break_times.${index}.break_end`}

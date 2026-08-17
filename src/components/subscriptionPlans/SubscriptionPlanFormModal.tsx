@@ -12,7 +12,7 @@ import Select from "../form/Select";
 interface SubscriptionPlanFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any, onError?: (error: any) => void) => void;
   initialData?: SubscriptionPlan | null;
   loading?: boolean;
 }
@@ -29,6 +29,7 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
     handleSubmit,
     reset,
     setValue,
+    setError,
     watch,
     formState: { errors },
   } = useForm<any>({
@@ -111,7 +112,22 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
       }
     });
 
-    onSubmit({ ...data, features: finalFeatures });
+    onSubmit({ ...data, features: finalFeatures }, (error: any) => {
+      if (error.response?.status === 422) {
+        const serverErrors = error.response.data.errors;
+        if (serverErrors) {
+          Object.keys(serverErrors).forEach((key) => {
+            setError(key as any, {
+              type: "server",
+              message: serverErrors[key][0],
+            });
+          });
+        }
+        if (error.response.data.message) {
+          setError("root", { type: "server", message: error.response.data.message });
+        }
+      }
+    });
   };
 
   return (
@@ -125,10 +141,14 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
         </p>
 
         <form onSubmit={handleSubmit(onLocalSubmit as any)} className="flex flex-col gap-5">
+          {errors.root && <p className="text-sm text-red-500">{errors.root.message}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Nama Paket</Label>
+              <Label htmlFor="plan-name" required>
+                Nama Paket
+              </Label>
               <Input
+                id="plan-name"
                 placeholder="contoh: Paket Pro Bulanan"
                 {...register("name")}
                 error={!!errors.name}
@@ -139,12 +159,13 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
             <div>
               <Select
                 label="Siklus Penagihan"
+                required
                 options={[
                   { value: "monthly", label: "Bulanan" },
                   { value: "yearly", label: "Tahunan" },
                 ]}
                 value={watch("billing_cycle")}
-                onChange={(val) => setValue("billing_cycle", val as any)}
+                onChange={(val) => setValue("billing_cycle", val as any, { shouldValidate: true })}
               />
               {errors.billing_cycle && (
                 <p className="mt-1.5 text-xs text-error-500">
@@ -156,8 +177,11 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Durasi (Hari)</Label>
+              <Label htmlFor="plan-duration" required>
+                Durasi (Hari)
+              </Label>
               <Input
+                id="plan-duration"
                 type="number"
                 {...register("duration", { valueAsNumber: true })}
                 error={!!errors.duration}
@@ -166,8 +190,11 @@ const SubscriptionPlanFormModal: React.FC<SubscriptionPlanFormModalProps> = ({
             </div>
 
             <div>
-              <Label>Harga (Rp)</Label>
+              <Label htmlFor="plan-price" required>
+                Harga (Rp)
+              </Label>
               <Input
+                id="plan-price"
                 type="number"
                 {...register("price", { valueAsNumber: true })}
                 error={!!errors.price}

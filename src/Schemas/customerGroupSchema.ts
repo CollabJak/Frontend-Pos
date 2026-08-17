@@ -4,14 +4,17 @@ export const customerGroupCodeValues = ["REGULAR", "MEMBER", "VIP", "RESELLER", 
 
 export const customerGroupSchema = z.object({
   code: z.enum(customerGroupCodeValues, {
-    message: "Customer group code is required",
+    message: "Kode grup pelanggan wajib dipilih",
   }),
-  name: z.string().min(1, "Customer group name is required").max(255, "Customer group name is too long"),
+  name: z
+    .string()
+    .min(1, "Nama grup pelanggan wajib diisi")
+    .max(255, "Nama grup pelanggan maksimal 255 karakter"),
   description: z.string().optional().or(z.literal("")),
   discount_percent: z
-    .number()
-    .min(0, "Discount percent must be at least 0")
-    .max(100, "Discount percent must be at most 100"),
+    .number({ message: "Persentase diskon harus berupa angka" })
+    .min(0, "Persentase diskon minimal 0%")
+    .max(100, "Persentase diskon maksimal 100%"),
   is_default: z.boolean(),
   is_active: z.boolean(),
 });

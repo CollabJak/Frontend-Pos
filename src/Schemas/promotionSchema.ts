@@ -4,19 +4,21 @@ export const promotionSchema = z
   .object({
     code: z
       .string()
-      .min(1, "Promotion code is required")
-      .max(255, "Promotion code is too long"),
+      .min(1, "Kode promosi wajib diisi")
+      .max(255, "Kode promosi maksimal 255 karakter"),
     name: z
       .string()
-      .min(1, "Promotion name is required")
-      .max(255, "Promotion name is too long"),
+      .min(1, "Nama promosi wajib diisi")
+      .max(255, "Nama promosi maksimal 255 karakter"),
     type: z
       .string()
-      .min(1, "Promotion type is required")
-      .max(255, "Promotion type is too long"),
-    priority: z.number().int("Promotion priority must be an integer"),
+      .min(1, "Tipe promosi wajib diisi")
+      .max(255, "Tipe promosi maksimal 255 karakter"),
+    priority: z
+      .number({ message: "Prioritas harus berupa angka" })
+      .int("Prioritas promosi harus berupa bilangan bulat"),
     is_stackable: z.boolean(),
-    start_date: z.string().min(1, "Start date is required"),
+    start_date: z.string().min(1, "Tanggal mulai wajib diisi"),
     end_date: z.string().optional(),
     is_active: z.boolean(),
   })
@@ -25,7 +27,7 @@ export const promotionSchema = z
     if (Number.isNaN(startDate.getTime())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Start date is invalid",
+        message: "Format tanggal mulai tidak valid",
         path: ["start_date"],
       });
     }
@@ -38,7 +40,7 @@ export const promotionSchema = z
     if (Number.isNaN(endDate.getTime())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "End date is invalid",
+        message: "Format tanggal selesai tidak valid",
         path: ["end_date"],
       });
       return;
@@ -47,7 +49,7 @@ export const promotionSchema = z
     if (endDate < startDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "End date must be after or equal to start date",
+        message: "Tanggal selesai harus sama atau setelah tanggal mulai",
         path: ["end_date"],
       });
     }

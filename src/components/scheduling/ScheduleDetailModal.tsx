@@ -235,12 +235,13 @@ export default function ScheduleDetailModal({
 
               {!isDayOff ? (
                 <div className="space-y-1">
+                  <Label required>Shift</Label>
                   <Controller
                     name="shift_id"
                     control={control}
                     render={({ field }) => (
                       <AsyncSearchSelect<OptionDto>
-                        label="Shift"
+                        label=""
                         value={field.value}
                         displayValue={shiftLabel}
                         onChange={(value, option) => {

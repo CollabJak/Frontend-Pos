@@ -101,7 +101,7 @@ export default function AddProductVariant() {
           {errors.root && <p className="text-red-500">{errors.root.message}</p>}
 
           <div>
-            <Label>Produk Utama</Label>
+            <Label required>Produk Utama</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
               keyName="product-variant-product-options"
@@ -124,7 +124,9 @@ export default function AddProductVariant() {
           </div>
 
           <div>
-            <Label htmlFor="variant-name">Nama Varian</Label>
+            <Label htmlFor="variant-name" required>
+              Nama Varian
+            </Label>
             <Input
               {...register("name")}
               id="variant-name"
@@ -160,7 +162,7 @@ export default function AddProductVariant() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label>Satuan Dasar (Base Unit)</Label>
+              <Label required>Satuan Dasar (Base Unit)</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
                 keyName="product-variant-base-unit-options"
@@ -223,7 +225,7 @@ export default function AddProductVariant() {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Atribut Varian</Label>
+              <Label required>Atribut Varian</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -241,7 +243,7 @@ export default function AddProductVariant() {
               >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <Label>Atribut</Label>
+                    <Label required>Atribut</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
                       keyName={`product-variant-atribute-options-${index}`}
@@ -268,7 +270,9 @@ export default function AddProductVariant() {
                   </div>
 
                   <div>
-                    <Label htmlFor={`atribute-value-${index}`}>Nilai Atribut</Label>
+                    <Label htmlFor={`atribute-value-${index}`} required>
+                      Nilai Atribut
+                    </Label>
                     <Input
                       {...register(`attributes_json.${index}.value`)}
                       id={`atribute-value-${index}`}

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Modal } from "../ui/modal";
 import { Input } from "../form/input/InputField";
+import Label from "../form/Label";
 import Button from "../ui/button/Button";
 import { Permission } from "../../types/types";
 import { useUpsertPermission } from "../../hooks/useRbac";
@@ -68,9 +69,7 @@ const PermissionFormModal: React.FC<PermissionFormModalProps> = ({
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <div>
-            <label className="mb-2.5 block font-medium text-gray-800 dark:text-white/90">
-              Nama Hak Akses
-            </label>
+            <Label required>Nama Hak Akses</Label>
             <Controller
               name="name"
               control={control}

@@ -3,15 +3,17 @@ import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 
 interface LabelProps {
+  id?: string;
   htmlFor?: string;
   children: ReactNode;
   className?: string;
   required?: boolean;
 }
 
-const Label: FC<LabelProps> = ({ htmlFor, children, className, required = false }) => {
+const Label: FC<LabelProps> = ({ id, htmlFor, children, className, required = false }) => {
   return (
     <label
+      id={id}
       htmlFor={htmlFor}
       className={clsx(
         twMerge(

@@ -199,57 +199,93 @@ export default function RotationPatternPage() {
       <Modal isOpen={isFormOpen} onClose={closeForm} className="max-w-[700px] p-8 overflow-y-auto max-h-[90vh]">
         <h3 className="mb-6 text-xl font-bold text-gray-800 dark:text-white/90">{selectedPattern ? "Edit Pola Rotasi" : "Buat Pola Rotasi Baru"}</h3>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {errors.root && <p className="text-sm text-red-500">{errors.root.message}</p>}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <Label htmlFor="p-name">Nama Pola</Label>
-              <Input id="p-name" {...register("name")} error={!!errors.name?.message} placeholder="Contoh: 5 Hari Kerja 2 Hari Libur" />
+              <Label htmlFor="p-name" required>
+                Nama Pola
+              </Label>
+              <Input
+                id="p-name"
+                {...register("name")}
+                error={!!errors.name?.message}
+                placeholder="Contoh: 5 Hari Kerja 2 Hari Libur"
+              />
+              {errors.name && (
+                <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="p-desc">Deskripsi</Label>
-              <Input id="p-desc" {...register("description")} placeholder="Keterangan (Opsional)" />
+              <Input
+                id="p-desc"
+                {...register("description")}
+                error={!!errors.description?.message}
+                placeholder="Keterangan (Opsional)"
+              />
+              {errors.description && (
+                <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
+              )}
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-gray-800 dark:text-white/90 text-theme-sm">Urutan Hari & Shift</h4>
+              <h4 className="font-semibold text-gray-800 dark:text-white/90 text-theme-sm">Urutan Hari & Shift <span className="text-red-500 ml-1 font-bold">*</span></h4>
               <Button type="button" variant="primary" size="sm" onClick={() => append({ day_index: fields.length, is_day_off: false, shift_id: null })}>
                 <PlusIcon className="mr-2 size-4" /> Tambah Hari
               </Button>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-2 p-3 border rounded-lg dark:border-white/[0.05]">
-                  <div className="flex items-center justify-center w-8 h-8 font-bold text-blue-600 bg-blue-50 rounded-full text-theme-xs">
-                    {index + 1}
+              {fields.map((field, index) => {
+                const itemError = (errors.items as any)?.[index]?.shift_id?.message || (errors.items as any)?.[index]?.message;
+                return (
+                  <div key={field.id} className="space-y-1">
+                    <div
+                      className={`flex items-center gap-2 p-3 border rounded-lg dark:border-white/[0.05] ${
+                        itemError ? "border-red-500 dark:border-red-500/50" : ""
+                      }`}
+                    >
+                      <div className="flex items-center justify-center w-8 h-8 font-bold text-blue-600 bg-blue-50 rounded-full text-theme-xs">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <Select
+                          value={watch(`items.${index}.is_day_off`) ? "OFF" : watch(`items.${index}.shift_id`)?.toString() || ""}
+                          onChange={(value) => {
+                            if (value === "OFF") {
+                              setValue(`items.${index}.is_day_off`, true, { shouldValidate: true });
+                              setValue(`items.${index}.shift_id`, null, { shouldValidate: true });
+                            } else {
+                              setValue(`items.${index}.is_day_off`, false, { shouldValidate: true });
+                              setValue(`items.${index}.shift_id`, parseInt(value), { shouldValidate: true });
+                            }
+                          }}
+                          options={[
+                            { value: "OFF", label: "LIBUR (OFF)" },
+                            ...(shifts?.map((s: any) => ({ value: s.id.toString(), label: s.name })) || [])
+                          ]}
+                          placeholder="Pilih Shift"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        disabled={fields.length === 1}
+                        className="text-red-500 hover:text-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <TrashBinIcon className="size-4" />
+                      </button>
+                    </div>
+                    {itemError && <p className="text-xs text-red-500">{itemError}</p>}
                   </div>
-                  <div className="flex-1">
-                    <Select
-                      value={watch(`items.${index}.is_day_off`) ? "OFF" : watch(`items.${index}.shift_id`)?.toString() || ""}
-                      onChange={(value) => {
-                        if (value === "OFF") {
-                          setValue(`items.${index}.is_day_off`, true);
-                          setValue(`items.${index}.shift_id`, null);
-                        } else {
-                          setValue(`items.${index}.is_day_off`, false);
-                          setValue(`items.${index}.shift_id`, parseInt(value));
-                        }
-                      }}
-                      options={[
-                        { value: "OFF", label: "LIBUR (OFF)" },
-                        ...(shifts?.map((s: any) => ({ value: s.id.toString(), label: s.name })) || [])
-                      ]}
-                      placeholder="Pilih Shift"
-                    />
-                  </div>
-                  <button type="button" onClick={() => remove(index)} className="text-red-500 hover:text-red-700">
-                    <TrashBinIcon className="size-4" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
-            {errors.items && <p className="text-xs text-red-500">{errors.items.message}</p>}
+            {errors.items && typeof (errors.items as any)?.message === "string" && (
+              <p className="text-xs text-red-500">{(errors.items as any).message}</p>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t dark:border-white/[0.05]">
