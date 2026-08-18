@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -22,6 +23,7 @@ type SelectOption = OptionDto & Record<string, unknown>;
 export default function AddPromotionAction() {
   const navigate = useNavigate();
   const { mutate: createPromotionAction, isPending } = useCreatePromotionAction();
+  const [promotionLabel, setPromotionLabel] = useState<string>("");
 
   const {
     register,
@@ -35,7 +37,7 @@ export default function AddPromotionAction() {
     defaultValues: {
       promotion_id: 0,
       action_type: "discount_percent",
-      action_value: { value: 0 },
+      action_value: { value: "" },
     },
   });
 
@@ -71,6 +73,14 @@ export default function AddPromotionAction() {
       ? errors.action_value.message
       : undefined;
 
+  const actionValueRecord = errors.action_value as Record<string, { message?: string }> | undefined;
+  const actionValueFieldErrors = {
+    value: actionValueRecord?.value?.message,
+    item_name: actionValueRecord?.item_name?.message,
+    qty: actionValueRecord?.qty?.message,
+    price: actionValueRecord?.price?.message,
+  };
+
   return (
     <>
       <PageMeta title="Tambah Aksi Promosi" description="Halaman tambah aksi promosi" />
@@ -88,10 +98,12 @@ export default function AddPromotionAction() {
               label=""
               keyName="promotion-action-promotion-options"
               value={watch("promotion_id") || null}
-              onChange={(selectedValue) => {
+              displayValue={promotionLabel}
+              onChange={(selectedValue, option) => {
                 setValue("promotion_id", Number(selectedValue ?? 0), {
                   shouldValidate: true,
                 });
+                setPromotionLabel(option?.name ? String(option.name) : "");
               }}
               placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
@@ -119,8 +131,8 @@ export default function AddPromotionAction() {
                   selectedType === "free_item"
                     ? { item_name: "", qty: 1 }
                     : selectedType === "bundle_price"
-                      ? { qty: 1, price: 0 }
-                      : { value: 0 };
+                      ? { qty: 1, price: "" }
+                      : { value: "" };
 
                 setValue("action_value", nextValue, {
                   shouldValidate: true,
@@ -147,6 +159,7 @@ export default function AddPromotionAction() {
               })
             }
             error={actionValueError}
+            fieldErrors={actionValueFieldErrors}
           />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
