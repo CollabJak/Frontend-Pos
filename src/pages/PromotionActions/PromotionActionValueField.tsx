@@ -1,3 +1,4 @@
+import type React from "react";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 
@@ -9,11 +10,19 @@ type ActionType =
   | "cashback"
   | "bundle_price";
 
-interface PromotionActionValueFieldProps {
+export interface PromotionActionValueFieldErrors {
+  value?: string;
+  item_name?: string;
+  qty?: string;
+  price?: string;
+}
+
+export interface PromotionActionValueFieldProps {
   actionType: ActionType;
   value: Record<string, unknown>;
   onChange: (value: Record<string, unknown>) => void;
   error?: string;
+  fieldErrors?: PromotionActionValueFieldErrors;
 }
 
 const toStringValue = (value: unknown): string => {
@@ -41,12 +50,13 @@ const toNumberOrEmpty = (value: string): number | string => {
   return Number.isNaN(numericValue) ? value : numericValue;
 };
 
-export default function PromotionActionValueField({
+export const PromotionActionValueField: React.FC<PromotionActionValueFieldProps> = ({
   actionType,
   value,
   onChange,
   error,
-}: PromotionActionValueFieldProps) {
+  fieldErrors = {},
+}) => {
   const primaryValue = toStringValue(value.value ?? value.amount ?? value.price ?? value.percent);
 
   if (actionType === "free_item") {
@@ -73,6 +83,7 @@ export default function PromotionActionValueField({
                 })
               }
             />
+            {fieldErrors.item_name && <p className="mt-1 text-sm text-red-500">{fieldErrors.item_name}</p>}
           </div>
           <div>
             <Label htmlFor="free-item-qty" className="mb-2" required>
@@ -92,6 +103,7 @@ export default function PromotionActionValueField({
                 })
               }
             />
+            {fieldErrors.qty && <p className="mt-1 text-sm text-red-500">{fieldErrors.qty}</p>}
           </div>
         </div>
         {error && <p className="text-red-500">{error}</p>}
@@ -125,6 +137,7 @@ export default function PromotionActionValueField({
                 })
               }
             />
+            {fieldErrors.qty && <p className="mt-1 text-sm text-red-500">{fieldErrors.qty}</p>}
           </div>
           <div>
             <Label htmlFor="bundle-price" className="mb-2" required>
@@ -144,6 +157,7 @@ export default function PromotionActionValueField({
                 })
               }
             />
+            {fieldErrors.price && <p className="mt-1 text-sm text-red-500">{fieldErrors.price}</p>}
           </div>
         </div>
         {error && <p className="text-red-500">{error}</p>}
@@ -154,11 +168,22 @@ export default function PromotionActionValueField({
   const inputLabelMap: Record<ActionType, string> = {
     discount_percent: "Persentase Diskon (%)",
     discount_amount: "Jumlah Diskon (Rp)",
-    override_price: "Harga Khusus / Baru",
+    override_price: "Harga Khusus / Baru (Rp)",
     free_item: "Nilai Aksi",
-    cashback: "Jumlah Cashback",
+    cashback: "Jumlah Cashback (Rp)",
     bundle_price: "Nilai Aksi",
   };
+
+  const inputPlaceholderMap: Record<ActionType, string> = {
+    discount_percent: "Contoh: 10 (untuk 10%)",
+    discount_amount: "Contoh: 10000",
+    override_price: "Contoh: 15000",
+    free_item: "Masukkan nilai aksi",
+    cashback: "Contoh: 5000",
+    bundle_price: "Masukkan nilai aksi",
+  };
+
+  const currentFieldError = fieldErrors.value || error;
 
   return (
     <div className="space-y-3">
@@ -171,10 +196,12 @@ export default function PromotionActionValueField({
         min="0"
         step="0.01"
         value={primaryValue}
-        placeholder="Masukkan nilai aksi"
+        placeholder={inputPlaceholderMap[actionType] || "Masukkan nilai aksi"}
         onChange={(event) => onChange({ value: toNumberOrEmpty(event.target.value) })}
       />
-      {error && <p className="text-red-500">{error}</p>}
+      {currentFieldError && <p className="text-sm text-red-500">{currentFieldError}</p>}
     </div>
   );
-}
+};
+
+export default PromotionActionValueField;

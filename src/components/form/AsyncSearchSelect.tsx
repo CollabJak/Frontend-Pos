@@ -45,9 +45,12 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(displayValue || "");
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  const [selectedLabel, setSelectedLabel] = useState("");
+  const [selectedLabel, setSelectedLabel] = useState(displayValue || "");
+
+  // Tracks user's explicit selection within this dropdown
+  const selectedOptionRef = useRef<{ value: OptionValue; label: string } | null>(null);
 
   const debouncedSearch = useDebouncedValue(inputValue.trim(), debounceMs);
   const shouldFetch =
@@ -76,27 +79,49 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
     [options, shouldFetch]
   );
 
+  // Synchronize displayValue and value from props
   useEffect(() => {
-    if (!isOpen && value != null && displayValue) {
-      setSelectedLabel(displayValue);
-      setInputValue(displayValue);
+    // 1. If user recently selected an option inside the dropdown, and `value` matches that selection,
+    // preserve the user's selected label and do NOT overwrite it with a stale displayValue from parent.
+    if (
+      selectedOptionRef.current &&
+      value !== null &&
+      value !== undefined &&
+      String(selectedOptionRef.current.value) === String(value)
+    ) {
+      setSelectedLabel(selectedOptionRef.current.label);
+      if (!isOpen) {
+        setInputValue(selectedOptionRef.current.label);
+      }
       return;
     }
 
-  }, [isOpen, displayValue, value]);
-
-  useEffect(() => {
-    if (!isOpen && value == null) {
-      setInputValue("");
-      setSelectedLabel("");
+    // 2. If displayValue is provided and non-empty, sync it to label and input
+    if (displayValue) {
+      setSelectedLabel(displayValue);
+      if (!isOpen) {
+        setInputValue(displayValue);
+      }
+      return;
     }
-  }, [isOpen, value]);
 
+    // 3. If value is null/undefined/0/empty and there's no displayValue, clear the label
+    if (value === null || value === undefined || value === 0 || value === "") {
+      selectedOptionRef.current = null;
+      setSelectedLabel("");
+      if (!isOpen) {
+        setInputValue("");
+      }
+      return;
+    }
+  }, [displayValue, value, isOpen]);
+
+  // Restore input to selectedLabel when dropdown closes without selection
   useEffect(() => {
-    if (!isOpen && value != null && selectedLabel) {
+    if (!isOpen) {
       setInputValue(selectedLabel);
     }
-  }, [isOpen, value, selectedLabel]);
+  }, [isOpen, selectedLabel]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -118,6 +143,7 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
   const handleSelect = (option: TOption) => {
     const newValue = getOptionValue(option);
     const newLabel = getOptionLabel(option);
+    selectedOptionRef.current = { value: newValue, label: newLabel };
     setSelectedLabel(newLabel);
     setInputValue(newLabel);
     setIsOpen(false);
@@ -126,6 +152,7 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
   };
 
   const handleClear = () => {
+    selectedOptionRef.current = null;
     setInputValue("");
     setSelectedLabel("");
     setIsOpen(false);
@@ -137,7 +164,7 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
     if (disabled) return;
     setIsOpen((prev) => !prev);
     setFocusedIndex(-1);
-    if (!isOpen && value != null && selectedLabel) {
+    if (!isOpen && selectedLabel) {
       setInputValue(selectedLabel);
     }
   };

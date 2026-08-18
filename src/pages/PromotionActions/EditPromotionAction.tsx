@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -28,7 +28,7 @@ const toActionValueObject = (value: unknown): Record<string, unknown> => {
     return value as Record<string, unknown>;
   }
 
-  return { value: 0 };
+  return { value: "" };
 };
 
 export default function EditPromotionAction() {
@@ -37,6 +37,7 @@ export default function EditPromotionAction() {
   const promotionActionId = Number(id);
   const { data: promotionAction, isLoading } = useFetchPromotionAction(promotionActionId);
   const { mutate: updatePromotionAction, isPending } = useUpdatePromotionAction();
+  const [promotionLabel, setPromotionLabel] = useState<string>("");
 
   const {
     register,
@@ -50,7 +51,7 @@ export default function EditPromotionAction() {
     defaultValues: {
       promotion_id: 0,
       action_type: "discount_percent",
-      action_value: { value: 0 },
+      action_value: { value: "" },
     },
   });
 
@@ -62,6 +63,7 @@ export default function EditPromotionAction() {
     setValue("promotion_id", promotionAction.promotion_id);
     setValue("action_type", promotionAction.action_type);
     setValue("action_value", toActionValueObject(promotionAction.action_value));
+    setPromotionLabel(promotionAction.promotion?.name ?? "");
   }, [promotionAction, setValue]);
 
   const onSubmit = (data: PromotionActionFormData) => {
@@ -99,6 +101,14 @@ export default function EditPromotionAction() {
       ? errors.action_value.message
       : undefined;
 
+  const actionValueRecord = errors.action_value as Record<string, { message?: string }> | undefined;
+  const actionValueFieldErrors = {
+    value: actionValueRecord?.value?.message,
+    item_name: actionValueRecord?.item_name?.message,
+    qty: actionValueRecord?.qty?.message,
+    price: actionValueRecord?.price?.message,
+  };
+
   if (isLoading) {
     return <p className="p-3">Memuat...</p>;
   }
@@ -120,11 +130,12 @@ export default function EditPromotionAction() {
               label=""
               keyName="promotion-action-promotion-options"
               value={watch("promotion_id") || null}
-              displayValue={promotionAction?.promotion?.name ?? undefined}
-              onChange={(selectedValue) => {
+              displayValue={promotionLabel}
+              onChange={(selectedValue, option) => {
                 setValue("promotion_id", Number(selectedValue ?? 0), {
                   shouldValidate: true,
                 });
+                setPromotionLabel(option?.name ? String(option.name) : "");
               }}
               placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
@@ -152,8 +163,8 @@ export default function EditPromotionAction() {
                   selectedType === "free_item"
                     ? { item_name: "", qty: 1 }
                     : selectedType === "bundle_price"
-                      ? { qty: 1, price: 0 }
-                      : { value: 0 };
+                      ? { qty: 1, price: "" }
+                      : { value: "" };
 
                 setValue("action_value", nextValue, {
                   shouldValidate: true,
@@ -180,6 +191,7 @@ export default function EditPromotionAction() {
               })
             }
             error={actionValueError}
+            fieldErrors={actionValueFieldErrors}
           />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
