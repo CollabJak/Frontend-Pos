@@ -28,10 +28,11 @@ const getStatusColor = (status: string) => {
 export default function BillingHistoryPage() {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
-    const [uploadModal, setUploadModal] = useState<{ isOpen: boolean, paymentId: number, invoiceNumber: string }>({
+    const [uploadModal, setUploadModal] = useState<{ isOpen: boolean, paymentId: number, invoiceNumber: string, isReupload?: boolean }>({
         isOpen: false,
         paymentId: 0,
-        invoiceNumber: ""
+        invoiceNumber: "",
+        isReupload: false
     });
     const [confirmCancelModal, setConfirmCancelModal] = useState<{ isOpen: boolean, paymentId: number }>({
         isOpen: false,
@@ -188,7 +189,7 @@ export default function BillingHistoryPage() {
                                                     <Button
                                                         size="sm"
                                                         variant="primary"
-                                                        onClick={() => setUploadModal({ isOpen: true, paymentId: item.id, invoiceNumber: item.invoice_number })}
+                                                        onClick={() => setUploadModal({ isOpen: true, paymentId: item.id, invoiceNumber: item.invoice_number, isReupload: false })}
                                                     >
                                                         Upload Bukti
                                                     </Button>
@@ -205,6 +206,13 @@ export default function BillingHistoryPage() {
                                             ) : item.payment_status === 'confirmation' ? (
                                                 <>
                                                     <Badge color="light">SEDANG DITINJAU</Badge>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => setUploadModal({ isOpen: true, paymentId: item.id, invoiceNumber: item.invoice_number, isReupload: true })}
+                                                    >
+                                                        Upload Ulang
+                                                    </Button>
                                                     <Button
                                                         size="sm"
                                                         variant="danger"
@@ -244,6 +252,7 @@ export default function BillingHistoryPage() {
                 onClose={() => setUploadModal({ ...uploadModal, isOpen: false })}
                 paymentId={uploadModal.paymentId}
                 invoiceNumber={uploadModal.invoiceNumber}
+                reupload={uploadModal.isReupload}
             />
 
             <Modal

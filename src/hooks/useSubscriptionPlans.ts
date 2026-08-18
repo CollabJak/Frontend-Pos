@@ -181,6 +181,8 @@ export const useDeleteSubscriptionPlan = () => {
 };
 
 export const useSubscriptionCheckout = () => {
+    const queryClient = useQueryClient();
+
     return useMutation<
         { payment: any; payment_url: string },
         AxiosError<ApiErrorResponse>,
@@ -195,6 +197,10 @@ export const useSubscriptionCheckout = () => {
         mutationFn: async (payload) => {
             const response = await apiClient.post("/subscription-plans/checkout", payload);
             return response.data.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["billing-history"] });
+            queryClient.invalidateQueries({ queryKey: ["my-subscription"] });
         },
     });
 };

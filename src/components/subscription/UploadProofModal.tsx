@@ -19,9 +19,10 @@ interface UploadProofModalProps {
     onClose: () => void;
     paymentId: number;
     invoiceNumber: string;
+    reupload?: boolean;
 }
 
-export default function UploadProofModal({ isOpen, onClose, paymentId, invoiceNumber }: UploadProofModalProps) {
+export default function UploadProofModal({ isOpen, onClose, paymentId, invoiceNumber, reupload = false }: UploadProofModalProps) {
     const [files, setFiles] = useState<any[]>([]);
     const { mutate: uploadProof, isPending } = useUploadPaymentProof();
 
@@ -67,7 +68,7 @@ export default function UploadProofModal({ isOpen, onClose, paymentId, invoiceNu
         >
             <div className="p-6">
                 <h3 className="text-xl font-bold dark:text-white mb-4">
-                    Upload Bukti Bayar - {invoiceNumber}
+                    {reupload ? 'Upload Ulang Bukti Bayar' : 'Upload Bukti Bayar'} - {invoiceNumber}
                 </h3>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="space-y-2">
@@ -119,7 +120,7 @@ export default function UploadProofModal({ isOpen, onClose, paymentId, invoiceNu
                             fullWidth
                             disabled={isPending}
                         >
-                            {isPending ? "Mengirim..." : "Kirim Bukti Bayar"}
+                            {isPending ? "Mengirim..." : reupload ? "Perbarui Bukti Bayar" : "Kirim Bukti Bayar"}
                         </Button>
                     </div>
                 </form>

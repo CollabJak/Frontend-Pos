@@ -15,10 +15,13 @@ import ConfirmDialog from "../../components/common/ConfirmDialog";
 import Button from "../../components/ui/button/Button";
 import { PencilIcon } from "../../icons";
 import { useModal } from "../../hooks/useModal";
+import { useAuth } from "../../hooks/useAuth";
 import { useDeleteBusiness, useFetchBusinesses } from "../../hooks/useBusinesses";
 
 export default function BusinessList() {
   const [page, setPage] = useState(1);
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("admin") ?? false;
   const { data, isLoading } = useFetchBusinesses({ page });
   const { mutate: deleteBusiness } = useDeleteBusiness();
   const { isOpen, openModal, closeModal } = useModal();
@@ -115,7 +118,7 @@ export default function BusinessList() {
                               <PencilIcon className="size-5" />
                               Edit
                             </Link>
-                            {!hasBusinessData && (
+                            {isAdmin && (
                               <Button
                                 size="sm"
                                 variant="danger"
