@@ -53,9 +53,6 @@ const tabOptions: Array<{ value: OverrideTab; label: string }> = [
   { value: "overtime", label: "Lembur" },
 ];
 
-const inputClass =
-  "h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs outline-hidden focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800";
-
 export default function OverrideModal({
   isOpen,
   userId,
@@ -73,7 +70,7 @@ export default function OverrideModal({
   const [swapUserLabel, setSwapUserLabel] = useState("");
   const [overtimeShiftLabel, setOvertimeShiftLabel] = useState("");
 
-  const { register, handleSubmit, control, watch, setError, clearErrors, reset, formState: { errors } } = useForm<OverrideFormValues>({
+  const { handleSubmit, control, watch, setError, clearErrors, reset, formState: { errors } } = useForm<OverrideFormValues>({
     defaultValues: {
       reason: "",
       new_shift_id: null,
