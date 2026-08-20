@@ -41,9 +41,23 @@ export interface HolidayCalendar {
   type: HolidayType;
   is_recurring: boolean;
   description: string | null;
-  location?: Location;
+  location?: Location | null;
+  created_by?: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface HolidayQueryParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  type?: HolidayType;
+  location_id?: number;
+  year?: number;
+  month?: number;
+  start_date?: string;
+  end_date?: string;
+  is_recurring?: boolean;
 }
 
 export interface HolidayCalendarPayload {

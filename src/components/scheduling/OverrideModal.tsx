@@ -4,10 +4,12 @@ import { fetchShiftOptions, fetchUserOptions } from "../../api/options";
 import type { OptionDto } from "../../api/options";
 import AsyncSearchSelect from "../form/AsyncSearchSelect";
 import Label from "../form/Label";
+import DatePicker from "../form/date-picker";
 import TextArea from "../form/input/TextArea";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
 import type { CalendarCell, EmployeeSchedule, OverrideType } from "../../types/scheduling";
+import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 import {
   useEmergencyOverride,
   useOvertimeOverride,
@@ -280,15 +282,20 @@ export default function OverrideModal({
                 )}
               </div>
               <div>
-                <Label>Tanggal Baru</Label>
-                <input
-                  type="date"
-                  {...register("new_schedule_date")}
-                  className={inputClass}
+                <Controller
+                  name="new_schedule_date"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      id="override_new_schedule_date"
+                      label="Tanggal Baru"
+                      placeholder="Pilih tanggal baru"
+                      defaultDate={field.value}
+                      onChange={([d]) => field.onChange(formatDateToYYYYMMDD(d))}
+                      error={errors.new_schedule_date?.message}
+                    />
+                  )}
                 />
-                {errors.new_schedule_date && (
-                  <p className="mt-1 text-xs text-red-500">{errors.new_schedule_date.message}</p>
-                )}
               </div>
             </div>
           )}
@@ -415,15 +422,21 @@ export default function OverrideModal({
                 )}
               </div>
               <div>
-                <Label required>Tanggal Lembur</Label>
-                <input
-                  type="date"
-                  {...register("overtime_date")}
-                  className={inputClass}
+                <Controller
+                  name="overtime_date"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      id="override_overtime_date"
+                      label="Tanggal Lembur"
+                      required
+                      placeholder="Pilih tanggal lembur"
+                      defaultDate={field.value}
+                      onChange={([d]) => field.onChange(formatDateToYYYYMMDD(d))}
+                      error={errors.overtime_date?.message}
+                    />
+                  )}
                 />
-                {errors.overtime_date && (
-                  <p className="mt-1 text-xs text-red-500">{errors.overtime_date.message}</p>
-                )}
               </div>
             </div>
           )}

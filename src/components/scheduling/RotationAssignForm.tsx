@@ -81,21 +81,15 @@ const RotationAssignForm: React.FC = () => {
     text: user.name,
   }));
 
-  const locationOptions = [
-    { value: "", label: "Pilih Lokasi (Opsional)" },
-    ...locationOptionsData.map((loc) => ({
-      value: loc.id.toString(),
-      label: loc.name,
-    })),
-  ];
+  const locationOptions = locationOptionsData.map((loc) => ({
+    value: loc.id.toString(),
+    label: loc.name,
+  }));
 
-  const rotationSelectOptions = [
-    { value: "", label: "Pilih Pola Rotasi" },
-    ...rotationPatternsData.map((pattern) => ({
-      value: pattern.id.toString(),
-      label: pattern.name,
-    })),
-  ];
+  const rotationSelectOptions = rotationPatternsData.map((pattern) => ({
+    value: pattern.id.toString(),
+    label: pattern.name,
+  }));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -150,10 +144,11 @@ const RotationAssignForm: React.FC = () => {
             render={({ field }) => (
               <Select
                 label="Pilih Pola Rotasi"
+                placeholder="Pilih Pola Rotasi"
                 required
                 options={rotationSelectOptions}
-                value={field.value?.toString() || ""}
-                onChange={(val) => field.onChange(Number(val))}
+                value={field.value ? field.value.toString() : ""}
+                onChange={(val) => field.onChange(val ? Number(val) : undefined)}
               />
             )}
           />
@@ -168,8 +163,9 @@ const RotationAssignForm: React.FC = () => {
           render={({ field }) => (
             <Select
               label="Lokasi Penugasan (Opsional)"
+              placeholder="Pilih Lokasi (Opsional)"
               options={locationOptions}
-              value={field.value?.toString() || ""}
+              value={field.value ? field.value.toString() : ""}
               onChange={(val) => field.onChange(val ? Number(val) : null)}
             />
           )}

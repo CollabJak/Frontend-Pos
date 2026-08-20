@@ -13,7 +13,7 @@ import {
   SwapOverridePayload
 } from "../../types/scheduling";
 import type { CreateSchedulePayload, UpdateSchedulePayload } from "../../types/scheduling";
-import type { HolidayBatchCreatePayload, HolidayCalendarPayload } from "../../types/scheduling";
+import type { HolidayBatchCreatePayload, HolidayCalendarPayload, HolidayQueryParams } from "../../types/scheduling";
 
 const schedulingService = {
   // Shifts
@@ -47,7 +47,7 @@ const schedulingService = {
   },
 
   // Holiday Calendar
-  getHolidays: async (params?: any) => {
+  getHolidays: async (params?: HolidayQueryParams) => {
     const response = await apiClient.get<ApiResponse<PaginatedApiResponse<HolidayCalendar>>>("/holiday-calendars", { params });
     return response.data.data;
   },
