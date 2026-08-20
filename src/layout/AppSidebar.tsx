@@ -13,6 +13,7 @@ import {
   TaskIcon,
   CalendarIcon,
   PageIcon,
+  PieChartIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../hooks/useAuth";
@@ -68,6 +69,19 @@ const navItems: NavItem[] = [
     name: "POS",
     path: "/pos",
     permissions: ["pos.view"],
+  },
+  {
+    icon: <PieChartIcon />,
+    name: "Laporan",
+    permissions: ["report.sales_by_location.view"],
+    subItems: [
+      {
+        name: "Penjualan per Lokasi",
+        path: "/reports/sales-by-location",
+        pro: false,
+        permissions: ["report.sales_by_location.view"],
+      },
+    ],
   },
   {
     icon: <TaskIcon />,

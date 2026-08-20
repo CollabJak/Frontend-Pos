@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,9 @@ export default function EditPromotionProduct() {
   const promotionProductId = Number(id);
   const { data: promotionProduct, isLoading } = useFetchPromotionProduct(promotionProductId);
   const { mutate: updatePromotionProduct, isPending } = useUpdatePromotionProduct();
+
+  const [promotionLabel, setPromotionLabel] = useState<string>("");
+  const [productVariantLabel, setProductVariantLabel] = useState<string>("");
 
   const fetchPromotionOptions = createOptionsFetcher<SelectOption>({
     endpoint: "/options/promotions",
@@ -55,6 +58,8 @@ export default function EditPromotionProduct() {
 
     setValue("promotion_id", promotionProduct.promotion_id);
     setValue("product_variant_id", promotionProduct.product_variant_id);
+    setPromotionLabel(promotionProduct.promotion?.name ?? "");
+    setProductVariantLabel(promotionProduct.product_variant?.name ?? "");
   }, [promotionProduct, setValue]);
 
   const onSubmit = (data: PromotionProductFormData) => {
@@ -106,12 +111,14 @@ export default function EditPromotionProduct() {
             <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="edit-promotion-product-promotion-options"
               value={watch("promotion_id") || null}
-              displayValue={promotionProduct?.promotion?.name ?? undefined}
-              onChange={(selectedValue) => {
+              displayValue={promotionLabel}
+              onChange={(selectedValue, option) => {
                 setValue("promotion_id", Number(selectedValue ?? 0), {
                   shouldValidate: true,
                 });
+                setPromotionLabel(option?.name ? String(option.name) : "");
               }}
               placeholder="Cari promosi..."
               fetchOptions={fetchPromotionOptions}
@@ -127,12 +134,14 @@ export default function EditPromotionProduct() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
+              keyName="edit-promotion-product-variant-options"
               value={watch("product_variant_id") || null}
-              displayValue={promotionProduct?.product_variant?.name ?? undefined}
-              onChange={(selectedValue) => {
+              displayValue={productVariantLabel}
+              onChange={(selectedValue, option) => {
                 setValue("product_variant_id", Number(selectedValue ?? 0), {
                   shouldValidate: true,
                 });
+                setProductVariantLabel(option?.name ? String(option.name) : "");
               }}
               placeholder="Cari varian produk..."
               fetchOptions={fetchProductVariantOptions}
