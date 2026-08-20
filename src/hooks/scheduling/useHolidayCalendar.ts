@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
 import { HolidayBatchCreateFormValues, HolidayCalendarFormValues } from "../../Schemas/scheduling/holidayCalendarSchema";
+import { HolidayQueryParams } from "../../types/scheduling";
 import { schedulingKeys } from "./useShifts";
 
-export const useHolidays = (params?: any) => {
+export const useHolidays = (params?: HolidayQueryParams) => {
   return useQuery({
     queryKey: schedulingKeys.holidays(params),
     queryFn: () => schedulingService.getHolidays(params),

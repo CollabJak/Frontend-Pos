@@ -148,10 +148,11 @@ const BulkAssignForm: React.FC = () => {
             render={({ field }) => (
               <Select
                 label="Pilih Shift"
+                placeholder="Pilih Shift"
                 required
                 options={shiftSelectOptions}
-                value={field.value?.toString() || ""}
-                onChange={(val) => field.onChange(Number(val))}
+                value={field.value ? field.value.toString() : ""}
+                onChange={(val) => field.onChange(val ? Number(val) : undefined)}
               />
             )}
           />
@@ -166,8 +167,9 @@ const BulkAssignForm: React.FC = () => {
           render={({ field }) => (
             <Select
               label="Lokasi Penugasan (Opsional)"
+              placeholder="Pilih Lokasi (Opsional)"
               options={locationOptions}
-              value={field.value?.toString() || ""}
+              value={field.value ? field.value.toString() : ""}
               onChange={(val) => field.onChange(val ? Number(val) : null)}
             />
           )}

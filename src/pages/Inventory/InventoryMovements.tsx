@@ -6,8 +6,9 @@ import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
+import Select from "../../components/form/Select";
+import DatePicker from "../../components/form/date-picker";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { useInventoryMovements } from "../../hooks/useInventoryMovements";
 import {
   Table,
@@ -18,6 +19,7 @@ import {
 } from "../../components/ui/table";
 import { Pagination } from "../../components/tables/Datatable";
 import { InventoryMovementItem } from "../../types/types";
+import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -63,7 +65,6 @@ const resolveReference = (row: InventoryMovementItem): string => {
 };
 
 const MOVEMENT_TYPE_OPTIONS = [
-  "",
   "IN",
   "OUT",
   "TRANSFER_IN",
@@ -75,40 +76,64 @@ const MOVEMENT_TYPE_OPTIONS = [
   "PRODUCTION_OUT",
 ];
 
+const getDefaultDateRange = () => {
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+  return {
+    from: formatDateToYYYYMMDD(oneMonthAgo),
+    to: formatDateToYYYYMMDD(today),
+  };
+};
+
 export default function InventoryMovements() {
   const [page, setPage] = useState(1);
+  const [productSearchInput, setProductSearchInput] = useState("");
   const [productSearch, setProductSearch] = useState("");
   const [locationId, setLocationId] = useState<number | null>(null);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+
+  const [dateFrom, setDateFrom] = useState(() => getDefaultDateRange().from);
+  const [dateTo, setDateTo] = useState(() => getDefaultDateRange().to);
   const [movementType, setMovementType] = useState("");
 
-  const debouncedProduct = useDebouncedValue(productSearch.trim(), 400);
   const fetchLocationOptions = createOptionsFetcher<SelectOption>({
     endpoint: "/options/locations",
   });
 
-  const { data, isLoading } = useInventoryMovements({
+  const { data, isLoading, isFetching } = useInventoryMovements({
     page,
-    product: debouncedProduct || undefined,
+    product: productSearch.trim() || undefined,
     locationId,
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
     movementType: movementType || undefined,
   });
 
-  useEffect(() => {
+  const handleSearch = () => {
+    setProductSearch(productSearchInput);
     setPage(1);
-  }, [debouncedProduct, locationId, dateFrom, dateTo, movementType]);
+  };
 
   const handleResetFilters = () => {
+    const defaultRange = getDefaultDateRange();
+    setProductSearchInput("");
     setProductSearch("");
     setLocationId(null);
-    setDateFrom("");
-    setDateTo("");
+    setDateFrom(defaultRange.from);
+    setDateTo(defaultRange.to);
     setMovementType("");
     setPage(1);
   };
+
+  const defaultDates = getDefaultDateRange();
+  const hasActiveFilters = Boolean(
+    productSearch ||
+    locationId ||
+    movementType ||
+    dateFrom !== defaultDates.from ||
+    dateTo !== defaultDates.to
+  );
 
   return (
     <>
@@ -117,80 +142,111 @@ export default function InventoryMovements() {
 
       <div className="space-y-6">
         <ComponentCard title="Buku Besar Pergerakan Stok">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-            <div>
-              <Label htmlFor="inventory-movement-product-search">Produk</Label>
-              <Input
-                id="inventory-movement-product-search"
-                type="text"
-                placeholder="Cari produk..."
-                value={productSearch}
-                onChange={(event) => setProductSearch(event.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Lokasi</Label>
-              <AsyncSearchSelect<SelectOption>
-                label=""
-                value={locationId}
-                onChange={(selectedValue) => {
-                  setLocationId(selectedValue != null ? Number(selectedValue) : null);
-                }}
-                placeholder="Cari lokasi..."
-                fetchOptions={fetchLocationOptions}
-                optionLabel="name"
-                optionValue="id"
-                debounceMs={400}
-                searchMinLength={0}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="inventory-movement-date-from">Dari Tanggal</Label>
-              <Input
-                id="inventory-movement-date-from"
-                type="date"
-                value={dateFrom}
-                onChange={(event) => setDateFrom(event.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="inventory-movement-date-to">Sampai Tanggal</Label>
-              <Input
-                id="inventory-movement-date-to"
-                type="date"
-                value={dateTo}
-                onChange={(event) => setDateTo(event.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="inventory-movement-type">Tipe Pergerakan</Label>
-              <select
-                id="inventory-movement-type"
-                value={movementType}
-                onChange={(event) => setMovementType(event.target.value)}
-                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                {MOVEMENT_TYPE_OPTIONS.map((option) => (
-                  <option
-                    key={option || "all"}
-                    value={option}
-                    className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
+          <div className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 dark:border-white/[0.05] dark:bg-white/[0.02] mb-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:items-end">
+              <div className="sm:col-span-2 lg:col-span-3">
+                <Label htmlFor="inventory-movement-product-search">Pencarian Produk</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="inventory-movement-product-search"
+                    type="text"
+                    placeholder="Cari nama produk..."
+                    value={productSearchInput}
+                    onChange={(event) => setProductSearchInput(event.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleSearch}
+                    isLoading={isFetching}
+                    disabled={isFetching}
                   >
-                    {option === "" ? "Semua Tipe" : option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+                    Cari
+                  </Button>
+                </div>
+              </div>
 
-          <div>
-            <Button variant="outline" onClick={handleResetFilters}>
-              Reset Filter
-            </Button>
+              <div className="sm:col-span-1 lg:col-span-3">
+                <AsyncSearchSelect<SelectOption>
+                  label="Lokasi"
+                  value={locationId}
+                  onChange={(selectedValue) => {
+                    setLocationId(selectedValue != null ? Number(selectedValue) : null);
+                    setPage(1);
+                  }}
+                  placeholder="Cari lokasi..."
+                  fetchOptions={fetchLocationOptions}
+                  optionLabel="name"
+                  optionValue="id"
+                  debounceMs={400}
+                  searchMinLength={0}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <DatePicker
+                  id="inventory-movement-date-from"
+                  label="Dari Tanggal"
+                  placeholder="Pilih tanggal mulai"
+                  defaultDate={dateFrom}
+                  onChange={([date]) => {
+                    setDateFrom(date ? formatDateToYYYYMMDD(date) : "");
+                    setPage(1);
+                  }}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <DatePicker
+                  id="inventory-movement-date-to"
+                  label="Sampai Tanggal"
+                  placeholder="Pilih tanggal selesai"
+                  defaultDate={dateTo}
+                  onChange={([date]) => {
+                    setDateTo(date ? formatDateToYYYYMMDD(date) : "");
+                    setPage(1);
+                  }}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Select
+                      label="Tipe Pergerakan"
+                      value={movementType}
+                      onChange={(val) => {
+                        setMovementType(val);
+                        setPage(1);
+                      }}
+                      options={[
+                        { value: "", label: "Semua Tipe" },
+                        ...MOVEMENT_TYPE_OPTIONS.map((opt) => ({
+                          value: opt,
+                          label: opt,
+                        })),
+                      ]}
+                    />
+                  </div>
+                  {hasActiveFilters && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-11"
+                      onClick={handleResetFilters}
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">

@@ -37,6 +37,7 @@ import {
 } from "../../Schemas/scheduling/holidayCalendarSchema";
 import { HolidayCalendar, HolidayType } from "../../types/scheduling";
 import { CopyIcon, PlusIcon, TrashBinIcon, PencilIcon } from "../../icons";
+import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 
 const createEmptyHolidayRow = (date: string): HolidayCalendarFormValues => ({
   name: "",
@@ -49,9 +50,38 @@ const createEmptyHolidayRow = (date: string): HolidayCalendarFormValues => ({
 
 export default function HolidayCalendarPage() {
   const [page, setPage] = useState(1);
-  const today = new Date().toISOString().split('T')[0];
-  const { data, isLoading } = useHolidays({ page });
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("");
+  const [locationFilter, setLocationFilter] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
+  const today = formatDateToYYYYMMDD(new Date());
+  const { data, isLoading, isFetching } = useHolidays({
+    page,
+    search: search.trim() || undefined,
+    type: (typeFilter as HolidayType) || undefined,
+    location_id: locationFilter ? Number(locationFilter) : undefined,
+    start_date: startDate || undefined,
+    end_date: endDate || undefined,
+  });
   const { data: locations } = useFetchLocations({});
+
+  const handleSearch = () => {
+    setSearch(searchInput);
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearchInput("");
+    setSearch("");
+    setTypeFilter("");
+    setLocationFilter("");
+    setStartDate("");
+    setEndDate("");
+    setPage(1);
+  };
 
   const { mutate: createHoliday, isPending: isCreating } = useCreateHoliday();
   const { mutate: updateHoliday, isPending: isUpdating } = useUpdateHoliday();
@@ -139,6 +169,11 @@ export default function HolidayCalendarPage() {
   };
 
   const handleFormSubmit = (formData: HolidayCalendarFormValues) => {
+    const payload: HolidayCalendarFormValues = {
+      ...formData,
+      location_id: formData.type === "location" ? formData.location_id : null,
+    };
+
     const options = {
       onSuccess: () => {
         closeForm();
@@ -157,14 +192,19 @@ export default function HolidayCalendarPage() {
     };
 
     if (selectedHoliday) {
-      updateHoliday({ id: selectedHoliday.id, data: formData }, options);
+      updateHoliday({ id: selectedHoliday.id, data: payload }, options);
     } else {
-      createHoliday(formData, options);
+      createHoliday(payload, options);
     }
   };
 
   const handleBatchFormSubmit = (formData: HolidayBatchCreateFormValues) => {
-    batchCreateHolidays(formData, {
+    const sanitizedHolidays = formData.holidays.map((h) => ({
+      ...h,
+      location_id: h.type === "location" ? h.location_id : null,
+    }));
+
+    batchCreateHolidays({ holidays: sanitizedHolidays }, {
       onSuccess: () => {
         closeBatch();
       },
@@ -207,6 +247,8 @@ export default function HolidayCalendarPage() {
     }
   };
 
+  const hasActiveFilters = Boolean(search || typeFilter || locationFilter || startDate || endDate);
+
   return (
     <>
       <PageMeta title="Kalender Libur - Jadwal Kerja" description="Kelola daftar hari libur." />
@@ -214,11 +256,117 @@ export default function HolidayCalendarPage() {
 
       <div className="space-y-6">
         <ComponentCard title="Hari Libur">
-          <div className="flex flex-wrap justify-end gap-3 mb-4">
-            <Button variant="outline" onClick={handleBatchAddClick} startIcon={<PlusIcon className="size-4" />}>
-              Tambah Batch
-            </Button>
-            <Button onClick={handleAddClick}>Tambah Hari Libur</Button>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <Button variant="outline" onClick={handleBatchAddClick} startIcon={<PlusIcon className="size-4" />}>
+                Tambah Batch
+              </Button>
+              <Button onClick={handleAddClick}>Tambah Hari Libur</Button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 p-4 rounded-xl border border-gray-200 bg-gray-50/50 dark:border-white/[0.05] dark:bg-white/[0.02] sm:grid-cols-2 lg:grid-cols-12 lg:items-end">
+              <div className="sm:col-span-2 lg:col-span-4">
+                <Label htmlFor="holiday-search">Pencarian</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="holiday-search"
+                    placeholder="Cari nama / keterangan..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleSearch}
+                    isLoading={isFetching}
+                    disabled={isFetching}
+                  >
+                    Cari
+                  </Button>
+                </div>
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <Label htmlFor="holiday-type-filter">Tipe Libur</Label>
+                <Select
+                  value={typeFilter}
+                  onChange={(val) => {
+                    setTypeFilter(val);
+                    setPage(1);
+                  }}
+                  options={[
+                    { value: "", label: "Semua Tipe" },
+                    { value: "national", label: "Nasional" },
+                    { value: "company", label: "Perusahaan" },
+                    { value: "location", label: "Lokasi Spesifik" },
+                  ]}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <Label htmlFor="holiday-location-filter">Lokasi Cabang</Label>
+                <Select
+                  value={locationFilter}
+                  onChange={(val) => {
+                    setLocationFilter(val);
+                    setPage(1);
+                  }}
+                  options={[
+                    { value: "", label: "Semua Lokasi" },
+                    ...(locations?.data.map((l: any) => ({
+                      value: l.id.toString(),
+                      label: l.name,
+                    })) || []),
+                  ]}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <DatePicker
+                  id="holiday-filter-start-date"
+                  label="Dari Tanggal"
+                  placeholder="Pilih tanggal mulai"
+                  defaultDate={startDate}
+                  onChange={([date]) => {
+                    setStartDate(date ? formatDateToYYYYMMDD(date) : "");
+                    setPage(1);
+                  }}
+                />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-2">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <DatePicker
+                      id="holiday-filter-end-date"
+                      label="Sampai Tanggal"
+                      placeholder="Pilih tanggal selesai"
+                      defaultDate={endDate}
+                      onChange={([date]) => {
+                        setEndDate(date ? formatDateToYYYYMMDD(date) : "");
+                        setPage(1);
+                      }}
+                    />
+                  </div>
+                  {hasActiveFilters && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-11"
+                      onClick={handleResetFilters}
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -257,7 +405,17 @@ export default function HolidayCalendarPage() {
                           </span>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-gray-500 text-theme-sm dark:text-gray-400">
-                          {holiday.location?.name || "Semua Lokasi"}
+                          {holiday.type === 'location' ? (
+                            holiday.location?.name ? (
+                              <span className="font-medium text-gray-800 dark:text-white/90">
+                                {holiday.location.name}
+                              </span>
+                            ) : (
+                              <span className="text-amber-600">Lokasi #{holiday.location_id}</span>
+                            )
+                          ) : (
+                            <span className="text-gray-400 italic">Semua Lokasi</span>
+                          )}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-end">
                           <div className="flex items-center justify-end gap-2">
