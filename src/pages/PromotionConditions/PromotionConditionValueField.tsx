@@ -2,22 +2,14 @@ import { useEffect, useState } from "react";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
-
-type ConditionType =
-  | "customer_group"
-  | "min_qty"
-  | "location"
-  | "weekday"
-  | "channel"
-  | "total_transaction"
-  | "payment_method"
-  | "time_range";
-
-type ConditionOperator = "=" | ">" | "<" | ">=" | "<=" | "IN" | "BETWEEN";
+import {
+  PromotionConditionOperator,
+  PromotionConditionType,
+} from "../../Schemas/promotionConditionSchema";
 
 interface PromotionConditionValueFieldProps {
-  conditionType: ConditionType;
-  conditionOperator: ConditionOperator;
+  conditionType: PromotionConditionType;
+  conditionOperator: PromotionConditionOperator;
   value: Record<string, unknown>;
   onChange: (value: Record<string, unknown>) => void;
   error?: string;
@@ -33,7 +25,7 @@ const WEEKDAY_OPTIONS = [
   "sunday",
 ];
 
-const NUMERIC_TYPES: ConditionType[] = ["min_qty", "total_transaction"];
+const NUMERIC_TYPES: PromotionConditionType[] = ["min_qty", "total_transaction"];
 
 const toStringValue = (value: unknown): string => {
   if (value === null || value === undefined) {
@@ -98,7 +90,7 @@ export default function PromotionConditionValueField({
   const betweenMax = toStringValue(value.max ?? value.to);
   const timeStart = toStringValue(value.start_time ?? value.start);
   const timeEnd = toStringValue(value.end_time ?? value.end);
-  const listValues = toArrayOfString(value.values ?? value.weekdays);
+  const listValues = toArrayOfString(value.weekdays ?? value.values);
   const weekdaySingle = toStringValue(value.value) || "monday";
 
   const addListValue = () => {
@@ -170,24 +162,31 @@ export default function PromotionConditionValueField({
       )}
 
       {!isTimeRange && isWeekday && isInOperator && (
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {WEEKDAY_OPTIONS.map((weekday) => (
-            <label key={weekday} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={listValues.includes(weekday)}
-                onChange={(event) => {
-                  if (event.target.checked) {
-                    onChange({ weekdays: Array.from(new Set([...listValues, weekday])) });
-                    return;
-                  }
+        <div className="space-y-2">
+          <p className="text-xs text-gray-500">Pilih satu atau lebih hari berlakunya promosi:</p>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            {WEEKDAY_OPTIONS.map((weekday) => (
+              <label
+                key={weekday}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 p-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800/50"
+              >
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-brand-500 focus:ring-brand-500"
+                  checked={listValues.includes(weekday)}
+                  onChange={(event) => {
+                    if (event.target.checked) {
+                      onChange({ weekdays: Array.from(new Set([...listValues, weekday])) });
+                      return;
+                    }
 
-                  onChange({ weekdays: listValues.filter((item) => item !== weekday) });
-                }}
-              />
-              <span className="capitalize">{weekday}</span>
-            </label>
-          ))}
+                    onChange({ weekdays: listValues.filter((item) => item !== weekday) });
+                  }}
+                />
+                <span className="capitalize">{weekday}</span>
+              </label>
+            ))}
+          </div>
         </div>
       )}
 
@@ -199,7 +198,7 @@ export default function PromotionConditionValueField({
         >
           {WEEKDAY_OPTIONS.map((weekday) => (
             <option key={weekday} value={weekday}>
-              {weekday}
+              {weekday.charAt(0).toUpperCase() + weekday.slice(1)}
             </option>
           ))}
         </select>
@@ -209,12 +208,14 @@ export default function PromotionConditionValueField({
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <Label htmlFor="condition-between-min" className="mb-2" required>
-              Nilai Minimal
+              Nilai Minimal {conditionType === "min_qty" ? "(Qty)" : conditionType === "total_transaction" ? "(Rp)" : ""}
             </Label>
             <Input
               id="condition-between-min"
               type={useNumericValue ? "number" : "text"}
-              step={useNumericValue ? "0.01" : undefined}
+              step={useNumericValue ? "1" : undefined}
+              min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
+              placeholder={conditionType === "min_qty" ? "Contoh: 1" : "Contoh: 50000"}
               value={betweenMin}
               onChange={(event) =>
                 onChange({
@@ -226,12 +227,14 @@ export default function PromotionConditionValueField({
           </div>
           <div>
             <Label htmlFor="condition-between-max" className="mb-2" required>
-              Nilai Maksimal
+              Nilai Maksimal {conditionType === "min_qty" ? "(Qty)" : conditionType === "total_transaction" ? "(Rp)" : ""}
             </Label>
             <Input
               id="condition-between-max"
               type={useNumericValue ? "number" : "text"}
-              step={useNumericValue ? "0.01" : undefined}
+              step={useNumericValue ? "1" : undefined}
+              min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
+              placeholder={conditionType === "min_qty" ? "Contoh: 10" : "Contoh: 200000"}
               value={betweenMax}
               onChange={(event) =>
                 onChange({
@@ -249,7 +252,7 @@ export default function PromotionConditionValueField({
           <div className="flex gap-2">
             <Input
               type={useNumericValue ? "number" : "text"}
-              step={useNumericValue ? "0.01" : undefined}
+              step={useNumericValue ? "1" : undefined}
               value={listInput}
               onChange={(event) => setListInput(event.target.value)}
               onKeyDown={(event) => {
@@ -258,7 +261,7 @@ export default function PromotionConditionValueField({
                   addListValue();
                 }
               }}
-              placeholder="Ketik nilai lalu Tambah. Anda juga dapat menempelkan nilai yang dipisahkan koma."
+              placeholder="Ketik nilai lalu klik Tambah (atau tekan Enter)"
             />
             <Button type="button" size="sm" variant="outline" onClick={addListValue}>
               Tambah
@@ -271,9 +274,9 @@ export default function PromotionConditionValueField({
                   key={item}
                   type="button"
                   onClick={() => removeListValue(item)}
-                  className="rounded-full border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
-                  {item} x
+                  {item} ✕
                 </button>
               ))}
             </div>
@@ -284,16 +287,23 @@ export default function PromotionConditionValueField({
       {!isTimeRange && !isWeekday && !isBetween && !isInOperator && (
         <Input
           type={useNumericValue ? "number" : "text"}
-          step={useNumericValue ? "0.01" : undefined}
+          step={useNumericValue ? "1" : undefined}
+          min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
           value={singleValue}
           onChange={(event) =>
             onChange({ value: toPrimitiveValue(event.target.value, useNumericValue) })
           }
-          placeholder={useNumericValue ? "Masukkan nilai angka" : "Masukkan nilai syarat"}
+          placeholder={
+            conditionType === "min_qty"
+              ? "Masukkan jumlah kuantitas minimal (contoh: 5)"
+              : conditionType === "total_transaction"
+              ? "Masukkan nominal transaksi minimal (contoh: 100000)"
+              : "Masukkan nilai syarat"
+          }
         />
       )}
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }

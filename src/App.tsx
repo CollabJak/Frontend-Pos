@@ -106,6 +106,7 @@ import ScheduleCalendarPage from "./pages/scheduling/ScheduleCalendarPage";
 import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
 import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
+import ProductSalesByLocationReport from "./pages/Reports/ProductSalesByLocationReport";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 export default function App() {
@@ -279,6 +280,11 @@ export default function App() {
                 <Route path="/pos" element={<POSPage />} />
                 <Route path="/pos/open-shift" element={<OpenShiftPage />} />
                 <Route path="/pos/payment" element={<POSPaymentPage />} />
+              </Route>
+
+              {/* Reports */}
+              <Route element={<ProtectedRoute allowedPermissions={["report.sales_by_location.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/reports/sales-by-location" element={<ProductSalesByLocationReport />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["absensi.enroll"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>

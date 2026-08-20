@@ -10,11 +10,15 @@ import Button from "../../components/ui/button/Button";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { fetchPromotionOptions, OptionDto } from "../../api/options";
 import { useCreatePromotionCondition } from "../../hooks/usePromotionConditions";
-import { ApiErrorResponse, PromotionConditionFormData } from "../../types/types";
+import { ApiErrorResponse } from "../../types/types";
 import PromotionConditionValueField from "./PromotionConditionValueField";
 import {
+  getDefaultConditionValue,
+  PromotionConditionFormData,
+  PromotionConditionOperator,
   promotionConditionOperatorValues,
   promotionConditionSchema,
+  PromotionConditionType,
   promotionConditionTypeValues,
 } from "../../Schemas/promotionConditionSchema";
 
@@ -40,6 +44,27 @@ export default function AddPromotionCondition() {
       condition_value: { value: "" },
     },
   });
+
+  const currentConditionType = watch("condition_type");
+  const currentConditionOperator = watch("condition_operator");
+
+  const handleTypeChange = (newType: PromotionConditionType) => {
+    setValue("condition_type", newType, { shouldValidate: true });
+    setValue(
+      "condition_value",
+      getDefaultConditionValue(newType, currentConditionOperator),
+      { shouldValidate: true }
+    );
+  };
+
+  const handleOperatorChange = (newOperator: PromotionConditionOperator) => {
+    setValue("condition_operator", newOperator, { shouldValidate: true });
+    setValue(
+      "condition_value",
+      getDefaultConditionValue(currentConditionType, newOperator),
+      { shouldValidate: true }
+    );
+  };
 
   const onSubmit = (data: PromotionConditionFormData) => {
     setError("root", { type: "server", message: "" });
@@ -112,6 +137,7 @@ export default function AddPromotionCondition() {
             <select
               {...register("condition_type")}
               id="condition-type"
+              onChange={(e) => handleTypeChange(e.target.value as PromotionConditionType)}
               className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             >
               {promotionConditionTypeValues.map((value) => (
@@ -130,6 +156,7 @@ export default function AddPromotionCondition() {
             <select
               {...register("condition_operator")}
               id="condition-operator"
+              onChange={(e) => handleOperatorChange(e.target.value as PromotionConditionOperator)}
               className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             >
               {promotionConditionOperatorValues.map((value) => (
@@ -144,8 +171,8 @@ export default function AddPromotionCondition() {
           </div>
 
           <PromotionConditionValueField
-            conditionType={watch("condition_type")}
-            conditionOperator={watch("condition_operator")}
+            conditionType={currentConditionType}
+            conditionOperator={currentConditionOperator}
             value={watch("condition_value")}
             onChange={(nextValue) =>
               setValue("condition_value", nextValue, {
