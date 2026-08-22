@@ -35,6 +35,16 @@ export interface ProductVariant {
     name: string;
     sku: string;
   } | null;
+  prices?: {
+    id: number;
+    price: string | number;
+    price_type: "sell" | "cost" | "purchase" | "wholesale" | "member";
+    location_id?: number | null;
+    location?: {
+      id: number;
+      name: string;
+    } | null;
+  }[];
   base_unit?: {
     id: number;
     name: string;

@@ -110,7 +110,7 @@ export default function ProductList({ embedded = false }: ProductListProps) {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Satuan
+                        Varian / Satuan
                       </TableCell>
                       <TableCell
                         isHeader
@@ -169,7 +169,13 @@ export default function ProductList({ embedded = false }: ProductListProps) {
                           {product.category?.name || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {product.unit?.name || "-"}
+                          {product.variants && product.variants.length > 0 ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                              {product.variants.length} Varian ({product.variants[0]?.base_unit?.name || "-"})
+                            </span>
+                          ) : (
+                            "-"
+                          )}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {product.brand?.name || "-"}

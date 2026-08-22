@@ -1,5 +1,6 @@
-import {z} from "zod";
-import { productSchema } from "../Schemas/productSchema";
+import { z } from "zod";
+import { productSchema, compositeProductSchema, compositeVariantSchema } from "../Schemas/productSchema";
+import { ProductVariant } from "./productVariant";
 
 export type ProductStatus = "active" | "inactive" | "discontinued";
 
@@ -10,7 +11,6 @@ export interface Product {
   barcode?: string | null;
   category_id: number;
   brand_id: number;
-  unit_id: number;
   description?: string | null;
   thumbnail?: string | null;
   status: ProductStatus;
@@ -25,10 +25,9 @@ export interface Product {
     id: number;
     name: string;
   } | null;
-  unit?: {
-    id: number;
-    name: string;
-  } | null;
+  variants?: ProductVariant[];
 }
 
-export type ProductFormData = z.input<typeof productSchema>;
+export type ProductFormData = z.infer<typeof productSchema>;
+export type CompositeVariantFormData = z.infer<typeof compositeVariantSchema>;
+export type CompositeProductFormData = z.infer<typeof compositeProductSchema>;
