@@ -58,6 +58,8 @@ export const useCreatePaymentMethod = () => {
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
+            await queryClient.invalidateQueries({ queryKey: ['payment-method-options'] });
+            await queryClient.invalidateQueries({ queryKey: ['options', 'payment-methods'] });
             navigate('/payment-methods');
         },
     });
@@ -90,6 +92,8 @@ export const useUpdatePaymentMethod = (id: string | number) => {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
             await queryClient.invalidateQueries({ queryKey: ['payment-methods', id] });
+            await queryClient.invalidateQueries({ queryKey: ['payment-method-options'] });
+            await queryClient.invalidateQueries({ queryKey: ['options', 'payment-methods'] });
             navigate('/payment-methods');
         },
     });
@@ -105,6 +109,8 @@ export const useDeletePaymentMethod = () => {
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
+            await queryClient.invalidateQueries({ queryKey: ['payment-method-options'] });
+            await queryClient.invalidateQueries({ queryKey: ['options', 'payment-methods'] });
         },
     });
 };

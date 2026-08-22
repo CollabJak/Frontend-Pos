@@ -4,6 +4,7 @@ import apiClient from "../api/axiosConfig";
 import { Brand } from "../types/types";
 import { PaginatedApiResponse, CreateBrandPayload, ApiErrorResponse } from "../types/types";
 import { useNavigate } from "react-router";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchBrandsParams {
   page?: number;
@@ -47,8 +48,7 @@ export const useCreateBrand = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["brands"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.BRANDS);
       navigate("/products?tab=brands");
     },
   });
@@ -68,9 +68,7 @@ export const useUpdateBrand = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["brands"] });
-      queryClient.invalidateQueries({ queryKey: ["brand", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.BRANDS, id);
       navigate("/products?tab=brands");
     },
   });
@@ -85,8 +83,7 @@ export const useDeleteBrand = () => {
       await apiClient.delete(`/brands/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["brands"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.BRANDS);
     },
   });
 };

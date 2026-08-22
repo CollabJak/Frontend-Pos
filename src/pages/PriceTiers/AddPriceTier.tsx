@@ -89,7 +89,7 @@ export default function AddPriceTier() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-product-variant-options"
+              keyName="product-variants"
               value={watch("product_variant_id") || null}
               onChange={(selectedValue) => {
                 setValue("product_variant_id", Number(selectedValue ?? 0), {
@@ -112,7 +112,7 @@ export default function AddPriceTier() {
             <Label required>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-customer-group-options"
+              keyName="customer-groups"
               value={watch("customer_group_id") || null}
               onChange={(selectedValue) => {
                 setValue("customer_group_id", Number(selectedValue ?? 0), {
@@ -165,7 +165,7 @@ export default function AddPriceTier() {
             <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-location-options"
+              keyName="locations"
               value={watch("location_id") || null}
               onChange={(selectedValue) => {
                 setValue("location_id", Number(selectedValue ?? 0), {

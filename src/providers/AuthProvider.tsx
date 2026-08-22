@@ -4,6 +4,7 @@ import { User } from "../types/types";
 import { authService } from "../api/authService";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { clearAppSession } from "../utils/sessionManager";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -50,7 +51,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Force refetch if returning from Google Oauth explicitly marking success
   useEffect(() => {
     if (isGoogleLogin) {
-      queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+      void clearAppSession(queryClient).then(() => {
+        void queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+      });
     }
   }, [isGoogleLogin, queryClient]);
 
@@ -69,9 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         navigate("/dashboard", { replace: true });
       }
     } else {
-      // For roles not allowed, we might have been logged out by backend already
-      // but let's ensure we stay on signin
-      navigate("/signin", { replace: true });
+      navigate("/absensi/scanner", { replace: true });
     }
 
     // Cleanup URL
@@ -92,11 +93,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Global listener for session expiry signals
   useEffect(() => {
     const handleUnauthorized = () => {
-      // Clear local session state
-      queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
-
-      // Force push to login page
-      navigate("/", { replace: true });
+      // Clear all server caches and local UI session state
+      void clearAppSession(queryClient).then(() => {
+        // Force push to login page
+        navigate("/", { replace: true });
+      });
     };
 
     window.addEventListener("auth:unauthorized", handleUnauthorized);
@@ -151,6 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
+      await clearAppSession(queryClient);
       const userData = await authService.login(email, password);
       setUser(userData);
 
@@ -169,8 +171,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           navigate("/dashboard", { replace: true });
         }
       } else {
-        // Keeper/Employee - backend already validates business_id during login
-        navigate("/dashboard", { replace: true });
+        // Roles other than admin and manager (e.g. employee, keeper, etc.)
+        navigate("/absensi/scanner", { replace: true });
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -201,10 +203,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = async () => {
     try {
       await authService.logout();
-      setUser(null);
-      navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout failed", error);
+    } finally {
+      await clearAppSession(queryClient);
+      navigate("/", { replace: true });
     }
   };
 

@@ -8,6 +8,7 @@ import {
   ProductPrice,
   ProductPriceFormData,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchProductPricesParams {
   page?: number;
@@ -61,7 +62,7 @@ export const useCreateProductPrice = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-prices"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_PRICES);
       navigate("/products?tab=prices");
     },
   });
@@ -84,8 +85,7 @@ export const useUpdateProductPrice = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["product-prices"] });
-      queryClient.invalidateQueries({ queryKey: ["product-price", id] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_PRICES, id);
       navigate("/products?tab=prices");
     },
   });
@@ -99,7 +99,7 @@ export const useDeleteProductPrice = () => {
       await apiClient.delete(`/product-prices/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-prices"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_PRICES);
     },
   });
 };

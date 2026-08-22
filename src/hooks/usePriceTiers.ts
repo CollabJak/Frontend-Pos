@@ -8,6 +8,7 @@ import {
   PriceTier,
   PriceTierFormData,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchPriceTiersParams {
   page?: number;
@@ -54,7 +55,7 @@ export const useCreatePriceTier = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["price-tiers"] });
+      invalidateDomain(queryClient, DOMAINS.PRICE_TIERS);
       navigate("/products?tab=tiers");
     },
   });
@@ -74,8 +75,7 @@ export const useUpdatePriceTier = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["price-tiers"] });
-      queryClient.invalidateQueries({ queryKey: ["price-tier", id] });
+      invalidateDomain(queryClient, DOMAINS.PRICE_TIERS, id);
       navigate("/products?tab=tiers");
     },
   });
@@ -89,7 +89,7 @@ export const useDeletePriceTier = () => {
       await apiClient.delete(`/price-tiers/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["price-tiers"] });
+      invalidateDomain(queryClient, DOMAINS.PRICE_TIERS);
     },
   });
 };

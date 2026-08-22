@@ -4,6 +4,7 @@ import apiClient from "../api/axiosConfig";
 import { UnitConversions } from "../types/types";
 import { PaginatedApiResponse, UnitConversionFormData, ApiErrorResponse } from "../types/types";
 import { useNavigate } from "react-router";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchUnitConversionParams {
   page?: number;
@@ -51,8 +52,7 @@ export const useCreateUnitConversion = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["unit-conversions"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNIT_CONVERSIONS);
       navigate("/units?tab=conversions");
     },
   });
@@ -72,9 +72,7 @@ export const useUpdateUnitConversion = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["unit-conversions"] });
-      queryClient.invalidateQueries({ queryKey: ["unit-conversions", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNIT_CONVERSIONS, id);
       navigate("/units?tab=conversions");
     },
   });
@@ -89,8 +87,7 @@ export const useDeleteUnitConversion = () => {
       await apiClient.delete(`/unit-conversions/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["unit-conversions"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNIT_CONVERSIONS);
     },
   });
 };

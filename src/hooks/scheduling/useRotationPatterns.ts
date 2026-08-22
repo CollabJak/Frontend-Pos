@@ -25,6 +25,8 @@ export const useCreateRotationPattern = () => {
       schedulingService.createRotationPattern(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.rotations() });
+      queryClient.invalidateQueries({ queryKey: ["options", "rotation-patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "rotation-patterns"] });
     },
   });
 };
@@ -36,6 +38,8 @@ export const useUpdateRotationPattern = () => {
       schedulingService.updateRotationPattern(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.rotations() });
+      queryClient.invalidateQueries({ queryKey: ["options", "rotation-patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "rotation-patterns"] });
     },
   });
 };
@@ -46,6 +50,8 @@ export const useDeleteRotationPattern = () => {
     mutationFn: (id: number) => schedulingService.deleteRotationPattern(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.rotations() });
+      queryClient.invalidateQueries({ queryKey: ["options", "rotation-patterns"] });
+      queryClient.invalidateQueries({ queryKey: ["async-options", "rotation-patterns"] });
     },
   });
 };

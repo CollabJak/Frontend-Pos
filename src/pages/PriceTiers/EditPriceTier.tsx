@@ -136,7 +136,7 @@ export default function EditPriceTier() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-product-variant-options"
+              keyName="product-variants"
               value={watch("product_variant_id") || null}
               displayValue={priceTier?.product_variant?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -160,7 +160,7 @@ export default function EditPriceTier() {
             <Label required>Grup Pelanggan</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-customer-group-options"
+              keyName="customer-groups"
               value={watch("customer_group_id") || null}
               displayValue={priceTier?.customer_group?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -214,7 +214,7 @@ export default function EditPriceTier() {
             <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="price-tier-location-options"
+              keyName="locations"
               value={watch("location_id") || null}
               displayValue={priceTier?.location?.name ?? undefined}
               onChange={(selectedValue) => {

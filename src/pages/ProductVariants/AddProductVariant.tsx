@@ -109,7 +109,7 @@ export default function AddProductVariant() {
             <Label required>Produk Utama</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="product-variant-product-options"
+              keyName="products"
               value={watch("product_id") || null}
               onChange={(selectedValue) => {
                 setValue("product_id", Number(selectedValue ?? 0), {
@@ -165,42 +165,40 @@ export default function AddProductVariant() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <Label required>Satuan Dasar (Base Unit)</Label>
-              <AsyncSearchSelect<SelectOption>
-                label=""
-                keyName="product-variant-base-unit-options"
-                value={watch("base_unit_id") || null}
-                onChange={(selectedValue) => {
-                  setValue("base_unit_id", Number(selectedValue ?? 0), {
-                    shouldValidate: true,
-                  });
-                }}
-                placeholder="Cari satuan dasar..."
-                fetchOptions={fetchUnitOptions}
-                optionLabel="name"
-                optionValue="id"
-                debounceMs={400}
-                searchMinLength={0}
-              />
-              {errors.base_unit_id && (
-                <p className="text-red-500">{errors.base_unit_id.message}</p>
-              )}
-            </div>
+          <div>
+            <Label required>Satuan Dasar (Base Unit)</Label>
+            <AsyncSearchSelect<SelectOption>
+              label=""
+              keyName="units"
+              value={watch("base_unit_id") || null}
+              onChange={(selectedValue) => {
+                setValue("base_unit_id", Number(selectedValue ?? 0), {
+                  shouldValidate: true,
+                });
+              }}
+              placeholder="Cari satuan dasar..."
+              fetchOptions={fetchUnitOptions}
+              optionLabel="name"
+              optionValue="id"
+              debounceMs={400}
+              searchMinLength={0}
+            />
+            {errors.base_unit_id && (
+              <p className="text-red-500">{errors.base_unit_id.message}</p>
+            )}
+          </div>
 
-            <div>
-              <Label htmlFor="min-stock">Stok Minimal (Min Stock)</Label>
-              <Input
-                {...register("min_stock")}
-                id="min-stock"
-                type="number"
-                step="0.0001"
-                min="0"
-                placeholder="0"
-              />
-              {errors.min_stock && <p className="text-red-500">{errors.min_stock.message}</p>}
-            </div>
+          <div>
+            <Label htmlFor="min-stock">Stok Minimal (Min Stock)</Label>
+            <Input
+              {...register("min_stock")}
+              id="min-stock"
+              type="number"
+              step="0.0001"
+              min="0"
+              placeholder="0"
+            />
+            {errors.min_stock && <p className="text-red-500">{errors.min_stock.message}</p>}
           </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -230,7 +228,12 @@ export default function AddProductVariant() {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label required>Atribut Varian</Label>
+              <div>
+                <Label>Atribut Varian (Opsional)</Label>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Tambahkan atribut seperti Warna, Ukuran, atau Rasa
+                </p>
+              </div>
               <Button
                 type="button"
                 variant="outline"
@@ -251,7 +254,7 @@ export default function AddProductVariant() {
                     <Label required>Atribut</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
-                      keyName={`product-variant-atribute-options-${index}`}
+                      keyName="atributes"
                       value={watch(`attributes_json.${index}.atribute_id`) || null}
                       onChange={(selectedValue) => {
                         setValue(

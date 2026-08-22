@@ -142,7 +142,7 @@ export default function EditProductPrice() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectProductVariantOption>
               label=""
-              keyName="product-price-product-variant-options"
+              keyName="product-variants"
               value={watch("product_variant_id") || null}
               displayValue={productPrice?.product_variant?.name ?? undefined}
               onChange={(selectedValue) => {
@@ -205,7 +205,7 @@ export default function EditProductPrice() {
             <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
-              keyName="product-price-location-options"
+              keyName="locations"
               value={watch("location_id") || null}
               displayValue={productPrice?.location?.name ?? undefined}
               onChange={(selectedValue) => {

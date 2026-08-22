@@ -93,7 +93,7 @@ export default function AddProductPrice() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
-              keyName="product-price-product-variant-options"
+              keyName="product-variants"
               value={watch("product_variant_id") || null}
               onChange={(selectedValue) => {
                 setValue("product_variant_id", Number(selectedValue ?? 0), {
@@ -155,7 +155,7 @@ export default function AddProductPrice() {
             <Label required>Lokasi</Label>
             <AsyncSearchSelect<SelectLocationOption>
               label=""
-              keyName="product-price-location-options"
+              keyName="locations"
               value={watch("location_id") || null}
               onChange={(selectedValue) => {
                 setValue("location_id", Number(selectedValue ?? 0), {

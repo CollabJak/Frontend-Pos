@@ -96,7 +96,7 @@ export default function AddPromotionAction() {
             <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="promotion-action-promotion-options"
+              keyName="promotions"
               value={watch("promotion_id") || null}
               displayValue={promotionLabel}
               onChange={(selectedValue, option) => {

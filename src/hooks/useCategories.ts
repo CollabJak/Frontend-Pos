@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ApiErrorResponse, PaginatedApiResponse, CreateCategoryPayload } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchCategoriesParams {
   page?: number;
@@ -66,10 +67,8 @@ export const useCreateCategory = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.CATEGORIES);
       navigate("/products?tab=categories");
-
     },
   });
 };
@@ -103,11 +102,8 @@ export const useUpdateCategory = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["category", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.CATEGORIES, id);
       navigate("/products?tab=categories");
-
     },
   });
 };
@@ -121,8 +117,7 @@ export const useDeleteCategory = () => {
       await apiClient.delete(`/categories/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.CATEGORIES);
     },
   });
 };

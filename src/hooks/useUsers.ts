@@ -1,9 +1,9 @@
 import { AxiosError } from "axios";
 import apiClient from "../api/axiosConfig";
-import { User } from "../types/types";
+import { User, ApiErrorResponse, PaginatedApiResponse, CreateUserPayload, Location } from "../types/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { ApiErrorResponse, PaginatedApiResponse, CreateUserPayload, Location } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchUsersParams {
   page?: number;
@@ -68,8 +68,7 @@ export const useCreateUser = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
+      invalidateDomain(queryClient, DOMAINS.USERS);
       navigate("/users");
     },
   });
@@ -108,9 +107,7 @@ export const useUpdateUser = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["user", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
+      invalidateDomain(queryClient, DOMAINS.USERS, id);
       navigate("/users");
     },
   });
@@ -124,8 +121,7 @@ export const useDeleteUser = () => {
       await apiClient.delete(`/users/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "users"] });
+      invalidateDomain(queryClient, DOMAINS.USERS);
     },
   });
 };

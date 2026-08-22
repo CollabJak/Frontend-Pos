@@ -4,6 +4,7 @@ import apiClient from "../api/axiosConfig";
 import { Atribute } from "../types/types";
 import { PaginatedApiResponse, CreateAtributePayload, ApiErrorResponse } from "../types/types";
 import { useNavigate } from "react-router";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchAtributesParams {
   page?: number;
@@ -47,9 +48,7 @@ export const useCreateAtribute = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["atribute"] });
-      queryClient.invalidateQueries({ queryKey: ["atributes"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.ATRIBUTES);
       navigate("/products?tab=attributes");
     },
   });
@@ -69,9 +68,7 @@ export const useUpdateAtribute = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["atributes"] });
-      queryClient.invalidateQueries({ queryKey: ["atribute", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.ATRIBUTES, id);
       navigate("/products?tab=attributes");
     },
   });
@@ -86,8 +83,7 @@ export const useDeleteAtribute = () => {
       await apiClient.delete(`/atribute/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["atributes"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.ATRIBUTES);
     },
   });
 };

@@ -111,7 +111,7 @@ export default function EditPromotionProduct() {
             <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="edit-promotion-product-promotion-options"
+              keyName="promotions"
               value={watch("promotion_id") || null}
               displayValue={promotionLabel}
               onChange={(selectedValue, option) => {
@@ -134,7 +134,7 @@ export default function EditPromotionProduct() {
             <Label required>Varian Produk</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="edit-promotion-product-variant-options"
+              keyName="product-variants"
               value={watch("product_variant_id") || null}
               displayValue={productVariantLabel}
               onChange={(selectedValue, option) => {

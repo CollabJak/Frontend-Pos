@@ -4,6 +4,7 @@ import apiClient from "../api/axiosConfig";
 import { Supplier } from "../types/types";
 import { PaginatedApiResponse, CreateSupplierPayload, ApiErrorResponse } from "../types/types";
 import { useNavigate } from "react-router";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchUnitsParams {
   page?: number;
@@ -51,8 +52,7 @@ export const useCreateSupplier = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.SUPPLIERS);
       navigate("/products?tab=suppliers");
     },
   });
@@ -72,9 +72,7 @@ export const useUpdateSupplier = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
-      queryClient.invalidateQueries({ queryKey: ["supplier", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.SUPPLIERS, id);
       navigate("/products?tab=suppliers");
     },
   });
@@ -89,8 +87,7 @@ export const useDeleteSupplier = () => {
       await apiClient.delete(`/suppliers/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.SUPPLIERS);
     },
   });
 };

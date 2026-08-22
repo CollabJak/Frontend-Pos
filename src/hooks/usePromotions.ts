@@ -8,6 +8,7 @@ import {
   PaginatedApiResponse,
   Promotion,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchPromotionsParams {
   page?: number;
@@ -54,7 +55,7 @@ export const useCreatePromotion = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["promotions"] });
+      invalidateDomain(queryClient, DOMAINS.PROMOTIONS);
       navigate("/promotions?tab=promotions");
     },
   });
@@ -74,8 +75,7 @@ export const useUpdatePromotion = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["promotions"] });
-      queryClient.invalidateQueries({ queryKey: ["promotion", id] });
+      invalidateDomain(queryClient, DOMAINS.PROMOTIONS, id);
       navigate("/promotions?tab=promotions");
     },
   });
@@ -89,7 +89,7 @@ export const useDeletePromotion = () => {
       await apiClient.delete(`/promotions/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["promotions"] });
+      invalidateDomain(queryClient, DOMAINS.PROMOTIONS);
     },
   });
 };
