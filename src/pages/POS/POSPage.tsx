@@ -53,6 +53,7 @@ export default function POSPage() {
     toGridItems,
     selectedPaymentMethodId,
     setSelectedPaymentMethodId,
+    selectedCustomer,
   } = usePosStore();
 
   // Fetch dynamic payment methods
@@ -176,6 +177,8 @@ export default function POSPage() {
               variant_id: item.variantId,
               qty: item.qty,
             })),
+            customer_group_id: selectedCustomer?.customer_group_id ?? null,
+            customer_id: selectedCustomer?.id ?? null,
           },
         },
         {
@@ -192,7 +195,7 @@ export default function POSPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [cartItems, selectedLocation, calculateCart, setPricingSnapshot]);
+  }, [cartItems, selectedLocation, selectedCustomer, calculateCart, setPricingSnapshot]);
 
   const filteredProducts = useMemo(() => {
     return toGridItems("");

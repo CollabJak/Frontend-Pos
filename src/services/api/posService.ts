@@ -122,6 +122,7 @@ export interface PosCalculateCartPayload {
   location_id: number;
   items: Array<{ variant_id: number; qty: number }>;
   customer_group_id?: number | null;
+  customer_id?: number | null;
   channel?: string;
 }
 

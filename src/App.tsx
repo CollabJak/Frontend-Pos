@@ -36,6 +36,8 @@ import EditSupplier from "./pages/Suppliers/EditSupplier";
 import CustomerGroupManagementPage from "./pages/CustomerGroups/CustomerGroupManagementPage";
 import AddCustomerGroup from "./pages/CustomerGroups/AddCustomerGroup";
 import EditCustomerGroup from "./pages/CustomerGroups/EditCustomerGroup";
+import AddCustomer from "./pages/Customers/AddCustomer";
+import EditCustomer from "./pages/Customers/EditCustomer";
 import CustomerGroupPriceList from "./pages/CustomerGroupPrices/CustomerGroupPriceList";
 import AddCustomerGroupPrice from "./pages/CustomerGroupPrices/AddCustomerGroupPrice";
 import EditCustomerGroupPrice from "./pages/CustomerGroupPrices/EditCustomerGroupPrice";
@@ -172,13 +174,22 @@ export default function App() {
                 <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view", "customer_group_price.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["customer_group.view", "customer_group_price.view", "customer.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/customer-groups" element={<CustomerGroupManagementPage />} />
+                <Route path="/customers" element={<CustomerGroupManagementPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["customer_group.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/customer-groups/create" element={<AddCustomerGroup />} />
                 <Route path="/customer-groups/edit/:id" element={<EditCustomerGroup />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["customer.create", "customer.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/customers/create" element={<AddCustomer />} />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedPermissions={["customer.update", "customer.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/customers/edit/:id" element={<EditCustomer />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["customer_group_price.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>

@@ -28,6 +28,7 @@ export interface PosCheckoutPayload {
   };
   device_id?: string;
   expected_total?: string;
+  customer_id?: number | null;
 }
 
 export interface PosCheckoutResult {
