@@ -16,6 +16,7 @@ interface RawPosProduct {
   imageUrl?: string;
   category_id?: number | string;
   categoryId?: number | string;
+  tagline?: string;
   description?: string;
 }
 
@@ -75,6 +76,7 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
     price,
     stock,
     categoryId: categoryId ?? undefined,
+    tagline: firstText(row.tagline) || undefined,
     imageUrl: row.imageUrl ?? row.image_url,
     description: firstText(row.description) || undefined,
     isBestSeller: false, // TODO: Source from backend when best_seller field is added

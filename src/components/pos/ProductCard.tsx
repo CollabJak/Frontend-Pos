@@ -45,9 +45,11 @@ export default function ProductCard({
           </span>
         </div>
 
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-          {product.description || "Premium quality product crafted with care."}
-        </p>
+        {product.description ? (
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+            {product.description}
+          </p>
+        ) : null}
 
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
           {product.isBestSeller && (
@@ -55,9 +57,11 @@ export default function ProductCard({
               Terlaris
             </Badge>
           )}
-          <Badge color="info" size="sm" variant="light">
-            12OZ
-          </Badge>
+          {product.tagline ? (
+            <Badge color="info" size="sm" variant="light">
+              {product.tagline}
+            </Badge>
+          ) : null}
         </div>
       </div>
 

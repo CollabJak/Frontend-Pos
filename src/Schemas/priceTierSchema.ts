@@ -6,7 +6,7 @@ export const priceTierSchema = z
     customer_group_id: z.number().int().min(1, "Grup pelanggan wajib dipilih"),
     min_qty: z
       .number({ message: "Jumlah minimal harus berupa angka" })
-      .min(0, "Jumlah minimal pembelian minimal 0"),
+      .min(1, "Jumlah minimal pembelian minimal 1"),
     price: z
       .number({ message: "Harga harus berupa angka" })
       .min(0, "Harga minimal 0"),

@@ -39,7 +39,7 @@ export default function AddPriceTier() {
     defaultValues: {
       product_variant_id: 0,
       customer_group_id: 0,
-      min_qty: 0,
+      min_qty: 1,
       price: 0,
       location_id: 0,
       start_date: "",
@@ -138,7 +138,7 @@ export default function AddPriceTier() {
             <Input
               id="min-qty"
               type="number"
-              min={0}
+              min={1}
               step="0.01"
               placeholder="Masukkan jumlah minimal pembelian"
               {...register("min_qty", { valueAsNumber: true })}

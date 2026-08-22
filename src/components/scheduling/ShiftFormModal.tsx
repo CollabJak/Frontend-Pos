@@ -245,7 +245,9 @@ export default function ShiftFormModal({
           </div>
 
           <div>
-            <Label htmlFor="tolerance_late_minutes">Toleransi Telat (Menit)</Label>
+            <Label htmlFor="tolerance_late_minutes" required>
+              Toleransi Telat (Menit)
+            </Label>
             <Input
               id="tolerance_late_minutes"
               type="number"
@@ -255,7 +257,9 @@ export default function ShiftFormModal({
           </div>
 
           <div>
-            <Label htmlFor="tolerance_early_out_minutes">Toleransi Pulang Cepat (Menit)</Label>
+            <Label htmlFor="tolerance_early_out_minutes" required>
+              Toleransi Pulang Cepat (Menit)
+            </Label>
             <Input
               id="tolerance_early_out_minutes"
               type="number"

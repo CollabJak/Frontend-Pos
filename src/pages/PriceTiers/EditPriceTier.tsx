@@ -187,7 +187,7 @@ export default function EditPriceTier() {
             <Input
               id="min-qty"
               type="number"
-              min={0}
+              min={1}
               step="0.01"
               placeholder="Masukkan jumlah minimal pembelian"
               {...register("min_qty", { valueAsNumber: true })}
