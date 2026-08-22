@@ -1,4 +1,5 @@
 import CartItem from "./CartItem";
+import PosCustomerSelector from "./PosCustomerSelector";
 import { PosCartItem } from "../../stores/pos.store";
 
 interface CartPanelProps {
@@ -21,7 +22,7 @@ export default function CartPanel({
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-2xl font-black tracking-tight text-gray-800 dark:text-white">
           Keranjang Penjualan
         </h3>
@@ -33,6 +34,11 @@ export default function CartPanel({
             Hapus Semua
           </button>
         )}
+      </div>
+
+      {/* Customer / Member Selector Widget */}
+      <div className="mb-4">
+        <PosCustomerSelector />
       </div>
 
       {errorMessage && (

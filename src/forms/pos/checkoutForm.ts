@@ -8,7 +8,8 @@ const toMoneyString = (value: number): string => {
 
 export const toPosCheckoutPayload = (
   values: PosCheckoutFormValues,
-  expectedTotal?: number
+  expectedTotal?: number,
+  customerId?: number | null
 ): PosCheckoutPayload => ({
   location_id: values.location_id,
   items: values.items.map((item) => ({
@@ -21,4 +22,5 @@ export const toPosCheckoutPayload = (
   },
   device_id: values.device_id,
   ...(expectedTotal !== undefined ? { expected_total: toMoneyString(expectedTotal) } : {}),
+  ...(customerId ? { customer_id: customerId } : {}),
 });

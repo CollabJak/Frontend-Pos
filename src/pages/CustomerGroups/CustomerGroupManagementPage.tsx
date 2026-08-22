@@ -5,9 +5,10 @@ import PageMeta from "../../components/common/PageMeta";
 import Tabs, { TabItem } from "../../components/ui/tabs/Tabs";
 import CustomerGroupList from "./CustomerGroupList";
 import CustomerGroupPriceList from "../CustomerGroupPrices/CustomerGroupPriceList";
+import CustomerList from "../Customers/CustomerList";
 import { useAuth } from "../../hooks/useAuth";
 import { hasAccess } from "../../utils/rbac";
-import { GroupIcon, DollarLineIcon } from "../../icons";
+import { GroupIcon, DollarLineIcon, UserIcon } from "../../icons";
 
 export default function CustomerGroupManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,6 +31,13 @@ export default function CustomerGroupManagementPage() {
         icon: <DollarLineIcon className="w-4 h-4" />,
         permission: "customer_group_price.view",
         component: <CustomerGroupPriceList embedded />,
+      },
+      {
+        id: "customers",
+        label: "Daftar Pelanggan / Member",
+        icon: <UserIcon className="w-4 h-4" />,
+        permission: "customer.view",
+        component: <CustomerList embedded />,
       },
     ],
     []

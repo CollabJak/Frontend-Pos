@@ -23,7 +23,7 @@ import { EyeIcon } from "../../icons";
 
 export default function POSPaymentPage() {
   const navigate = useNavigate();
-  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot, selectedPaymentMethodId } = usePosStore();
+  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot, selectedPaymentMethodId, selectedCustomer } = usePosStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState<PosCheckoutResult | null>(null);
@@ -221,7 +221,7 @@ export default function POSPaymentPage() {
 
     while (true) {
       try {
-        const payload = toPosCheckoutPayload(formValues, totalDue);
+        const payload = toPosCheckoutPayload(formValues, totalDue, selectedCustomer?.id);
         const response = await checkoutOrder({ payload, idempotencyKey: currentKey });
 
         if (response.data) {
@@ -310,6 +310,35 @@ export default function POSPaymentPage() {
                     Edit
                   </button>
                 </div>
+
+                {/* Member Info Indicator (if member is selected) */}
+                {selectedCustomer ? (
+                  <div className="mb-3 flex items-center justify-between rounded-xl bg-brand-50/80 p-2.5 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-brand-600 text-white text-[10px] font-bold">
+                        👤
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold text-gray-900 dark:text-white">
+                          {selectedCustomer.name}
+                        </p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                          {selectedCustomer.phone || selectedCustomer.code || "Member"}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedCustomer.customer_group && (
+                      <span className="rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-extrabold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+                        {selectedCustomer.customer_group.name}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mb-3 flex items-center gap-2 rounded-xl bg-slate-50 p-2 dark:bg-slate-800/40 text-[11px] text-slate-400">
+                    <span>👤</span>
+                    <span>Pelanggan Umum (Non-Member)</span>
+                  </div>
+                )}
 
                 {/* Card Body (Scrollable) */}
                 <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">

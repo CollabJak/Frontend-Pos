@@ -64,6 +64,7 @@ export const fetchUnitOptions = createOptionsFetcher({ endpoint: "/options/units
 export const fetchProductOptions = createOptionsFetcher({ endpoint: "/options/products" });
 export const fetchProductVariantOptions = createOptionsFetcher({ endpoint: "/options/product-variants" });
 export const fetchCustomerGroupOptions = createOptionsFetcher({ endpoint: "/options/customer-groups" });
+export const fetchCustomerOptions = createOptionsFetcher({ endpoint: "/options/customers" });
 export const fetchAtributeOptions = createOptionsFetcher({ endpoint: "/options/atributes" });
 export const fetchLocationOptions = createOptionsFetcher({ endpoint: "/options/locations" });
 export const fetchPromotionOptions = createOptionsFetcher({ endpoint: "/options/promotions" });

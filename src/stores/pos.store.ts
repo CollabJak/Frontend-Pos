@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { PosProduct } from "../types/types";
+import type { PosProduct, Customer } from "../types/types";
 import type { PosCalculateCartResult } from "../services/api/posService";
 
 export interface PosCartItem {
@@ -31,6 +31,8 @@ interface PosStoreState {
   cartItems: PosCartItem[];
   deviceId: string;
   pricingSnapshot: PosCalculateCartResult | null;
+  selectedCustomer: Customer | null;
+  setSelectedCustomer: (customer: Customer | null) => void;
   setSelectedLocation: (locationId: number | null) => void;
   setProducts: (products: PosProduct[]) => void;
   updateStock: (variantId: number, locationId: number, qty: number) => void;
@@ -102,9 +104,12 @@ export const usePosStore = create<PosStoreState>()(
       deviceId: buildDeviceId(),
       pricingSnapshot: null,
       selectedPaymentMethodId: null,
+      selectedCustomer: null,
+
+      setSelectedCustomer: (customer) => set({ selectedCustomer: customer }),
 
       setSelectedLocation: (locationId) => {
-        set({ selectedLocation: locationId, cartItems: [], pricingSnapshot: null, selectedPaymentMethodId: null });
+        set({ selectedLocation: locationId, cartItems: [], pricingSnapshot: null, selectedPaymentMethodId: null, selectedCustomer: null });
       },
 
       setSelectedPaymentMethodId: (id) => set({ selectedPaymentMethodId: id }),
@@ -259,7 +264,7 @@ export const usePosStore = create<PosStoreState>()(
       },
 
       clearCart: () => {
-        set({ cartItems: [], pricingSnapshot: null });
+        set({ cartItems: [], pricingSnapshot: null, selectedCustomer: null });
       },
 
       setPricingSnapshot: (snapshot) => {
@@ -294,6 +299,7 @@ export const usePosStore = create<PosStoreState>()(
         cartItems: state.cartItems,
         deviceId: state.deviceId,
         selectedPaymentMethodId: state.selectedPaymentMethodId,
+        selectedCustomer: state.selectedCustomer,
       }),
     }
   )

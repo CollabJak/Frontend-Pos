@@ -76,6 +76,11 @@ export default function DatePicker({
           onChangeRef.current.forEach((fn) => fn(selectedDates, dateStr, instance));
         }
       },
+      onReady: (_, __, fp) => {
+        if (fp.altInput) {
+          fp.input.style.display = "none";
+        }
+      },
       plugins,
     });
 
