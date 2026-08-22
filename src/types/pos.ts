@@ -8,6 +8,7 @@ export interface PosProduct {
   price: number;
   stock: number;
   categoryId?: number;
+  tagline?: string;
   imageUrl?: string;
   description?: string;
   isBestSeller?: boolean;

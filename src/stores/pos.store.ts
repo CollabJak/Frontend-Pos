@@ -19,6 +19,7 @@ export interface PosGridItem {
   price: number;
   stock: number;
   categoryId?: number;
+  tagline?: string;
   imageUrl?: string;
   description?: string;
   isBestSeller?: boolean;
@@ -278,6 +279,7 @@ export const usePosStore = create<PosStoreState>()(
             price: product.price,
             stock: Math.max(0, product.stock - (cartQtyMap.get(product.variantId) ?? 0)),
             categoryId: product.categoryId,
+            tagline: product.tagline,
             imageUrl: product.imageUrl,
             description: product.description,
             isBestSeller: product.isBestSeller,

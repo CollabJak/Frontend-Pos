@@ -204,7 +204,7 @@ const RotationAssignForm: React.FC = () => {
         />
 
         <div>
-          <Label>Indeks Hari Mulai (0 = Hari Pertama Pola)</Label>
+          <Label required>Indeks Hari Mulai (0 = Hari Pertama Pola)</Label>
           <Input
             type="number"
             min={0}

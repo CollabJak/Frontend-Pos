@@ -45,15 +45,11 @@ export const useCreateProduct = () => {
     mutationFn: async (payload: ProductFormData) => {
       const formData = new FormData();
       formData.append("name", payload.name);
-      if(payload.barcode) {
-        formData.append("barcode", payload.barcode);
-      }
+      formData.append("barcode", payload.barcode ?? "");
       formData.append("category_id", payload.category_id.toString());
       formData.append("brand_id", payload.brand_id.toString());
       formData.append("unit_id", payload.unit_id.toString());
-      if(payload.description) {
-        formData.append("description", payload.description);
-      }
+      formData.append("description", payload.description ?? "");
       formData.append("status", payload.status ?? "active");
       formData.append("is_sellable", payload.is_sellable ? "1" : "0");
       formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");
@@ -88,15 +84,11 @@ export const useUpdateProduct = () => {
     mutationFn: async ({ id, ...payload }) => {
       const formData = new FormData();
       formData.append("name", payload.name);
-      if(payload.barcode) {
-        formData.append("barcode", payload.barcode);
-      }
+      formData.append("barcode", payload.barcode ?? "");
       formData.append("category_id", payload.category_id.toString());
       formData.append("brand_id", payload.brand_id.toString());
       formData.append("unit_id", payload.unit_id.toString());
-      if(payload.description) {
-        formData.append("description", payload.description);
-      }
+      formData.append("description", payload.description ?? "");
       formData.append("status", payload.status ?? "active");
       formData.append("is_sellable", payload.is_sellable ? "1" : "0");
       formData.append("is_purchasable", payload.is_purchasable ? "1" : "0");

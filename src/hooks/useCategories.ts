@@ -51,9 +51,7 @@ export const useCreateCategory = () => {
     mutationFn: async (payload: CreateCategoryPayload) => {
       const formData = new FormData();
       formData.append("name", payload.name);
-      if(payload.tagline) {
-        formData.append("tagline", payload.tagline);
-      }
+      formData.append("tagline", payload.tagline ?? "");
       formData.append("require_expiry", payload.require_expiry ? "1" : "0");
       formData.append("require_batch", payload.require_batch ? "1" : "0");
       formData.append("default_picking_strategy", payload.default_picking_strategy ?? "FIFO");
@@ -88,9 +86,7 @@ export const useUpdateCategory = () => {
     mutationFn: async ({ id, ...payload }) => {
       const formData = new FormData();
       formData.append("name", payload.name);
-      if(payload.tagline) {
-        formData.append("tagline", payload.tagline);
-      }
+      formData.append("tagline", payload.tagline ?? "");
       formData.append("require_expiry", payload.require_expiry ? "1" : "0");
       formData.append("require_batch", payload.require_batch ? "1" : "0");
       formData.append("default_picking_strategy", payload.default_picking_strategy ?? "FIFO");
