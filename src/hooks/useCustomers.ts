@@ -10,6 +10,7 @@ import {
   CustomerOption,
   PaginatedApiResponse,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchCustomersParams {
   page?: number;
@@ -96,8 +97,7 @@ export const useCreateCustomer = (redirectOnSuccess: boolean = true) => {
       return response.data.data as Customer;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      queryClient.invalidateQueries({ queryKey: ["options", "customers"] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMERS);
       if (redirectOnSuccess) {
         navigate("/customer-groups?tab=customers");
       }
@@ -119,9 +119,7 @@ export const useUpdateCustomer = () => {
       return response.data.data as Customer;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      queryClient.invalidateQueries({ queryKey: ["customer", id] });
-      queryClient.invalidateQueries({ queryKey: ["options", "customers"] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMERS, id);
       navigate("/customer-groups?tab=customers");
     },
   });
@@ -135,8 +133,7 @@ export const useDeleteCustomer = () => {
       await apiClient.delete(`/customers/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      queryClient.invalidateQueries({ queryKey: ["options", "customers"] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMERS);
     },
   });
 };

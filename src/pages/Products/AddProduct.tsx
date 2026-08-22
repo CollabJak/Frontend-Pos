@@ -140,7 +140,7 @@ export default function AddProduct() {
               <Label required>Kategori</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-category-options"
+                keyName="categories"
                 value={watch("category_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("category_id", Number(selectedValue ?? 0), {
@@ -163,7 +163,7 @@ export default function AddProduct() {
               <Label required>Merek</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-brand-options"
+                keyName="brands"
                 value={watch("brand_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("brand_id", Number(selectedValue ?? 0), {
@@ -186,7 +186,7 @@ export default function AddProduct() {
               <Label required>Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-unit-options"
+                keyName="units"
                 value={watch("unit_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("unit_id", Number(selectedValue ?? 0), {

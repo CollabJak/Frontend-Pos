@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useNavigate } from "react-router";
 import apiClient from "../api/axiosConfig";
 import { ApiErrorResponse, CreateCustomerGroupPayload, CustomerGroup, PaginatedApiResponse } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchCustomerGroupsParams {
   page?: number;
@@ -47,7 +48,7 @@ export const useCreateCustomerGroup = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customer-groups"] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMER_GROUPS);
       navigate("/customer-groups?tab=groups");
     },
   });
@@ -67,8 +68,7 @@ export const useUpdateCustomerGroup = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["customer-groups"] });
-      queryClient.invalidateQueries({ queryKey: ["customer-group", id] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMER_GROUPS, id);
       navigate("/customer-groups?tab=groups");
     },
   });
@@ -82,7 +82,7 @@ export const useDeleteCustomerGroup = () => {
       await apiClient.delete(`/customer-groups/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customer-groups"] });
+      invalidateDomain(queryClient, DOMAINS.CUSTOMER_GROUPS);
     },
   });
 };

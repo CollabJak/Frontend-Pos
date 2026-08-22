@@ -8,6 +8,7 @@ import {
   LocationFormData,
   PaginatedApiResponse,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchLocationsParams {
   page?: number;
@@ -49,8 +50,7 @@ export const useCreateLocation = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
+      invalidateDomain(queryClient, DOMAINS.LOCATIONS);
       navigate("/locations");
     },
   });
@@ -70,9 +70,7 @@ export const useUpdateLocation = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
-      queryClient.invalidateQueries({ queryKey: ["location", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
+      invalidateDomain(queryClient, DOMAINS.LOCATIONS, id);
       navigate("/locations");
     },
   });
@@ -86,8 +84,7 @@ export const useDeleteLocation = () => {
       await apiClient.delete(`/locations/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["locations"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options", "locations"] });
+      invalidateDomain(queryClient, DOMAINS.LOCATIONS);
     },
   });
 };

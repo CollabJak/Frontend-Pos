@@ -201,7 +201,7 @@ export default function EditProduct() {
               <Label required>Kategori</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-category-options"
+                keyName="categories"
                 value={watch("category_id") ?? null}
                 displayValue={product?.category?.name}
                 onChange={(selectedValue) => {
@@ -225,7 +225,7 @@ export default function EditProduct() {
               <Label required>Merek</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-brand-options"
+                keyName="brands"
                 value={watch("brand_id") ?? null}
                 displayValue={product?.brand?.name}
                 onChange={(selectedValue) => {
@@ -249,7 +249,7 @@ export default function EditProduct() {
               <Label required>Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="product-unit-options"
+                keyName="units"
                 value={watch("unit_id") ?? null}
                 displayValue={product?.unit?.name}
                 onChange={(selectedValue) => {

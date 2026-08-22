@@ -93,7 +93,7 @@ export default function AddUnitConversion() {
               </Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="unit-conversion-product-variant-options"
+                keyName="product-variants"
                 value={watch("product_variant_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("product_variant_id", Number(selectedValue ?? 0), {
@@ -116,7 +116,7 @@ export default function AddUnitConversion() {
               <Label required>Dari Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="unit-conversion-from-unit-options"
+                keyName="units"
                 value={watch("from_unit_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("from_unit_id", Number(selectedValue ?? 0), {
@@ -139,7 +139,7 @@ export default function AddUnitConversion() {
               <Label required>Ke Satuan</Label>
               <AsyncSearchSelect<OptionDto>
                 label=""
-                keyName="unit-conversion-to-unit-options"
+                keyName="units"
                 value={watch("to_unit_id") ?? null}
                 onChange={(selectedValue) => {
                   setValue("to_unit_id", Number(selectedValue ?? 0), {

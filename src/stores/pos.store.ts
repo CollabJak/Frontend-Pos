@@ -45,6 +45,7 @@ interface PosStoreState {
   toGridItems: (search: string) => PosGridItem[];
   selectedPaymentMethodId: number | null;
   setSelectedPaymentMethodId: (id: number | null) => void;
+  reset: () => void;
 }
 
 const syncCartItems = (items: PosCartItem[], productsMap: Map<number, PosProduct>): PosCartItem[] => {
@@ -269,6 +270,24 @@ export const usePosStore = create<PosStoreState>()(
 
       setPricingSnapshot: (snapshot) => {
         set({ pricingSnapshot: snapshot });
+      },
+
+      reset: () => {
+        set({
+          selectedLocation: null,
+          products: [],
+          cartItems: [],
+          pricingSnapshot: null,
+          selectedCustomer: null,
+          selectedPaymentMethodId: null,
+        });
+        if (typeof window !== "undefined") {
+          try {
+            window.sessionStorage.removeItem("pos-cart-storage");
+          } catch {
+            // ignore storage removal errors
+          }
+        }
       },
 
       toGridItems: (search) => {

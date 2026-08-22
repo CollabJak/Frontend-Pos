@@ -136,7 +136,7 @@ export default function ProductSalesByLocationReport() {
               <div>
                 <Label>Lokasi / Outlet</Label>
                 <AsyncSearchSelect<SelectOption>
-                  keyName="report-location-select"
+                  keyName="locations"
                   placeholder="Semua Lokasi"
                   value={draftLocationId}
                   onChange={(val) => setDraftLocationId(val ? Number(val) : null)}

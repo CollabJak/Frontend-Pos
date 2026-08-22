@@ -64,6 +64,7 @@ export const useCreateShift = () => {
     mutationFn: (data: ShiftFormValues) => schedulingService.createShift(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.shifts() });
+      queryClient.invalidateQueries({ queryKey: ["options", "shifts"] });
       queryClient.invalidateQueries({ queryKey: ["async-options", "shifts"] });
     },
   });
@@ -77,6 +78,7 @@ export const useUpdateShift = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.shifts() });
       queryClient.invalidateQueries({ queryKey: schedulingKeys.shift(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ["options", "shifts"] });
       queryClient.invalidateQueries({ queryKey: ["async-options", "shifts"] });
     },
   });
@@ -88,6 +90,7 @@ export const useDeleteShift = () => {
     mutationFn: (id: number) => schedulingService.deleteShift(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.shifts() });
+      queryClient.invalidateQueries({ queryKey: ["options", "shifts"] });
       queryClient.invalidateQueries({ queryKey: ["async-options", "shifts"] });
     },
   });
@@ -99,6 +102,7 @@ export const useToggleShiftActive = () => {
     mutationFn: (id: number) => schedulingService.toggleShiftActive(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: schedulingKeys.shifts() });
+      queryClient.invalidateQueries({ queryKey: ["options", "shifts"] });
       queryClient.invalidateQueries({ queryKey: ["async-options", "shifts"] });
     },
   });

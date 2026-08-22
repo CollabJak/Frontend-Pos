@@ -8,6 +8,7 @@ import {
   ProductVariant,
   ProductVariantFormData,
 } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchProductVariantsParams {
   page?: number;
@@ -44,8 +45,7 @@ export const useCreateProductVariant = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-variants"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_VARIANTS);
       navigate("/products?tab=variants");
     },
   });
@@ -76,9 +76,7 @@ export const useUpdateProductVariant = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["product-variants"] });
-      queryClient.invalidateQueries({ queryKey: ["product-variant", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_VARIANTS, id);
       navigate("/products?tab=variants");
     },
   });
@@ -92,8 +90,7 @@ export const useDeleteProductVariant = () => {
       await apiClient.delete(`/product-variants/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-variants"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCT_VARIANTS);
     },
   });
 };

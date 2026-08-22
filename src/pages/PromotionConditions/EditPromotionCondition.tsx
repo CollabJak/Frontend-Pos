@@ -146,7 +146,7 @@ export default function EditPromotionCondition() {
             <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="promotion-condition-promotion-options"
+              keyName="promotions"
               value={watch("promotion_id") || null}
               displayValue={promotionCondition?.promotion?.name ?? undefined}
               onChange={(selectedValue) => {

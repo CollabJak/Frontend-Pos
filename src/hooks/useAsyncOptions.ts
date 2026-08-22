@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { OPTIONS_QUERY_KEY } from "../constants/queryKeys";
 
 export interface FetchOptionsParams {
   limit?: number;
@@ -24,10 +25,10 @@ export function useAsyncOptions<TOption>({
   fetchOptions,
 }: UseAsyncOptionsParams<TOption>) {
   return useQuery<TOption[]>({
-    queryKey: ["async-options", key, search ?? "", limit],
+    queryKey: [OPTIONS_QUERY_KEY, key, search ?? "", limit],
     queryFn: ({ signal }) => fetchOptions({ limit, search, signal }),
     enabled,
     placeholderData: (previousData) => previousData,
-    staleTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 30 * 1000, // 30 seconds fresh cache, instant invalidate on mutation
   });
 }

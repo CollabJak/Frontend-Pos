@@ -4,6 +4,7 @@ import { Units } from "../types/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ApiErrorResponse, PaginatedApiResponse, CreateUnitPayload } from "../types/types";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchUnitsParams {
   page?: number;
@@ -52,8 +53,7 @@ export const useCreateUnit = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["units"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNITS);
       navigate("/units?tab=units");
     },
   });
@@ -73,9 +73,7 @@ export const useUpdateUnit = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["units"] });
-      queryClient.invalidateQueries({ queryKey: ["unit", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNITS, id);
       navigate("/units?tab=units");
     },
   });
@@ -90,8 +88,7 @@ export const useDeleteUnit = () => {
       await apiClient.delete(`/units/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["units"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.UNITS);
     },
   });
 };

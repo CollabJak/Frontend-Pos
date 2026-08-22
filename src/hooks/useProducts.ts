@@ -4,6 +4,7 @@ import apiClient from "../api/axiosConfig";
 import { Product } from "../types/types";
 import { PaginatedApiResponse, ProductFormData, ApiErrorResponse } from "../types/types";
 import { useNavigate } from "react-router";
+import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface fetchProductsParams {
   page?: number;
@@ -65,8 +66,7 @@ export const useCreateProduct = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCTS);
       navigate("/products?tab=products");
     },
   });
@@ -105,9 +105,7 @@ export const useUpdateProduct = () => {
       return response.data.data;
     },
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      queryClient.invalidateQueries({ queryKey: ["product", id] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCTS, id);
       navigate("/products?tab=products");
     },
   });
@@ -122,8 +120,7 @@ export const useDeleteProduct = () => {
       await apiClient.delete(`/products/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      queryClient.invalidateQueries({ queryKey: ["async-options"] });
+      invalidateDomain(queryClient, DOMAINS.PRODUCTS);
     },
   });
 };

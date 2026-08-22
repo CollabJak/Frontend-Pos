@@ -180,7 +180,7 @@ export default function EditProductVariant() {
               <Label required>Produk Utama</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
-                keyName="product-variant-product-options"
+                keyName="products"
                 value={watch("product_id") || null}
                 displayValue={productVariant?.product?.name}
                 onChange={(selectedValue) => {
@@ -240,7 +240,7 @@ export default function EditProductVariant() {
               <Label required>Satuan Dasar (Base Unit)</Label>
               <AsyncSearchSelect<SelectOption>
                 label=""
-                keyName="product-variant-base-unit-options"
+                keyName="units"
                 value={watch("base_unit_id") || null}
                 displayValue={productVariant?.base_unit?.name}
                 onChange={(selectedValue) => {
@@ -322,7 +322,7 @@ export default function EditProductVariant() {
                     <Label required>Atribut</Label>
                     <AsyncSearchSelect<SelectOption>
                       label=""
-                      keyName={`product-variant-atribute-options-${index}`}
+                      keyName="atributes"
                       value={watch(`attributes_json.${index}.atribute_id`) || null}
                       displayValue={productVariant?.attributes_json?.[index]?.name ?? undefined}
                       onChange={(selectedValue) => {

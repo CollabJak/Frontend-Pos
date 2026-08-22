@@ -113,7 +113,7 @@ export default function AddPromotionCondition() {
             <Label required>Promosi</Label>
             <AsyncSearchSelect<SelectOption>
               label=""
-              keyName="promotion-condition-promotion-options"
+              keyName="promotions"
               value={watch("promotion_id") || null}
               onChange={(selectedValue) => {
                 setValue("promotion_id", Number(selectedValue ?? 0), {

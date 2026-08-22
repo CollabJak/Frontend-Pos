@@ -10,10 +10,8 @@ export const useRoleRedirect = () => {
     if (!loading && user?.roles) {
       if (user.roles.includes("manager") || user.roles.includes("admin")) {
         navigate("/dashboard");
-      } else if (user.roles.includes("keeper")) {
-        navigate("/overview-merchant");
-      } else if (user.roles.includes("employee")) {
-        navigate("/absensi");
+      } else {
+        navigate("/absensi/scanner");
       }
     }
   }, [user, loading, navigate]);

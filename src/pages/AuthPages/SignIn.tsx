@@ -13,8 +13,9 @@ export default function SignIn() {
     if (!loading && user) {
       if (user.roles?.includes("manager") || user.roles?.includes("admin")) {
         navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/absensi/scanner", { replace: true });
       }
-      // Add other role redirects if needed, but for now /dashboard is the focus
     }
   }, [user, loading, navigate]);
 
