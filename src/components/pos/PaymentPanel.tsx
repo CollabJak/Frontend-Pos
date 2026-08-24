@@ -22,6 +22,7 @@ interface PaymentPanelProps {
   subtotal: number;
   discount: number;
   tax: number;
+  taxLabel?: string;
   total: number;
   isPaying: boolean;
   disabled: boolean;
@@ -39,6 +40,7 @@ export default function PaymentPanel({
   subtotal,
   discount,
   tax,
+  taxLabel,
   total,
   isPaying,
   disabled,
@@ -74,7 +76,9 @@ export default function PaymentPanel({
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Pajak (11%)</span>
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {taxLabel || (tax > 0 ? "Pajak" : "Pajak (0%)")}
+          </span>
           {isCalculatingPrice ? (
             <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
           ) : (

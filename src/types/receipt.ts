@@ -16,6 +16,10 @@ export interface ReceiptItem {
 
 export interface ReceiptSummary {
   subtotal: number;
+  discount?: number;
+  tax?: number;
+  tax_name?: string | null;
+  tax_rate?: number | null;
   total: number;
   paid: number;
   change: number;
