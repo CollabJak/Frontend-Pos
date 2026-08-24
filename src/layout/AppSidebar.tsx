@@ -137,6 +137,7 @@ const navItems: NavItem[] = [
       { name: "Izin Akses", path: "/permissions", pro: false, permissions: ["permission.view"] },
       { name: "Pengguna", path: "/users", pro: false, permissions: ["user.view"] },
       { name: "Manajemen Paket", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
+      { name: "Pengaturan Pajak", path: "/taxes", pro: false, permissions: ["tax.view", "view_taxes"] },
     ],
   },
 ];

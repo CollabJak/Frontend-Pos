@@ -15,7 +15,8 @@ import { posCheckoutSchema } from "../../Schemas/pos.schema";
 import type { PosCheckoutResult } from "../../types/types";
 import { formatCurrency } from "../../utils/currency";
 import { resolveErrorMessage } from "../../utils/error";
-import { POS_TAX_RATE } from "../../constants/pos";
+import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
+import { useFetchActiveTax } from "../../hooks/useTaxes";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
 import { runtimeConfig } from "../../utils/runtimeConfig";
 import { Modal } from "../../components/ui/modal";
@@ -89,6 +90,12 @@ export default function POSPaymentPage() {
     return formattedInteger;
   };
 
+  const { data: activeTax } = useFetchActiveTax();
+  const activeTaxRate = activeTax?.is_active ? activeTax.rate : DEFAULT_FALLBACK_TAX_RATE;
+  const currentTaxRate = pricingSnapshot?.tax_rate !== undefined ? pricingSnapshot.tax_rate : activeTaxRate;
+  const currentTaxName = pricingSnapshot?.tax_name || activeTax?.name || "Pajak";
+  const taxLabel = currentTaxRate > 0 ? `${currentTaxName} (${currentTaxRate}%)` : "Pajak (0%)";
+
   // Totals
   const subtotal = useMemo(() => {
     return pricingSnapshot?.subtotal ?? cartItems.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
@@ -99,8 +106,8 @@ export default function POSPaymentPage() {
   }, [pricingSnapshot]);
 
   const tax = useMemo(() => {
-    return pricingSnapshot?.tax_total ?? (subtotal * POS_TAX_RATE);
-  }, [subtotal, pricingSnapshot]);
+    return pricingSnapshot?.tax_total ?? (subtotal * (activeTaxRate / 100));
+  }, [subtotal, pricingSnapshot, activeTaxRate]);
 
   const totalDue = useMemo(() => {
     return pricingSnapshot?.grand_total ?? (subtotal - discount + tax);
@@ -386,7 +393,7 @@ export default function POSPaymentPage() {
                     </div>
                   )}
                   <div className="flex justify-between text-[11px] font-medium">
-                    <span className="text-slate-400">Pajak</span>
+                    <span className="text-slate-400">{taxLabel}</span>
                     <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatCurrency(tax)}</span>
                   </div>
                   <div className="flex justify-between pt-1">

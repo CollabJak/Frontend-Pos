@@ -1,5 +1,6 @@
 /**
  * POS-specific constants.
- * Single source of truth — replaces duplicated POS_TAX_RATE.
+ * Fallback tax rate when no active tax rule is configured.
  */
-export const POS_TAX_RATE = 0.11;
+export const DEFAULT_FALLBACK_TAX_RATE = 0;
+export const POS_TAX_RATE = DEFAULT_FALLBACK_TAX_RATE;

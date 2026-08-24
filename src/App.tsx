@@ -109,6 +109,7 @@ import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
 import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
 import ProductSalesByLocationReport from "./pages/Reports/ProductSalesByLocationReport";
+import TaxListPage from "./pages/Taxes/TaxListPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 export default function App() {
@@ -309,6 +310,9 @@ export default function App() {
               </Route>
 
               {/* Roles, Permissions & Administration */}
+              <Route element={<ProtectedRoute allowedPermissions={["tax.view", "view_taxes"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/taxes" element={<TaxListPage />} />
+              </Route>
               <Route element={<ProtectedRoute allowedPermissions={["role.view"]}><Outlet /></ProtectedRoute>}>
                 <Route path="/roles" element={<RoleList />} />
               </Route>

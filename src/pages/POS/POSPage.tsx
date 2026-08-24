@@ -23,8 +23,9 @@ import ActiveShiftWidget from "../../components/pos/ActiveShiftWidget";
 import AddCashMovementModal from "../../components/pos/AddCashMovementModal";
 import CloseShiftModal from "../../components/pos/CloseShiftModal";
 import { resolveErrorMessage } from "../../utils/error";
-import { POS_TAX_RATE } from "../../constants/pos";
+import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
+import { useFetchActiveTax } from "../../hooks/useTaxes";
 
 export default function POSPage() {
   const navigate = useNavigate();
@@ -267,6 +268,12 @@ export default function POSPage() {
     errors.location_id?.message ??
     null;
 
+  const { data: activeTax } = useFetchActiveTax();
+  const activeTaxRate = activeTax?.is_active ? activeTax.rate : DEFAULT_FALLBACK_TAX_RATE;
+  const currentTaxRate = pricingSnapshot?.tax_rate !== undefined ? pricingSnapshot.tax_rate : activeTaxRate;
+  const currentTaxName = pricingSnapshot?.tax_name || activeTax?.name || "Pajak";
+  const taxLabel = currentTaxRate > 0 ? `${currentTaxName} (${currentTaxRate}%)` : "Pajak (0%)";
+
   const subTotal = useMemo(() => {
     if (pricingSnapshot) {
       return pricingSnapshot.subtotal;
@@ -285,8 +292,8 @@ export default function POSPage() {
     if (pricingSnapshot) {
       return pricingSnapshot.tax_total;
     }
-    return subTotal * POS_TAX_RATE;
-  }, [subTotal, pricingSnapshot]);
+    return subTotal * (activeTaxRate / 100);
+  }, [subTotal, pricingSnapshot, activeTaxRate]);
 
   const total = useMemo(() => {
     if (pricingSnapshot) {
@@ -387,6 +394,7 @@ export default function POSPage() {
             subtotal={subTotal}
             discount={discountTotal}
             tax={tax}
+            taxLabel={taxLabel}
             total={total}
             isPaying={false}
             disabled={

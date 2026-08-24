@@ -33,6 +33,11 @@ export interface PosCheckoutPayload {
 
 export interface PosCheckoutResult {
   order_id: number;
+  subtotal?: number;
+  discount?: number;
+  tax?: number;
+  tax_rate?: number | null;
+  tax_name?: string | null;
   total: number;
   paid: number;
   change: number;

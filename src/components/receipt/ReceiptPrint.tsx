@@ -91,9 +91,21 @@ const ReceiptPrint = forwardRef<HTMLDivElement, ReceiptPrintProps>(function Rece
       rows.push(formatLine(`${item.qty} x ${toMoney(item.price)}`, toMoney(item.total), width));
     }
 
+    rows.push(ruler);
+    rows.push(formatLine("Subtotal", toMoney(receipt.summary.subtotal), width));
+
+    if (receipt.summary.discount && receipt.summary.discount > 0) {
+      rows.push(formatLine("Diskon", `-${toMoney(receipt.summary.discount)}`, width));
+    }
+
+    if (receipt.summary.tax && receipt.summary.tax > 0) {
+      const taxLabel = receipt.summary.tax_rate
+        ? `Pajak (${receipt.summary.tax_rate}%)`
+        : (receipt.summary.tax_name || "Pajak");
+      rows.push(formatLine(taxLabel, toMoney(receipt.summary.tax), width));
+    }
+
     rows.push(
-      ruler,
-      formatLine("Subtotal", toMoney(receipt.summary.subtotal), width),
       formatLine("Total", toMoney(receipt.summary.total), width),
       formatLine("Dibayar", toMoney(receipt.summary.paid), width),
       formatLine("Kembali", toMoney(receipt.summary.change), width),

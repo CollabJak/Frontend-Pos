@@ -141,6 +141,9 @@ export interface PosCalculateCartResult {
   subtotal: number;
   discount_total: number;
   tax_total: number;
+  tax_rate?: number;
+  tax_name?: string | null;
+  tax_id?: number | null;
   grand_total: number;
 }
 

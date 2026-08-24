@@ -26,5 +26,6 @@ export * from "./subscriptionPlan";
 export * from "./subscription";
 export * from "./user";
 export * from "./customers";
+export * from "./tax";
 
 
