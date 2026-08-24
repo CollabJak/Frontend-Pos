@@ -73,6 +73,11 @@ export default function ProductWizardForm({
           name: "Utama",
           barcode: "",
           base_unit_id: 0,
+          unit_name: "",
+          location_id: null,
+          location_name: "",
+          location_ids: [],
+          location_types: [],
           selling_price: 0,
           cost_price: 0,
           attributes_json: [],
@@ -126,9 +131,15 @@ export default function ProductWizardForm({
           const costPriceObj = v.prices?.find((p: { price_type: string; price: string | number; location_id?: number | null; location?: { id: number; name: string } | null }) => p.price_type === "cost");
           const sellPrice = sellPriceObj?.price;
           const costPrice = costPriceObj?.price;
-          const locObj = sellPriceObj || v.prices?.[0];
-          const locationId = locObj?.location?.id || locObj?.location_id || null;
-          const locationName = locObj?.location?.name || "";
+
+          const mappedLoc = v.locations && v.locations.length > 0 ? v.locations[0] : null;
+          const fallbackPriceLoc = sellPriceObj || v.prices?.[0];
+          const locationId = mappedLoc?.id || fallbackPriceLoc?.location?.id || fallbackPriceLoc?.location_id || null;
+          const locationName = mappedLoc?.name || fallbackPriceLoc?.location?.name || "";
+          const locationIds = v.locations && v.locations.length > 0
+            ? v.locations.map((l) => l.id)
+            : (locationId ? [locationId] : []);
+          const locationTypes = (v.location_types as ("store" | "warehouse" | "pos" | "hq")[]) || [];
 
           return {
             id: v.id,
@@ -138,6 +149,8 @@ export default function ProductWizardForm({
             unit_name: v.base_unit?.name || "",
             location_id: locationId,
             location_name: locationName,
+            location_ids: locationIds,
+            location_types: locationTypes,
             selling_price: sellPrice ? Number(sellPrice) : 0,
             cost_price: costPrice ? Number(costPrice) : 0,
             attributes_json: v.attributes_json
@@ -183,6 +196,8 @@ export default function ProductWizardForm({
       unit_name: watchVariants[0]?.unit_name || "",
       location_id: watchVariants[0]?.location_id || null,
       location_name: watchVariants[0]?.location_name || "",
+      location_ids: watchVariants[0]?.location_ids || (watchVariants[0]?.location_id ? [watchVariants[0].location_id] : []),
+      location_types: watchVariants[0]?.location_types || [],
       selling_price: 0,
       cost_price: 0,
       attributes_json: [],
@@ -433,6 +448,11 @@ export default function ProductWizardForm({
                             name: watchName || "Utama",
                             barcode: "",
                             base_unit_id: watchVariants[0]?.base_unit_id || 0,
+                            unit_name: watchVariants[0]?.unit_name || "",
+                            location_id: watchVariants[0]?.location_id || null,
+                            location_name: watchVariants[0]?.location_name || "",
+                            location_ids: watchVariants[0]?.location_ids || [],
+                            location_types: watchVariants[0]?.location_types || [],
                             selling_price: watchVariants[0]?.selling_price || 0,
                             cost_price: watchVariants[0]?.cost_price || 0,
                             attributes_json: [],
@@ -541,9 +561,11 @@ export default function ProductWizardForm({
                       label=""
                       keyName="locations-single"
                       value={watchVariants[0]?.location_id || null}
-                      displayValue={watchVariants[0]?.location_name || initialData?.variants?.[0]?.prices?.[0]?.location?.name}
+                      displayValue={watchVariants[0]?.location_name || initialData?.variants?.[0]?.locations?.[0]?.name || initialData?.variants?.[0]?.prices?.[0]?.location?.name}
                       onChange={(val, option) => {
-                        setValue("variants.0.location_id", val ? Number(val) : null);
+                        const locId = val ? Number(val) : null;
+                        setValue("variants.0.location_id", locId);
+                        setValue("variants.0.location_ids", locId ? [locId] : []);
                         if (option) {
                           setValue("variants.0.location_name", (option as OptionDto).name);
                         } else {
@@ -693,9 +715,11 @@ export default function ProductWizardForm({
                           label=""
                           keyName={`locations-${index}`}
                           value={watchVariants[index]?.location_id || null}
-                          displayValue={watchVariants[index]?.location_name || initialData?.variants?.[index]?.prices?.[0]?.location?.name}
+                          displayValue={watchVariants[index]?.location_name || initialData?.variants?.[index]?.locations?.[0]?.name || initialData?.variants?.[index]?.prices?.[0]?.location?.name}
                           onChange={(val, option) => {
-                            setValue(`variants.${index}.location_id`, val ? Number(val) : null);
+                            const locId = val ? Number(val) : null;
+                            setValue(`variants.${index}.location_id`, locId);
+                            setValue(`variants.${index}.location_ids`, locId ? [locId] : []);
                             if (option) {
                               setValue(`variants.${index}.location_name`, (option as OptionDto).name);
                             } else {
@@ -942,7 +966,7 @@ export default function ProductWizardForm({
                         {v.unit_name || initialData?.variants?.[i]?.base_unit?.name || "-"}
                       </td>
                       <td className="p-3 text-gray-600 dark:text-gray-400 text-xs font-medium">
-                        {v.location_name || initialData?.variants?.[i]?.prices?.[0]?.location?.name || "Utama (Default)"}
+                        {v.location_name || initialData?.variants?.[i]?.locations?.[0]?.name || initialData?.variants?.[i]?.prices?.[0]?.location?.name || "Utama (Default)"}
                       </td>
                       <td className="p-3 text-gray-500">{v.barcode || "-"}</td>
                       <td className="p-3 text-emerald-600 dark:text-emerald-400 font-semibold">

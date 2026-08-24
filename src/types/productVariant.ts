@@ -45,6 +45,12 @@ export interface ProductVariant {
       name: string;
     } | null;
   }[];
+  locations?: {
+    id: number;
+    name: string;
+    type?: string | null;
+  }[];
+  location_types?: string[];
   base_unit?: {
     id: number;
     name: string;
