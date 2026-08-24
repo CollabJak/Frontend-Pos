@@ -71,6 +71,16 @@ export const useCreateProduct = () => {
           if (variant.location_id) {
             formData.append(`variants[${vIdx}][location_id]`, variant.location_id.toString());
           }
+          if (variant.location_ids && variant.location_ids.length > 0) {
+            variant.location_ids.forEach((locId) => {
+              formData.append(`variants[${vIdx}][location_ids][]`, locId.toString());
+            });
+          }
+          if (variant.location_types && variant.location_types.length > 0) {
+            variant.location_types.forEach((locType) => {
+              formData.append(`variants[${vIdx}][location_types][]`, locType);
+            });
+          }
           formData.append(`variants[${vIdx}][base_unit_id]`, variant.base_unit_id.toString());
           formData.append(`variants[${vIdx}][selling_price]`, variant.selling_price.toString());
           if (variant.cost_price !== undefined && variant.cost_price !== null) {
@@ -135,6 +145,16 @@ export const useUpdateProduct = () => {
           }
           if (variant.location_id) {
             formData.append(`variants[${vIdx}][location_id]`, variant.location_id.toString());
+          }
+          if (variant.location_ids && variant.location_ids.length > 0) {
+            variant.location_ids.forEach((locId) => {
+              formData.append(`variants[${vIdx}][location_ids][]`, locId.toString());
+            });
+          }
+          if (variant.location_types && variant.location_types.length > 0) {
+            variant.location_types.forEach((locType) => {
+              formData.append(`variants[${vIdx}][location_types][]`, locType);
+            });
           }
           formData.append(`variants[${vIdx}][base_unit_id]`, variant.base_unit_id.toString());
           formData.append(`variants[${vIdx}][selling_price]`, variant.selling_price.toString());
