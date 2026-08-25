@@ -1,4 +1,5 @@
 import { Location } from "./location";
+import { Business } from "./businesses";
 
 export interface MerchantProfile {
   id?: number;
@@ -15,6 +16,8 @@ export interface User {
   photo: string | null;
   phone: string;
   business_id?: number | null;
+  is_business_active?: boolean | null;
+  business?: Business | null;
   email_verified_at?: string;
   is_email_verified?: boolean;
   roles?: string[];

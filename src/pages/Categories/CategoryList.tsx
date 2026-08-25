@@ -192,6 +192,7 @@ export default function CategoryList({ embedded = false }: CategoryListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Jika kategori ini masih digunakan oleh produk aktif, sistem akan menolak penghapusan untuk menjaga integritas data."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

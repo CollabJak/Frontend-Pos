@@ -4,6 +4,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Tabs, { TabItem } from "../../components/ui/tabs/Tabs";
 import ProductList from "./ProductList";
+import ProductPriceList from "../ProductPrices/ProductPriceList";
 import PriceTierList from "../PriceTiers/PriceTierList";
 import CategoryList from "../Categories/CategoryList";
 import SupplierList from "../Suppliers/SupllierList";
@@ -14,6 +15,7 @@ import { hasAccess } from "../../utils/rbac";
 import {
   BoxIcon,
   CreditCardIcon,
+  DollarLineIcon,
   FolderIcon,
   GroupIcon,
   GridIcon,
@@ -34,6 +36,13 @@ export default function ProductManagementPage() {
         icon: <BoxIcon className="w-4 h-4" />,
         permission: "product.view",
         component: <ProductList embedded />,
+      },
+      {
+        id: "prices",
+        label: "Harga Produk",
+        icon: <DollarLineIcon className="w-4 h-4" />,
+        permission: "product_price.view",
+        component: <ProductPriceList embedded />,
       },
       {
         id: "tiers",

@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { hasAccess, getDenialContext } from "../../utils/rbac";
@@ -14,6 +14,7 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children, allowedRoles, allowedPermissions, requireActiveSubscription }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -27,6 +28,42 @@ export default function ProtectedRoute({ children, allowedRoles, allowedPermissi
     return <Navigate to="/signin" replace />;
   }
 
+  const isAdmin = user.roles?.includes("admin") ?? false;
+  const isManager = user.roles?.includes("manager") ?? false;
+  const currentPath = location.pathname;
+  const isInactivePage = currentPath === "/business-inactive";
+  const isSetupPage = currentPath === "/businesses/create";
+
+  // Check if business is inactive
+  const isBusinessInactive =
+    user.is_business_active === false || user.business?.is_active === false;
+
+  // Non-Admin Business Status Guards
+  if (!isAdmin) {
+    // 1. If business is deactivated by admin
+    if (isBusinessInactive) {
+      if (!isInactivePage) {
+        return <Navigate to="/business-inactive" replace />;
+      }
+      return <>{children}</>;
+    }
+
+    // 2. If business is active but user is on /business-inactive page
+    if (isInactivePage) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    // 3. If user has no business configured yet
+    if (!user.business_id) {
+      if (isManager && !isSetupPage) {
+        return <Navigate to="/businesses/create" replace />;
+      }
+      if (!isManager && !isInactivePage) {
+        return <Navigate to="/business-inactive" replace />;
+      }
+    }
+  }
+
   // Check if user has access to this route
   if (!hasAccess(user.roles || [], user.permissions || [], allowedRoles, allowedPermissions)) {
     const denial = getDenialContext(user.roles || [], user.permissions || [], allowedRoles, allowedPermissions);
@@ -34,22 +71,14 @@ export default function ProtectedRoute({ children, allowedRoles, allowedPermissi
       reason: denial.reason,
       requiredPermissions: denial.requiredPermissions,
       requiredRoles: denial.requiredRoles,
-      attemptedPath: window.location.pathname,
+      attemptedPath: currentPath,
     };
 
     return <Navigate to="/403" replace state={state} />;
   }
 
-  // Guard: Manager without business_id redirected to setup business
-  const isManager = user.roles?.includes("manager");
-  const isSetupPage = window.location.pathname === "/businesses/create";
-
-  if (isManager && !user.business_id && !isSetupPage) {
-    return <Navigate to="/businesses/create" replace />;
-  }
-
   // Guard: Subscription Check (Delegated to SubscriptionGuard)
-  if (requireActiveSubscription) {
+  if (requireActiveSubscription && !isAdmin) {
     return <SubscriptionGuard>{children}</SubscriptionGuard>;
   }
 

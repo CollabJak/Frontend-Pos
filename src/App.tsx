@@ -110,6 +110,7 @@ import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage"
 import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
 import ProductSalesByLocationReport from "./pages/Reports/ProductSalesByLocationReport";
 import TaxListPage from "./pages/Taxes/TaxListPage";
+import BusinessInactivePage from "./pages/Businesses/BusinessInactivePage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 export default function App() {
@@ -128,6 +129,14 @@ export default function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/reset-password/:token/:email" element={<ResetPassword />} />
+            <Route
+              path="/business-inactive"
+              element={
+                <ProtectedRoute>
+                  <BusinessInactivePage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Dashboard Layout */}
             <Route

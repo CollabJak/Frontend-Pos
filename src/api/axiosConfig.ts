@@ -32,6 +32,15 @@ apiClient.interceptors.response.use(
     } else if (status === 402) {
       // Handle Subscription Required
       window.dispatchEvent(new CustomEvent("subscription:required"));
+    } else if (status === 403 && errorCode === "BUSINESS_INACTIVE") {
+      // Redirect to business inactive page
+      window.dispatchEvent(
+        new CustomEvent("auth:business-inactive", {
+          detail: {
+            message: error.response?.data?.message,
+          },
+        })
+      );
     } else if (status === 403 && errorCode === "BUSINESS_SETUP_REQUIRED") {
       // Redirect to business setup page
       window.dispatchEvent(new CustomEvent("auth:business-setup-required"));

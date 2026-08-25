@@ -149,6 +149,7 @@ export default function AtributeList({ embedded = false }: AtributeListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Jika atribut ini masih digunakan oleh varian produk, sistem akan menolak penghapusan untuk menjaga konsistensi data."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

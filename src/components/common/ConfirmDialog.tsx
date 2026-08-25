@@ -7,6 +7,7 @@ interface ConfirmDialogProps {
   isOpen: boolean;
   title: string;
   description?: string;
+  warningNote?: string;
   confirmText?: string;
   cancelText?: string;
   tone?: ConfirmTone;
@@ -37,6 +38,7 @@ export default function ConfirmDialog({
   isOpen,
   title,
   description,
+  warningNote,
   confirmText = "Confirm",
   cancelText = "Cancel",
   tone = "danger",
@@ -74,6 +76,15 @@ export default function ConfirmDialog({
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
               {description && (
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{description}</p>
+              )}
+              {warningNote && (
+                <div className="mt-3 rounded-xl border border-amber-200/80 bg-amber-50/80 p-3 text-xs leading-relaxed text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+                  <div className="flex items-center gap-1.5 font-semibold text-amber-800 dark:text-amber-300">
+                    <span>⚠️</span>
+                    <span>Informasi Dampak</span>
+                  </div>
+                  <p className="mt-1">{warningNote}</p>
+                </div>
               )}
             </div>
           </div>

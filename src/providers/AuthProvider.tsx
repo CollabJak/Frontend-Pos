@@ -63,8 +63,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return;
     }
 
+    const isBusinessInactive = user.is_business_active === false || user.business?.is_active === false;
+
     if (user.roles?.includes("admin")) {
       navigate("/dashboard", { replace: true });
+    } else if (isBusinessInactive) {
+      navigate("/business-inactive", { replace: true });
     } else if (user.roles?.includes("manager")) {
       if (!user.business_id) {
         navigate("/businesses/create", { replace: true });
@@ -72,7 +76,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         navigate("/dashboard", { replace: true });
       }
     } else {
-      navigate("/absensi/scanner", { replace: true });
+      if (!user.business_id) {
+        navigate("/business-inactive", { replace: true });
+      } else {
+        navigate("/absensi/scanner", { replace: true });
+      }
     }
 
     // Cleanup URL
@@ -108,6 +116,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     window.addEventListener("auth:business-setup-required", handleBusinessSetupRequired);
 
+    const handleBusinessInactive = () => {
+      navigate("/business-inactive", { replace: true });
+    };
+
+    window.addEventListener("auth:business-inactive", handleBusinessInactive);
+
     const handleEmailUnverified = () => {
       navigate("/verify-email", { replace: true });
     };
@@ -136,6 +150,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
       window.removeEventListener("auth:business-setup-required", handleBusinessSetupRequired);
+      window.removeEventListener("auth:business-inactive", handleBusinessInactive);
       window.removeEventListener("auth:email-unverified", handleEmailUnverified);
       window.removeEventListener("subscription:required", handleSubscriptionRequired);
       window.removeEventListener("auth:forbidden", handleForbidden);
@@ -161,9 +176,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      // Redirect logic based on role and business_id
+      const isBusinessInactive = userData.is_business_active === false || userData.business?.is_active === false;
+
+      // Redirect logic based on role and business status
       if (userData.roles?.includes("admin")) {
         navigate("/dashboard", { replace: true });
+      } else if (isBusinessInactive) {
+        navigate("/business-inactive", { replace: true });
       } else if (userData.roles?.includes("manager")) {
         if (!userData.business_id) {
           navigate("/businesses/create", { replace: true });
@@ -172,7 +191,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       } else {
         // Roles other than admin and manager (e.g. employee, keeper, etc.)
-        navigate("/absensi/scanner", { replace: true });
+        if (!userData.business_id) {
+          navigate("/business-inactive", { replace: true });
+        } else {
+          navigate("/absensi/scanner", { replace: true });
+        }
       }
     } catch (error) {
       console.error("Login error:", error);

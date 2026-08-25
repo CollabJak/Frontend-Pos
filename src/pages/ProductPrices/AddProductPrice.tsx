@@ -23,10 +23,7 @@ type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const PRICE_TYPE_OPTIONS: Array<{ value: ProductPriceType; label: string }> = [
   { value: "sell", label: "Harga Jual (Sell)" },
-  { value: "purchase", label: "Harga Beli (Purchase)" },
-  { value: "wholesale", label: "Harga Grosir (Wholesale)" },
   { value: "cost", label: "Harga Pokok (Cost)" },
-  { value: "member", label: "Harga Member (Member)" },
 ];
 
 export default function AddProductPrice() {

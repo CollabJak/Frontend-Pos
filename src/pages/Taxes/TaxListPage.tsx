@@ -393,6 +393,7 @@ export default function TaxListPage({ embedded = false }: TaxListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Pajak yang berstatus default dan aktif tidak dapat dihapus. Tentukan pajak default lain terlebih dahulu jika ingin menghapus pajak ini."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"
