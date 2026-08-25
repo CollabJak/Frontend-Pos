@@ -171,6 +171,7 @@ export default function UnitList({ embedded = false }: UnitListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Jika satuan ini masih digunakan oleh varian produk, aturan konversi, atau mutasi inventaris, sistem akan menolak penghapusan."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

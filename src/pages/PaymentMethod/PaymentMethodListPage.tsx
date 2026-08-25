@@ -190,13 +190,14 @@ export default function PaymentMethodListPage() {
 
             <ConfirmDialog
                 isOpen={isOpen}
-                title="Nonaktifkan Metode Pembayaran?"
+                title="Hapus / Nonaktifkan Metode Pembayaran?"
                 description={
                     pendingDelete
-                        ? `Apakah Anda yakin ingin menonaktifkan "${pendingDelete.name}"? Metode ini tidak akan lagi tersedia untuk transaksi baru.`
-                        : "Tindakan ini akan menonaktifkan metode pembayaran."
+                        ? `Apakah Anda yakin ingin menghapus "${pendingDelete.name}"?`
+                        : "Tindakan ini akan menghapus metode pembayaran."
                 }
-                confirmText="Nonaktifkan"
+                warningNote="Metode pembayaran yang masih memiliki transaksi dalam status pending tidak dapat dihapus."
+                confirmText="Hapus"
                 cancelText="Batal"
                 tone="danger"
                 onConfirm={handleConfirmDelete}

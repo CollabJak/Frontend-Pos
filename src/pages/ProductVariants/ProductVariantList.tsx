@@ -298,6 +298,7 @@ export default function ProductVariantList({ embedded = false }: ProductVariantL
             ? `Tindakan ini tidak dapat dibatalkan. Varian produk "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Varian produk yang memiliki riwayat transaksi penjualan atau saldo inventaris tidak dapat dihapus."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

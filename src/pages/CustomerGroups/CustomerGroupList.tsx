@@ -173,6 +173,7 @@ export default function CustomerGroupList({ embedded = false }: CustomerGroupLis
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Jika grup pelanggan ini masih digunakan oleh data pelanggan aktif, sistem akan menolak penghapusan."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

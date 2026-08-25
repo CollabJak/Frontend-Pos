@@ -229,6 +229,7 @@ export default function ProductList({ embedded = false }: ProductListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. Produk "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Produk yang memiliki riwayat penjualan/transaksi atau sisa saldo stok tidak dapat dihapus. Silakan ubah status produk menjadi Nonaktif jika tidak lagi dijual."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

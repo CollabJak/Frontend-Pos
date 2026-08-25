@@ -166,6 +166,7 @@ export default function BrandList({ embedded = false }: BrandListProps) {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Jika merek ini masih digunakan oleh produk aktif, sistem akan menolak penghapusan untuk menjaga integritas data."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"

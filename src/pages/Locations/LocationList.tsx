@@ -164,6 +164,7 @@ export default function LocationList() {
             ? `Tindakan ini tidak dapat dibatalkan. "${pendingDelete.name}" akan dihapus.`
             : "Tindakan ini tidak dapat dibatalkan."
         }
+        warningNote="Lokasi yang memiliki riwayat transaksi/pesanan, sesi shift POS, sub-lokasi, atau sisa saldo stok tidak dapat dihapus."
         confirmText="Hapus"
         cancelText="Batal"
         tone="danger"
