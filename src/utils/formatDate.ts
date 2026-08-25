@@ -58,3 +58,40 @@ export const formatDateToYYYYMMDD = (date: Date | string | null | undefined): st
   
   return `${year}-${month}-${day}`;
 };
+
+/**
+ * Formats a date/datetime string or Date object into human-readable Indonesian format
+ * Example: '2026-08-25T11:58' -> '25 Agu 2026 11:58'
+ * Example: '2026-08-25' -> '25 Agu 2026'
+ */
+export const formatDateTimeDisplay = (
+  date: string | Date | null | undefined,
+  fallback: string = "-"
+): string => {
+  if (!date) return fallback;
+
+  try {
+    const d = typeof date === "string" ? new Date(date) : date;
+    if (isNaN(d.getTime())) return String(date);
+
+    // If date string contains time (like 'T' or ':')
+    const hasTime = typeof date === "string" ? date.includes("T") || date.includes(":") : true;
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      ...(hasTime
+        ? {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }
+        : {}),
+    };
+
+    return new Intl.DateTimeFormat("id-ID", options).format(d).replace(/\./g, ":");
+  } catch {
+    return String(date);
+  }
+};

@@ -1,8 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import apiClient from "../api/axiosConfig";
-import { ApiErrorResponse, CreateCustomerGroupPayload, CustomerGroup, PaginatedApiResponse } from "../types/types";
+import {
+  ApiErrorResponse,
+  CreateCustomerGroupPayload,
+  CustomerGroup,
+  CustomerGroupWithPrices,
+  PaginatedApiResponse,
+} from "../types/types";
 import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
 
 interface FetchCustomerGroupsParams {
@@ -35,6 +41,29 @@ export const useFetchCustomerGroup = (id: number) => {
       return response.data.data;
     },
     enabled: !!id,
+  });
+};
+
+export const useFetchCustomerGroupWithPrices = (id: number) => {
+  return useQuery<CustomerGroupWithPrices, AxiosError>({
+    queryKey: ["customer-group-with-prices", id],
+    queryFn: async () => {
+      const [groupRes, pricesRes] = await Promise.all([
+        apiClient.get(`/customer-groups/${id}`),
+        apiClient.get("/customer-group-prices", {
+          params: { customer_group_id: id, per_page: 100 },
+        }),
+      ]);
+
+      const groupData = groupRes.data.data;
+      const pricesData = pricesRes.data.data?.data || pricesRes.data.data || [];
+
+      return {
+        ...groupData,
+        prices: Array.isArray(pricesData) ? pricesData : [],
+      };
+    },
+    enabled: !!id && id > 0,
   });
 };
 

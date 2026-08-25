@@ -11,22 +11,48 @@ import {
 
 interface FetchPromotionActionsParams {
   page?: number;
+  per_page?: number;
   search?: string;
+  promotion_id?: number;
 }
 
 const normalizePayload = (payload: PromotionActionFormData) => payload;
 
-export const useFetchPromotionActions = ({ page = 1, search }: FetchPromotionActionsParams) => {
+export const useFetchPromotionActions = ({
+  page = 1,
+  per_page,
+  search,
+  promotion_id,
+}: FetchPromotionActionsParams = {}) => {
   return useQuery<PaginatedApiResponse<PromotionAction>, AxiosError>({
-    queryKey: ["promotion-actions", page, search ?? ""],
+    queryKey: ["promotion-actions", page, search ?? "", promotion_id ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-actions", {
-        params: { page, ...(search ? {search} : {}) },
+        params: {
+          page,
+          ...(per_page ? { per_page } : {}),
+          ...(search ? { search } : {}),
+          ...(promotion_id ? { promotion_id } : {}),
+        },
       });
 
       return response.data.data;
     },
     placeholderData: (previousData) => previousData,
+  });
+};
+
+export const useFetchActionsByPromotionId = (promotionId: number | null | undefined) => {
+  return useQuery<PromotionAction[], AxiosError>({
+    queryKey: ["promotion-actions", "by-promotion", promotionId],
+    queryFn: async () => {
+      if (!promotionId) return [];
+      const response = await apiClient.get("/promotion-actions", {
+        params: { promotion_id: promotionId, per_page: 100 },
+      });
+      return response.data.data.data;
+    },
+    enabled: !!promotionId,
   });
 };
 

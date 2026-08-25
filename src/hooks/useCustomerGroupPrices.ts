@@ -47,6 +47,22 @@ export const useFetchCustomerGroupPrice = (id: number) => {
   });
 };
 
+export const useFetchPricesByCustomerGroupId = (customerGroupId: number) => {
+  return useQuery<PaginatedApiResponse<CustomerGroupPrice>, AxiosError>({
+    queryKey: ["customer-group-prices", "by-group", customerGroupId],
+    queryFn: async () => {
+      const response = await apiClient.get("/customer-group-prices", {
+        params: {
+          customer_group_id: customerGroupId,
+          per_page: 100,
+        },
+      });
+      return response.data.data;
+    },
+    enabled: !!customerGroupId && customerGroupId > 0,
+  });
+};
+
 export const useCreateCustomerGroupPrice = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();

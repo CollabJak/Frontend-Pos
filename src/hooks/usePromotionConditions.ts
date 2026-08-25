@@ -11,22 +11,48 @@ import {
 
 interface FetchPromotionConditionsParams {
   page?: number;
+  per_page?: number;
   search?: string;
+  promotion_id?: number;
 }
 
 const normalizePayload = (payload: PromotionConditionFormData) => payload;
 
-export const useFetchPromotionConditions = ({ page = 1, search }: FetchPromotionConditionsParams) => {
+export const useFetchPromotionConditions = ({
+  page = 1,
+  per_page,
+  search,
+  promotion_id,
+}: FetchPromotionConditionsParams = {}) => {
   return useQuery<PaginatedApiResponse<PromotionCondition>, AxiosError>({
-    queryKey: ["promotion-conditions", page, search ?? ""],
+    queryKey: ["promotion-conditions", page, search ?? "", promotion_id ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-conditions", {
-        params: { page, ...(search ? {search} : {}) },
+        params: {
+          page,
+          ...(per_page ? { per_page } : {}),
+          ...(search ? { search } : {}),
+          ...(promotion_id ? { promotion_id } : {}),
+        },
       });
 
       return response.data.data;
     },
     placeholderData: (previousData) => previousData,
+  });
+};
+
+export const useFetchConditionsByPromotionId = (promotionId: number | null | undefined) => {
+  return useQuery<PromotionCondition[], AxiosError>({
+    queryKey: ["promotion-conditions", "by-promotion", promotionId],
+    queryFn: async () => {
+      if (!promotionId) return [];
+      const response = await apiClient.get("/promotion-conditions", {
+        params: { promotion_id: promotionId, per_page: 100 },
+      });
+      return response.data.data.data;
+    },
+    enabled: !!promotionId,
   });
 };
 
