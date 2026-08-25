@@ -1,219 +1,59 @@
-import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { AxiosError } from "axios";
+import { useParams } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
-import Label from "../../components/form/Label";
-import { Input } from "../../components/form/input/InputField";
-import TextArea from "../../components/form/input/TextArea";
-import Checkbox from "../../components/form/input/Checkbox";
-import Button from "../../components/ui/button/Button";
-import { customerGroupCodeValues, CustomerGroupFormData, customerGroupSchema } from "../../Schemas/customerGroupSchema";
-import { useFetchCustomerGroup, useUpdateCustomerGroup } from "../../hooks/useCustomerGroups";
-import { ApiErrorResponse } from "../../types/types";
+import CustomerGroupWizardForm from "../../components/customer-groups/CustomerGroupWizardForm";
+import { useFetchCustomerGroupWithPrices } from "../../hooks/useCustomerGroups";
+import { useCustomerGroupWizard } from "../../hooks/api/useCustomerGroupWizard";
+import { CompositeCustomerGroupFormData } from "../../Schemas/compositeCustomerGroupSchema";
 
 export default function EditCustomerGroup() {
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const customerGroupId = Number(id);
-  const { data: customerGroup, isLoading } = useFetchCustomerGroup(customerGroupId);
-  const { mutate: updateCustomerGroup, isPending } = useUpdateCustomerGroup();
-
   const {
-    register,
-    handleSubmit,
-    setError,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<CustomerGroupFormData>({
-    resolver: zodResolver(customerGroupSchema),
-    defaultValues: {
-      code: "REGULAR",
-      name: "",
-      description: "",
-      discount_percent: 0,
-      is_default: false,
-      is_active: true,
-    },
-  });
+    data: groupWithPrices,
+    isLoading,
+    isError,
+  } = useFetchCustomerGroupWithPrices(customerGroupId);
+  const { submitEdit, isSubmitting, serverError } = useCustomerGroupWizard();
 
-  useEffect(() => {
-    if (customerGroup) {
-      setValue("code", customerGroup.code);
-      setValue("name", customerGroup.name);
-      setValue("description", customerGroup.description || "");
-      setValue("discount_percent", Number(customerGroup.discount_percent));
-      setValue("is_default", customerGroup.is_default);
-      setValue("is_active", customerGroup.is_active);
-    }
-  }, [customerGroup, setValue]);
-
-  const onSubmit = (data: CustomerGroupFormData) => {
-    setError("root", { type: "server", message: "" });
-
-    updateCustomerGroup(
-      { ...data, id: customerGroupId },
-      {
-        onError: (error: AxiosError<ApiErrorResponse>) => {
-          if (error.response) {
-            const { message, errors: fieldErrors } = error.response.data;
-
-            if (message) {
-              setError("root", { type: "server", message });
-            }
-
-            if (fieldErrors) {
-              Object.entries(fieldErrors).forEach(([key, messages]) => {
-                setError(key as keyof CustomerGroupFormData, {
-                  type: "server",
-                  message: messages[0],
-                });
-              });
-            }
-          }
-        },
-      }
-    );
+  const handleSubmit = async (data: CompositeCustomerGroupFormData) => {
+    if (!groupWithPrices) return;
+    await submitEdit(customerGroupId, data, groupWithPrices);
   };
 
   if (isLoading) {
-    return <p className="p-3">Memuat...</p>;
+    return (
+      <div className="p-8 text-center text-gray-500 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+        Memuat data grup pelanggan beserta daftar harga...
+      </div>
+    );
+  }
+
+  if (isError || !groupWithPrices) {
+    return (
+      <div className="p-8 text-center text-red-500 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+        Gagal memuat data grup pelanggan atau grup tidak ditemukan.
+      </div>
+    );
   }
 
   return (
     <>
-      <PageMeta title="Edit Grup Pelanggan" description="Halaman edit grup pelanggan" />
-      <PageBreadcrumb
-        pageTitle="Edit Grup Pelanggan"
-        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups?tab=groups" }]}
+      <PageMeta
+        title="Edit Grup Pelanggan | Wizard"
+        description="Halaman edit grup pelanggan dengan wizard step-by-step"
       />
-      <ComponentCard title="Form Edit Grup Pelanggan">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {errors.root && <p className="text-red-500">{errors.root.message}</p>}
-
-          <div className="space-y-6">
-            <div>
-              <Label htmlFor="customer-group-code" required>
-                Kode
-              </Label>
-              <select
-                {...register("code")}
-                id="customer-group-code"
-                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-              >
-                {customerGroupCodeValues.map((code) => (
-                  <option key={code} value={code}>
-                    {code}
-                  </option>
-                ))}
-              </select>
-              {errors.code && <p className="text-red-500">{errors.code.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="customer-group-name" required>
-                Nama
-              </Label>
-              <Input
-                {...register("name")}
-                type="text"
-                id="customer-group-name"
-                placeholder="Masukkan nama grup pelanggan"
-              />
-              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="customer-group-discount" required>
-                Persentase Diskon
-              </Label>
-              <Input
-                {...register("discount_percent", { valueAsNumber: true })}
-                type="number"
-                id="customer-group-discount"
-                placeholder="Masukkan persentase diskon"
-                step="0.01"
-                min="0"
-                max="100"
-              />
-              {errors.discount_percent && (
-                <p className="text-red-500">{errors.discount_percent.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="customer-group-description">Deskripsi</Label>
-              <TextArea
-                value={watch("description") || ""}
-                onChange={(value) =>
-                  setValue("description", value, { shouldValidate: true })
-                }
-                rows={3}
-                placeholder="Deskripsi opsional"
-              />
-              {errors.description && (
-                <p className="text-red-500">{errors.description.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="customer-group-default">Grup Default</Label>
-              <Checkbox
-                id="customer-group-default"
-                checked={Boolean(watch("is_default"))}
-                onChange={(checked) =>
-                  setValue("is_default", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Atur sebagai grup pelanggan default"
-              />
-              {errors.is_default && (
-                <p className="text-red-500">{errors.is_default.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="customer-group-active">Status Aktif</Label>
-              <Checkbox
-                id="customer-group-active"
-                checked={Boolean(watch("is_active"))}
-                onChange={(checked) =>
-                  setValue("is_active", checked, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                label="Grup aktif"
-              />
-              {errors.is_active && (
-                <p className="text-red-500">{errors.is_active.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-              <Button
-                className="w-full sm:w-auto"
-                size="sm"
-                variant="outline"
-                type="button"
-                onClick={() => navigate("/customer-groups?tab=groups")}
-              >
-                Kembali
-              </Button>
-              <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Memperbarui Grup Pelanggan..." : "Perbarui Grup Pelanggan"}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </ComponentCard>
+      <PageBreadcrumb
+        pageTitle="Edit Grup Pelanggan (Wizard)"
+        breadcrumbs={[{ label: "Grup Pelanggan", path: "/customer-groups" }]}
+      />
+      <CustomerGroupWizardForm
+        initialData={groupWithPrices}
+        onSubmit={handleSubmit}
+        isPending={isSubmitting}
+        serverError={serverError}
+        isEdit
+      />
     </>
   );
 }
-

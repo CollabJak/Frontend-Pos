@@ -21,6 +21,7 @@ import {
 } from "../../hooks/usePromotionActions";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
+import { formatActionValue } from "../../utils/promotionFormatters";
 
 export interface PromotionActionListProps {
   embedded?: boolean;
@@ -116,7 +117,8 @@ export default function PromotionActionList({ embedded = false }: PromotionActio
                           {item.action_type}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {item.action_value_display || "-"}
+                          {item.action_value_display ||
+                            formatActionValue(item.action_type, item.action_value)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">

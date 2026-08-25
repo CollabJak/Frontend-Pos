@@ -4,11 +4,10 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Tabs, { TabItem } from "../../components/ui/tabs/Tabs";
 import CustomerGroupList from "./CustomerGroupList";
-import CustomerGroupPriceList from "../CustomerGroupPrices/CustomerGroupPriceList";
 import CustomerList from "../Customers/CustomerList";
 import { useAuth } from "../../hooks/useAuth";
 import { hasAccess } from "../../utils/rbac";
-import { GroupIcon, DollarLineIcon, UserIcon } from "../../icons";
+import { GroupIcon, UserIcon } from "../../icons";
 
 export default function CustomerGroupManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,13 +23,6 @@ export default function CustomerGroupManagementPage() {
         icon: <GroupIcon className="w-4 h-4" />,
         permission: "customer_group.view",
         component: <CustomerGroupList embedded />,
-      },
-      {
-        id: "prices",
-        label: "Harga Grup Pelanggan",
-        icon: <DollarLineIcon className="w-4 h-4" />,
-        permission: "customer_group_price.view",
-        component: <CustomerGroupPriceList embedded />,
       },
       {
         id: "customers",
@@ -69,7 +61,7 @@ export default function CustomerGroupManagementPage() {
     <>
       <PageMeta
         title="Grup Pelanggan | POS System"
-        description="Kelola daftar grup pelanggan dan harga grup pelanggan secara terpusat."
+        description="Kelola daftar grup pelanggan dan member secara terpusat."
       />
       <PageBreadcrumb pageTitle="Grup Pelanggan" />
 

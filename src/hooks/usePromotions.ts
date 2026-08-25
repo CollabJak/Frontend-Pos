@@ -45,6 +45,28 @@ export const useFetchPromotion = (id: number) => {
   });
 };
 
+export const useFetchPromotionWithDetails = (id: number) => {
+  return useQuery({
+    queryKey: ["promotion-with-details", id],
+    queryFn: async () => {
+      const [promoRes, condRes, actRes, prodRes] = await Promise.all([
+        apiClient.get(`/promotions/${id}`),
+        apiClient.get("/promotion-conditions", { params: { promotion_id: id, per_page: 100 } }),
+        apiClient.get("/promotion-actions", { params: { promotion_id: id, per_page: 100 } }),
+        apiClient.get("/promotion-products", { params: { promotion_id: id, per_page: 100 } }),
+      ]);
+
+      return {
+        promotion: promoRes.data.data as Promotion,
+        conditions: condRes.data.data.data,
+        actions: actRes.data.data.data,
+        products: prodRes.data.data.data,
+      };
+    },
+    enabled: !!id,
+  });
+};
+
 export const useCreatePromotion = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -56,7 +78,7 @@ export const useCreatePromotion = () => {
     },
     onSuccess: () => {
       invalidateDomain(queryClient, DOMAINS.PROMOTIONS);
-      navigate("/promotions?tab=promotions");
+      navigate("/promotions");
     },
   });
 };
@@ -76,7 +98,8 @@ export const useUpdatePromotion = () => {
     },
     onSuccess: (_, { id }) => {
       invalidateDomain(queryClient, DOMAINS.PROMOTIONS, id);
-      navigate("/promotions?tab=promotions");
+      queryClient.invalidateQueries({ queryKey: ["promotion-with-details", id] });
+      navigate("/promotions");
     },
   });
 };
@@ -90,6 +113,9 @@ export const useDeletePromotion = () => {
     },
     onSuccess: () => {
       invalidateDomain(queryClient, DOMAINS.PROMOTIONS);
+      queryClient.invalidateQueries({ queryKey: ["promotion-conditions"] });
+      queryClient.invalidateQueries({ queryKey: ["promotion-actions"] });
+      queryClient.invalidateQueries({ queryKey: ["promotion-products"] });
     },
   });
 };

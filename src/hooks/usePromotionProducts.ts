@@ -11,20 +11,46 @@ import {
 
 interface FetchPromotionProductsParams {
   page?: number;
+  per_page?: number;
   search?: string;
+  promotion_id?: number;
 }
 
-export const useFetchPromotionProducts = ({ page = 1, search }: FetchPromotionProductsParams) => {
+export const useFetchPromotionProducts = ({
+  page = 1,
+  per_page,
+  search,
+  promotion_id,
+}: FetchPromotionProductsParams = {}) => {
   return useQuery<PaginatedApiResponse<PromotionProduct>, AxiosError>({
-    queryKey: ["promotion-products", page, search ?? ""],
+    queryKey: ["promotion-products", page, search ?? "", promotion_id ?? ""],
     queryFn: async () => {
       const response = await apiClient.get("/promotion-products", {
-        params: { page, ...(search ? {search} : {}) },
+        params: {
+          page,
+          ...(per_page ? { per_page } : {}),
+          ...(search ? { search } : {}),
+          ...(promotion_id ? { promotion_id } : {}),
+        },
       });
 
       return response.data.data;
     },
     placeholderData: (previousData) => previousData,
+  });
+};
+
+export const useFetchProductsByPromotionId = (promotionId: number | null | undefined) => {
+  return useQuery<PromotionProduct[], AxiosError>({
+    queryKey: ["promotion-products", "by-promotion", promotionId],
+    queryFn: async () => {
+      if (!promotionId) return [];
+      const response = await apiClient.get("/promotion-products", {
+        params: { promotion_id: promotionId, per_page: 100 },
+      });
+      return response.data.data.data;
+    },
+    enabled: !!promotionId,
   });
 };
 
