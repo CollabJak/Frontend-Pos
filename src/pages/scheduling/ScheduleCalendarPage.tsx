@@ -113,7 +113,7 @@ const ScheduleCalendarPage: React.FC = () => {
               Generate Jadwal
             </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/scheduling/batches")}>
-              Batch Jadwal
+              Draft Jadwal
             </Button>
           </div>
         </div>

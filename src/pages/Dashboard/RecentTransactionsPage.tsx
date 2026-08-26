@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useSearchParams } from "react-router";
+import { useMemo, useState } from "react";
+import { useLocation, useSearchParams } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import Badge from "../../components/ui/badge/Badge";
@@ -17,6 +17,12 @@ import {
 } from "../../components/ui/table";
 import Select from "../../components/form/Select";
 import DatePicker from "../../components/form/date-picker";
+import Button from "../../components/ui/button/Button";
+import CancelTransactionModal from "../../components/transactions/CancelTransactionModal";
+import { useAuth } from "../../hooks/useAuth";
+import { useCancelTransaction } from "../../hooks/useCancelTransaction";
+import { hasAccess } from "../../utils/rbac";
+import type { Transaction } from "../../types/dashboard";
 
 const PER_PAGE = 15;
 
@@ -57,6 +63,14 @@ const getStatusColor = (status: string) => {
 
 export default function RecentTransactionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const { user } = useAuth();
+  const cancelTransaction = useCancelTransaction();
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const isKasirContext = location.pathname === "/transactions";
+  const userRoles = user?.roles || [];
+  const userPermissions = user?.permissions || [];
+  const canCancelTransaction = hasAccess(userRoles, userPermissions, undefined, ["transaction.cancel"]);
 
   const getToday = () => {
     const today = new Date();
@@ -133,6 +147,18 @@ export default function RecentTransactionsPage() {
     }
   };
 
+  const handleCancelTransaction = (transactionId: number, reason: string) => {
+    cancelTransaction.mutate(
+      { orderId: transactionId, reason },
+      {
+        onSuccess: () => {
+          setSelectedTransaction(null);
+          refetch();
+        },
+      }
+    );
+  };
+
   const transactions = transactionData?.data?.data || [];
   const meta = transactionData?.data?.meta;
 
@@ -141,16 +167,20 @@ export default function RecentTransactionsPage() {
     return "";
   }, [fromDate, toDate]);
 
+  const pageTitle = isKasirContext ? "Riwayat Transaksi" : "Transaksi Terbaru";
+  const metaTitle = isKasirContext ? "Riwayat Transaksi | Kasir" : "Transaksi Terbaru | Dashboard";
+  const breadcrumbs = isKasirContext ? [{ label: "Kasir", path: "/pos" }] : undefined;
+
   return (
     <>
       <PageMeta
-        title="Transaksi Terbaru | Dashboard"
+        title={metaTitle}
         description="Lihat semua transaksi terbaru dengan filter lanjutan"
       />
-      <PageBreadcrumb pageTitle="Transaksi Terbaru" />
+      <PageBreadcrumb pageTitle={pageTitle} breadcrumbs={breadcrumbs} />
 
       <div className="space-y-6">
-        <ComponentCard title="Semua Transaksi Terbaru">
+        <ComponentCard title={isKasirContext ? "Riwayat Transaksi" : "Semua Transaksi Terbaru"}>
           <div className="flex flex-col gap-4 md:flex-row md:items-end mb-6">
             <div className="flex-1">
               <DatePicker
@@ -202,6 +232,7 @@ export default function RecentTransactionsPage() {
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Item</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Total Jumlah</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Status</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Aksi</TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
@@ -230,6 +261,15 @@ export default function RecentTransactionsPage() {
                             {txn.order_status.toUpperCase()}
                           </Badge>
                         </TableCell>
+                        <TableCell className="px-5 py-4 text-end whitespace-nowrap">
+                          {canCancelTransaction && txn.order_status.toLowerCase() === "completed" ? (
+                            <Button size="sm" variant="danger" onClick={() => setSelectedTransaction(txn)}>
+                              Batalkan
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-gray-400 dark:text-gray-500">-</span>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -247,6 +287,14 @@ export default function RecentTransactionsPage() {
           </div>
         </ComponentCard>
       </div>
+
+      <CancelTransactionModal
+        isOpen={!!selectedTransaction}
+        onClose={() => setSelectedTransaction(null)}
+        transaction={selectedTransaction}
+        onConfirm={handleCancelTransaction}
+        isPending={cancelTransaction.isPending}
+      />
     </>
   );
 }

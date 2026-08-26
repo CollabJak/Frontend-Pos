@@ -30,7 +30,11 @@ import { rotationPatternSchema, RotationPatternFormValues } from "../../Schemas/
 import { RotationPattern } from "../../types/scheduling";
 import Select from "../../components/form/Select";
 
-export default function RotationPatternPage() {
+interface RotationPatternPageProps {
+  embedded?: boolean;
+}
+
+export default function RotationPatternPage({ embedded = false }: RotationPatternPageProps) {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useRotationPatterns({ page });
   const { data: shifts } = useShiftOptions();
@@ -135,8 +139,12 @@ export default function RotationPatternPage() {
 
   return (
     <>
-      <PageMeta title="Pola Rotasi - Jadwal Kerja" description="Kelola pola perputaran shift kerja." />
-      <PageBreadcrumb pageTitle="Pola Rotasi" />
+      {!embedded && (
+        <>
+          <PageMeta title="Pola Rotasi - Jadwal Kerja" description="Kelola pola perputaran shift kerja." />
+          <PageBreadcrumb pageTitle="Pola Rotasi" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Pola Rotasi Shift">

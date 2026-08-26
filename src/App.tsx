@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./providers/AuthProvider";
 import SignIn from "./pages/AuthPages/SignIn";
@@ -101,9 +101,7 @@ import AdminSubscriptionVerificationPage from "./pages/Subscription/AdminSubscri
 import UserList from "./pages/Users/UserList";
 import AddUser from "./pages/Users/AddUser";
 import EditUser from "./pages/Users/EditUser";
-import ShiftMasterPage from "./pages/scheduling/ShiftMasterPage";
-import HolidayCalendarPage from "./pages/scheduling/HolidayCalendarPage";
-import RotationPatternPage from "./pages/scheduling/RotationPatternPage";
+import ScheduleSettingsPage from "./pages/scheduling/ScheduleSettingsPage";
 import ScheduleCalendarPage from "./pages/scheduling/ScheduleCalendarPage";
 import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
@@ -288,19 +286,21 @@ export default function App() {
               {/* Work Scheduling */}
               <Route element={<ProtectedRoute allowedPermissions={["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/scheduling" element={<ScheduleCalendarPage />} />
-                <Route path="/scheduling/shifts" element={<ShiftMasterPage />} />
-                <Route path="/scheduling/holidays" element={<HolidayCalendarPage />} />
-                <Route path="/scheduling/rotation-patterns" element={<RotationPatternPage />} />
+                <Route path="/scheduling/settings" element={<ScheduleSettingsPage />} />
+                <Route path="/scheduling/shifts" element={<Navigate to="/scheduling/settings?tab=shifts" replace />} />
+                <Route path="/scheduling/holidays" element={<Navigate to="/scheduling/settings?tab=holidays" replace />} />
+                <Route path="/scheduling/rotation-patterns" element={<Navigate to="/scheduling/settings?tab=rotation" replace />} />
                 <Route path="/scheduling/generate" element={<ScheduleGeneratePage />} />
                 <Route path="/scheduling/batches" element={<ScheduleBatchListPage />} />
                 <Route path="/scheduling/batches/:id" element={<ScheduleBatchDetailPage />} />
               </Route>
 
-              <Route element={<ProtectedRoute allowedPermissions={["pos.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute allowedPermissions={["pos.view", "transaction.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
 
                 <Route path="/pos" element={<POSPage />} />
                 <Route path="/pos/open-shift" element={<OpenShiftPage />} />
                 <Route path="/pos/payment" element={<POSPaymentPage />} />
+                <Route path="/transactions" element={<RecentTransactionsPage />} />
               </Route>
 
               {/* Reports */}

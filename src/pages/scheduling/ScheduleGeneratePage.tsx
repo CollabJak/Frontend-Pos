@@ -14,7 +14,10 @@ const ScheduleGeneratePage: React.FC = () => {
         title="Generate Jadwal Karyawan | POS System"
         description="Buat draf jadwal kerja karyawan secara massal atau berbasis pola rotasi."
       />
-      <PageBreadcrumb pageTitle="Generate Jadwal Kerja" />
+      <PageBreadcrumb
+        pageTitle="Generate Jadwal Kerja"
+        breadcrumbs={[{ label: "Jadwal Kerja", path: "/scheduling" }]}
+      />
 
       <div className="space-y-6">
         <ComponentCard title="Buat Draf Jadwal Baru">
