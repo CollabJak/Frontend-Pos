@@ -1,23 +1,10 @@
-import { useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import AuthLayout from "./AuthPageLayout";
 import SignInForm from "../../components/auth/SignInForm";
 
 export default function SignIn() {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && user) {
-      if (user.roles?.includes("manager") || user.roles?.includes("admin")) {
-        navigate("/dashboard", { replace: true });
-      } else {
-        navigate("/absensi/scanner", { replace: true });
-      }
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -28,7 +15,7 @@ export default function SignIn() {
   }
 
   if (user) {
-    return null; // or a redirecting message
+    return null;
   }
 
   return (

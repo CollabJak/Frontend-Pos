@@ -15,7 +15,8 @@ import {
   UserFormData,
   createUserSchema,
 } from "../../Schemas/userSchema";
-import { useCreateUser } from "../../hooks/useUsers";
+import { useCreateUserWithLocations } from "../../hooks/useUsers";
+import { useLocationOptions } from "../../hooks/useLocationOptions";
 import { ApiErrorResponse } from "../../types/types";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,17 +27,20 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 export default function AddUser() {
   const navigate = useNavigate();
-  const { mutate: createUser, isPending } = useCreateUser();
+  const { mutate: createUser, isPending } = useCreateUserWithLocations();
   const [showPassword, setShowPassword] = useState(false);
 
   const [files, setFiles] = useState<unknown[]>([]);
   type FilePondItem = { file?: File };
+
+  const { data: locationOptions, isLoading: isLoadingOptions } = useLocationOptions();
 
   const {
     register,
     handleSubmit,
     setError,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<UserFormData>({
     resolver: zodResolver(createUserSchema),
@@ -45,8 +49,34 @@ export default function AddUser() {
       email: "",
       password: "",
       phone: "",
+      location_ids: [],
+      primary_location_id: 0,
     },
   });
+
+  const selectedLocationIds = watch("location_ids") || [];
+  const primaryLocationId = watch("primary_location_id");
+
+  const handleLocationToggle = (locId: number) => {
+    const isChecked = selectedLocationIds.includes(locId);
+    let nextIds: number[];
+    
+    if (isChecked) {
+      nextIds = selectedLocationIds.filter((id) => id !== locId);
+    } else {
+      nextIds = [...selectedLocationIds, locId];
+    }
+    
+    setValue("location_ids", nextIds, { shouldValidate: true });
+
+    if (primaryLocationId === locId && isChecked) {
+      setValue("primary_location_id", nextIds.length > 0 ? nextIds[0] : 0, { shouldValidate: true });
+    } else if (!primaryLocationId && nextIds.length > 0) {
+      setValue("primary_location_id", nextIds[0], { shouldValidate: true });
+    } else if (primaryLocationId === 0 && nextIds.length > 0) {
+      setValue("primary_location_id", nextIds[0], { shouldValidate: true });
+    }
+  };
 
   const onSubmit = (data: UserFormData) => {
     setError("root", { type: "server", message: "" });
@@ -55,17 +85,24 @@ export default function AddUser() {
         if (error.response) {
           const { message, errors: fieldErrors } = error.response.data;
 
-          if (message) {
-            setError("root", { type: "server", message });
-          }
-
-          if (fieldErrors) {
-            Object.entries(fieldErrors).forEach(([key, messages]) => {
-              setError(key as keyof UserFormData, {
-                type: "server",
-                message: messages[0],
-              });
+          if (error.config?.url?.includes('/locations')) {
+            setError("root", { 
+              type: "server", 
+              message: "User berhasil dibuat, tetapi gagal mengatur lokasi. Silakan edit user untuk mengatur lokasi kerja." 
             });
+          } else {
+            if (message) {
+              setError("root", { type: "server", message });
+            }
+
+            if (fieldErrors) {
+              Object.entries(fieldErrors).forEach(([key, messages]) => {
+                setError(key as keyof UserFormData, {
+                  type: "server",
+                  message: messages[0],
+                });
+              });
+            }
           }
         }
       },
@@ -189,6 +226,85 @@ export default function AddUser() {
             </div>
           </div>
 
+          <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div>
+              <Label required>Penugasan Lokasi Kerja</Label>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Pilih lokasi toko di mana pengguna ini diperbolehkan bekerja. Anda harus memilih tepat satu Lokasi Utama.
+              </p>
+            </div>
+
+            {isLoadingOptions ? (
+              <div className="text-gray-500 text-sm">Memuat daftar lokasi...</div>
+            ) : locationOptions && locationOptions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {locationOptions.map((locOption) => {
+                  const locId = Number(locOption.id);
+                  const isChecked = selectedLocationIds.includes(locId);
+
+                  return (
+                    <div
+                      key={locOption.id}
+                      className={`p-4 rounded-xl border flex items-center justify-between transition-colors ${
+                        isChecked
+                          ? "border-green-500 bg-green-50/50 dark:bg-green-950/10 dark:border-green-500"
+                          : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          id={`loc-${locOption.id}`}
+                          checked={isChecked}
+                          onChange={() => handleLocationToggle(locId)}
+                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                        />
+                        <label
+                          htmlFor={`loc-${locOption.id}`}
+                          className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                        >
+                          {locOption.name}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            id={`primary-loc-${locOption.id}`}
+                            name="primary_location"
+                            checked={primaryLocationId === locId}
+                            onChange={() => setValue("primary_location_id", locId, { shouldValidate: true })}
+                            className="w-4 h-4 text-green-600 focus:ring-green-500 cursor-pointer"
+                          />
+                          <label
+                            htmlFor={`primary-loc-${locOption.id}`}
+                            className="text-xs text-gray-500 dark:text-gray-400 cursor-pointer"
+                          >
+                            Utama
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                  Belum ada lokasi yang dibuat. Silakan buat lokasi toko terlebih dahulu.
+                </p>
+              </div>
+            )}
+
+            {errors.location_ids && (
+              <p className="text-red-500 text-sm mt-1">{errors.location_ids.message}</p>
+            )}
+            {errors.primary_location_id && (
+              <p className="text-red-500 text-sm mt-1">{errors.primary_location_id.message}</p>
+            )}
+          </div>
+
           {errors.root && (
             <p className="text-red-500 text-sm">{errors.root.message}</p>
           )}
@@ -203,7 +319,7 @@ export default function AddUser() {
             >
               Kembali
             </Button>
-            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending}>
+            <Button className="w-full sm:w-auto" size="sm" type="submit" disabled={isPending || isLoadingOptions || (locationOptions && locationOptions.length > 0 && selectedLocationIds.length === 0)}>
               {isPending ? "Menambahkan Pengguna..." : "Tambah Pengguna"}
             </Button>
           </div>

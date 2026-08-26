@@ -4,6 +4,7 @@ import { User, ApiErrorResponse, PaginatedApiResponse, CreateUserPayload, Locati
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { DOMAINS, invalidateDomain } from "../constants/queryKeys";
+import { UserFormData } from "../Schemas/userSchema";
 
 interface FetchUsersParams {
   page?: number;
@@ -126,6 +127,57 @@ export const useDeleteUser = () => {
   });
 };
 
+export const useCreateUserWithLocations = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation<User, AxiosError<ApiErrorResponse>, UserFormData>({
+    mutationFn: async (payload) => {
+      const userPayload: CreateUserPayload = {
+        name: payload.name,
+        email: payload.email,
+        password: payload.password,
+        phone: payload.phone,
+        photo: payload.photo,
+        business_id: payload.business_id,
+      };
+
+      const formData = new FormData();
+      formData.append("name", userPayload.name);
+      formData.append("email", userPayload.email);
+      if (userPayload.password) {
+        formData.append("password", userPayload.password);
+      }
+      formData.append("phone", userPayload.phone);
+      if (userPayload.photo) {
+        formData.append("photo", userPayload.photo);
+      }
+      if (userPayload.business_id) {
+        formData.append("business_id", userPayload.business_id.toString());
+      }
+
+      const createResponse = await apiClient.post("/users", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const newUser = createResponse.data.data;
+
+      const locationPayload = {
+        location_ids: payload.location_ids,
+        primary_location_id: payload.primary_location_id,
+      };
+
+      await apiClient.put(`/users/${newUser.id}/locations`, locationPayload);
+
+      return newUser;
+    },
+    onSuccess: () => {
+      invalidateDomain(queryClient, DOMAINS.USERS);
+      navigate("/users");
+    },
+  });
+};
+
 export const useFetchUserLocations = (userId: number) => {
   return useQuery<Location[], AxiosError>({
     queryKey: ["user-locations", userId],
@@ -139,7 +191,6 @@ export const useFetchUserLocations = (userId: number) => {
 
 export const useSyncUserLocations = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return useMutation<
     Location[],
@@ -157,9 +208,7 @@ export const useSyncUserLocations = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
       queryClient.invalidateQueries({ queryKey: ["user-locations", userId] });
-      // Invalidate auth me to refresh the logged-in user locations if self
       queryClient.invalidateQueries({ queryKey: ["auth"] });
-      navigate("/users");
     },
   });
 };

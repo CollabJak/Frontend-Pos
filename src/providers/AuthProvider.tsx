@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "../types/types";
 import { authService } from "../api/authService";
@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
+  const hasRedirectedRef = useRef(false);
 
   const searchParams = new URLSearchParams(location.search);
   const googleLoginStatus = searchParams.get("google_login");
@@ -48,48 +49,70 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const user = meQuery.data ?? null;
   const loading = shouldBootstrapSession ? meQuery.isPending : false;
 
-  // Force refetch if returning from Google Oauth explicitly marking success
+  // Reset redirect flag when navigating to public paths
   useEffect(() => {
-    if (isGoogleLogin) {
-      void clearAppSession(queryClient).then(() => {
-        void queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
-      });
+    if (PUBLIC_PATHS.has(location.pathname) && !isGoogleLogin) {
+      hasRedirectedRef.current = false;
     }
-  }, [isGoogleLogin, queryClient]);
+  }, [location.pathname, isGoogleLogin]);
 
-  // Handle Google Login Redirection based on role and business status
-  useEffect(() => {
-    if (!isGoogleLogin || !user || meQuery.isFetching) {
+  // Centralized redirect function based on user role and business status
+  const redirectAfterAuth = useCallback((userData: User, shouldCleanupUrl: boolean = false) => {
+    if (hasRedirectedRef.current) {
       return;
     }
 
-    const isBusinessInactive = user.is_business_active === false || user.business?.is_active === false;
+    hasRedirectedRef.current = true;
 
-    if (user.roles?.includes("admin")) {
+    const isBusinessInactive = userData.is_business_active === false || userData.business?.is_active === false;
+
+    if (userData.roles?.includes("admin")) {
       navigate("/dashboard", { replace: true });
     } else if (isBusinessInactive) {
       navigate("/business-inactive", { replace: true });
-    } else if (user.roles?.includes("manager")) {
-      if (!user.business_id) {
+    } else if (userData.roles?.includes("manager")) {
+      if (!userData.business_id) {
         navigate("/businesses/create", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
     } else {
-      if (!user.business_id) {
+      if (!userData.business_id) {
         navigate("/business-inactive", { replace: true });
       } else {
         navigate("/absensi/scanner", { replace: true });
       }
     }
 
-    // Cleanup URL
-    const nextParams = new URLSearchParams(location.search);
-    nextParams.delete("google_login");
-    const nextSearch = nextParams.toString();
-    const nextUrl = nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname;
-    window.history.replaceState({}, "", nextUrl);
-  }, [isGoogleLogin, user, meQuery.isFetching, navigate, location.pathname, location.search]);
+    // Cleanup URL if coming from Google OAuth
+    if (shouldCleanupUrl) {
+      const nextParams = new URLSearchParams(location.search);
+      nextParams.delete("google_login");
+      const nextSearch = nextParams.toString();
+      const nextUrl = nextSearch ? `${location.pathname}?${nextSearch}` : location.pathname;
+      window.history.replaceState({}, "", nextUrl);
+    }
+  }, [navigate, location.pathname, location.search]);
+
+  // Handle Google Login: force refetch and redirect when data is ready
+  useEffect(() => {
+    if (!isGoogleLogin) {
+      return;
+    }
+
+    // Force clear session and refetch user data
+    if (!meQuery.isFetching && !user && !hasRedirectedRef.current) {
+      void clearAppSession(queryClient).then(() => {
+        void queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+      });
+      return;
+    }
+
+    // Wait until user data is available and fetch is complete
+    if (user && !meQuery.isFetching && !hasRedirectedRef.current) {
+      redirectAfterAuth(user, true);
+    }
+  }, [isGoogleLogin, user, meQuery.isFetching, queryClient, redirectAfterAuth]);
 
   // Proactive navigation guard for unverified email users
   useEffect(() => {
@@ -176,27 +199,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      const isBusinessInactive = userData.is_business_active === false || userData.business?.is_active === false;
-
-      // Redirect logic based on role and business status
-      if (userData.roles?.includes("admin")) {
-        navigate("/dashboard", { replace: true });
-      } else if (isBusinessInactive) {
-        navigate("/business-inactive", { replace: true });
-      } else if (userData.roles?.includes("manager")) {
-        if (!userData.business_id) {
-          navigate("/businesses/create", { replace: true });
-        } else {
-          navigate("/dashboard", { replace: true });
-        }
-      } else {
-        // Roles other than admin and manager (e.g. employee, keeper, etc.)
-        if (!userData.business_id) {
-          navigate("/business-inactive", { replace: true });
-        } else {
-          navigate("/absensi/scanner", { replace: true });
-        }
-      }
+      redirectAfterAuth(userData, false);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
