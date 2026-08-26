@@ -4,20 +4,65 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileSchema, ProfileFormData } from "../../Schemas/profileSchema";
+import { useUpdateUserProfile } from "../../hooks/api/useUpdateUserProfile";
+import { useEffect } from "react";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
   const { user } = useAuth();
   const fullName = user?.name?.trim() || "User";
-  const [firstName, ...nameRemainder] = fullName.split(" ");
-  const lastName = nameRemainder.join(" ").trim() || "-";
-  const email = user?.email?.trim() || "-";
-  const phone = user?.phone?.trim() || "-";
+  const email = user?.email?.trim() || "";
+  const phone = user?.phone?.trim() || "";
   const roleLabel = user?.roles?.[0]?.replace(/_/g, " ") || "-";
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+
+  const updateProfileMutation = useUpdateUserProfile();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: fullName,
+      email: email,
+      phone: phone,
+    },
+  });
+
+  useEffect(() => {
+    if (isOpen && user) {
+      reset({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      });
+    }
+  }, [isOpen, user, reset]);
+
+  const onSubmit = (data: ProfileFormData) => {
+    if (!user?.id) return;
+
+    updateProfileMutation.mutate(
+      {
+        userId: user.id,
+        payload: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          photo: data.photo,
+        },
+      },
+      {
+        onSuccess: () => {
+          closeModal();
+        },
+      }
+    );
   };
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -30,19 +75,10 @@ export default function UserInfoCard() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Nama Depan
+                Nama Lengkap
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {firstName}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Nama Belakang
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {lastName}
+                {fullName}
               </p>
             </div>
 
@@ -108,80 +144,72 @@ export default function UserInfoCard() {
               Perbarui rincian akun Anda agar tetap relevan.
             </p>
           </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+            <div className="custom-scrollbar max-h-[400px] overflow-y-auto px-2 pb-3">
               <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Tautan Media Sosial
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Informasi Pribadi
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Nama Depan</Label>
-                    <Input type="text" value={firstName} />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Nama Belakang</Label>
-                    <Input type="text" value={lastName} />
+                  <div className="col-span-2">
+                    <Label>Nama Lengkap</Label>
+                    <Input
+                      type="text"
+                      {...register("name")}
+                      error={!!errors.name}
+                      hint={errors.name?.message}
+                      disabled={updateProfileMutation.isPending}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Alamat Email</Label>
-                    <Input type="text" value={email} />
+                    <Input
+                      type="email"
+                      {...register("email")}
+                      error={!!errors.email}
+                      hint={errors.email?.message}
+                      disabled={updateProfileMutation.isPending}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>No. Telepon</Label>
-                    <Input type="text" value={phone} />
+                    <Input
+                      type="text"
+                      {...register("phone")}
+                      error={!!errors.phone}
+                      hint={errors.phone?.message}
+                      disabled={updateProfileMutation.isPending}
+                    />
                   </div>
 
                   <div className="col-span-2">
                     <Label>Bio / Peran</Label>
-                    <Input type="text" value={roleLabel} />
+                    <Input type="text" value={roleLabel} disabled />
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={closeModal}
+                type="button"
+                disabled={updateProfileMutation.isPending}
+              >
                 Batal
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Simpan Perubahan
+              <Button
+                size="sm"
+                type="submit"
+                disabled={updateProfileMutation.isPending}
+              >
+                {updateProfileMutation.isPending
+                  ? "Menyimpan..."
+                  : "Simpan Perubahan"}
               </Button>
             </div>
           </form>

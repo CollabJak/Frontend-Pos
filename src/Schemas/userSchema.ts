@@ -28,6 +28,13 @@ export const createUserSchema = z.object({
       }
     ),
   business_id: z.number().optional().nullable(),
+  location_ids: z.array(z.number()).min(1, "Pilih setidaknya satu lokasi kerja."),
+  primary_location_id: z.number(),
+}).refine((data) => {
+  return data.location_ids.includes(data.primary_location_id);
+}, {
+  message: "Lokasi utama harus salah satu dari lokasi yang dipilih.",
+  path: ["primary_location_id"],
 });
 
 export const updateUserSchema = z.object({

@@ -6,7 +6,6 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../hooks/useAuth";
-import { useRoleRedirect } from "../../hooks/useRoleRedirect";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 
 export default function SignInForm() {
@@ -21,8 +20,6 @@ export default function SignInForm() {
   const isEmailVerified = searchParams.get("verified") === "true";
   const isPasswordReset = searchParams.get("reset") === "success";
   const errorMessage = searchParams.get("error");
-
-  useRoleRedirect();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
