@@ -50,8 +50,8 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ isOpen, onClose
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="max-w-[760px] m-4">
             <div className="p-6 lg:p-8">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                    <div>
+                <div className="mb-6 flex items-start justify-between gap-4 pr-8">
+                    <div className="flex-1">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">Detail Invoice</h3>
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Informasi tagihan, subscriber, bisnis, dan paket langganan.</p>
                     </div>
