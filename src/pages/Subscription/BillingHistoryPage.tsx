@@ -11,6 +11,7 @@ import Button from "../../components/ui/button/Button";
 import { CalendarIcon, CreditCardIcon } from "../../icons";
 
 import UploadProofModal from "../../components/subscription/UploadProofModal";
+import InvoiceDetailModal from "../../components/subscription/InvoiceDetailModal";
 import { Modal } from "../../components/ui/modal";
 
 const getStatusColor = (status: string) => {
@@ -37,6 +38,10 @@ export default function BillingHistoryPage() {
     const [confirmCancelModal, setConfirmCancelModal] = useState<{ isOpen: boolean, paymentId: number }>({
         isOpen: false,
         paymentId: 0
+    });
+    const [detailModal, setDetailModal] = useState<{ isOpen: boolean, paymentId: number | null }>({
+        isOpen: false,
+        paymentId: null
     });
 
     const { mutate: cancelSubscription, isPending: isCancelling } = useCancelSubscriptionPayment();
@@ -154,16 +159,22 @@ export default function BillingHistoryPage() {
                         <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                             {isHistoryLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">Memuat riwayat...</TableCell>
+                                    <TableCell colSpan={7} className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">Memuat riwayat...</TableCell>
                                 </TableRow>
                             ) : history?.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="px-4 py-3 text-center text-gray-500">Tidak ada riwayat pembayaran.</TableCell>
+                                    <TableCell colSpan={7} className="px-4 py-3 text-center text-gray-500">Tidak ada riwayat pembayaran.</TableCell>
                                 </TableRow>
-                            ) : history?.data.map((item: any) => (
+                            ) : history?.data.map((item) => (
                                 <TableRow key={item.id}>
-                                    <TableCell className="font-medium text-gray-800 dark:text-white/90">
-                                        {item.invoice_number}
+                                    <TableCell className="px-4 py-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setDetailModal({ isOpen: true, paymentId: item.id })}
+                                            className="font-medium text-brand-600 hover:text-brand-700 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-brand-400 dark:hover:text-brand-300"
+                                        >
+                                            {item.invoice_number}
+                                        </button>
                                     </TableCell>
                                     <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                         {item.subscription_plan?.name}
@@ -253,6 +264,12 @@ export default function BillingHistoryPage() {
                 paymentId={uploadModal.paymentId}
                 invoiceNumber={uploadModal.invoiceNumber}
                 reupload={uploadModal.isReupload}
+            />
+
+            <InvoiceDetailModal
+                isOpen={detailModal.isOpen}
+                onClose={() => setDetailModal({ isOpen: false, paymentId: null })}
+                paymentId={detailModal.paymentId}
             />
 
             <Modal

@@ -8,6 +8,7 @@ import {
   SubscriptionPlan,
   SubscriptionPlanFormData,
 } from "../types/types";
+import { SubscriptionPaymentDetail } from "../types/subscription";
 
 interface FetchSubscriptionPlansParams {
   page?: number;
@@ -216,12 +217,23 @@ export const useFetchMySubscription = () => {
 };
 
 export const useFetchBillingHistory = (page = 1) => {
-    return useQuery<PaginatedApiResponse<any>, AxiosError>({
+    return useQuery<PaginatedApiResponse<SubscriptionPaymentDetail>, AxiosError>({
         queryKey: ["billing-history", page],
         queryFn: async () => {
             const response = await apiClient.get("/billing/history", { params: { page } });
             return response.data.data;
         },
+    });
+};
+
+export const useFetchBillingHistoryDetail = (id: number | null) => {
+    return useQuery<SubscriptionPaymentDetail, AxiosError>({
+        queryKey: ["billing-history-detail", id],
+        queryFn: async () => {
+            const response = await apiClient.get(`/billing/history/${id}`);
+            return response.data.data;
+        },
+        enabled: id !== null,
     });
 };
 
