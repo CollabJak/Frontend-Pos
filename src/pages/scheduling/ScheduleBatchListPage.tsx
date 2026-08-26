@@ -61,14 +61,17 @@ export default function ScheduleBatchListPage() {
   return (
     <>
       <PageMeta
-        title="Batch Jadwal | POS System"
-        description="Kelola batch draft, published, dan archived untuk jadwal kerja."
+        title="Draft Jadwal | POS System"
+        description="Kelola draft, published, dan archived untuk jadwal kerja."
       />
-      <PageBreadcrumb pageTitle="Batch Jadwal" />
+      <PageBreadcrumb
+        pageTitle="Draft Jadwal"
+        breadcrumbs={[{ label: "Jadwal Kerja", path: "/scheduling" }]}
+      />
 
       <ComponentCard
-        title="Batch Jadwal"
-        desc="Review batch hasil generate sebelum dipublish ke karyawan."
+        title="Draft Jadwal"
+        desc="Review draft hasil generate sebelum dipublish ke karyawan."
         linkLabel="Generate Jadwal"
         linkTo="/scheduling/generate"
       >
@@ -87,7 +90,7 @@ export default function ScheduleBatchListPage() {
           <TableHeader className="border-y border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                Nama Batch
+                Nama Draft
               </TableCell>
               <TableCell isHeader className="px-5 py-3 text-left text-xs font-medium uppercase text-gray-500">
                 Periode
@@ -110,7 +113,7 @@ export default function ScheduleBatchListPage() {
             {isLoading && (
               <TableRow>
                 <TableCell colSpan={6} className="px-5 py-8 text-center text-sm text-gray-500">
-                  Memuat batch jadwal...
+                  Memuat draft jadwal...
                 </TableCell>
               </TableRow>
             )}
@@ -118,7 +121,7 @@ export default function ScheduleBatchListPage() {
             {!isLoading && batches.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="px-5 py-8 text-center text-sm text-gray-500">
-                  Belum ada batch jadwal.
+                  Belum ada draft jadwal.
                 </TableCell>
               </TableRow>
             )}

@@ -55,11 +55,7 @@ const BulkAssignForm: React.FC = () => {
         } else {
           setConflicts(null);
           setValue("force", false);
-
-          const batchId = result?.id || result?.batch?.id;
-          if (batchId) {
-            navigate(`/scheduling/batches/${batchId}`);
-          }
+          navigate('/scheduling');
         }
       },
       onError: (error: any) => {

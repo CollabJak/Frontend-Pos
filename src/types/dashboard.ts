@@ -8,6 +8,9 @@ export interface Transaction {
   total_amount: string;
   payment_status: string;
   order_status: string;
+  cancelled_at?: string;
+  cancelled_by?: number;
+  cancellation_reason?: string;
 }
 
 export interface TransactionMeta {

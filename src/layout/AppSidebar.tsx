@@ -40,10 +40,10 @@ const navItems: NavItem[] = [
     name: "Produk",
     permissions: ["product.view", "product_variant.view", "product_price.view"],
     subItems: [
+      { name: "Manajemen Produk", path: "/products", pro: false, permissions: ["product.view", "product_variant.view", "product_price.view", "price_tier.view", "category.view", "supplier.view", "brand.view", "atribute.view"] },
       { name: "Manajemen Satuan", path: "/units", pro: false, permissions: ["unit.view", "unit_conversion.view"] },
       { name: "Grup Pelanggan", path: "/customer-groups", pro: false, permissions: ["customer_group.view", "customer_group_price.view"] },
-      { name: "Manajemen Promosi", path: "/promotions", pro: false, permissions: ["promotion.view", "promotion_condition.view", "promotion_action.view", "promotion_product.view"] },
-      { name: "Manajemen Produk", path: "/products", pro: false, permissions: ["product.view", "product_variant.view", "product_price.view", "price_tier.view", "category.view", "supplier.view", "brand.view", "atribute.view"] }
+      { name: "Promosi", path: "/promotions", pro: false, permissions: ["promotion.view", "promotion_condition.view", "promotion_action.view", "promotion_product.view"] },
     ],
   },
   {
@@ -55,20 +55,23 @@ const navItems: NavItem[] = [
 
   {
     icon: <ListIcon />,
-    name: "Inventaris",
+    name: "Inventory",
     permissions: ["inventory.view"],
     subItems: [
       { name: "Daftar Inventaris", path: "/inventory", pro: false, permissions: ["inventory.view"] },
-      { name: "Stok Tanpa Varian", path: "/inventory/orphaned", pro: false, permissions: ["inventory.view"] },
+      // { name: "Stok Tanpa Varian", path: "/inventory/orphaned", pro: false, permissions: ["inventory.view"] },
       { name: "Pergerakan Stok", path: "/inventory/movements", pro: false, permissions: ["inventory.movements"] },
       { name: "Penyesuaian Stok", path: "/inventory/adjustment", pro: false, permissions: ["inventory.adjustment"] },
     ],
   },
   {
     icon: <DollarLineIcon />,
-    name: "POS",
-    path: "/pos",
-    permissions: ["pos.view"],
+    name: "Kasir",
+    permissions: ["pos.view", "transaction.view"],
+    subItems: [
+      { name: "POS", path: "/pos", pro: false, permissions: ["pos.view"] },
+      { name: "Riwayat Transaksi", path: "/transactions", pro: false, permissions: ["transaction.view"] },
+    ],
   },
   {
     icon: <PieChartIcon />,
@@ -98,12 +101,8 @@ const navItems: NavItem[] = [
     name: "Jadwal Kerja",
     permissions: ["jadwal.view", "jadwal.create", "shift.view", "holiday.view", "rotation.view"],
     subItems: [
-      { name: "Kalender Jadwal", path: "/scheduling", pro: false, permissions: ["jadwal.view"] },
-      { name: "Generate Jadwal", path: "/scheduling/generate", pro: false, permissions: ["jadwal.create"] },
-      { name: "Batch Jadwal", path: "/scheduling/batches", pro: false, permissions: ["jadwal.view"] },
-      { name: "Master Shift", path: "/scheduling/shifts", pro: false, permissions: ["shift.view"] },
-      { name: "Pola Rotasi", path: "/scheduling/rotation-patterns", pro: false, permissions: ["rotation.view"] },
-      { name: "Kalender Libur", path: "/scheduling/holidays", pro: false, permissions: ["holiday.view"] },
+      { name: "Kalender Kerja", path: "/scheduling", pro: false, permissions: ["jadwal.view"] },
+      { name: "Pengaturan Jadwal", path: "/scheduling/settings", pro: false, permissions: ["shift.view", "rotation.view", "holiday.view"] },
     ],
   },
   {
@@ -123,9 +122,10 @@ const navItems: NavItem[] = [
     icon: <DollarLineIcon />,
     permissions: ["view_subscription_plans"],
     subItems: [
-      { name: "Paket Harga", path: "/pricing", pro: false, permissions: ["view_subscription_plans"] },
+      { name: "Master Paket", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
+      { name: "Paket Langganan", path: "/pricing", pro: false, permissions: ["view_subscription_plans"] },
       { name: "Riwayat Tagihan", path: "/billing", pro: false, permissions: ["business.view"] },
-      { name: "Verifikasi Langganan", path: "/subscriptions/verification", pro: false, roles: ["admin"] },
+      { name: "Verifikasi Pembayaran", path: "/subscriptions/verification", pro: false, roles: ["admin"] },
     ],
   },
   {
@@ -133,10 +133,9 @@ const navItems: NavItem[] = [
     icon: <PlugInIcon />,
     permissions: ["settings.view"],
     subItems: [
+      { name: "Pengguna", path: "/users", pro: false, permissions: ["user.view"] },
       { name: "Role / Peran", path: "/roles", pro: false, permissions: ["role.view"] },
       { name: "Izin Akses", path: "/permissions", pro: false, permissions: ["permission.view"] },
-      { name: "Pengguna", path: "/users", pro: false, permissions: ["user.view"] },
-      { name: "Manajemen Paket", path: "/subscriptions-plans", pro: false, permissions: ["subscription_plan.view"] },
       { name: "Pengaturan Pajak", path: "/taxes", pro: false, permissions: ["tax.view", "view_taxes"] },
     ],
   },

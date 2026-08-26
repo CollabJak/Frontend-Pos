@@ -9,7 +9,7 @@ export const fetchRecentTransactions = async (params?: {
   page?: number;
 }): Promise<RecentTransactionsResponse> => {
   const response = await apiClient.get<RecentTransactionsResponse>(
-    "/dashboard/recent-transactions",
+    "/transactions",
     { params }
   );
   return response.data;

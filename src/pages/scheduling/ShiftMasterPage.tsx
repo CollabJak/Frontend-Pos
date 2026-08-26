@@ -25,7 +25,11 @@ import ShiftFormModal from "../../components/scheduling/ShiftFormModal";
 import { Shift } from "../../types/scheduling";
 import Switch from "../../components/form/switch/Switch";
 
-export default function ShiftMasterPage() {
+interface ShiftMasterPageProps {
+  embedded?: boolean;
+}
+
+export default function ShiftMasterPage({ embedded = false }: ShiftMasterPageProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search.trim(), 400);
@@ -67,11 +71,15 @@ export default function ShiftMasterPage() {
 
   return (
     <>
-      <PageMeta
-        title="Master Shift - Jadwal Kerja"
-        description="Kelola daftar shift kerja karyawan."
-      />
-      <PageBreadcrumb pageTitle="Master Shift" />
+      {!embedded && (
+        <>
+          <PageMeta
+            title="Master Shift - Jadwal Kerja"
+            description="Kelola daftar shift kerja karyawan."
+          />
+          <PageBreadcrumb pageTitle="Master Shift" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Daftar Shift">

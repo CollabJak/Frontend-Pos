@@ -48,7 +48,11 @@ const createEmptyHolidayRow = (date: string): HolidayCalendarFormValues => ({
   description: "",
 });
 
-export default function HolidayCalendarPage() {
+interface HolidayCalendarPageProps {
+  embedded?: boolean;
+}
+
+export default function HolidayCalendarPage({ embedded = false }: HolidayCalendarPageProps) {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -251,8 +255,12 @@ export default function HolidayCalendarPage() {
 
   return (
     <>
-      <PageMeta title="Kalender Libur - Jadwal Kerja" description="Kelola daftar hari libur." />
-      <PageBreadcrumb pageTitle="Kalender Libur" />
+      {!embedded && (
+        <>
+          <PageMeta title="Kalender Libur - Jadwal Kerja" description="Kelola daftar hari libur." />
+          <PageBreadcrumb pageTitle="Kalender Libur" />
+        </>
+      )}
 
       <div className="space-y-6">
         <ComponentCard title="Hari Libur">
