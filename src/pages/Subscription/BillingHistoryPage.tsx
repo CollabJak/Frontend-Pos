@@ -9,7 +9,6 @@ import { Pagination } from "../../components/tables/Datatable";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
 import { CalendarIcon, CreditCardIcon } from "../../icons";
-
 import UploadProofModal from "../../components/subscription/UploadProofModal";
 import InvoiceDetailModal from "../../components/subscription/InvoiceDetailModal";
 import { Modal } from "../../components/ui/modal";
