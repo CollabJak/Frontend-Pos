@@ -19,6 +19,7 @@ import {
   promotionConditionOperatorValues,
   promotionConditionSchema,
   PromotionConditionType,
+  promotionConditionTypeLabels,
   promotionConditionTypeValues,
 } from "../../Schemas/promotionConditionSchema";
 
@@ -142,7 +143,7 @@ export default function AddPromotionCondition() {
             >
               {promotionConditionTypeValues.map((value) => (
                 <option key={value} value={value}>
-                  {value}
+                  {promotionConditionTypeLabels[value] || value}
                 </option>
               ))}
             </select>

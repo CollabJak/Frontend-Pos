@@ -71,3 +71,5 @@ export const fetchPromotionOptions = createOptionsFetcher({ endpoint: "/options/
 export const fetchShiftOptions = createOptionsFetcher({ endpoint: "/options/shifts" });
 export const fetchUserOptions = createOptionsFetcher({ endpoint: "/options/users" });
 export const fetchRotationPatternOptions = createOptionsFetcher({ endpoint: "/options/rotation-patterns" });
+export const fetchPaymentMethodOptions = createOptionsFetcher({ endpoint: "/options/payment-methods" });
+

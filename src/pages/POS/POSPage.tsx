@@ -180,6 +180,7 @@ export default function POSPage() {
             })),
             customer_group_id: selectedCustomer?.customer_group_id ?? null,
             customer_id: selectedCustomer?.id ?? null,
+            payment_method_id: selectedPaymentMethodId ?? null,
           },
         },
         {
@@ -196,7 +197,7 @@ export default function POSPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [cartItems, selectedLocation, selectedCustomer, calculateCart, setPricingSnapshot]);
+  }, [cartItems, selectedLocation, selectedCustomer, selectedPaymentMethodId, calculateCart, setPricingSnapshot]);
 
   const filteredProducts = useMemo(() => {
     return toGridItems("");

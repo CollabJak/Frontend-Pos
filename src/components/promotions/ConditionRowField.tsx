@@ -12,6 +12,7 @@ import {
   PromotionConditionOperator,
   promotionConditionOperatorValues,
   PromotionConditionType,
+  promotionConditionTypeLabels,
   promotionConditionTypeValues,
 } from "../../Schemas/promotionConditionSchema";
 import { CompositePromotionFormData } from "../../Schemas/compositePromotionSchema";
@@ -91,7 +92,7 @@ export const ConditionRowField: React.FC<ConditionRowFieldProps> = ({
           >
             {promotionConditionTypeValues.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {promotionConditionTypeLabels[value] || value}
               </option>
             ))}
           </select>

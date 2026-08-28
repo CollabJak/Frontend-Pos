@@ -21,7 +21,7 @@ import {
 } from "../../hooks/usePromotionActions";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
-import { formatActionValue } from "../../utils/promotionFormatters";
+import { formatActionValue, getActionTypeLabel } from "../../utils/promotionFormatters";
 
 export interface PromotionActionListProps {
   embedded?: boolean;
@@ -46,9 +46,12 @@ export default function PromotionActionList({ embedded = false }: PromotionActio
       return;
     }
 
-    deletePromotionAction(pendingDelete.id);
-    setPendingDelete(null);
-    closeModal();
+    deletePromotionAction(pendingDelete.id, {
+      onSuccess: () => {
+        closeModal();
+        setPendingDelete(null);
+      },
+    });
   };
 
   const handleCancelDelete = () => {
@@ -62,14 +65,17 @@ export default function PromotionActionList({ embedded = false }: PromotionActio
 
   return (
     <>
-      {!embedded && (
-        <>
-          <PageMeta title="Aksi Promosi" description="Halaman daftar aksi promosi" />
-          <PageBreadcrumb pageTitle="Aksi Promosi" />
-        </>
-      )}
-
       <div className="space-y-6">
+        {!embedded && (
+          <>
+            <PageMeta title="Aksi Promosi" description="Halaman daftar aksi promosi" />
+            <PageBreadcrumb
+              pageTitle="Aksi Promosi"
+              breadcrumbs={[{ label: "Manajemen Promosi", path: "/promotions" }]}
+            />
+          </>
+        )}
+
         <ComponentCard
           title="Daftar Aksi Promosi"
           linkLabel="Tambah Aksi Promosi"
@@ -114,7 +120,7 @@ export default function PromotionActionList({ embedded = false }: PromotionActio
                           {item.promotion?.code ? ` (${item.promotion.code})` : ""}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {item.action_type}
+                          {getActionTypeLabel(item.action_type)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {item.action_value_display ||

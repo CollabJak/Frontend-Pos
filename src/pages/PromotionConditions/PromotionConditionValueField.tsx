@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import Select from "../../components/form/Select";
+import MultiSelect from "../../components/form/MultiSelect";
+import { useCustomerGroupOptions } from "../../hooks/useCustomerGroupOptions";
+import { useLocationOptions } from "../../hooks/useLocationOptions";
+import { usePaymentMethodOptions } from "../../hooks/usePaymentMethodOptions";
 import {
   PromotionConditionOperator,
   PromotionConditionType,
@@ -79,9 +84,49 @@ export default function PromotionConditionValueField({
 
   const isTimeRange = conditionType === "time_range";
   const isWeekday = conditionType === "weekday";
+  const isCustomerGroup = conditionType === "customer_group";
+  const isLocation = conditionType === "location";
+  const isPaymentMethod = conditionType === "payment_method";
+
   const isInOperator = conditionOperator === "IN";
   const isBetween = conditionOperator === "BETWEEN" && !isTimeRange;
   const useNumericValue = NUMERIC_TYPES.includes(conditionType);
+
+  // Options hooks
+  const { data: customerGroups = [], isLoading: isLoadingCustomerGroups } =
+    useCustomerGroupOptions({ enabled: isCustomerGroup });
+  const { data: locations = [], isLoading: isLoadingLocations } =
+    useLocationOptions({ enabled: isLocation });
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } =
+    usePaymentMethodOptions({ enabled: isPaymentMethod });
+
+  // Map options
+  const customerGroupMultiOptions = customerGroups.map((cg) => ({
+    value: cg.id.toString(),
+    text: cg.name,
+  }));
+  const customerGroupSelectOptions = customerGroups.map((cg) => ({
+    value: cg.id.toString(),
+    label: cg.name,
+  }));
+
+  const locationMultiOptions = locations.map((loc) => ({
+    value: loc.id.toString(),
+    text: loc.name,
+  }));
+  const locationSelectOptions = locations.map((loc) => ({
+    value: loc.id.toString(),
+    label: loc.name,
+  }));
+
+  const paymentMethodMultiOptions = paymentMethods.map((pm) => ({
+    value: pm.id.toString(),
+    text: pm.name,
+  }));
+  const paymentMethodSelectOptions = paymentMethods.map((pm) => ({
+    value: pm.id.toString(),
+    label: pm.name,
+  }));
 
   const singleValue = toStringValue(
     value.value ?? value.id ?? value.channel ?? value.payment_method
@@ -92,6 +137,28 @@ export default function PromotionConditionValueField({
   const timeEnd = toStringValue(value.end_time ?? value.end);
   const listValues = toArrayOfString(value.weekdays ?? value.values);
   const weekdaySingle = toStringValue(value.value) || "monday";
+
+  // Specific values for dropdowns
+  const customerGroupMultiValues = toArrayOfString(
+    value.customer_group_ids ?? value.groups ?? value.values ?? (Array.isArray(value.value) ? value.value : [])
+  );
+  const customerGroupSingleValue = toStringValue(
+    value.customer_group_id ?? value.id ?? value.value
+  );
+
+  const locationMultiValues = toArrayOfString(
+    value.location_ids ?? value.locations ?? value.values ?? (Array.isArray(value.value) ? value.value : [])
+  );
+  const locationSingleValue = toStringValue(
+    value.location_id ?? value.id ?? value.value
+  );
+
+  const paymentMethodMultiValues = toArrayOfString(
+    value.payment_method_ids ?? value.payment_methods ?? value.values ?? (Array.isArray(value.value) ? value.value : [])
+  );
+  const paymentMethodSingleValue = toStringValue(
+    value.payment_method_id ?? value.payment_method ?? value.id ?? value.value
+  );
 
   const addListValue = () => {
     const newValues = listInput
@@ -120,10 +187,16 @@ export default function PromotionConditionValueField({
     });
   };
 
+  const hasOwnLabel =
+    (isCustomerGroup && isInOperator) ||
+    (isLocation && isInOperator) ||
+    (isPaymentMethod && isInOperator);
+
   return (
     <div className="space-y-3">
-      <Label required>Nilai Syarat</Label>
+      {!hasOwnLabel && <Label required>Nilai Syarat</Label>}
 
+      {/* 1. Time Range */}
       {isTimeRange && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
@@ -161,7 +234,102 @@ export default function PromotionConditionValueField({
         </div>
       )}
 
-      {!isTimeRange && isWeekday && isInOperator && (
+      {/* 2. Customer Group */}
+      {isCustomerGroup && isInOperator && (
+        <MultiSelect
+          label="Nilai Syarat (Pilih Kelompok Pelanggan)"
+          required
+          placeholder={
+            isLoadingCustomerGroups
+              ? "Memuat kelompok pelanggan..."
+              : "Pilih satu atau lebih kelompok pelanggan"
+          }
+          options={customerGroupMultiOptions}
+          value={customerGroupMultiValues}
+          onChange={(vals) =>
+            onChange({ customer_group_ids: vals.map((v) => Number(v)) })
+          }
+        />
+      )}
+      {isCustomerGroup && !isInOperator && (
+        <Select
+          placeholder={
+            isLoadingCustomerGroups
+              ? "Memuat kelompok pelanggan..."
+              : "Pilih Kelompok Pelanggan"
+          }
+          options={customerGroupSelectOptions}
+          value={customerGroupSingleValue}
+          onChange={(val) =>
+            onChange({ customer_group_id: val ? Number(val) : "" })
+          }
+        />
+      )}
+
+      {/* 3. Location */}
+      {isLocation && isInOperator && (
+        <MultiSelect
+          label="Nilai Syarat (Pilih Lokasi)"
+          required
+          placeholder={
+            isLoadingLocations
+              ? "Memuat lokasi..."
+              : "Pilih satu atau lebih lokasi"
+          }
+          options={locationMultiOptions}
+          value={locationMultiValues}
+          onChange={(vals) =>
+            onChange({ location_ids: vals.map((v) => Number(v)) })
+          }
+        />
+      )}
+      {isLocation && !isInOperator && (
+        <Select
+          placeholder={
+            isLoadingLocations ? "Memuat lokasi..." : "Pilih Lokasi"
+          }
+          options={locationSelectOptions}
+          value={locationSingleValue}
+          onChange={(val) =>
+            onChange({ location_id: val ? Number(val) : "" })
+          }
+        />
+      )}
+
+      {/* 4. Payment Method */}
+      {isPaymentMethod && isInOperator && (
+        <MultiSelect
+          label="Nilai Syarat (Pilih Metode Pembayaran)"
+          required
+          placeholder={
+            isLoadingPaymentMethods
+              ? "Memuat metode pembayaran..."
+              : "Pilih satu atau lebih metode pembayaran"
+          }
+          options={paymentMethodMultiOptions}
+          value={paymentMethodMultiValues}
+          onChange={(vals) =>
+            onChange({ payment_method_ids: vals.map((v) => Number(v)) })
+          }
+        />
+      )}
+      {isPaymentMethod && !isInOperator && (
+        <Select
+          placeholder={
+            isLoadingPaymentMethods
+              ? "Memuat metode pembayaran..."
+              : "Pilih Metode Pembayaran"
+          }
+          options={paymentMethodSelectOptions}
+          value={paymentMethodSingleValue}
+          onChange={(val) =>
+            onChange({ payment_method_id: val ? Number(val) : "" })
+          }
+        />
+      )}
+
+      {/* 5. Weekday */}
+      {!isTimeRange && !isCustomerGroup && !isLocation && !isPaymentMethod && isWeekday && isInOperator && (
         <div className="space-y-2">
           <p className="text-xs text-gray-500">Pilih satu atau lebih hari berlakunya promosi:</p>
           <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -190,7 +358,7 @@ export default function PromotionConditionValueField({
         </div>
       )}
 
-      {!isTimeRange && isWeekday && !isInOperator && (
+      {!isTimeRange && !isCustomerGroup && !isLocation && !isPaymentMethod && isWeekday && !isInOperator && (
         <select
           value={weekdaySingle}
           onChange={(event) => onChange({ value: event.target.value })}
@@ -204,7 +372,8 @@ export default function PromotionConditionValueField({
         </select>
       )}
 
-      {!isTimeRange && !isWeekday && isBetween && (
+      {/* 6. Between (Numeric) */}
+      {!isTimeRange && !isCustomerGroup && !isLocation && !isPaymentMethod && !isWeekday && isBetween && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <Label htmlFor="condition-between-min" className="mb-2" required>
@@ -247,7 +416,8 @@ export default function PromotionConditionValueField({
         </div>
       )}
 
-      {!isTimeRange && !isWeekday && !isBetween && isInOperator && (
+      {/* 7. Generic IN */}
+      {!isTimeRange && !isCustomerGroup && !isLocation && !isPaymentMethod && !isWeekday && !isBetween && isInOperator && (
         <div className="space-y-3">
           <div className="flex gap-2">
             <Input
@@ -284,7 +454,8 @@ export default function PromotionConditionValueField({
         </div>
       )}
 
-      {!isTimeRange && !isWeekday && !isBetween && !isInOperator && (
+      {/* 8. Generic Single */}
+      {!isTimeRange && !isCustomerGroup && !isLocation && !isPaymentMethod && !isWeekday && !isBetween && !isInOperator && (
         <Input
           type={useNumericValue ? "number" : "text"}
           step={useNumericValue ? "1" : undefined}
@@ -307,3 +478,4 @@ export default function PromotionConditionValueField({
     </div>
   );
 }
+

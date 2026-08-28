@@ -160,11 +160,12 @@ export const singlePromotionConditionSchema = z
       }
 
       const list =
-        condition_value.values ??
         condition_value.customer_group_ids ??
         condition_value.location_ids ??
-        condition_value.channels ??
+        condition_value.payment_method_ids ??
         condition_value.payment_methods ??
+        condition_value.values ??
+        condition_value.channels ??
         (Array.isArray(condition_value.value) ? condition_value.value : null);
 
       if (!Array.isArray(list) || list.length === 0) {
@@ -206,11 +207,12 @@ export const singlePromotionConditionSchema = z
 
     // 4. Comparison operators (=, >, <, >=, <=)
     const singleVal =
-      condition_value.value ??
       condition_value.customer_group_id ??
       condition_value.location_id ??
-      condition_value.channel ??
+      condition_value.payment_method_id ??
       condition_value.payment_method ??
+      condition_value.value ??
+      condition_value.channel ??
       condition_value.id;
 
     if (singleVal === undefined || singleVal === null || singleVal === "") {
@@ -339,12 +341,21 @@ export const singlePromotionActionSchema = z
         });
       }
     } else if (action_type === "free_item") {
+      const variantId = action_value.product_variant_id ?? action_value.item_id;
       const itemName = action_value.item_name ?? action_value.item_code;
-      if (!itemName || typeof itemName !== "string" || itemName.trim() === "") {
+      const hasVariant =
+        variantId !== undefined &&
+        variantId !== null &&
+        variantId !== "" &&
+        !Number.isNaN(Number(variantId)) &&
+        Number(variantId) > 0;
+      const hasItemName = typeof itemName === "string" && itemName.trim() !== "";
+
+      if (!hasVariant && !hasItemName) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Nama atau kode item gratis wajib diisi",
-          path: ["action_value", "item_name"],
+          message: "Varian produk gratis wajib dipilih",
+          path: ["action_value", "product_variant_id"],
         });
       }
       const qty = action_value.qty ?? action_value.quantity;
