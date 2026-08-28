@@ -16,6 +16,7 @@ import PromotionActionValueField from "./PromotionActionValueField";
 import {
   promotionActionSchema,
   promotionActionTypeValues,
+  promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 
 type SelectOption = OptionDto & Record<string, unknown>;
@@ -76,6 +77,7 @@ export default function AddPromotionAction() {
   const actionValueRecord = errors.action_value as Record<string, { message?: string }> | undefined;
   const actionValueFieldErrors = {
     value: actionValueRecord?.value?.message,
+    product_variant_id: actionValueRecord?.product_variant_id?.message,
     item_name: actionValueRecord?.item_name?.message,
     qty: actionValueRecord?.qty?.message,
     price: actionValueRecord?.price?.message,
@@ -129,9 +131,7 @@ export default function AddPromotionAction() {
 
                 const nextValue =
                   selectedType === "free_item"
-                    ? { item_name: "", qty: 1 }
-                    : selectedType === "bundle_price"
-                      ? { qty: 1, price: "" }
+                    ? { product_variant_id: null, qty: 1 }
                       : { value: "" };
 
                 setValue("action_value", nextValue, {
@@ -142,7 +142,7 @@ export default function AddPromotionAction() {
             >
               {promotionActionTypeValues.map((value) => (
                 <option key={value} value={value}>
-                  {value}
+                  {promotionActionTypeLabels[value] ?? value}
                 </option>
               ))}
             </select>

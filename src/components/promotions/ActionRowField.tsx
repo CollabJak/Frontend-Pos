@@ -9,6 +9,7 @@ import Button from "../ui/button/Button";
 import PromotionActionValueField from "../../pages/PromotionActions/PromotionActionValueField";
 import {
   promotionActionTypeValues,
+  promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 import { CompositePromotionFormData } from "../../Schemas/compositePromotionSchema";
 import { PromotionActionFormData } from "../../types/types";
@@ -39,9 +40,7 @@ export const ActionRowField: React.FC<ActionRowFieldProps> = ({
 
     const nextValue =
       newType === "free_item"
-        ? { item_name: "", qty: 1 }
-        : newType === "bundle_price"
-        ? { qty: 1, price: "" }
+        ? { product_variant_id: null, qty: 1 }
         : { value: "" };
 
     setValue(`actions.${index}.action_value`, nextValue, {
@@ -62,6 +61,7 @@ export const ActionRowField: React.FC<ActionRowFieldProps> = ({
 
   const actionValueFieldErrors = {
     value: actionValueRecord?.value?.message,
+    product_variant_id: actionValueRecord?.product_variant_id?.message,
     item_name: actionValueRecord?.item_name?.message,
     qty: actionValueRecord?.qty?.message,
     price: actionValueRecord?.price?.message,
@@ -100,7 +100,7 @@ export const ActionRowField: React.FC<ActionRowFieldProps> = ({
         >
           {promotionActionTypeValues.map((value) => (
             <option key={value} value={value}>
-              {value}
+              {promotionActionTypeLabels[value] ?? value}
             </option>
           ))}
         </select>

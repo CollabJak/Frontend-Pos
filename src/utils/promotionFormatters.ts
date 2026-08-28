@@ -15,7 +15,6 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
   override_price: "Harga Khusus",
   free_item: "Item Gratis",
   cashback: "Cashback",
-  bundle_price: "Harga Paket",
 };
 
 const WEEKDAY_ID_LABELS: Record<string, string> = {
@@ -173,7 +172,11 @@ export const formatActionValue = (
   const raw = actionValue as Record<string, unknown>;
 
   if (actionType === "free_item") {
-    const itemName = raw.item_name ?? raw.item_code ?? raw.item_id ?? "Item";
+    const itemName =
+      raw.product_variant_name ??
+      raw.item_name ??
+      raw.item_code ??
+      (raw.product_variant_id ? `Varian #${raw.product_variant_id}` : "Item");
     const qty = raw.qty ?? raw.quantity ?? 1;
     return `${itemName} (${qty} pcs)`;
   }

@@ -6,8 +6,17 @@ export const promotionActionTypeValues = [
   "override_price",
   "free_item",
   "cashback",
-  "bundle_price",
 ] as const;
+
+export type PromotionActionType = (typeof promotionActionTypeValues)[number];
+
+export const promotionActionTypeLabels: Record<PromotionActionType, string> = {
+  discount_percent: "Diskon Persentase",
+  discount_amount: "Diskon Nominal",
+  override_price: "Harga Khusus",
+  free_item: "Item Gratis",
+  cashback: "Cashback",
+};
 
 export const promotionActionSchema = z
   .object({
@@ -93,12 +102,21 @@ export const promotionActionSchema = z
         });
       }
     } else if (action_type === "free_item") {
+      const variantId = action_value.product_variant_id ?? action_value.item_id;
       const itemName = action_value.item_name ?? action_value.item_code;
-      if (!itemName || typeof itemName !== "string" || itemName.trim() === "") {
+      const hasVariant =
+        variantId !== undefined &&
+        variantId !== null &&
+        variantId !== "" &&
+        !Number.isNaN(Number(variantId)) &&
+        Number(variantId) > 0;
+      const hasItemName = typeof itemName === "string" && itemName.trim() !== "";
+
+      if (!hasVariant && !hasItemName) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Nama atau kode item gratis wajib diisi",
-          path: ["action_value", "item_name"],
+          message: "Varian produk gratis wajib dipilih",
+          path: ["action_value", "product_variant_id"],
         });
       }
       const qty = action_value.qty ?? action_value.quantity;

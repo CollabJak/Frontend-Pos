@@ -124,6 +124,8 @@ export interface PosCalculateCartPayload {
   customer_group_id?: number | null;
   customer_id?: number | null;
   channel?: string;
+  payment_method?: string | null;
+  payment_method_id?: number | null;
 }
 
 export interface PosCalculateCartResult {

@@ -7,7 +7,7 @@ import PaymentMethodCard from "../../components/pos/PaymentMethodCard";
 import Button from "../../components/ui/button/Button";
 import PaymentSuccessModal from "../../components/pos/PaymentSuccessModal";
 import ReceiptPrint from "../../components/receipt/ReceiptPrint";
-import { usePosCheckout } from "../../hooks/usePos";
+import { usePosCheckout, useCalculatePosCart } from "../../hooks/usePos";
 import { useReceiptPrint } from "../../hooks/useReceiptPrint";
 import { toPosCheckoutPayload } from "../../forms/pos/checkoutForm";
 import { useZodForm } from "../../hooks/form/useZodForm";
@@ -24,7 +24,17 @@ import { EyeIcon } from "../../icons";
 
 export default function POSPaymentPage() {
   const navigate = useNavigate();
-  const { cartItems, selectedLocation, deviceId, clearCart, pricingSnapshot, selectedPaymentMethodId, selectedCustomer } = usePosStore();
+  const {
+    cartItems,
+    selectedLocation,
+    deviceId,
+    clearCart,
+    pricingSnapshot,
+    setPricingSnapshot,
+    selectedPaymentMethodId,
+    setSelectedPaymentMethodId,
+    selectedCustomer,
+  } = usePosStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState<PosCheckoutResult | null>(null);
@@ -66,6 +76,7 @@ export default function POSPaymentPage() {
   });
 
   const { mutateAsync: checkoutOrder } = usePosCheckout();
+  const { mutate: calculateCart, isPending: isCalculatingPrice } = useCalculatePosCart();
 
   const { data: paymentMethods, isLoading: isLoadingMethods } = useFetchPaymentMethodOptions('business');
 
@@ -113,6 +124,54 @@ export default function POSPaymentPage() {
     return pricingSnapshot?.grand_total ?? (subtotal - discount + tax);
   }, [subtotal, discount, tax, pricingSnapshot]);
 
+  const handleSelectMethod = (method: { id: number; type: string }) => {
+    setSelectedPaymentMethodId(method.id);
+    setValue("payment.payment_method_id", method.id, { shouldValidate: true });
+
+    if (selectedLocation && cartItems.length > 0) {
+      calculateCart(
+        {
+          payload: {
+            location_id: selectedLocation,
+            items: cartItems.map((item) => ({
+              variant_id: item.variantId,
+              qty: item.qty,
+            })),
+            customer_group_id: selectedCustomer?.customer_group_id ?? null,
+            customer_id: selectedCustomer?.id ?? null,
+            payment_method_id: method.id,
+          },
+        },
+        {
+          onSuccess: (response) => {
+            if (response.data) {
+              setPricingSnapshot(response.data);
+              const newTotal = response.data.grand_total;
+              if (method.type !== "cash") {
+                setReceivedAmountStr(newTotal.toString());
+                setValue("payment.amount_paid", newTotal, { shouldValidate: true });
+              } else {
+                setReceivedAmountStr("0");
+                setValue("payment.amount_paid", 0, { shouldValidate: true });
+              }
+            }
+          },
+          onError: (err) => {
+            console.error("Failed to calculate cart price on payment method change:", err);
+          },
+        }
+      );
+    } else {
+      if (method.type !== "cash") {
+        setReceivedAmountStr(totalDue.toString());
+        setValue("payment.amount_paid", totalDue, { shouldValidate: true });
+      } else {
+        setReceivedAmountStr("0");
+        setValue("payment.amount_paid", 0, { shouldValidate: true });
+      }
+    }
+  };
+
   // Auto-select is_default payment method or the one pre-selected in store
   useEffect(() => {
     if (paymentMethods && paymentMethods.length > 0) {
@@ -122,18 +181,10 @@ export default function POSPaymentPage() {
                             activeMethods[0];
       
       if (methodToSelect && selectedMethodId === 0) {
-        setValue("payment.payment_method_id", methodToSelect.id, { shouldValidate: true });
-        
-        if (methodToSelect.type !== "cash") {
-          setReceivedAmountStr(totalDue.toString());
-          setValue("payment.amount_paid", totalDue, { shouldValidate: true });
-        } else {
-          setReceivedAmountStr("0");
-          setValue("payment.amount_paid", 0);
-        }
+        handleSelectMethod(methodToSelect);
       }
     }
-  }, [paymentMethods, selectedPaymentMethodId, selectedMethodId, totalDue, setValue]);
+  }, [paymentMethods, selectedPaymentMethodId, selectedMethodId]);
 
   const receivedAmount = parseFloat(receivedAmountStr || "0");
   const change = Math.max(0, receivedAmount - totalDue);
@@ -595,14 +646,7 @@ export default function POSPaymentPage() {
                           label={method.name}
                           selected={selectedMethodId === method.id}
                           onClick={() => {
-                            setValue("payment.payment_method_id", method.id, { shouldValidate: true });
-                            if (method.type !== "cash") {
-                              setReceivedAmountStr(totalDue.toString());
-                              setValue("payment.amount_paid", totalDue, { shouldValidate: true });
-                            } else {
-                              setReceivedAmountStr("0");
-                              setValue("payment.amount_paid", 0, { shouldValidate: true });
-                            }
+                            handleSelectMethod(method);
                           }}
                           icon={
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -625,7 +669,13 @@ export default function POSPaymentPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[11px] font-bold">
                     <span className="text-slate-400 uppercase tracking-widest">Total Tagihan</span>
-                    <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">{formatCurrency(totalDue)}</span>
+                    <span className="text-slate-900 dark:text-white whitespace-nowrap text-lg">
+                      {isCalculatingPrice ? (
+                        <span className="animate-pulse text-brand-500">Menghitung...</span>
+                      ) : (
+                        formatCurrency(totalDue)
+                      )}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center rounded-2xl bg-slate-50 p-3.5 border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800 relative">
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">{isCash ? "Diterima" : "Dibayar"}</span>
@@ -653,11 +703,11 @@ export default function POSPaymentPage() {
                   <Button
                     className="h-14 w-full rounded-2xl text-sm font-black shadow-xl shadow-brand-500/20 active:scale-[0.98] animate-in fade-in slide-in-from-bottom-2 duration-300"
                     onClick={handleCompleteOrder}
-                    disabled={isProcessing}
+                    disabled={isProcessing || isCalculatingPrice}
                   >
                     <div className="flex items-center gap-2">
-                      <span>{isProcessing ? "MEMPROSES..." : "SELESAIKAN PESANAN"}</span>
-                      {!isProcessing && (
+                      <span>{isProcessing ? "MEMPROSES..." : isCalculatingPrice ? "MENGHITUNG HARGA..." : "SELESAIKAN PESANAN"}</span>
+                      {!isProcessing && !isCalculatingPrice && (
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>

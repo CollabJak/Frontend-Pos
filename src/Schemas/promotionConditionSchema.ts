@@ -24,6 +24,17 @@ export const promotionConditionOperatorValues = [
 export type PromotionConditionType = (typeof promotionConditionTypeValues)[number];
 export type PromotionConditionOperator = (typeof promotionConditionOperatorValues)[number];
 
+export const promotionConditionTypeLabels: Record<PromotionConditionType, string> = {
+  customer_group: "Kelompok Pelanggan",
+  min_qty: "Minimum Kuantitas",
+  location: "Lokasi",
+  weekday: "Hari",
+  channel: "Saluran Penjualan",
+  total_transaction: "Total Transaksi",
+  payment_method: "Metode Pembayaran",
+  time_range: "Rentang Waktu",
+};
+
 const VALID_WEEKDAYS = [
   "monday",
   "tuesday",
@@ -48,10 +59,28 @@ export const getDefaultConditionValue = (
     if (type === "weekday") {
       return { weekdays: [] };
     }
+    if (type === "customer_group") {
+      return { customer_group_ids: [] };
+    }
+    if (type === "location") {
+      return { location_ids: [] };
+    }
+    if (type === "payment_method") {
+      return { payment_method_ids: [] };
+    }
     return { values: [] };
   }
   if (type === "weekday") {
     return { value: "monday" };
+  }
+  if (type === "customer_group") {
+    return { customer_group_id: "" };
+  }
+  if (type === "location") {
+    return { location_id: "" };
+  }
+  if (type === "payment_method") {
+    return { payment_method_id: "" };
   }
   return { value: "" };
 };
@@ -200,11 +229,12 @@ export const promotionConditionSchema = z
       }
 
       const list =
-        condition_value.values ??
         condition_value.customer_group_ids ??
         condition_value.location_ids ??
-        condition_value.channels ??
+        condition_value.payment_method_ids ??
         condition_value.payment_methods ??
+        condition_value.values ??
+        condition_value.channels ??
         (Array.isArray(condition_value.value) ? condition_value.value : null);
 
       if (!Array.isArray(list) || list.length === 0) {
@@ -246,11 +276,12 @@ export const promotionConditionSchema = z
 
     // 4. Comparison operators (=, >, <, >=, <=)
     const singleVal =
-      condition_value.value ??
       condition_value.customer_group_id ??
       condition_value.location_id ??
-      condition_value.channel ??
+      condition_value.payment_method_id ??
       condition_value.payment_method ??
+      condition_value.value ??
+      condition_value.channel ??
       condition_value.id;
 
     if (singleVal === undefined || singleVal === null || singleVal === "") {
