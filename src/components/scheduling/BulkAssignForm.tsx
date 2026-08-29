@@ -212,7 +212,10 @@ const BulkAssignForm: React.FC = () => {
           {...register("skip_holidays")}
         />
         <Label htmlFor="skip_holidays" className="mb-0 cursor-pointer">
-          Lewati Hari Libur (nasional/perusahaan)
+          <span className="block">Jangan Buat Jadwal pada Hari Libur</span>
+          <span className="block text-xs text-gray-500 dark:text-gray-400 font-normal mt-0.5">
+            Aktifkan jika hari libur nasional atau perusahaan tidak perlu dijadwalkan sebagai hari kerja
+          </span>
         </Label>
       </div>
 
