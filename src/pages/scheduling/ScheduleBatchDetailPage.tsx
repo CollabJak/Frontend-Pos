@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import ComponentCard from "../../components/common/ComponentCard";
-import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useBatchAuditLogs, useGenerationStatus } from "../../hooks/scheduling/useScheduleBatches";
+import { useScheduleBatch, useBatchSchedules, usePublishBatch, useArchiveBatch, useRestoreBatch, useBatchAuditLogs, useGenerationStatus } from "../../hooks/scheduling/useScheduleBatches";
 import { Pagination } from "../../components/tables/Datatable";
 import Badge from "../../components/ui/badge/Badge";
 import Button from "../../components/ui/button/Button";
@@ -27,7 +27,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
   const batchId = Number(id);
 
   const [page, setPage] = useState(1);
-  const [confirmAction, setConfirmAction] = useState<"publish" | "archive" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"publish" | "archive" | "restore" | null>(null);
   const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
   const [showAudit, setShowAudit] = useState(false);
 
@@ -41,6 +41,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
   
   const publishMutation = usePublishBatch();
   const archiveMutation = useArchiveBatch();
+  const restoreMutation = useRestoreBatch();
 
   useEffect(() => {
     if (polledBatch?.generation_status !== "completed") {
@@ -75,6 +76,22 @@ const ScheduleBatchDetailPage: React.FC = () => {
       },
       onError: () => {
         setConfirmAction(null);
+      },
+    });
+  };
+
+  const handleRestore = () => {
+    restoreMutation.mutate(batchId, {
+      onSuccess: () => {
+        setConflicts(null);
+        setConfirmAction(null);
+      },
+      onError: (error: any) => {
+        setConfirmAction(null);
+        const nextConflicts = error.response?.data?.errors?.conflicts;
+        if (nextConflicts) {
+          setConflicts(nextConflicts);
+        }
       },
     });
   };
@@ -154,15 +171,26 @@ const ScheduleBatchDetailPage: React.FC = () => {
                 </>
               )}
               {batch.status === "published" && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setConfirmAction("archive")}
                   disabled={archiveMutation.isPending}
                   className="text-red-600 border-red-200 hover:bg-red-50"
                 >
                   <ArchiveIcon className="w-4 h-4 mr-2" />
                   {archiveMutation.isPending ? "Archiving..." : "Arsipkan Batch"}
+                </Button>
+              )}
+              {batch.status === "archived" && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setConfirmAction("restore")}
+                  disabled={restoreMutation.isPending}
+                >
+                  <CheckIcon className="w-4 h-4 mr-2" />
+                  {restoreMutation.isPending ? "Restoring..." : "Pulihkan Batch"}
                 </Button>
               )}
             </div>
@@ -290,6 +318,18 @@ const ScheduleBatchDetailPage: React.FC = () => {
         onConfirm={handleArchive}
         onCancel={() => setConfirmAction(null)}
         confirmLoading={archiveMutation.isPending}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmAction === "restore"}
+        title="Pulihkan batch?"
+        description={`Batch "${batch.name}" akan dikembalikan ke status published. Sistem akan mengecek konflik: jika ada karyawan yang sudah memiliki jadwal published di tanggal yang sama dari batch lain, proses akan dibatalkan.`}
+        confirmText="Pulihkan"
+        cancelText="Batal"
+        tone="warning"
+        onConfirm={handleRestore}
+        onCancel={() => setConfirmAction(null)}
+        confirmLoading={restoreMutation.isPending}
       />
 
       <AuditLogDrawer

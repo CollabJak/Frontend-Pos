@@ -56,6 +56,15 @@ export const useArchiveBatch = () => {
   });
 };
 
+export const useRestoreBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => schedulingService.restoreBatch(id),
+    onSuccess: () => invalidateBatchViews(queryClient),
+  });
+};
+
 export const useBatchSchedules = (batchId: number, params?: any) => {
   return useQuery({
     queryKey: [...schedulingKeys.batchSchedules(batchId), params],
