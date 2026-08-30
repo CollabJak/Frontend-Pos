@@ -20,6 +20,7 @@ export const rotationGenerateSchema = z.object({
   end_date: z.string().min(1, "Tanggal selesai wajib diisi"),
   rotation_pattern_id: z.number({ message: "Pilih pola rotasi" }),
   start_day_index: z.number().min(0),
+  skip_holidays: z.boolean(),
   location_id: z.number().nullable().optional(),
   force: z.boolean(),
 });
