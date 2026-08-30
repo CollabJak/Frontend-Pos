@@ -148,6 +148,10 @@ export interface SchedulePublishBatch {
   total_schedules: number;
   published_at: string | null;
   published_by: number | null;
+  archived_at: string | null;
+  archived_by: number | null;
+  restored_at: string | null;
+  restored_by: number | null;
   location?: Location;
   publisher?: User;
   created_at: string;

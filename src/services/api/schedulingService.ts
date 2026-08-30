@@ -123,6 +123,10 @@ const schedulingService = {
     const response = await apiClient.post<ApiResponse<void>>(`/schedules/batches/${id}/archive`);
     return response.data.data;
   },
+  restoreBatch: async (id: number) => {
+    const response = await apiClient.post<ApiResponse<void>>(`/schedules/batches/${id}/restore`);
+    return response.data.data;
+  },
   getSchedules: async (params?: any) => {
     const response = await apiClient.get<ApiResponse<PaginatedApiResponse<EmployeeSchedule>>>("/schedules", { params });
     return response.data.data;
