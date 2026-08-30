@@ -207,6 +207,9 @@ const RotationAssignForm: React.FC = () => {
             min={0}
             {...register("start_day_index", { valueAsNumber: true })}
           />
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Indeks pada pola rotasi yang akan dipakai pada <strong>Tanggal Mulai</strong>. Indeks bersifat <strong>siklik</strong> (berulang mengikuti cycle_days pola), bukan merujuk ke hari kalender (Senin/Minggu/dst). Kosongkan atau isi 0 untuk memulai pola dari awal.
+          </p>
           {errors.start_day_index && (
             <p className="mt-1 text-xs text-red-500">{errors.start_day_index.message}</p>
           )}
