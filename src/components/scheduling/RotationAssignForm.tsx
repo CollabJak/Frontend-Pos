@@ -42,6 +42,7 @@ const RotationAssignForm: React.FC = () => {
       start_date: formatDateToYYYYMMDD(new Date()),
       end_date: "",
       start_day_index: 0,
+      skip_holidays: true,
       force: false,
     },
   });
@@ -210,6 +211,21 @@ const RotationAssignForm: React.FC = () => {
             <p className="mt-1 text-xs text-red-500">{errors.start_day_index.message}</p>
           )}
         </div>
+      </div>
+
+      <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+        <input
+          type="checkbox"
+          id="skip_holidays"
+          className="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500"
+          {...register("skip_holidays")}
+        />
+        <Label htmlFor="skip_holidays" className="mb-0 cursor-pointer">
+          <span className="block">Jangan Buat Jadwal pada Hari Libur</span>
+          <span className="block text-xs text-gray-500 dark:text-gray-400 font-normal mt-0.5">
+            Aktifkan jika hari libur nasional atau perusahaan tidak perlu dijadwalkan sebagai hari kerja
+          </span>
+        </Label>
       </div>
 
       <div className="flex justify-end pt-2">
