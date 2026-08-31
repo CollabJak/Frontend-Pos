@@ -188,23 +188,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     [queryClient]
   );
 
-  const login = async (email: string, password: string) => {
-    try {
-      await clearAppSession(queryClient);
-      const userData = await authService.login(email, password);
-      setUser(userData);
+  const login = async (email: string, password: string, remember: boolean = false) => {
+      try {
+        await clearAppSession(queryClient);
+        const userData = await authService.login(email, password, remember);
+        setUser(userData);
 
-      if (!userData.email_verified_at) {
-        navigate("/verify-email", { replace: true });
-        return;
+        if (!userData.email_verified_at) {
+          navigate("/verify-email", { replace: true });
+          return;
+        }
+
+        redirectAfterAuth(userData, false);
+      } catch (error) {
+        console.error("Login error:", error);
+        throw error;
       }
-
-      redirectAfterAuth(userData, false);
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
-    }
-  };
+    };
 
   const register = async (
     name: string,

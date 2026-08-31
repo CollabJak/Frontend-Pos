@@ -78,18 +78,18 @@ export const authService = {
     }
   },
 
-  login: async (email: string, password: string): Promise<User> => {
-    try {
-      await ensureCsrfCookie();
-      const { data } = await apiClient.post("/login", { email, password });
-      return { ...data.data, roles: data.data.roles ?? [] };
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        throw new Error(error.response?.data?.message || "Invalid credentials.");
+  login: async (email: string, password: string, remember: boolean = false): Promise<User> => {
+      try {
+        await ensureCsrfCookie();
+        const { data } = await apiClient.post("/login", { email, password, remember });
+        return { ...data.data, roles: data.data.roles ?? [] };
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          throw new Error(error.response?.data?.message || "Invalid credentials.");
+        }
+        throw new Error("Unexpected error. Please try again.");
       }
-      throw new Error("Unexpected error. Please try again.");
-    }
-  },
+    },
 
   logout: async (): Promise<void> => {
     try {
