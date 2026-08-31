@@ -31,6 +31,10 @@ export const authService = {
       return { ...data.data, roles: data.data.roles ?? [] };
     } catch (error) {
       if (error instanceof AxiosError) {
+        if (error.response?.status === 401 || error.response?.status === 419) {
+          return null;
+        }
+
         throw new Error(error.response?.data?.message || "Error fetching user.");
       }
       throw new Error("Unexpected error. Please try again.");

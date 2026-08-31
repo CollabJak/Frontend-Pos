@@ -26,9 +26,20 @@ apiClient.interceptors.response.use(
     const status = error.response?.status;
     const errorCode = error.response?.data?.code;
 
-    // Handle Session Expiry (Unauthorized or Authentication Timeout)
+    const requestUrl = error.config?.url ?? "";
+    const isAuthBootstrapRequest = requestUrl === "/me" || requestUrl.endsWith("/me");
+
+    // Handle Session Expiry (Unauthorized or Authentication Timeout).
+    // A 401/419 from /me is a normal unauthenticated bootstrap state, not a
+    // global session-expiry event. Dispatching here clears the auth query cache
+    // and immediately refetches /me again, causing an infinite loop.
+    // 401/419 responses are auth-state signals, so they should not show toast.
     if (status === 401 || status === 419) {
-      window.dispatchEvent(new Event("auth:unauthorized"));
+      if (!isAuthBootstrapRequest) {
+        window.dispatchEvent(new Event("auth:unauthorized"));
+      }
+
+      return Promise.reject(error);
     } else if (status === 402) {
       // Handle Subscription Required
       window.dispatchEvent(new CustomEvent("subscription:required"));

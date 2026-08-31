@@ -5,6 +5,7 @@ import { authService } from "../api/authService";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearAppSession } from "../utils/sessionManager";
+import { rememberMe } from "../utils/rememberMe";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -32,7 +33,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const searchParams = new URLSearchParams(location.search);
   const googleLoginStatus = searchParams.get("google_login");
   const isGoogleLogin = googleLoginStatus === "success" || googleLoginStatus === "setup";
-  const shouldBootstrapSession = !PUBLIC_PATHS.has(location.pathname) || isGoogleLogin;
+  const isPublicPath = PUBLIC_PATHS.has(location.pathname);
+  const shouldBootstrapSession = !isPublicPath || isGoogleLogin || rememberMe.isEnabled();
 
   const meQuery = useQuery<User | null>({
     queryKey: AUTH_ME_QUERY_KEY,
@@ -113,6 +115,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       redirectAfterAuth(user, true);
     }
   }, [isGoogleLogin, user, meQuery.isFetching, queryClient, redirectAfterAuth]);
+
+  // Redirect authenticated users away from public auth pages after /me bootstrap.
+  useEffect(() => {
+    if (loading || !user || isGoogleLogin || hasRedirectedRef.current || !PUBLIC_PATHS.has(location.pathname)) {
+      return;
+    }
+
+    if (!user.email_verified_at && !user.is_email_verified) {
+      if (location.pathname !== "/verify-email") {
+        navigate("/verify-email", { replace: true });
+      }
+      return;
+    }
+
+    redirectAfterAuth(user, false);
+  }, [user, loading, isGoogleLogin, location.pathname, navigate, redirectAfterAuth]);
 
   // Proactive navigation guard for unverified email users
   useEffect(() => {
