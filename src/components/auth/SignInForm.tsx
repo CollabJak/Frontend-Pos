@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
@@ -7,6 +7,7 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
+import { rememberMe } from "../../utils/rememberMe";
 
 export default function SignInForm() {
   const { login } = useAuth();
@@ -21,11 +22,37 @@ export default function SignInForm() {
   const isPasswordReset = searchParams.get("reset") === "success";
   const errorMessage = searchParams.get("error");
 
+  // Restore remembered email + checkbox state from localStorage on mount.
+  // Priority: search-param email (verification/reset links) > remembered email.
+  useEffect(() => {
+    const paramEmail = searchParams.get("email");
+    if (!paramEmail && rememberMe.isEnabled()) {
+      const remembered = rememberMe.getRememberedEmail();
+      if (remembered) {
+        setEmail(remembered);
+        setIsChecked(true);
+      }
+    } else if (rememberMe.isEnabled()) {
+      // Even if a param email is set, reflect prior opt-in on the checkbox.
+      setIsChecked(true);
+    }
+    // Intentionally empty deps: only on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await login(email, password);
+      await login(email, password, isChecked);
+      // Persist / clear remembered email based on the user's current choice.
+      // Password is never stored.
+      if (isChecked) {
+        rememberMe.setRememberedEmail(email);
+        rememberMe.setEnabled(true);
+      } else {
+        rememberMe.clearAll();
+      }
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
