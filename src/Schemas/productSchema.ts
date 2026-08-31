@@ -20,7 +20,7 @@ export const compositeVariantSchema = z.object({
   location_types: z.array(z.enum(["store", "warehouse", "pos", "hq"])).optional().default([]),
   purchase_unit_id: z.number().optional().nullable(),
   sales_unit_id: z.number().optional().nullable(),
-  selling_price: z.number().min(0, "Harga jual minimal 0"),
+  selling_price: z.number().min(1, "Harga jual wajib lebih dari 0"),
   cost_price: z.number().min(0, "Harga modal minimal 0").optional().nullable(),
   attributes_json: z.array(compositeAttributeSchema).default([]),
 });
