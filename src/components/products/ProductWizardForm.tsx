@@ -585,7 +585,7 @@ export default function ProductWizardForm({
                     <Label required>Harga Jual (Rp)</Label>
                     <Input
                       type="number"
-                      min="0"
+                      min="1"
                       step="1"
                       placeholder="0"
                       value={watchVariants[0]?.selling_price || ""}
@@ -739,7 +739,7 @@ export default function ProductWizardForm({
                         <Label required>Harga Jual (Rp)</Label>
                         <Input
                           type="number"
-                          min="0"
+                          min="1"
                           step="1"
                           placeholder="0"
                           value={watchVariants[index]?.selling_price || ""}
