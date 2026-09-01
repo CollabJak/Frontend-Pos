@@ -8,7 +8,8 @@ import Label from "../form/Label";
 import Button from "../ui/button/Button";
 import PromotionActionValueField from "../../pages/PromotionActions/PromotionActionValueField";
 import {
-  promotionActionTypeValues,
+  visiblePromotionActionTypes,
+  hiddenPromotionActionTypes,
   promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 import { CompositePromotionFormData } from "../../Schemas/compositePromotionSchema";
@@ -98,11 +99,21 @@ export const ActionRowField: React.FC<ActionRowFieldProps> = ({
           }
           className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
         >
-          {promotionActionTypeValues.map((value) => (
-            <option key={value} value={value}>
-              {promotionActionTypeLabels[value] ?? value}
-            </option>
-          ))}
+          {(() => {
+            const shownTypes = (
+              visiblePromotionActionTypes as readonly string[]
+            ).includes(currentActionType)
+              ? visiblePromotionActionTypes
+              : [currentActionType, ...visiblePromotionActionTypes];
+            return shownTypes.map((value) => (
+              <option key={value} value={value}>
+                {promotionActionTypeLabels[value] ?? value}
+                {(hiddenPromotionActionTypes as readonly string[]).includes(value)
+                  ? " (nonaktif)"
+                  : ""}
+              </option>
+            ));
+          })()}
         </select>
         {actionErrors?.action_type && (
           <p className="text-xs text-red-500 mt-1">

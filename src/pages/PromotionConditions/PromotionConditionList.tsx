@@ -21,7 +21,10 @@ import {
 } from "../../hooks/usePromotionConditions";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
-import { formatConditionValue } from "../../utils/promotionFormatters";
+import {
+  formatConditionValue,
+  getConditionOperatorLabel,
+} from "../../utils/promotionFormatters";
 
 export interface PromotionConditionListProps {
   embedded?: boolean;
@@ -120,7 +123,7 @@ export default function PromotionConditionList({ embedded = false }: PromotionCo
                           {item.condition_type}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {item.condition_operator}
+                          {getConditionOperatorLabel(item.condition_operator)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {item.condition_value_display ||

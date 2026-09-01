@@ -219,8 +219,8 @@ export const PromotionWizardForm: React.FC<PromotionWizardFormProps> = ({
   const handleAddCondition = () => {
     appendCondition({
       condition_type: "customer_group",
-      condition_operator: "=",
-      condition_value: { value: "" },
+      condition_operator: "IN",
+      condition_value: { customer_group_ids: [] },
     });
   };
 

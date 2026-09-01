@@ -5,7 +5,6 @@ export const promotionConditionTypeValues = [
   "min_qty",
   "location",
   "weekday",
-  "channel",
   "total_transaction",
   "payment_method",
   "time_range",
@@ -21,6 +20,47 @@ export const promotionConditionOperatorValues = [
   "BETWEEN",
 ] as const;
 
+/**
+ * Pengelompokan operator yang diizinkan per tipe syarat
+ * (harus sinkron dengan PromotionCondition::CONDITION_OPERATORS_BY_TYPE di backend):
+ * - customer_group, location, weekday, payment_method: hanya IN
+ * - min_qty, total_transaction: =, >=, <=, >, <, BETWEEN
+ * - time_range: hanya =
+ */
+export const promotionConditionOperatorsByType: Record<
+  PromotionConditionType,
+  readonly PromotionConditionOperator[]
+> = {
+  customer_group: ["IN"],
+  location: ["IN"],
+  weekday: ["IN"],
+  payment_method: ["IN"],
+  min_qty: ["=", ">=", "<=", ">", "<", "BETWEEN"],
+  total_transaction: ["=", ">=", "<=", ">", "<", "BETWEEN"],
+  time_range: ["="],
+};
+
+export const getAllowedOperatorsForType = (
+  type: PromotionConditionType
+): readonly PromotionConditionOperator[] =>
+  promotionConditionOperatorsByType[type] ?? promotionConditionOperatorValues;
+
+/**
+ * Label operator syarat (value tetap sama, hanya label yang berubah).
+ */
+export const promotionConditionOperatorLabels: Record<
+  PromotionConditionOperator,
+  string
+> = {
+  "=": "Sama Dengan",
+  ">": "Besar Dari",
+  "<": "Kecil Dari",
+  ">=": "Nilai Minimum",
+  "<=": "Nilai Maksimum",
+  IN: "In",
+  BETWEEN: "Nilai Antara",
+};
+
 export type PromotionConditionType = (typeof promotionConditionTypeValues)[number];
 export type PromotionConditionOperator = (typeof promotionConditionOperatorValues)[number];
 
@@ -29,7 +69,6 @@ export const promotionConditionTypeLabels: Record<PromotionConditionType, string
   min_qty: "Minimum Kuantitas",
   location: "Lokasi",
   weekday: "Hari",
-  channel: "Saluran Penjualan",
   total_transaction: "Total Transaksi",
   payment_method: "Metode Pembayaran",
   time_range: "Rentang Waktu",
@@ -98,6 +137,17 @@ export const promotionConditionSchema = z
   })
   .superRefine((data, ctx) => {
     const { condition_type, condition_operator, condition_value } = data;
+
+    // 0. Operator harus sesuai pengelompokan tipe syarat
+    const allowedOperators = getAllowedOperatorsForType(condition_type);
+    if (!allowedOperators.includes(condition_operator)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Operator syarat tidak sesuai dengan tipe syarat yang dipilih",
+        path: ["condition_operator"],
+      });
+      return;
+    }
 
     if (!condition_value || typeof condition_value !== "object") {
       ctx.addIssue({

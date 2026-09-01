@@ -27,6 +27,21 @@ const WEEKDAY_ID_LABELS: Record<string, string> = {
   sunday: "Minggu",
 };
 
+const CONDITION_OPERATOR_LABELS: Record<string, string> = {
+  "=": "Sama Dengan",
+  ">": "Besar Dari",
+  "<": "Kecil Dari",
+  ">=": "Nilai Minimum",
+  "<=": "Nilai Maksimum",
+  IN: "In",
+  BETWEEN: "Nilai Antara",
+};
+
+export const getConditionOperatorLabel = (operator?: string): string => {
+  if (!operator) return "Sama Dengan";
+  return CONDITION_OPERATOR_LABELS[operator] || operator;
+};
+
 const formatRupiah = (val: number | string): string => {
   const num = Number(val);
   if (Number.isNaN(num)) return String(val);
@@ -146,7 +161,7 @@ export const formatConditionSummary = (
     return `${typeLabel}: ${valFormatted}`;
   }
 
-  return `${typeLabel} (${operator || "="}): ${valFormatted}`;
+  return `${typeLabel} (${getConditionOperatorLabel(operator)}): ${valFormatted}`;
 };
 
 /**
