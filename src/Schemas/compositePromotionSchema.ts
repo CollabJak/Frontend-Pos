@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   promotionConditionOperatorValues,
   promotionConditionTypeValues,
+  getAllowedOperatorsForType,
 } from "./promotionConditionSchema";
 import { promotionActionTypeValues } from "./promotionActionSchema";
 
@@ -29,6 +30,17 @@ export const singlePromotionConditionSchema = z
   })
   .superRefine((data, ctx) => {
     const { condition_type, condition_operator, condition_value } = data;
+
+    // 0. Operator harus sesuai pengelompokan tipe syarat
+    const allowedOperators = getAllowedOperatorsForType(condition_type);
+    if (!allowedOperators.includes(condition_operator)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Operator syarat tidak sesuai dengan tipe syarat yang dipilih",
+        path: ["condition_operator"],
+      });
+      return;
+    }
 
     if (!condition_value || typeof condition_value !== "object") {
       ctx.addIssue({

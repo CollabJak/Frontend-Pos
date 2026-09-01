@@ -14,9 +14,10 @@ import { ApiErrorResponse } from "../../types/types";
 import PromotionConditionValueField from "./PromotionConditionValueField";
 import {
   getDefaultConditionValue,
+  getAllowedOperatorsForType,
   PromotionConditionFormData,
   PromotionConditionOperator,
-  promotionConditionOperatorValues,
+  promotionConditionOperatorLabels,
   promotionConditionSchema,
   PromotionConditionType,
   promotionConditionTypeLabels,
@@ -41,8 +42,8 @@ export default function AddPromotionCondition() {
     defaultValues: {
       promotion_id: 0,
       condition_type: "customer_group",
-      condition_operator: "=",
-      condition_value: { value: "" },
+      condition_operator: "IN",
+      condition_value: { customer_group_ids: [] },
     },
   });
 
@@ -50,10 +51,16 @@ export default function AddPromotionCondition() {
   const currentConditionOperator = watch("condition_operator");
 
   const handleTypeChange = (newType: PromotionConditionType) => {
+    const allowedOperators = getAllowedOperatorsForType(newType);
+    const nextOperator = allowedOperators.includes(currentConditionOperator)
+      ? currentConditionOperator
+      : allowedOperators[0];
+
     setValue("condition_type", newType, { shouldValidate: true });
+    setValue("condition_operator", nextOperator, { shouldValidate: true });
     setValue(
       "condition_value",
-      getDefaultConditionValue(newType, currentConditionOperator),
+      getDefaultConditionValue(newType, nextOperator),
       { shouldValidate: true }
     );
   };
@@ -160,9 +167,9 @@ export default function AddPromotionCondition() {
               onChange={(e) => handleOperatorChange(e.target.value as PromotionConditionOperator)}
               className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             >
-              {promotionConditionOperatorValues.map((value) => (
+              {getAllowedOperatorsForType(currentConditionType).map((value) => (
                 <option key={value} value={value}>
-                  {value}
+                  {promotionConditionOperatorLabels[value] || value}
                 </option>
               ))}
             </select>

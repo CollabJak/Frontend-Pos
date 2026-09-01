@@ -17,7 +17,8 @@ import {
 import { ApiErrorResponse, PromotionActionFormData } from "../../types/types";
 import {
   promotionActionSchema,
-  promotionActionTypeValues,
+  visiblePromotionActionTypes,
+  hiddenPromotionActionTypes,
   promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 import PromotionActionValueField from "./PromotionActionValueField";
@@ -172,11 +173,22 @@ export default function EditPromotionAction() {
                 });
               }}
             >
-              {promotionActionTypeValues.map((value) => (
-                <option key={value} value={value}>
-                  {promotionActionTypeLabels[value] ?? value}
-                </option>
-              ))}
+              {(() => {
+                const currentType = watch("action_type");
+                const shownTypes = (visiblePromotionActionTypes as readonly string[]).includes(
+                  currentType
+                )
+                  ? visiblePromotionActionTypes
+                  : [currentType, ...visiblePromotionActionTypes];
+                return shownTypes.map((value) => (
+                  <option key={value} value={value}>
+                    {promotionActionTypeLabels[value] ?? value}
+                    {(hiddenPromotionActionTypes as readonly string[]).includes(value)
+                      ? " (nonaktif)"
+                      : ""}
+                  </option>
+                ));
+              })()}
             </select>
             {errors.action_type && <p className="text-red-500">{errors.action_type.message}</p>}
           </div>

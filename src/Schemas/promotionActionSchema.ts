@@ -10,6 +10,21 @@ export const promotionActionTypeValues = [
 
 export type PromotionActionType = (typeof promotionActionTypeValues)[number];
 
+/**
+ * Tipe aksi yang DISEMBUNYIKAN dari form pembuatan/perubahan promosi
+ * (Harga Khusus & Item Gratis). Value tetap valid di schema, backend, dan
+ * pricing engine — data lama dengan tipe ini tetap tampil dan bisa diedit.
+ */
+export const hiddenPromotionActionTypes = [
+  "override_price",
+  "free_item",
+] as const;
+
+export const visiblePromotionActionTypes = promotionActionTypeValues.filter(
+  (value): value is PromotionActionType =>
+    !(hiddenPromotionActionTypes as readonly string[]).includes(value)
+);
+
 export const promotionActionTypeLabels: Record<PromotionActionType, string> = {
   discount_percent: "Diskon Persentase",
   discount_amount: "Diskon Nominal",

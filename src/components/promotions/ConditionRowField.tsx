@@ -9,8 +9,9 @@ import Button from "../ui/button/Button";
 import PromotionConditionValueField from "../../pages/PromotionConditions/PromotionConditionValueField";
 import {
   getDefaultConditionValue,
+  getAllowedOperatorsForType,
   PromotionConditionOperator,
-  promotionConditionOperatorValues,
+  promotionConditionOperatorLabels,
   PromotionConditionType,
   promotionConditionTypeLabels,
   promotionConditionTypeValues,
@@ -38,10 +39,16 @@ export const ConditionRowField: React.FC<ConditionRowFieldProps> = ({
   const currentConditionValue = condition?.condition_value || { value: "" };
 
   const handleTypeChange = (newType: PromotionConditionType) => {
+    const allowedOperators = getAllowedOperatorsForType(newType);
+    const nextOperator = allowedOperators.includes(currentConditionOperator)
+      ? currentConditionOperator
+      : allowedOperators[0];
+
     setValue(`conditions.${index}.condition_type`, newType, { shouldValidate: true });
+    setValue(`conditions.${index}.condition_operator`, nextOperator, { shouldValidate: true });
     setValue(
       `conditions.${index}.condition_value`,
-      getDefaultConditionValue(newType, currentConditionOperator),
+      getDefaultConditionValue(newType, nextOperator),
       { shouldValidate: true }
     );
   };
@@ -114,9 +121,9 @@ export const ConditionRowField: React.FC<ConditionRowFieldProps> = ({
             onChange={(e) => handleOperatorChange(e.target.value as PromotionConditionOperator)}
             className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
           >
-            {promotionConditionOperatorValues.map((value) => (
+            {getAllowedOperatorsForType(currentConditionType).map((value) => (
               <option key={value} value={value}>
-                {value}
+                {promotionConditionOperatorLabels[value] || value}
               </option>
             ))}
           </select>

@@ -15,7 +15,7 @@ import { ApiErrorResponse, PromotionActionFormData } from "../../types/types";
 import PromotionActionValueField from "./PromotionActionValueField";
 import {
   promotionActionSchema,
-  promotionActionTypeValues,
+  visiblePromotionActionTypes,
   promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 
@@ -140,7 +140,7 @@ export default function AddPromotionAction() {
                 });
               }}
             >
-              {promotionActionTypeValues.map((value) => (
+              {visiblePromotionActionTypes.map((value) => (
                 <option key={value} value={value}>
                   {promotionActionTypeLabels[value] ?? value}
                 </option>
