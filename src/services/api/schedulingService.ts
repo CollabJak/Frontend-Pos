@@ -13,6 +13,17 @@ import {
   SwapOverridePayload
 } from "../../types/scheduling";
 import type { CreateSchedulePayload, UpdateSchedulePayload } from "../../types/scheduling";
+import type {
+  UpdateBatchPayload,
+  UpdateBatchSchedulePayload,
+  BulkEditPayload,
+  BulkEditPreview,
+  BulkEditResult,
+  DeleteBatchResult,
+  AddBatchSchedulesResult,
+  BatchScheduleItemPayload,
+  ScheduleWarningItem,
+} from "../../types/scheduling";
 import type { HolidayBatchCreatePayload, HolidayCalendarPayload, HolidayQueryParams } from "../../types/scheduling";
 
 const schedulingService = {
@@ -169,6 +180,35 @@ const schedulingService = {
   },
   overtimeOverride: async (data: OvertimeOverridePayload) => {
     const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules/override/overtime", data);
+    return response.data.data;
+  },
+
+  // Batch edit workflow (draft batches)
+  updateBatch: async (id: number, data: UpdateBatchPayload) => {
+    const response = await apiClient.put<ApiResponse<SchedulePublishBatch>>(`/schedules/batches/${id}`, data);
+    return response.data.data;
+  },
+  addBatchSchedules: async (id: number, data: { schedules: BatchScheduleItemPayload[] }) => {
+    const response = await apiClient.post<ApiResponse<AddBatchSchedulesResult>>(`/schedules/batches/${id}/schedules`, data);
+    return response.data.data;
+  },
+  updateBatchSchedule: async (id: number, scheduleId: number, data: UpdateBatchSchedulePayload) => {
+    const response = await apiClient.put<ApiResponse<{ schedule: EmployeeSchedule; warnings: ScheduleWarningItem[] }>>(
+      `/schedules/batches/${id}/schedules/${scheduleId}`,
+      data
+    );
+    return response.data.data;
+  },
+  deleteBatchSchedule: async (id: number, scheduleId: number) => {
+    const response = await apiClient.delete<ApiResponse<SchedulePublishBatch>>(`/schedules/batches/${id}/schedules/${scheduleId}`);
+    return response.data.data;
+  },
+  bulkEditBatch: async (id: number, data: BulkEditPayload) => {
+    const response = await apiClient.post<ApiResponse<BulkEditPreview | BulkEditResult>>(`/schedules/batches/${id}/bulk-edit`, data);
+    return response.data.data;
+  },
+  deleteBatch: async (id: number) => {
+    const response = await apiClient.delete<ApiResponse<DeleteBatchResult>>(`/schedules/batches/${id}`);
     return response.data.data;
   },
 };

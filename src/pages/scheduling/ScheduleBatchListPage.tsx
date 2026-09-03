@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
@@ -15,7 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { usePublishBatch, useScheduleBatches } from "../../hooks/scheduling/useScheduleBatches";
+import { usePublishBatch, useScheduleBatches, useDeleteBatch } from "../../hooks/scheduling/useScheduleBatches";
+import { useAuth } from "../../hooks/useAuth";
+import { Input } from "../../components/form/input/InputField";
+import Select from "../../components/form/Select";
+import { hasAccess } from "../../utils/rbac";
 import type { SchedulePublishBatch } from "../../types/scheduling";
 
 const getStatusColor = (status: string): "success" | "warning" | "light" => {
@@ -33,12 +37,46 @@ const getStatusColor = (status: string): "success" | "warning" | "light" => {
 
 export default function ScheduleBatchListPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [pendingPublish, setPendingPublish] = useState<SchedulePublishBatch | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<SchedulePublishBatch | null>(null);
   const [conflicts, setConflicts] = useState<ConflictItem[] | null>(null);
-  const { data, isLoading } = useScheduleBatches({ page });
+  const { data, isLoading, isFetching } = useScheduleBatches({
+    page,
+    search: appliedSearch || undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+  });
   const publishMutation = usePublishBatch();
+  const deleteBatchMutation = useDeleteBatch();
   const batches = data?.data ?? [];
+
+  const handleSearch = () => {
+    setAppliedSearch(search.trim());
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [appliedSearch, statusFilter]);
+
+  const canEditBatch = (batch: SchedulePublishBatch) =>
+    batch.status === "draft" &&
+    batch.generation_status !== "pending" &&
+    batch.generation_status !== "processing" &&
+    batch.generation_status !== "failed" &&
+    hasAccess(user?.roles || [], user?.permissions || [], undefined, ["jadwal.create"]);
+
+  const handleDelete = () => {
+    if (!pendingDelete) return;
+
+    deleteBatchMutation.mutate(pendingDelete.id, {
+      onSuccess: () => setPendingDelete(null),
+      onError: () => setPendingDelete(null),
+    });
+  };
 
   const handlePublish = () => {
     if (!pendingPublish) return;
@@ -86,6 +124,33 @@ export default function ScheduleBatchListPage() {
           </div>
         )}
 
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="flex gap-2">
+            <Input
+              className="flex-1"
+              placeholder="Cari nama batch..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+            />
+            <Button size="sm" variant="primary" onClick={handleSearch} isLoading={isFetching}>
+              Cari
+            </Button>
+          </div>
+          <Select
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
+            options={[
+              { value: "all", label: "Semua Status" },
+              { value: "draft", label: "Draft" },
+              { value: "published", label: "Published" },
+              { value: "archived", label: "Archived" },
+            ]}
+          />
+        </div>
+
         <Table scrollable>
           <TableHeader className="border-y border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
             <TableRow>
@@ -121,7 +186,9 @@ export default function ScheduleBatchListPage() {
             {!isLoading && batches.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="px-5 py-8 text-center text-sm text-gray-500">
-                  Belum ada draft jadwal.
+                  {(appliedSearch || statusFilter !== "all")
+                    ? "Tidak ada batch yang cocok dengan filter."
+                    : "Belum ada draft jadwal."}
                 </TableCell>
               </TableRow>
             )}
@@ -163,6 +230,17 @@ export default function ScheduleBatchListPage() {
                       >
                         Detail
                       </Button>
+                      {canEditBatch(batch) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setPendingDelete(batch)}
+                          disabled={deleteBatchMutation.isPending}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          Hapus
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -193,6 +271,22 @@ export default function ScheduleBatchListPage() {
         onConfirm={handlePublish}
         onCancel={() => setPendingPublish(null)}
         confirmLoading={publishMutation.isPending}
+      />
+
+      <ConfirmDialog
+        isOpen={!!pendingDelete}
+        title="Hapus batch draft ini?"
+        description={
+          pendingDelete
+            ? `Seluruh ${pendingDelete.total_schedules} jadwal dalam batch "${pendingDelete.name}" akan dihapus bersama batch-nya. Tindakan ini berlaku hanya untuk batch draft dan tidak bisa dibatalkan.`
+            : ""
+        }
+        confirmText="Hapus Batch"
+        cancelText="Batal"
+        tone="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setPendingDelete(null)}
+        confirmLoading={deleteBatchMutation.isPending}
       />
     </>
   );

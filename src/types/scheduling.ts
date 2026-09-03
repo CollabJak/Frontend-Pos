@@ -136,6 +136,7 @@ export interface SchedulePublishBatch {
   business_id: number;
   location_id: number | null;
   name: string;
+  description?: string | null;
   period_start: string;
   period_end: string;
   status: ScheduleStatus;
@@ -235,4 +236,98 @@ export interface UpdateSchedulePayload {
   is_day_off?: boolean;
   location_id?: number | null;
   day_off_note?: string | null;
+}
+
+// ---------------------------------------------------------------
+// Batch edit workflow (draft batches)
+// ---------------------------------------------------------------
+
+export type BatchEditAction = "reassign_shift" | "set_day_off" | "remove";
+
+export interface BatchScheduleItemPayload {
+  user_id: number;
+  shift_id?: number | null;
+  schedule_date: string;
+  is_day_off?: boolean;
+  location_id?: number | null;
+  day_off_note?: string | null;
+}
+
+export interface UpdateBatchSchedulePayload {
+  user_id?: number;
+  shift_id?: number | null;
+  schedule_date?: string;
+  is_day_off?: boolean;
+  location_id?: number | null;
+  day_off_note?: string | null;
+}
+
+export interface UpdateBatchPayload {
+  name?: string;
+  description?: string | null;
+  period_start?: string;
+  period_end?: string;
+}
+
+export interface BulkEditPayload {
+  action: BatchEditAction;
+  dry_run: boolean;
+  filters: {
+    date_from?: string | null;
+    date_to?: string | null;
+    user_ids?: number[] | null;
+    schedule_ids?: number[] | null;
+    current_shift_id?: number | null;
+  };
+  payload?: {
+    shift_id?: number | null;
+    day_off_note?: string | null;
+  };
+}
+
+export interface ScheduleConflictItem {
+  schedule_id: number | null;
+  user_id: number | null;
+  user_name?: string | null;
+  date: string | null;
+  conflict_type: "double_schedule" | "invalid_status" | "cross_day_overlap" | "batch_overlap";
+  message: string;
+}
+
+export interface ScheduleWarningItem {
+  schedule_id: number | null;
+  user_id: number | null;
+  date: string | null;
+  conflict_type: "cross_day_overlap" | "batch_overlap";
+  message: string;
+}
+
+export interface BulkEditPreview {
+  affected_count: number;
+  affected_items: Array<{
+    schedule_id: number;
+    user_name: string | null;
+    schedule_date: string;
+    current_shift: string | null;
+    new_shift: string | null;
+  }>;
+  conflicts: ScheduleConflictItem[];
+  warnings: ScheduleWarningItem[];
+  blocked: boolean;
+}
+
+export interface BulkEditResult {
+  affected_count: number;
+  warnings: ScheduleWarningItem[];
+}
+
+export interface DeleteBatchResult {
+  deleted_schedules: number;
+  deleted_batch: boolean;
+}
+
+export interface AddBatchSchedulesResult {
+  created_count: number;
+  warnings: ScheduleWarningItem[];
+  batch: SchedulePublishBatch;
 }
