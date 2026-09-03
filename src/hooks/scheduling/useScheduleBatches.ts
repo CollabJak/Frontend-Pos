@@ -2,6 +2,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
 import { schedulingKeys } from "./queryKeys";
+import type {
+  UpdateBatchPayload,
+  UpdateBatchSchedulePayload,
+  BulkEditPayload,
+  BatchScheduleItemPayload,
+} from "../../types/scheduling";
 
 export const useScheduleBatches = (filters?: any) => {
   return useQuery({
@@ -36,6 +42,13 @@ const invalidateBatchViews = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: schedulingKeys.calendar });
   queryClient.invalidateQueries({ queryKey: ["schedule"] });
   queryClient.invalidateQueries({ queryKey: ["schedule-audit"] });
+};
+
+const invalidateBatchDetail = (queryClient: QueryClient, batchId: number) => {
+  invalidateBatchViews(queryClient);
+  queryClient.invalidateQueries({ queryKey: schedulingKeys.batch(batchId) });
+  queryClient.invalidateQueries({ queryKey: schedulingKeys.batchSchedules(batchId) });
+  queryClient.invalidateQueries({ queryKey: schedulingKeys.batchAudit(batchId) });
 };
 
 export const usePublishBatch = () => {
@@ -78,5 +91,68 @@ export const useBatchAuditLogs = (batchId: number) => {
     queryKey: schedulingKeys.batchAudit(batchId),
     queryFn: () => schedulingService.getBatchAuditLogs(batchId),
     enabled: !!batchId,
+  });
+};
+
+// ---------------------------------------------------------------
+// Batch edit workflow (draft batches)
+// ---------------------------------------------------------------
+
+export const useUpdateBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateBatchPayload }) =>
+      schedulingService.updateBatch(id, data),
+    onSuccess: (_data, variables) => invalidateBatchDetail(queryClient, variables.id),
+  });
+};
+
+export const useAddBatchSchedules = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: { schedules: BatchScheduleItemPayload[] } }) =>
+      schedulingService.addBatchSchedules(id, data),
+    onSuccess: (_data, variables) => invalidateBatchDetail(queryClient, variables.id),
+  });
+};
+
+export const useUpdateBatchSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, scheduleId, data }: { id: number; scheduleId: number; data: UpdateBatchSchedulePayload }) =>
+      schedulingService.updateBatchSchedule(id, scheduleId, data),
+    onSuccess: (_data, variables) => invalidateBatchDetail(queryClient, variables.id),
+  });
+};
+
+export const useDeleteBatchSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, scheduleId }: { id: number; scheduleId: number }) =>
+      schedulingService.deleteBatchSchedule(id, scheduleId),
+    onSuccess: (_data, variables) => invalidateBatchDetail(queryClient, variables.id),
+  });
+};
+
+export const useBulkEditBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: BulkEditPayload }) =>
+      schedulingService.bulkEditBatch(id, data),
+    onSuccess: (_data, variables) => invalidateBatchDetail(queryClient, variables.id),
+  });
+};
+
+export const useDeleteBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => schedulingService.deleteBatch(id),
+    onSuccess: () => invalidateBatchViews(queryClient),
   });
 };
