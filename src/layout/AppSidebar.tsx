@@ -76,13 +76,19 @@ const navItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Laporan",
-    permissions: ["report.sales_by_location.view"],
+    permissions: ["report.sales_by_location.view", "report.attendance.view"],
     subItems: [
       {
         name: "Penjualan per Lokasi",
         path: "/reports/sales-by-location",
         pro: false,
         permissions: ["report.sales_by_location.view"],
+      },
+      {
+        name: "Absensi Karyawan",
+        path: "/reports/attendance",
+        pro: false,
+        permissions: ["report.attendance.view"],
       },
     ],
   },

@@ -107,6 +107,7 @@ import ScheduleGeneratePage from "./pages/scheduling/ScheduleGeneratePage";
 import ScheduleBatchDetailPage from "./pages/scheduling/ScheduleBatchDetailPage";
 import ScheduleBatchListPage from "./pages/scheduling/ScheduleBatchListPage";
 import ProductSalesByLocationReport from "./pages/Reports/ProductSalesByLocationReport";
+import AttendanceReportPage from "./pages/Reports/AttendanceReportPage";
 import TaxListPage from "./pages/Taxes/TaxListPage";
 import BusinessInactivePage from "./pages/Businesses/BusinessInactivePage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -306,6 +307,9 @@ export default function App() {
               {/* Reports */}
               <Route element={<ProtectedRoute allowedPermissions={["report.sales_by_location.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
                 <Route path="/reports/sales-by-location" element={<ProductSalesByLocationReport />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedPermissions={["report.attendance.view"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
+                <Route path="/reports/attendance" element={<AttendanceReportPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedPermissions={["absensi.enroll"]} requireActiveSubscription={true}><Outlet /></ProtectedRoute>}>
