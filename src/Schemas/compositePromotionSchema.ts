@@ -17,6 +17,12 @@ const VALID_WEEKDAYS = [
 ];
 
 // Single Condition Item Schema (without requiring promotion_id)
+/**
+ * Pengelompokan operator sinkron dengan backend: hanya
+ * total_transaction yang boleh pakai =, >=, <=, >, <, BETWEEN.
+ */
+const numericOperatorTypes = ["total_transaction"] as const;
+
 export const singlePromotionConditionSchema = z
   .object({
     id: z.number().optional(),
@@ -119,19 +125,14 @@ export const singlePromotionConditionSchema = z
           });
         }
         if (!Number.isNaN(numMin) && !Number.isNaN(numMax)) {
-          if (condition_type === "min_qty" && numMin < 1) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Jumlah minimal kuantitas minimal 1",
-              path: ["condition_value"],
-            });
-          }
-          if (condition_type === "total_transaction" && numMin < 0) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Nominal transaksi tidak boleh negatif",
-              path: ["condition_value"],
-            });
+          if (numericOperatorTypes.includes(condition_type as "total_transaction")) {
+            if (numMin < 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Nominal transaksi tidak boleh negatif",
+                path: ["condition_value"],
+              });
+            }
           }
           if (numMax < numMin) {
             ctx.addIssue({
@@ -177,7 +178,6 @@ export const singlePromotionConditionSchema = z
         condition_value.payment_method_ids ??
         condition_value.payment_methods ??
         condition_value.values ??
-        condition_value.channels ??
         (Array.isArray(condition_value.value) ? condition_value.value : null);
 
       if (!Array.isArray(list) || list.length === 0) {
@@ -189,19 +189,7 @@ export const singlePromotionConditionSchema = z
         return;
       }
 
-      if (condition_type === "min_qty") {
-        const invalid = list.some((item) => {
-          const n = Number(item);
-          return Number.isNaN(n) || n < 1;
-        });
-        if (invalid) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Semua nilai kuantitas harus berupa angka minimal 1",
-            path: ["condition_value"],
-          });
-        }
-      } else if (condition_type === "total_transaction") {
+      if (numericOperatorTypes.includes(condition_type as "total_transaction")) {
         const invalid = list.some((item) => {
           const n = Number(item);
           return Number.isNaN(n) || n < 0;
@@ -224,7 +212,6 @@ export const singlePromotionConditionSchema = z
       condition_value.payment_method_id ??
       condition_value.payment_method ??
       condition_value.value ??
-      condition_value.channel ??
       condition_value.id;
 
     if (singleVal === undefined || singleVal === null || singleVal === "") {
@@ -247,16 +234,7 @@ export const singlePromotionConditionSchema = z
           path: ["condition_value"],
         });
       }
-    } else if (condition_type === "min_qty") {
-      const num = Number(singleVal);
-      if (Number.isNaN(num) || num < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Kuantitas minimal harus berupa angka minimal 1",
-          path: ["condition_value"],
-        });
-      }
-    } else if (condition_type === "total_transaction") {
+    } else if (numericOperatorTypes.includes(condition_type as "total_transaction")) {
       const num = Number(singleVal);
       if (Number.isNaN(num) || num < 0) {
         ctx.addIssue({
@@ -322,21 +300,6 @@ export const singlePromotionActionSchema = z
           path: ["action_value", "value"],
         });
       }
-    } else if (action_type === "override_price") {
-      const val = action_value.value ?? action_value.price;
-      if (val === "" || val === null || val === undefined || Number.isNaN(Number(val))) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Harga khusus wajib diisi",
-          path: ["action_value", "value"],
-        });
-      } else if (Number(val) < 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Harga khusus tidak boleh kurang dari 0",
-          path: ["action_value", "value"],
-        });
-      }
     } else if (action_type === "cashback") {
       const val = action_value.value ?? action_value.amount;
       if (val === "" || val === null || val === undefined || Number.isNaN(Number(val))) {
@@ -350,55 +313,6 @@ export const singlePromotionActionSchema = z
           code: z.ZodIssueCode.custom,
           message: "Jumlah cashback harus lebih dari 0",
           path: ["action_value", "value"],
-        });
-      }
-    } else if (action_type === "free_item") {
-      const variantId = action_value.product_variant_id ?? action_value.item_id;
-      const itemName = action_value.item_name ?? action_value.item_code;
-      const hasVariant =
-        variantId !== undefined &&
-        variantId !== null &&
-        variantId !== "" &&
-        !Number.isNaN(Number(variantId)) &&
-        Number(variantId) > 0;
-      const hasItemName = typeof itemName === "string" && itemName.trim() !== "";
-
-      if (!hasVariant && !hasItemName) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Varian produk gratis wajib dipilih",
-          path: ["action_value", "product_variant_id"],
-        });
-      }
-      const qty = action_value.qty ?? action_value.quantity;
-      if (qty === "" || qty === null || qty === undefined || Number.isNaN(Number(qty)) || Number(qty) < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Jumlah item gratis minimal 1",
-          path: ["action_value", "qty"],
-        });
-      }
-    } else if (action_type === "bundle_price") {
-      const qty = action_value.qty ?? action_value.min_qty;
-      if (qty === "" || qty === null || qty === undefined || Number.isNaN(Number(qty)) || Number(qty) < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Jumlah paket minimal 1",
-          path: ["action_value", "qty"],
-        });
-      }
-      const price = action_value.price ?? action_value.value;
-      if (price === "" || price === null || price === undefined || Number.isNaN(Number(price))) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Harga paket wajib diisi",
-          path: ["action_value", "price"],
-        });
-      } else if (Number(price) < 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Harga paket tidak boleh kurang dari 0",
-          path: ["action_value", "price"],
         });
       }
     }

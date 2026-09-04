@@ -15,6 +15,11 @@ import { posCheckoutSchema } from "../../Schemas/pos.schema";
 import type { PosCheckoutResult } from "../../types/types";
 import { formatCurrency } from "../../utils/currency";
 import { resolveErrorMessage } from "../../utils/error";
+import PromotionBreakdownPopup from "../../components/pos/PromotionBreakdownPopup";
+import {
+  aggregateDiscountRows,
+  getCashbackRows,
+} from "../../utils/promotionBreakdown";
 import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchActiveTax } from "../../hooks/useTaxes";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
@@ -115,6 +120,17 @@ export default function POSPaymentPage() {
   const discount = useMemo(() => {
     return pricingSnapshot?.discount_total ?? 0;
   }, [pricingSnapshot]);
+
+  // FR-7 BRD v1.4: agregasi sumber diskon & cashback untuk popup info (Mode A + Mode B).
+  const discountBreakdown = useMemo(
+    () => aggregateDiscountRows(pricingSnapshot),
+    [pricingSnapshot]
+  );
+  const cashbackBreakdown = useMemo(
+    () => getCashbackRows(pricingSnapshot),
+    [pricingSnapshot]
+  );
+  const cashbackTotal = pricingSnapshot?.total_cashback ?? 0;
 
   const tax = useMemo(() => {
     return pricingSnapshot?.tax_total ?? (subtotal * (activeTaxRate / 100));
@@ -437,10 +453,25 @@ export default function POSPaymentPage() {
                     <span className="text-slate-400">Subtotal</span>
                     <span className="text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatCurrency(subtotal)}</span>
                   </div>
-                  {discount > 0 && (
+                  {(discount > 0 || discountBreakdown.length > 0) && (
                     <div className="flex justify-between text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                      <span>Diskon</span>
+                      <PromotionBreakdownPopup
+                        label="Diskon"
+                        rows={discountBreakdown}
+                        variant="summary"
+                      />
                       <span className="whitespace-nowrap">- {formatCurrency(discount)}</span>
+                    </div>
+                  )}
+                  {(cashbackTotal > 0 || cashbackBreakdown.length > 0) && (
+                    <div className="flex justify-between text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                      <PromotionBreakdownPopup
+                        label="Cashback"
+                        rows={cashbackBreakdown}
+                        variant="summary"
+                        footnote="Cashback tidak mengurangi total tagihan."
+                      />
+                      <span className="whitespace-nowrap">+ {formatCurrency(cashbackTotal)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-[11px] font-medium">

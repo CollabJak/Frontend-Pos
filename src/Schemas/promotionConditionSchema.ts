@@ -1,13 +1,18 @@
 import { z } from "zod";
 
+/**
+ * Katalog syarat final (FR-1 BRD v1.4) — sinkron dengan
+ * PromotionCondition::CONDITION_TYPES di backend:
+ * customer_group, location, weekday, time_range, total_transaction, payment_method.
+ * (min_qty & channel DIHAPUS — min_qty kini hanya milik PriceTier.)
+ */
 export const promotionConditionTypeValues = [
   "customer_group",
-  "min_qty",
   "location",
   "weekday",
+  "time_range",
   "total_transaction",
   "payment_method",
-  "time_range",
 ] as const;
 
 export const promotionConditionOperatorValues = [
@@ -24,7 +29,7 @@ export const promotionConditionOperatorValues = [
  * Pengelompokan operator yang diizinkan per tipe syarat
  * (harus sinkron dengan PromotionCondition::CONDITION_OPERATORS_BY_TYPE di backend):
  * - customer_group, location, weekday, payment_method: hanya IN
- * - min_qty, total_transaction: =, >=, <=, >, <, BETWEEN
+ * - total_transaction: =, >=, <=, >, <, BETWEEN
  * - time_range: hanya =
  */
 export const promotionConditionOperatorsByType: Record<
@@ -35,7 +40,6 @@ export const promotionConditionOperatorsByType: Record<
   location: ["IN"],
   weekday: ["IN"],
   payment_method: ["IN"],
-  min_qty: ["=", ">=", "<=", ">", "<", "BETWEEN"],
   total_transaction: ["=", ">=", "<=", ">", "<", "BETWEEN"],
   time_range: ["="],
 };
@@ -66,7 +70,6 @@ export type PromotionConditionOperator = (typeof promotionConditionOperatorValue
 
 export const promotionConditionTypeLabels: Record<PromotionConditionType, string> = {
   customer_group: "Kelompok Pelanggan",
-  min_qty: "Minimum Kuantitas",
   location: "Lokasi",
   weekday: "Hari",
   total_transaction: "Total Transaksi",
@@ -226,13 +229,6 @@ export const promotionConditionSchema = z
           });
         }
         if (!Number.isNaN(numMin) && !Number.isNaN(numMax)) {
-          if (condition_type === "min_qty" && numMin < 1) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Jumlah minimal kuantitas minimal 1",
-              path: ["condition_value"],
-            });
-          }
           if (condition_type === "total_transaction" && numMin < 0) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
@@ -284,7 +280,6 @@ export const promotionConditionSchema = z
         condition_value.payment_method_ids ??
         condition_value.payment_methods ??
         condition_value.values ??
-        condition_value.channels ??
         (Array.isArray(condition_value.value) ? condition_value.value : null);
 
       if (!Array.isArray(list) || list.length === 0) {
@@ -296,19 +291,7 @@ export const promotionConditionSchema = z
         return;
       }
 
-      if (condition_type === "min_qty") {
-        const invalid = list.some((item) => {
-          const n = Number(item);
-          return Number.isNaN(n) || n < 1;
-        });
-        if (invalid) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Semua nilai kuantitas harus berupa angka minimal 1",
-            path: ["condition_value"],
-          });
-        }
-      } else if (condition_type === "total_transaction") {
+      if (condition_type === "total_transaction") {
         const invalid = list.some((item) => {
           const n = Number(item);
           return Number.isNaN(n) || n < 0;
@@ -331,7 +314,6 @@ export const promotionConditionSchema = z
       condition_value.payment_method_id ??
       condition_value.payment_method ??
       condition_value.value ??
-      condition_value.channel ??
       condition_value.id;
 
     if (singleVal === undefined || singleVal === null || singleVal === "") {
@@ -351,15 +333,6 @@ export const promotionConditionSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Hari yang dipilih tidak valid",
-          path: ["condition_value"],
-        });
-      }
-    } else if (condition_type === "min_qty") {
-      const num = Number(singleVal);
-      if (Number.isNaN(num) || num < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Kuantitas minimal harus berupa angka minimal 1",
           path: ["condition_value"],
         });
       }

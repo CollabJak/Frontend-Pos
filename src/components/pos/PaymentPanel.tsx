@@ -1,4 +1,7 @@
 import Button from "../ui/button/Button";
+import PromotionBreakdownPopup, {
+  type PromotionBreakdownPopupRow,
+} from "./PromotionBreakdownPopup";
 
 const formatCurrency = (value: number): string =>
   new Intl.NumberFormat("id-ID", {
@@ -34,6 +37,11 @@ interface PaymentPanelProps {
   paymentMethods?: any[];
   selectedPaymentMethodId?: number | null;
   onSelectPaymentMethod?: (id: number | null) => void;
+  /** FR-7 BRD v1.4: rincian sumber diskon (Mode A + Mode B) untuk popup info. */
+  discountBreakdown?: PromotionBreakdownPopupRow[];
+  /** FR-4/FR-7: cashback flat — informasi, tidak mengurangi total. */
+  cashbackAmount?: number;
+  cashbackBreakdown?: PromotionBreakdownPopupRow[];
 }
 
 export default function PaymentPanel({
@@ -50,6 +58,9 @@ export default function PaymentPanel({
   paymentMethods = [],
   selectedPaymentMethodId = null,
   onSelectPaymentMethod,
+  discountBreakdown = [],
+  cashbackAmount = 0,
+  cashbackBreakdown = [],
 }: PaymentPanelProps) {
   return (
     <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-800">
@@ -64,13 +75,33 @@ export default function PaymentPanel({
           )}
         </div>
 
-        {discount > 0 && (
+        {(discount > 0 || discountBreakdown.length > 0) && (
           <div className="flex items-center justify-between text-success-600 dark:text-success-400">
-            <span className="text-sm font-medium">Diskon</span>
+            <PromotionBreakdownPopup
+              label="Diskon"
+              rows={discountBreakdown}
+              variant="panel"
+            />
             {isCalculatingPrice ? (
               <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
             ) : (
               <span className="text-sm font-bold">- {formatCurrency(discount)}</span>
+            )}
+          </div>
+        )}
+
+        {(cashbackAmount > 0 || cashbackBreakdown.length > 0) && (
+          <div className="flex items-center justify-between text-amber-600 dark:text-amber-400">
+            <PromotionBreakdownPopup
+              label="Cashback"
+              rows={cashbackBreakdown}
+              variant="panel"
+              footnote="Cashback tidak mengurangi total tagihan."
+            />
+            {isCalculatingPrice ? (
+              <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            ) : (
+              <span className="text-sm font-bold">+ {formatCurrency(cashbackAmount)}</span>
             )}
           </div>
         )}

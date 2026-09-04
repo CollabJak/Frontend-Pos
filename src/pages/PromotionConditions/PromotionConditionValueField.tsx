@@ -30,7 +30,7 @@ const WEEKDAY_OPTIONS = [
   "sunday",
 ];
 
-const NUMERIC_TYPES: PromotionConditionType[] = ["min_qty", "total_transaction"];
+const NUMERIC_TYPES: PromotionConditionType[] = ["total_transaction"];
 
 const toStringValue = (value: unknown): string => {
   if (value === null || value === undefined) {
@@ -129,7 +129,7 @@ export default function PromotionConditionValueField({
   }));
 
   const singleValue = toStringValue(
-    value.value ?? value.id ?? value.channel ?? value.payment_method
+    value.value ?? value.id ?? value.payment_method
   );
   const betweenMin = toStringValue(value.min ?? value.from);
   const betweenMax = toStringValue(value.max ?? value.to);
@@ -377,14 +377,14 @@ export default function PromotionConditionValueField({
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <Label htmlFor="condition-between-min" className="mb-2" required>
-              Nilai Minimal {conditionType === "min_qty" ? "(Qty)" : conditionType === "total_transaction" ? "(Rp)" : ""}
+              Nilai Minimal {conditionType === "total_transaction" ? "(Rp)" : ""}
             </Label>
             <Input
               id="condition-between-min"
               type={useNumericValue ? "number" : "text"}
               step={useNumericValue ? "1" : undefined}
-              min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
-              placeholder={conditionType === "min_qty" ? "Contoh: 1" : "Contoh: 50000"}
+              min={conditionType === "total_transaction" ? "0" : undefined}
+              placeholder="Contoh: 50000"
               value={betweenMin}
               onChange={(event) =>
                 onChange({
@@ -396,14 +396,14 @@ export default function PromotionConditionValueField({
           </div>
           <div>
             <Label htmlFor="condition-between-max" className="mb-2" required>
-              Nilai Maksimal {conditionType === "min_qty" ? "(Qty)" : conditionType === "total_transaction" ? "(Rp)" : ""}
+              Nilai Maksimal {conditionType === "total_transaction" ? "(Rp)" : ""}
             </Label>
             <Input
               id="condition-between-max"
               type={useNumericValue ? "number" : "text"}
               step={useNumericValue ? "1" : undefined}
-              min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
-              placeholder={conditionType === "min_qty" ? "Contoh: 10" : "Contoh: 200000"}
+              min={conditionType === "total_transaction" ? "0" : undefined}
+              placeholder="Contoh: 200000"
               value={betweenMax}
               onChange={(event) =>
                 onChange({
@@ -459,15 +459,13 @@ export default function PromotionConditionValueField({
         <Input
           type={useNumericValue ? "number" : "text"}
           step={useNumericValue ? "1" : undefined}
-          min={conditionType === "min_qty" ? "1" : conditionType === "total_transaction" ? "0" : undefined}
+          min={conditionType === "total_transaction" ? "0" : undefined}
           value={singleValue}
           onChange={(event) =>
             onChange({ value: toPrimitiveValue(event.target.value, useNumericValue) })
           }
           placeholder={
-            conditionType === "min_qty"
-              ? "Masukkan jumlah kuantitas minimal (contoh: 5)"
-              : conditionType === "total_transaction"
+            conditionType === "total_transaction"
               ? "Masukkan nominal transaksi minimal (contoh: 100000)"
               : "Masukkan nilai syarat"
           }

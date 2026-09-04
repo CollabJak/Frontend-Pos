@@ -23,6 +23,10 @@ import ActiveShiftWidget from "../../components/pos/ActiveShiftWidget";
 import AddCashMovementModal from "../../components/pos/AddCashMovementModal";
 import CloseShiftModal from "../../components/pos/CloseShiftModal";
 import { resolveErrorMessage } from "../../utils/error";
+import {
+  aggregateDiscountRows,
+  getCashbackRows,
+} from "../../utils/promotionBreakdown";
 import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
 import { useFetchActiveTax } from "../../hooks/useTaxes";
@@ -303,6 +307,17 @@ export default function POSPage() {
     return subTotal + tax;
   }, [subTotal, tax, pricingSnapshot]);
 
+  // FR-7 BRD v1.4: agregasi sumber diskon & cashback untuk popup info (Mode A + Mode B).
+  const discountBreakdown = useMemo(
+    () => aggregateDiscountRows(pricingSnapshot),
+    [pricingSnapshot]
+  );
+  const cashbackBreakdown = useMemo(
+    () => getCashbackRows(pricingSnapshot),
+    [pricingSnapshot]
+  );
+  const cashbackTotal = pricingSnapshot?.total_cashback ?? 0;
+
   return (
     <>
       <PageMeta title="Kasir (POS)" description="Halaman kasir penjualan (Point of Sale)" />
@@ -408,6 +423,9 @@ export default function POSPage() {
             paymentMethods={paymentMethods.filter((m) => m.is_active)}
             selectedPaymentMethodId={selectedPaymentMethodId}
             onSelectPaymentMethod={setSelectedPaymentMethodId}
+            discountBreakdown={discountBreakdown}
+            cashbackAmount={cashbackTotal}
+            cashbackBreakdown={cashbackBreakdown}
           />
         }
       />

@@ -15,7 +15,7 @@ import { ApiErrorResponse, PromotionActionFormData } from "../../types/types";
 import PromotionActionValueField from "./PromotionActionValueField";
 import {
   promotionActionSchema,
-  visiblePromotionActionTypes,
+  promotionActionTypeValues,
   promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 
@@ -129,18 +129,13 @@ export default function AddPromotionAction() {
                 const selectedType = event.target.value as PromotionActionFormData["action_type"];
                 setValue("action_type", selectedType, { shouldValidate: true });
 
-                const nextValue =
-                  selectedType === "free_item"
-                    ? { product_variant_id: null, qty: 1 }
-                      : { value: "" };
-
-                setValue("action_value", nextValue, {
+                setValue("action_value", { value: "" }, {
                   shouldValidate: true,
                   shouldDirty: true,
                 });
               }}
             >
-              {visiblePromotionActionTypes.map((value) => (
+              {promotionActionTypeValues.map((value) => (
                 <option key={value} value={value}>
                   {promotionActionTypeLabels[value] ?? value}
                 </option>
