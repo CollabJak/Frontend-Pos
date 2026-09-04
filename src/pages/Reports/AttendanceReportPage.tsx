@@ -574,7 +574,7 @@ export default function AttendanceReportPage() {
                               {row.user_name}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-gray-600 text-theme-sm dark:text-gray-400">
-                              {row.location_name ?? "-"}
+                              {row.location_name ?? "Tanpa Lokasi"}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-gray-600 text-theme-sm dark:text-gray-400">
                               {row.shift_name ?? "-"}
@@ -668,7 +668,7 @@ export default function AttendanceReportPage() {
               <div>
                 <span className="text-xs text-gray-500">Lokasi</span>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {selectedRow.location_name ?? "-"}
+                  {selectedRow.location_name ?? "Tanpa Lokasi"}
                 </p>
               </div>
               <div>
