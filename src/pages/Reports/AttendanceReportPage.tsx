@@ -173,7 +173,7 @@ export default function AttendanceReportPage() {
 
   const statusBadge = (status: string) =>
     STATUS_BADGES[status] ?? {
-      label: status,
+      label: status || "-",
       className:
         "bg-gray-100 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400",
     };
