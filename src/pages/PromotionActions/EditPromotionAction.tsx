@@ -17,8 +17,7 @@ import {
 import { ApiErrorResponse, PromotionActionFormData } from "../../types/types";
 import {
   promotionActionSchema,
-  visiblePromotionActionTypes,
-  hiddenPromotionActionTypes,
+  promotionActionTypeValues,
   promotionActionTypeLabels,
 } from "../../Schemas/promotionActionSchema";
 import PromotionActionValueField from "./PromotionActionValueField";
@@ -162,33 +161,17 @@ export default function EditPromotionAction() {
                 const selectedType = event.target.value as PromotionActionFormData["action_type"];
                 setValue("action_type", selectedType, { shouldValidate: true });
 
-                const nextValue =
-                  selectedType === "free_item"
-                    ? { product_variant_id: null, qty: 1 }
-                      : { value: "" };
-
-                setValue("action_value", nextValue, {
+                setValue("action_value", { value: "" }, {
                   shouldValidate: true,
                   shouldDirty: true,
                 });
               }}
             >
-              {(() => {
-                const currentType = watch("action_type");
-                const shownTypes = (visiblePromotionActionTypes as readonly string[]).includes(
-                  currentType
-                )
-                  ? visiblePromotionActionTypes
-                  : [currentType, ...visiblePromotionActionTypes];
-                return shownTypes.map((value) => (
-                  <option key={value} value={value}>
-                    {promotionActionTypeLabels[value] ?? value}
-                    {(hiddenPromotionActionTypes as readonly string[]).includes(value)
-                      ? " (nonaktif)"
-                      : ""}
-                  </option>
-                ));
-              })()}
+              {promotionActionTypeValues.map((value) => (
+                <option key={value} value={value}>
+                  {promotionActionTypeLabels[value] ?? value}
+                </option>
+              ))}
             </select>
             {errors.action_type && <p className="text-red-500">{errors.action_type.message}</p>}
           </div>

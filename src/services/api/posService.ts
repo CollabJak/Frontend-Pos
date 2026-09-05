@@ -139,6 +139,12 @@ export interface PosCalculateCartResult {
     final_total_price: number;
     applied_promotions: number[];
     applied_tier: number | null;
+    promotion_breakdown: Array<{
+      promotion_id: number;
+      promotion_name: string;
+      type: string;
+      amount: number;
+    }>;
   }>;
   subtotal: number;
   discount_total: number;
@@ -147,6 +153,25 @@ export interface PosCalculateCartResult {
   tax_name?: string | null;
   tax_id?: number | null;
   grand_total: number;
+  /**
+   * FR-6 BRD v1.4: breakdown sumber diskon & cashback level cart.
+   * transaction_discounts = Mode B (level transaksi); diskon Mode A ada di
+   * items[].promotion_breakdown. Cashback TIDAK mengurangi grand_total (FR-4).
+   */
+  transaction_discounts: Array<{
+    promotion_id: number;
+    promotion_name: string;
+    type: string;
+    amount: number;
+  }>;
+  total_transaction_discount: number;
+  cashbacks: Array<{
+    promotion_id: number;
+    promotion_name: string;
+    amount: number;
+  }>;
+  total_cashback: number;
+  total_cart: number;
 }
 
 export const calculatePosCart = async (

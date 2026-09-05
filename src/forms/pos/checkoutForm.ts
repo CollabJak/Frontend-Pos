@@ -9,7 +9,8 @@ const toMoneyString = (value: number): string => {
 export const toPosCheckoutPayload = (
   values: PosCheckoutFormValues,
   expectedTotal?: number,
-  customerId?: number | null
+  customerId?: number | null,
+  referenceNumber?: string | null
 ): PosCheckoutPayload => ({
   location_id: values.location_id,
   items: values.items.map((item) => ({
@@ -19,6 +20,9 @@ export const toPosCheckoutPayload = (
   payment: {
     payment_method_id: values.payment.payment_method_id,
     amount_paid: toMoneyString(values.payment.amount_paid),
+    // BRD Referensi-Transaksi-Transfer: kirim hanya saat bank_transfer & terisi
+    // (diputuskan pemanggil), bukan string kosong.
+    ...(referenceNumber && referenceNumber.trim() !== "" ? { reference_number: referenceNumber.trim() } : {}),
   },
   device_id: values.device_id,
   ...(expectedTotal !== undefined ? { expected_total: toMoneyString(expectedTotal) } : {}),

@@ -25,6 +25,8 @@ export interface PosCheckoutPayload {
   payment: {
     payment_method_id: number;
     amount_paid: string;
+    /** BRD Referensi-Transaksi-Transfer: wajib utk bank_transfer; tipe lain diabaikan BE. */
+    reference_number?: string;
   };
   device_id?: string;
   expected_total?: string;

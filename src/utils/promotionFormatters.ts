@@ -1,9 +1,7 @@
 const CONDITION_TYPE_LABELS: Record<string, string> = {
   customer_group: "Grup Pelanggan",
-  min_qty: "Minimal Kuantitas",
   location: "Lokasi / Outlet",
   weekday: "Hari Berlaku",
-  channel: "Saluran Penjualan",
   total_transaction: "Total Transaksi",
   payment_method: "Metode Pembayaran",
   time_range: "Rentang Waktu",
@@ -12,8 +10,6 @@ const CONDITION_TYPE_LABELS: Record<string, string> = {
 const ACTION_TYPE_LABELS: Record<string, string> = {
   discount_percent: "Diskon Persentase",
   discount_amount: "Potongan Harga",
-  override_price: "Harga Khusus",
-  free_item: "Item Gratis",
   cashback: "Cashback",
 };
 
@@ -88,9 +84,6 @@ export const formatConditionValue = (
       if (type === "total_transaction") {
         return `${formatRupiah(String(min))} s/d ${formatRupiah(String(max))}`;
       }
-      if (type === "min_qty") {
-        return `${min} s/d ${max} item`;
-      }
       return `${min} s/d ${max}`;
     }
   }
@@ -102,7 +95,6 @@ export const formatConditionValue = (
       raw.values ??
       raw.customer_group_ids ??
       raw.location_ids ??
-      raw.channels ??
       raw.payment_methods ??
       (Array.isArray(raw.value) ? raw.value : null);
 
@@ -124,7 +116,6 @@ export const formatConditionValue = (
     raw.value ??
     raw.customer_group_id ??
     raw.location_id ??
-    raw.channel ??
     raw.payment_method ??
     raw.id;
 
@@ -134,9 +125,6 @@ export const formatConditionValue = (
     }
     if (type === "total_transaction") {
       return formatRupiah(String(val));
-    }
-    if (type === "min_qty") {
-      return `${val} item`;
     }
     return String(val);
   }
@@ -169,10 +157,7 @@ export const formatConditionSummary = (
  * Example inputs:
  *   { value: 10 } (discount_percent) -> "10%"
  *   { value: 15000 } (discount_amount) -> "Rp 15.000"
- *   { value: 25000 } (override_price) -> "Rp 25.000"
  *   { value: 5000 } (cashback) -> "Rp 5.000"
- *   { item_name: "Kopi Susu", qty: 1 } (free_item) -> "Kopi Susu (1 pcs)"
- *   { qty: 2, price: 30000 } (bundle_price) -> "2 pcs seharga Rp 30.000"
  */
 export const formatActionValue = (
   actionType?: string,
@@ -186,33 +171,13 @@ export const formatActionValue = (
 
   const raw = actionValue as Record<string, unknown>;
 
-  if (actionType === "free_item") {
-    const itemName =
-      raw.product_variant_name ??
-      raw.item_name ??
-      raw.item_code ??
-      (raw.product_variant_id ? `Varian #${raw.product_variant_id}` : "Item");
-    const qty = raw.qty ?? raw.quantity ?? 1;
-    return `${itemName} (${qty} pcs)`;
-  }
-
-  if (actionType === "bundle_price") {
-    const qty = raw.qty ?? raw.min_qty ?? 1;
-    const price = raw.price ?? raw.value ?? 0;
-    return `${qty} pcs seharga ${formatRupiah(String(price))}`;
-  }
-
   const val = raw.value ?? raw.amount ?? raw.price ?? raw.percent;
 
   if (val !== undefined && val !== null && val !== "") {
     if (actionType === "discount_percent") {
       return `${val}%`;
     }
-    if (
-      actionType === "discount_amount" ||
-      actionType === "override_price" ||
-      actionType === "cashback"
-    ) {
+    if (actionType === "discount_amount" || actionType === "cashback") {
       return formatRupiah(String(val));
     }
     return String(val);

@@ -231,6 +231,7 @@ export default function RecentTransactionsPage() {
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Lokasi</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Item</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Total Jumlah</TableCell>
+                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Pembayaran</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Status</TableCell>
                       <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Aksi</TableCell>
                     </TableRow>
@@ -255,6 +256,22 @@ export default function RecentTransactionsPage() {
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start whitespace-nowrap text-theme-sm font-bold text-gray-800 dark:text-white/90">
                           {formatCurrency(txn.total_amount)}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start text-theme-sm text-gray-600 dark:text-gray-400">
+                          {txn.payment_method ? (
+                            <>
+                              <span className="whitespace-nowrap font-semibold text-gray-800 dark:text-white/90">
+                                {txn.payment_method}
+                              </span>
+                              {txn.payment_reference && (
+                                <span className="block whitespace-nowrap font-mono text-theme-xs text-gray-500 dark:text-gray-400">
+                                  {txn.payment_reference}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="whitespace-nowrap">-</span>
+                          )}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-end whitespace-nowrap">
                           <Badge color={getStatusColor(txn.order_status)} variant="solid" size="sm">

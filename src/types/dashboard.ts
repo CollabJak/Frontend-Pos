@@ -8,6 +8,9 @@ export interface Transaction {
   total_amount: string;
   payment_status: string;
   order_status: string;
+  /** BRD Referensi-Transaksi-Transfer: metode bayar + nomor referensi (null utk cash/qris/e_wallet). */
+  payment_method?: string | null;
+  payment_reference?: string | null;
   cancelled_at?: string;
   cancelled_by?: number;
   cancellation_reason?: string;
