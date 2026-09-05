@@ -108,7 +108,18 @@ const ReceiptPrint = forwardRef<HTMLDivElement, ReceiptPrintProps>(function Rece
     rows.push(
       formatLine("Total", toMoney(receipt.summary.total), width),
       formatLine("Dibayar", toMoney(receipt.summary.paid), width),
-      formatLine("Kembali", toMoney(receipt.summary.change), width),
+      formatLine("Kembali", toMoney(receipt.summary.change), width)
+    );
+
+    // BRD Referensi-Transaksi-Transfer: metode bayar + nomor referensi EDC/m-banking.
+    if (receipt.payment?.method) {
+      rows.push(formatLine("Metode", receipt.payment.method, width));
+    }
+    if (receipt.payment?.reference) {
+      rows.push(formatLine("No. Transaksi", receipt.payment.reference, width));
+    }
+
+    rows.push(
       ruler,
       centerLine(receipt.footer.note, width)
     );

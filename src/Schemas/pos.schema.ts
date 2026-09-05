@@ -11,6 +11,9 @@ export const posCheckoutSchema = z.object({
   payment: z.object({
     payment_method_id: z.number().int("Payment method is invalid").positive("Payment method is required"),
     amount_paid: z.coerce.number().positive("Paid amount must be greater than zero"),
+    // Kewajiban isi (bank_transfer) divalidasi manual di halaman pembayaran —
+    // schema tidak tahu tipe metode yang dipilih.
+    reference_number: z.string().trim().max(255, "Nomor transaksi maksimal 255 karakter").optional(),
   }),
   device_id: z.string().trim().min(1).optional(),
 });

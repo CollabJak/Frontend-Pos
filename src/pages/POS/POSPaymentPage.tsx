@@ -71,6 +71,7 @@ export default function POSPaymentPage() {
 
   const selectedMethodId = watch("payment.payment_method_id");
   const amountPaid = watch("payment.amount_paid");
+  const referenceNumberValue = watch("payment.reference_number");
 
   // Local state for the raw keypad string to handle decimals/zeros correctly
   const [receivedAmountStr, setReceivedAmountStr] = useState("0");
@@ -143,6 +144,13 @@ export default function POSPaymentPage() {
   const handleSelectMethod = (method: { id: number; type: string }) => {
     setSelectedPaymentMethodId(method.id);
     setValue("payment.payment_method_id", method.id, { shouldValidate: true });
+
+    // BRD Referensi-Transaksi-Transfer: reset nomor referensi saat pindah metode —
+    // hanya bank_transfer yang memakainya.
+    if (method.type !== "bank_transfer") {
+      setValue("payment.reference_number", "", { shouldValidate: false });
+      clearErrors("payment.reference_number");
+    }
 
     if (selectedLocation && cartItems.length > 0) {
       calculateCart(
@@ -266,6 +274,18 @@ export default function POSPaymentPage() {
       return;
     }
 
+    // BRD Referensi-Transaksi-Transfer (2026-09-05): nomor transaksi EDC/m-banking
+    // wajib untuk metode bertipe bank_transfer.
+    const referenceNumber = (formValues.payment.reference_number ?? "").trim();
+    const isBankTransfer = selectedMethodModel?.type === "bank_transfer";
+    if (isBankTransfer && referenceNumber === "") {
+      setError("payment.reference_number", {
+        type: "manual",
+        message: "Nomor transaksi wajib diisi untuk pembayaran transfer.",
+      });
+      return;
+    }
+
     if (!selectedLocation) {
       setError("location_id", {
         type: "manual",
@@ -295,7 +315,12 @@ export default function POSPaymentPage() {
 
     while (true) {
       try {
-        const payload = toPosCheckoutPayload(formValues, totalDue, selectedCustomer?.id);
+        const payload = toPosCheckoutPayload(
+          formValues,
+          totalDue,
+          selectedCustomer?.id,
+          isBankTransfer ? referenceNumber : null
+        );
         const response = await checkoutOrder({ payload, idempotencyKey: currentKey });
 
         if (response.data) {
@@ -636,6 +661,32 @@ export default function POSPaymentPage() {
                             </div>
                           )}
                         </div>
+
+                        {selectedMethodModel.type === "bank_transfer" && (
+                          <div>
+                            <label className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              Nomor Transaksi (EDC/m-banking) <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={referenceNumberValue ?? ""}
+                              onChange={(e) => {
+                                setValue("payment.reference_number", e.target.value, { shouldValidate: false });
+                                if (errors.payment?.reference_number) {
+                                  clearErrors("payment.reference_number");
+                                }
+                              }}
+                              placeholder="cth: 1234567890"
+                              maxLength={255}
+                              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                            />
+                            {errors.payment?.reference_number && (
+                              <p className="mt-1 text-[11px] font-bold text-red-500">
+                                {errors.payment.reference_number.message}
+                              </p>
+                            )}
+                          </div>
+                        )}
 
                         {selectedMethodModel.payment_instructions && (
                           <div className="rounded-xl bg-brand-50/30 dark:bg-brand-500/5 p-4 border border-brand-100/30 dark:border-brand-500/10">

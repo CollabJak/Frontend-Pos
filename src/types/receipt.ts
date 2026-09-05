@@ -31,9 +31,18 @@ export interface ReceiptFooter {
   barcode?: string | null;
 }
 
+export interface ReceiptPayment {
+  /** Nama metode bayar (snapshot) — null bila tidak tersedia. */
+  method?: string | null;
+  /** Nomor referensi transaksi EDC/m-banking — null untuk cash/qris/e_wallet. */
+  reference?: string | null;
+}
+
 export interface ReceiptPayload {
   header: ReceiptHeader;
   items: ReceiptItem[];
   summary: ReceiptSummary;
+  /** BRD Referensi-Transaksi-Transfer (2026-09-05): blok pembayaran struk. */
+  payment?: ReceiptPayment;
   footer: ReceiptFooter;
 }
