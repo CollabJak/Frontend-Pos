@@ -24,6 +24,7 @@ export const useSubscriptionStatus = () => {
       hasActiveSubscription: true,
       subscriptionStatus: "active" as SubscriptionStatus,
       endsAt: null,
+      daysLeft: null,
       isLoading: false,
     };
   }
@@ -32,6 +33,7 @@ export const useSubscriptionStatus = () => {
     hasActiveSubscription: query.data?.has_active_subscription ?? false,
     subscriptionStatus: (query.data?.status ?? "none") as SubscriptionStatus,
     endsAt: query.data?.end_date ?? null,
+    daysLeft: query.data?.days_left ?? null,
     isLoading: query.isLoading,
   };
 };
