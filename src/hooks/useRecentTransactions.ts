@@ -7,6 +7,7 @@ export const useRecentTransactions = (params?: {
   to?: string;
   per_page?: number;
   page?: number;
+  search?: string;
 }) => {
   return useQuery({
     queryKey: ["recent-transactions", params],

@@ -7,6 +7,7 @@ export const fetchRecentTransactions = async (params?: {
   to?: string;
   per_page?: number;
   page?: number;
+  search?: string;
 }): Promise<RecentTransactionsResponse> => {
   const response = await apiClient.get<RecentTransactionsResponse>(
     "/transactions",
