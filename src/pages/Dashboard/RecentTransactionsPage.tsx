@@ -23,7 +23,9 @@ import CancelTransactionModal from "../../components/transactions/CancelTransact
 import TransactionDetailRow from "../../components/transactions/TransactionDetailRow";
 import { useAuth } from "../../hooks/useAuth";
 import { useCancelTransaction } from "../../hooks/useCancelTransaction";
+import { useExportTransactions } from "../../hooks/useRecentTransactions";
 import { hasAccess } from "../../utils/rbac";
+import { DownloadIcon } from "../../icons";
 import type { Transaction } from "../../types/dashboard";
 
 const PER_PAGE = 15;
@@ -68,12 +70,14 @@ export default function RecentTransactionsPage() {
   const location = useLocation();
   const { user } = useAuth();
   const cancelTransaction = useCancelTransaction();
+  const exportTransactions = useExportTransactions();
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [expandedTransactionId, setExpandedTransactionId] = useState<number | null>(null);
   const isKasirContext = location.pathname === "/transactions";
   const userRoles = user?.roles || [];
   const userPermissions = user?.permissions || [];
   const canCancelTransaction = hasAccess(userRoles, userPermissions, undefined, ["transaction.cancel"]);
+  const canExportTransactions = hasAccess(userRoles, userPermissions, undefined, ["transaction.export"]);
 
   const getToday = () => {
     const today = new Date();
@@ -188,6 +192,15 @@ export default function RecentTransactionsPage() {
     );
   };
 
+  const handleExportExcel = () => {
+    exportTransactions.mutate({
+      location_id: selectedLocationId !== "all" ? selectedLocationId : undefined,
+      from: fromDate || undefined,
+      to: toDate || undefined,
+      search: activeSearch || undefined,
+    });
+  };
+
   const transactions = transactionData?.data?.data || [];
   const meta = transactionData?.data?.meta;
 
@@ -268,6 +281,21 @@ export default function RecentTransactionsPage() {
                 placeholder="Pilih Lokasi"
               />
             </div>
+            {canExportTransactions && (
+              <button
+                type="button"
+                onClick={handleExportExcel}
+                disabled={exportTransactions.isPending || isLoading}
+                className="inline-flex h-10 items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {exportTransactions.isPending ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <DownloadIcon className="h-4 w-4" />
+                )}
+                Export to Excel
+              </button>
+            )}
           </div>
 
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
