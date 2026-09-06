@@ -4,6 +4,8 @@ export interface SubscriptionStatusData {
   has_active_subscription: boolean;
   status: SubscriptionStatus;
   end_date: string | null;
+  /** Sisa hari langganan (dihitung backend, null jika tidak aktif/admin). */
+  days_left: number | null;
 }
 
 export type PaymentStatus = 'pending' | 'confirmation' | 'paid' | 'failed' | 'expired' | 'cancelled';
