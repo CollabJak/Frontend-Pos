@@ -5,12 +5,14 @@ import Label from "../form/Label";
 import { Input } from "../form/input/InputField";
 import Select from "../form/Select";
 import Switch from "../form/switch/Switch";
+import DatePicker from "../form/date-picker";
 import ConflictWarningList, { ConflictItem } from "./ConflictWarningList";
 import { useUpdateBatchSchedule } from "../../hooks/scheduling/useScheduleBatches";
 import { useShiftOptions } from "../../hooks/scheduling/useShifts";
 import { useUserOptions } from "../../hooks/useUserOptions";
 import type { ConflictError } from "../../types/apiErrorHelpers";
 import type { EmployeeSchedule, ScheduleWarningItem } from "../../types/scheduling";
+import { formatDateToYYYYMMDD } from "../../utils/formatDate";
 
 interface BatchScheduleEditModalProps {
   isOpen: boolean;
@@ -122,12 +124,14 @@ export default function BatchScheduleEditModal({
           </div>
 
           <div>
-            <Label htmlFor="edit-schedule-date">Tanggal</Label>
-            <Input
+            <DatePicker
               id="edit-schedule-date"
-              type="date"
-              value={scheduleDate}
-              onChange={(e) => setScheduleDate(e.target.value)}
+              label="Tanggal"
+              placeholder="Pilih tanggal"
+              defaultDate={scheduleDate || undefined}
+              onChange={([date]) =>
+                setScheduleDate(date ? formatDateToYYYYMMDD(date) : "")
+              }
             />
           </div>
 
