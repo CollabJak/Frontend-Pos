@@ -26,7 +26,6 @@ import { resolveErrorMessage } from "../../utils/error";
 import {
   aggregateDiscountRows,
   getCashbackRows,
-  getMemberDiscountRows,
 } from "../../utils/promotionBreakdown";
 import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
@@ -318,12 +317,6 @@ export default function POSPage() {
     [pricingSnapshot]
   );
   const cashbackTotal = pricingSnapshot?.total_cashback ?? 0;
-  const memberRows = useMemo(
-    () => getMemberDiscountRows(pricingSnapshot),
-    [pricingSnapshot]
-  );
-  const memberDiscountTotal = pricingSnapshot?.member_discount_total ?? 0;
-  const memberGroupName = pricingSnapshot?.member_group_name ?? null;
 
   return (
     <>
@@ -431,9 +424,6 @@ export default function POSPage() {
             selectedPaymentMethodId={selectedPaymentMethodId}
             onSelectPaymentMethod={setSelectedPaymentMethodId}
             discountBreakdown={discountBreakdown}
-            memberDiscountTotal={memberDiscountTotal}
-            memberGroupName={memberGroupName}
-            memberDiscountRows={memberRows}
             cashbackAmount={cashbackTotal}
             cashbackBreakdown={cashbackBreakdown}
           />
