@@ -4,6 +4,7 @@ import type { PosCalculateCartResult } from "../services/api/posService";
  * Util agregasi breakdown promosi untuk UI cart (FR-7 BRD v1.4).
  * FE mengagregasi sendiri dari field kontrak FR-6, tanpa endpoint tambahan:
  * - Diskon  = items[].promotion_breakdown (Mode A per-variant) + transaction_discounts (Mode B)
+ *            + items[].member_discount (diskon % grup member, per-unit × qty)
  * - Cashback = cashbacks (flat, tidak mengurangi total — FR-4)
  */
 
@@ -14,8 +15,8 @@ export interface PromotionAmountRow {
 }
 
 /**
- * Gabungkan semua sumber diskon cart per promosi (Mode A + Mode B),
- * dijumlahkan per promotion_id agar popup menampilkan satu baris per promo.
+ * Gabungkan semua sumber diskon cart (Mode A + Mode B + diskon member),
+ * dijumlahkan per promotion_id agar popup menampilkan satu baris per sumber.
  */
 export function aggregateDiscountRows(
   snapshot: PosCalculateCartResult | null
@@ -43,6 +44,19 @@ export function aggregateDiscountRows(
 
   (snapshot.transaction_discounts ?? []).forEach((row) => {
     addRow(Number(row.promotion_id), String(row.promotion_name ?? ""), Number(row.amount ?? 0));
+  });
+
+  snapshot.items.forEach((item) => {
+    const member = item.member_discount;
+    if (!member) {
+      return;
+    }
+    const groupId = Number(member.customer_group_id);
+    addRow(
+      groupId,
+      String(member.group_name ?? ""),
+      Number(member.amount ?? 0) * Number(item.qty ?? 0)
+    );
   });
 
   return Array.from(byId.values());

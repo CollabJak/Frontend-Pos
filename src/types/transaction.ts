@@ -38,6 +38,7 @@ export interface PricingBreakdown {
   transaction_discount: string;
   transaction_discount_details: TransactionDiscountDetail[];
   member_discount: string;
+  member_group_name?: string | null;
   tax_amount: string;
   cashbacks: CashbackApplied[];
   grand_total: string;
