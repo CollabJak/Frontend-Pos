@@ -18,12 +18,12 @@ import { locationSchema } from "../../Schemas/locationSchema";
 
 type SelectLocationOption = OptionDto & Record<string, unknown>;
 
-const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
+const BASE_LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
   "warehouse",
-  "pos",
-  "hq",
 ];
+
+const LEGACY_TYPES: Array<LocationFormData["type"]> = ["pos", "hq"];
 
 export default function EditLocation() {
   const navigate = useNavigate();
@@ -36,6 +36,10 @@ export default function EditLocation() {
   // --- Location Type Change Warning States ---
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<LocationFormData | null>(null);
+
+  const locationTypeOptions = location && LEGACY_TYPES.includes(location.type)
+    ? [location.type, ...BASE_LOCATION_TYPE_OPTIONS]
+    : BASE_LOCATION_TYPE_OPTIONS;
 
   const fetchLocationOptions = async (params: {
     limit: number;
@@ -163,7 +167,7 @@ export default function EditLocation() {
               {...register("type")}
               className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             >
-              {LOCATION_TYPE_OPTIONS.map((type) => (
+              {locationTypeOptions.map((type) => (
                 <option
                   key={type}
                   value={type}

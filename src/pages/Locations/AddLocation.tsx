@@ -19,8 +19,6 @@ type SelectLocationOption = OptionDto & Record<string, unknown>;
 const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
   "warehouse",
-  "pos",
-  "hq",
 ];
 
 export default function AddLocation() {
