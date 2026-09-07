@@ -145,6 +145,7 @@ export interface PosCalculateCartResult {
       type: string;
       amount: number;
     }>;
+    member_discount: MemberDiscount | null;
   }>;
   subtotal: number;
   discount_total: number;
@@ -172,6 +173,15 @@ export interface PosCalculateCartResult {
   }>;
   total_cashback: number;
   total_cart: number;
+  member_discount_total: number;
+  member_group_name: string | null;
+}
+
+export interface MemberDiscount {
+  customer_group_id: number;
+  group_name: string;
+  percent: number;
+  amount: number;
 }
 
 export const calculatePosCart = async (

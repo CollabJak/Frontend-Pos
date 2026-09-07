@@ -19,6 +19,7 @@ import PromotionBreakdownPopup from "../../components/pos/PromotionBreakdownPopu
 import {
   aggregateDiscountRows,
   getCashbackRows,
+  getMemberDiscountRows,
 } from "../../utils/promotionBreakdown";
 import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchActiveTax } from "../../hooks/useTaxes";
@@ -132,6 +133,12 @@ export default function POSPaymentPage() {
     [pricingSnapshot]
   );
   const cashbackTotal = pricingSnapshot?.total_cashback ?? 0;
+  const memberRows = useMemo(
+    () => getMemberDiscountRows(pricingSnapshot),
+    [pricingSnapshot]
+  );
+  const memberDiscountTotal = pricingSnapshot?.member_discount_total ?? 0;
+  const memberGroupName = pricingSnapshot?.member_group_name ?? null;
 
   const tax = useMemo(() => {
     return pricingSnapshot?.tax_total ?? (subtotal * (activeTaxRate / 100));
@@ -486,6 +493,16 @@ export default function POSPaymentPage() {
                         variant="summary"
                       />
                       <span className="whitespace-nowrap">- {formatCurrency(discount)}</span>
+                    </div>
+                  )}
+                  {(memberDiscountTotal > 0 || memberRows.length > 0) && (
+                    <div className="flex justify-between text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                      <PromotionBreakdownPopup
+                        label={memberGroupName ? `Diskon Member (${memberGroupName})` : "Diskon Member"}
+                        rows={memberRows}
+                        variant="summary"
+                      />
+                      <span className="whitespace-nowrap">- {formatCurrency(memberDiscountTotal)}</span>
                     </div>
                   )}
                   {(cashbackTotal > 0 || cashbackBreakdown.length > 0) && (

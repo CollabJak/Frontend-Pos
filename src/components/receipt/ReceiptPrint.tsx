@@ -98,6 +98,13 @@ const ReceiptPrint = forwardRef<HTMLDivElement, ReceiptPrintProps>(function Rece
       rows.push(formatLine("Diskon", `-${toMoney(receipt.summary.discount)}`, width));
     }
 
+    if (receipt.summary.member_discount && receipt.summary.member_discount > 0) {
+      const memberLabel = receipt.summary.member_group_name
+        ? `Diskon Member (${receipt.summary.member_group_name})`
+        : "Diskon Member";
+      rows.push(formatLine(memberLabel, `-${toMoney(receipt.summary.member_discount)}`, width));
+    }
+
     if (receipt.summary.tax && receipt.summary.tax > 0) {
       const taxLabel = receipt.summary.tax_rate
         ? `Pajak (${receipt.summary.tax_rate}%)`

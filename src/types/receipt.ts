@@ -17,6 +17,8 @@ export interface ReceiptItem {
 export interface ReceiptSummary {
   subtotal: number;
   discount?: number;
+  member_discount?: number;
+  member_group_name?: string | null;
   tax?: number;
   tax_name?: string | null;
   tax_rate?: number | null;

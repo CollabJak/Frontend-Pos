@@ -39,6 +39,10 @@ interface PaymentPanelProps {
   onSelectPaymentMethod?: (id: number | null) => void;
   /** FR-7 BRD v1.4: rincian sumber diskon (Mode A + Mode B) untuk popup info. */
   discountBreakdown?: PromotionBreakdownPopupRow[];
+  /** Diskon member global grup pelanggan: mengurangi total, terpisah dari promosi. */
+  memberDiscountTotal?: number;
+  memberGroupName?: string | null;
+  memberDiscountRows?: PromotionBreakdownPopupRow[];
   /** FR-4/FR-7: cashback flat — informasi, tidak mengurangi total. */
   cashbackAmount?: number;
   cashbackBreakdown?: PromotionBreakdownPopupRow[];
@@ -59,6 +63,9 @@ export default function PaymentPanel({
   selectedPaymentMethodId = null,
   onSelectPaymentMethod,
   discountBreakdown = [],
+  memberDiscountTotal = 0,
+  memberGroupName = null,
+  memberDiscountRows = [],
   cashbackAmount = 0,
   cashbackBreakdown = [],
 }: PaymentPanelProps) {
@@ -86,6 +93,21 @@ export default function PaymentPanel({
               <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
             ) : (
               <span className="text-sm font-bold">- {formatCurrency(discount)}</span>
+            )}
+          </div>
+        )}
+
+        {(memberDiscountTotal > 0 || memberDiscountRows.length > 0) && (
+          <div className="flex items-center justify-between text-success-600 dark:text-success-400">
+            <PromotionBreakdownPopup
+              label={memberGroupName ? `Diskon Member (${memberGroupName})` : "Diskon Member"}
+              rows={memberDiscountRows}
+              variant="panel"
+            />
+            {isCalculatingPrice ? (
+              <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
+            ) : (
+              <span className="text-sm font-bold">- {formatCurrency(memberDiscountTotal)}</span>
             )}
           </div>
         )}

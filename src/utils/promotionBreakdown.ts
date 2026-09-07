@@ -62,3 +62,41 @@ export function getCashbackRows(
     amount: Number(row.amount ?? 0),
   }));
 }
+
+/**
+ * Baris breakdown diskon member per grup. amount dari backend = PER-UNIT harga,
+ * jadi total baris = amount × qty item (satu grup member per transaksi).
+ */
+export function getMemberDiscountRows(
+  snapshot: PosCalculateCartResult | null
+): PromotionAmountRow[] {
+  if (!snapshot) {
+    return [];
+  }
+
+  const byGroup = new Map<number, PromotionAmountRow>();
+
+  (snapshot.items ?? []).forEach((item) => {
+    const member = item.member_discount;
+    if (!member) {
+      return;
+    }
+
+    const groupId = Number(member.customer_group_id);
+    const total = Number(member.amount ?? 0) * Number(item.qty ?? 0);
+
+    const existing = byGroup.get(groupId);
+    if (existing) {
+      existing.amount += total;
+      return;
+    }
+
+    byGroup.set(groupId, {
+      promotion_id: groupId,
+      promotion_name: String(member.group_name ?? ""),
+      amount: total,
+    });
+  });
+
+  return Array.from(byGroup.values());
+}
