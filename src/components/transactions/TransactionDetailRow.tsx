@@ -149,7 +149,7 @@ export default function TransactionDetailRow({ transactionId, onCollapse }: Prop
                     <div className="border-t border-gray-200 pt-2.5 dark:border-gray-700"></div>
                     <div className="text-gray-600 dark:text-gray-400">Diskon Member:</div>
                     <div className="flex justify-between pl-4">
-                      <span className="text-gray-500 dark:text-gray-400">• Harga Khusus Member</span>
+                      <span className="text-gray-500 dark:text-gray-400">• Harga Khusus Member{breakdown.member_group_name ? ` (${breakdown.member_group_name})` : ''}</span>
                       <span className="text-red-600 dark:text-red-400">-{formatCurrency(toNumber(breakdown.member_discount))}</span>
                     </div>
                   </>
