@@ -127,8 +127,7 @@ export default function CheckoutPlanPage() {
     }
 
     const subtotal = Number(plan.price);
-    const tax = Math.round(subtotal * 0.11);
-    const total = subtotal + tax;
+    const total = subtotal;
 
     return (
         <>
@@ -381,10 +380,6 @@ export default function CheckoutPlanPage() {
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">Subtotal</span>
                                             <span className="font-medium">Rp {subtotal.toLocaleString("id-ID")}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">PPN (11%)</span>
-                                            <span className="font-medium">Rp {tax.toLocaleString("id-ID")}</span>
                                         </div>
                                         <div className="flex justify-between text-lg font-bold text-brand-600 dark:text-brand-400 pt-2">
                                             <span>Total Pembayaran</span>

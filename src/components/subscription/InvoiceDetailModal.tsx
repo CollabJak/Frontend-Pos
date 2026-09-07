@@ -76,7 +76,9 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ isOpen, onClose
                                 <DetailItem label="Tanggal Bayar" value={formatDate(data.paid_at)} />
                                 <DetailItem label="Metode Pembayaran" value={data.payment_method} />
                                 <DetailItem label="Subtotal" value={formatCurrency(data.subtotal)} />
-                                <DetailItem label="Pajak" value={formatCurrency(data.tax_amount)} />
+                                {parseFloat(data.tax_amount) > 0 && (
+                                    <DetailItem label="Pajak" value={formatCurrency(data.tax_amount)} />
+                                )}
                                 <DetailItem label="Total" value={formatCurrency(data.amount)} />
                             </div>
                         </div>
