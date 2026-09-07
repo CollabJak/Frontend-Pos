@@ -1,5 +1,7 @@
 import { useModal } from "../../hooks/useModal";
 import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
@@ -13,6 +15,7 @@ import { useEffect } from "react";
 export default function UserInfoCard() {
   const { isOpen, closeModal } = useModal();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const fullName = user?.name?.trim() || "User";
   const email = user?.email?.trim() || "";
   const phone = user?.phone?.trim() || "";
@@ -47,6 +50,9 @@ export default function UserInfoCard() {
   const onSubmit = (data: ProfileFormData) => {
     if (!user?.id) return;
 
+    const emailChanged =
+      data.email.trim().toLowerCase() !== user.email.trim().toLowerCase();
+
     updateProfileMutation.mutate(
       {
         userId: user.id,
@@ -60,6 +66,10 @@ export default function UserInfoCard() {
       {
         onSuccess: () => {
           closeModal();
+          if (emailChanged) {
+            toast("Email diperbarui. Silakan verifikasi email baru Anda.");
+            navigate("/verify-email");
+          }
         },
       }
     );
