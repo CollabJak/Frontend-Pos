@@ -18,20 +18,13 @@ import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
 import { useInventoryList } from "../../hooks/useInventoryList";
 import { InventoryListItem } from "../../types/types";
+import { formatDecimal } from "../../utils/formatDecimal";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
 const toNumber = (value: string | number | undefined): number => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const formatDecimal = (value: string | number): string => {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return Number.isInteger(value) ? `${value}` : value.toFixed(6);
 };
 
 const resolveVariantId = (row: InventoryListItem): number | null => {
