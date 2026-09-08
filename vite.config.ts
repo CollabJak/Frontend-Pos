@@ -15,13 +15,4 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    // Allow Vite dev server to be accessed from outside the container
-    host: "0.0.0.0",
-    port: 5173,
-    watch: {
-      // Use polling for file watching in Docker (volume mounts)
-      usePolling: true,
-    },
-  },
 });
