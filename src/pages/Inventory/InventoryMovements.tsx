@@ -20,6 +20,7 @@ import {
 import { Pagination } from "../../components/tables/Datatable";
 import { InventoryMovementItem } from "../../types/types";
 import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import { formatDecimal } from "../../utils/formatDecimal";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -34,18 +35,6 @@ const formatDateTime = (value?: string): string => {
   }
 
   return date.toLocaleString();
-};
-
-const formatDecimal = (value?: string | number | null): string => {
-  if (value === undefined || value === null) {
-    return "-";
-  }
-
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return Number.isInteger(value) ? `${value}` : value.toFixed(6);
 };
 
 const resolveProductName = (row: InventoryMovementItem): string => {
