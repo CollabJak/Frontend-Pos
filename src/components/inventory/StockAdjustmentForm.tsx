@@ -195,22 +195,6 @@ export default function StockAdjustmentForm() {
               {...register("qty", { valueAsNumber: true })}
             />
           </div>
-
-          <div>
-            <Label htmlFor="adjustment-cost">Harga Pokok / Cost</Label>
-            <Input
-              id="adjustment-cost"
-              type="number"
-              min="0"
-              step="0.000001"
-              placeholder="Masukkan harga pokok jika diperlukan"
-              error={Boolean(errors.cost)}
-              hint={errors.cost?.message}
-              {...register("cost", {
-                setValueAs: (value) => (value === "" ? undefined : Number(value)),
-              })}
-            />
-          </div>
         </div>
 
         <div>
