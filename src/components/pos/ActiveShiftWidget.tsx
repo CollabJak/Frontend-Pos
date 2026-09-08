@@ -76,7 +76,7 @@ export default function ActiveShiftWidget({
           {/* Expected Cash */}
           <div className="space-y-0.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Estimasi Uang di Laci
+              Modal Awal Kasir
             </p>
             <p className="text-sm font-black text-brand-600 dark:text-brand-400">
               {formatCurrency(shift.expected_cash)}
