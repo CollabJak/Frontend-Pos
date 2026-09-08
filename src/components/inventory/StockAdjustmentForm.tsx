@@ -197,41 +197,25 @@ export default function StockAdjustmentForm() {
           </div>
 
           <div>
-            <Label htmlFor="adjustment-cost">Harga Pokok / Cost</Label>
-            <Input
-              id="adjustment-cost"
-              type="number"
-              min="0"
-              step="0.000001"
-              placeholder="Masukkan harga pokok jika diperlukan"
-              error={Boolean(errors.cost)}
-              hint={errors.cost?.message}
-              {...register("cost", {
-                setValueAs: (value) => (value === "" ? undefined : Number(value)),
-              })}
+            <Label htmlFor="adjustment-reason" required>Alasan Penyesuaian</Label>
+            <Controller
+              name="reason"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    (clearErrors as (name: string) => void)("root");
+                  }}
+                  rows={4}
+                  placeholder="Tuliskan alasan penyesuaian stok (contoh: Barang rusak, Stok opname)"
+                  error={Boolean(errors.reason)}
+                  hint={errors.reason?.message}
+                />
+              )}
             />
           </div>
-        </div>
-
-        <div>
-          <Label htmlFor="adjustment-reason" required>Alasan Penyesuaian</Label>
-          <Controller
-            name="reason"
-            control={control}
-            render={({ field }) => (
-              <TextArea
-                value={field.value}
-                onChange={(value) => {
-                  field.onChange(value);
-                  (clearErrors as (name: string) => void)("root");
-                }}
-                rows={4}
-                placeholder="Tuliskan alasan penyesuaian stok (contoh: Barang rusak, Stok opname)"
-                error={Boolean(errors.reason)}
-                hint={errors.reason?.message}
-              />
-            )}
-          />
         </div>
 
         <div>

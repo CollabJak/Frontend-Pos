@@ -20,6 +20,7 @@ import {
   OptionDto,
 } from "../../api/options";
 import { Product, CompositeProductFormData } from "../../types/product";
+import { storageUrl } from "../../utils/storageUrl";
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
@@ -111,12 +112,9 @@ export default function ProductWizardForm({
       setValue("has_variant", initialData.has_variant ?? false);
 
       if (initialData.thumbnail) {
-        const photoUrl = initialData.thumbnail.includes("/storage/")
-          ? initialData.thumbnail.replace("/storage/", "/api/storage/")
-          : initialData.thumbnail;
         setFiles([
           {
-            source: photoUrl,
+            source: storageUrl(initialData.thumbnail),
             options: {
               type: "local",
             },

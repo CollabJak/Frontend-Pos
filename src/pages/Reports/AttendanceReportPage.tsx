@@ -9,6 +9,7 @@ import Select from "../../components/form/Select";
 import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
 import { createOptionsFetcher, OptionDto } from "../../api/options";
 import { Modal } from "../../components/ui/modal";
+import StorageImage from "../../components/ui/images/StorageImage";
 import {
   Table,
   TableBody,
@@ -33,6 +34,7 @@ import {
   PageIcon,
   PieChartIcon,
 } from "../../icons";
+import { storageUrl } from "../../utils/storageUrl";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -87,12 +89,6 @@ const STATUS_BADGES: Record<
     className:
       "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400",
   },
-};
-
-const storageUrl = (path: string | null): string | null => {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  return `/api/storage/${path.replace(/^\/+/, "")}`;
 };
 
 const formatMenit = (value: number | null | undefined): string =>
@@ -723,27 +719,23 @@ export default function AttendanceReportPage() {
                   { label: "Gambar Check-In", path: selectedRow.check_in_image },
                   { label: "Gambar Check-Out", path: selectedRow.check_out_image },
                 ] as const
-              ).map((img) => {
-                const url = storageUrl(img.path);
-                return (
-                  <div key={img.label}>
-                    <span className="mb-1 block text-xs text-gray-500">
-                      {img.label}
-                    </span>
-                    {url ? (
-                      <img
-                        src={url}
-                        alt={img.label}
-                        className="h-40 w-full rounded-lg border border-gray-200 object-cover dark:border-gray-700"
-                      />
-                    ) : (
+              ).map((img) => (
+                <div key={img.label}>
+                  <span className="mb-1 block text-xs text-gray-500">
+                    {img.label}
+                  </span>
+                  <StorageImage
+                    src={storageUrl(img.path)}
+                    alt={img.label}
+                    className="h-40 w-full rounded-lg border border-gray-200 object-cover dark:border-gray-700"
+                    fallback={
                       <div className="flex h-40 w-full items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 text-center text-xs text-gray-400 dark:border-gray-700 dark:bg-gray-900/40">
                         Gambar tidak tersedia (retensi 7 hari)
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                    }
+                  />
+                </div>
+              ))}
             </div>
 
             <div className="mt-6 flex justify-end">
