@@ -23,6 +23,7 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
+import { storageUrl } from "../../utils/storageUrl";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -132,13 +133,9 @@ export default function EditUser() {
       setValue("business_id", user.business_id);
 
       if (user.photo) {
-        const photoUrl = user.photo.includes("/storage/")
-          ? user.photo.replace("/storage/", "/api/storage/")
-          : user.photo;
-          
         setFiles([
           {
-            source: photoUrl,
+            source: storageUrl(user.photo),
             options: {
               type: "local",
             },

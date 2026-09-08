@@ -21,6 +21,7 @@ import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
+import { storageUrl } from "../../utils/storageUrl";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -58,12 +59,9 @@ export default function EditCategory() {
       setValue("default_picking_strategy", category.default_picking_strategy);
 
       if (category.photo) {
-        const photoUrl = category.photo.includes("/storage/")
-          ? category.photo.replace("/storage/", "/api/storage/")
-          : category.photo;
         setFiles([
           {
-            source: photoUrl,
+            source: storageUrl(category.photo),
             options: {
               type: "local",
             },

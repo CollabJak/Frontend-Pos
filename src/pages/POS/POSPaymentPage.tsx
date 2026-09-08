@@ -23,7 +23,7 @@ import {
 import { DEFAULT_FALLBACK_TAX_RATE } from "../../constants/pos";
 import { useFetchActiveTax } from "../../hooks/useTaxes";
 import { useFetchPaymentMethodOptions } from "../../hooks/usePaymentMethods";
-import { runtimeConfig } from "../../utils/runtimeConfig";
+import { storageUrl } from "../../utils/storageUrl";
 import { Modal } from "../../components/ui/modal";
 import { EyeIcon } from "../../icons";
 
@@ -212,13 +212,6 @@ export default function POSPaymentPage() {
 
   const receivedAmount = parseFloat(receivedAmountStr || "0");
   const change = Math.max(0, receivedAmount - totalDue);
-
-  const getImageUrl = (path: string) => {
-    if (!path) return "";
-    if (path.startsWith("http")) return path;
-    const baseUrl = runtimeConfig.apiBaseUrl.replace(/\/api\/?$/, "");
-    return `${baseUrl}/storage/${path}`;
-  };
 
   const getMethodIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -584,7 +577,7 @@ export default function POSPaymentPage() {
                           {selectedMethodModel.qr_image_path ? (
                             <>
                               <img
-                                src={getImageUrl(selectedMethodModel.qr_image_path)}
+                                src={storageUrl(selectedMethodModel.qr_image_path) ?? undefined}
                                 alt="QRIS Code"
                                 className="w-56 h-56 object-contain rounded-2xl"
                               />
@@ -830,7 +823,7 @@ export default function POSPaymentPage() {
             
             <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-inner mb-6">
               <img
-                src={getImageUrl(selectedMethodModel.qr_image_path)}
+                src={storageUrl(selectedMethodModel.qr_image_path) ?? undefined}
                 alt="QR Code Zoomed"
                 className="max-h-[50vh] w-auto max-w-full object-contain rounded-lg ring-1 ring-slate-200 dark:ring-slate-800"
               />
