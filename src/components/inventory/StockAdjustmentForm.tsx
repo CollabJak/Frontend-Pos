@@ -195,27 +195,27 @@ export default function StockAdjustmentForm() {
               {...register("qty", { valueAsNumber: true })}
             />
           </div>
-        </div>
 
-        <div>
-          <Label htmlFor="adjustment-reason" required>Alasan Penyesuaian</Label>
-          <Controller
-            name="reason"
-            control={control}
-            render={({ field }) => (
-              <TextArea
-                value={field.value}
-                onChange={(value) => {
-                  field.onChange(value);
-                  (clearErrors as (name: string) => void)("root");
-                }}
-                rows={4}
-                placeholder="Tuliskan alasan penyesuaian stok (contoh: Barang rusak, Stok opname)"
-                error={Boolean(errors.reason)}
-                hint={errors.reason?.message}
-              />
-            )}
-          />
+          <div>
+            <Label htmlFor="adjustment-reason" required>Alasan Penyesuaian</Label>
+            <Controller
+              name="reason"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    (clearErrors as (name: string) => void)("root");
+                  }}
+                  rows={4}
+                  placeholder="Tuliskan alasan penyesuaian stok (contoh: Barang rusak, Stok opname)"
+                  error={Boolean(errors.reason)}
+                  hint={errors.reason?.message}
+                />
+              )}
+            />
+          </div>
         </div>
 
         <div>
