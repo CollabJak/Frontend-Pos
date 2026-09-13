@@ -57,12 +57,14 @@ export default function AsyncSearchSelect<TOption extends Record<string, unknown
     isOpen &&
     (debouncedSearch.length === 0 || debouncedSearch.length >= searchMinLength);
 
+  const optionsKey = keyName || (fetchOptions as { optionsKey?: string }).optionsKey || "default";
+
   const {
     data: options = [],
     isLoading,
     isFetching,
   } = useAsyncOptions<TOption>({
-    key: keyName || "default",
+    key: optionsKey,
     enabled: shouldFetch,
     limit,
     search: debouncedSearch.length >= searchMinLength ? debouncedSearch : undefined,
