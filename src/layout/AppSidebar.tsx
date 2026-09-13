@@ -339,7 +339,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed top-16 lg:top-0 flex flex-col px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-[calc(100dvh-4rem)] lg:h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
         ${isExpanded || isMobileOpen
           ? "w-[290px]"
           : isHovered
@@ -355,35 +355,29 @@ const AppSidebar: React.FC = () => {
         className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
           }`}
       >
-        <Link to="/dashboard">
+        <Link to="/dashboard" className="flex items-center gap-2">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <img
-                className="dark:hidden"
-                src="/images/logo/main-logo.jpg"
-                alt="Logo"
-                width={150}
-                height={40}
+                src="/images/logo/logo-icon.jpg"
+                alt="CHRONA"
+                className="h-8 w-8 rounded"
               />
-              <img
-                className="hidden dark:block"
-                src="/images/logo/logo.png"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
+              <span className="text-lg font-bold text-brand-500 dark:text-white">
+                CHRONA
+              </span>
             </>
           ) : (
             <img
               src="/images/logo/logo-icon.jpg"
-              alt="Logo"
+              alt="CHRONA"
               width={32}
               height={32}
             />
           )}
         </Link>
       </div>
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+      <div className="flex flex-1 min-h-0 flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
             <div>

@@ -45,6 +45,8 @@ interface PosStoreState {
   toGridItems: (search: string) => PosGridItem[];
   selectedPaymentMethodId: number | null;
   setSelectedPaymentMethodId: (id: number | null) => void;
+  isCartDrawerOpen: boolean;
+  setCartDrawerOpen: (open: boolean) => void;
   reset: () => void;
 }
 
@@ -106,6 +108,9 @@ export const usePosStore = create<PosStoreState>()(
       pricingSnapshot: null,
       selectedPaymentMethodId: null,
       selectedCustomer: null,
+      isCartDrawerOpen: false,
+
+      setCartDrawerOpen: (open) => set({ isCartDrawerOpen: open }),
 
       setSelectedCustomer: (customer) => set({ selectedCustomer: customer }),
 
