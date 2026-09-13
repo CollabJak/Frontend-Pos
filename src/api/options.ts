@@ -13,6 +13,16 @@ interface CreateOptionsFetcherParams {
   searchParam?: string;
 }
 
+export type OptionsFetcher<TOption> = {
+  (params: {
+    limit?: number;
+    search?: string;
+    signal?: AbortSignal;
+  }): Promise<TOption[]>;
+  /** Domain name used to isolate the dropdown options cache entry. */
+  optionsKey: string;
+};
+
 const MAX_OPTIONS_LIMIT = 100;
 
 export function createOptionsFetcher<TOption = OptionDto>({
@@ -20,7 +30,7 @@ export function createOptionsFetcher<TOption = OptionDto>({
   limitParam = "limit",
   searchParam = "search",
 }: CreateOptionsFetcherParams) {
-  return async (params: {
+  const fetcher = async (params: {
     limit?: number;
     search?: string;
     signal?: AbortSignal;
@@ -56,6 +66,11 @@ export function createOptionsFetcher<TOption = OptionDto>({
 
     return [];
   };
+
+  // Cache key for dropdown options, derived from the endpoint so every
+  // AsyncSearchSelect instance is isolated even when no keyName is passed.
+  (fetcher as OptionsFetcher<TOption>).optionsKey = endpoint.replace(/^\/options\//, "");
+  return fetcher;
 }
 
 export const fetchCategoryOptions = createOptionsFetcher({ endpoint: "/options/categories" });
