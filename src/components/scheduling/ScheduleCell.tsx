@@ -28,9 +28,11 @@ const ScheduleCell: React.FC<ScheduleCellProps> = ({ cell, holidays = [], date, 
           ? `${cell.shift_name || "Hari Off"} - ${cell.status}`
           : isHoliday
             ? holidays.map((holiday) => holiday.name).join(", ")
-          : "Klik untuk membuat draft jadwal"
+            : undefined
       }
-      className={`h-16 w-full border-r border-b border-gray-100 dark:border-gray-800 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 flex flex-col items-center justify-center p-1 text-center ${getStatusColor()}`}
+      className={`h-16 w-full border-r border-b border-gray-100 dark:border-gray-800 transition-colors ${
+        cell ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30" : ""
+      } flex flex-col items-center justify-center p-1 text-center ${getStatusColor()}`}
     >
       {cell ? (
         <>

@@ -222,15 +222,6 @@ export interface OvertimeOverridePayload {
   reason: string;
 }
 
-export interface CreateSchedulePayload {
-  user_id: number;
-  shift_id?: number | null;
-  schedule_date: string;
-  is_day_off?: boolean;
-  location_id?: number | null;
-  day_off_note?: string | null;
-}
-
 export interface UpdateSchedulePayload {
   shift_id?: number | null;
   is_day_off?: boolean;

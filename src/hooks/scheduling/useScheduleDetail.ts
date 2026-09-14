@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import schedulingService from "../../services/api/schedulingService";
-import type { CreateSchedulePayload, UpdateSchedulePayload } from "../../types/scheduling";
+import type { UpdateSchedulePayload } from "../../types/scheduling";
 import { schedulingKeys } from "./queryKeys";
 
 export const useScheduleDetail = (id?: number | null) => {
@@ -17,15 +17,6 @@ const invalidateScheduleViews = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: schedulingKeys.batches });
   queryClient.invalidateQueries({ queryKey: ["schedule"] });
   queryClient.invalidateQueries({ queryKey: ["schedule-audit"] });
-};
-
-export const useCreateSchedule = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CreateSchedulePayload) => schedulingService.createSchedule(data),
-    onSuccess: () => invalidateScheduleViews(queryClient),
-  });
 };
 
 export const useUpdateSchedule = () => {

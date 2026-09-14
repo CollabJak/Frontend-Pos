@@ -29,7 +29,7 @@ const ScheduleCalendarPage: React.FC = () => {
   const [selectedCell, setSelectedCell] = useState<{
     userId: number;
     date: string;
-    cell?: CalendarCell;
+    cell: CalendarCell;
   } | null>(null);
 
   const { data: calendarData, isLoading } = useScheduleCalendar({
@@ -51,6 +51,7 @@ const ScheduleCalendarPage: React.FC = () => {
   }, [viewMonth, locationId, status]);
 
   const handleCellClick = (userId: number, date: string, cell?: CalendarCell) => {
+    if (!cell) return;
     setSelectedCell({ userId, date, cell });
   };
 
