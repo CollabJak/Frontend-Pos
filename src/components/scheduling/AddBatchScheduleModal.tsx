@@ -141,7 +141,7 @@ export default function AddBatchScheduleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl m-4">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-5xl m-4">
       <div className="p-6">
         <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">Tambah Jadwal</h3>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
