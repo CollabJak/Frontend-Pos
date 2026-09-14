@@ -21,27 +21,7 @@ import {
 } from "../../hooks/useCustomerGroupPrices";
 import { Input } from "../../components/form/input/InputField";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
-
-const formatDate = (value?: string | null) => {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  const pad = (num: number) => String(num).padStart(2, "0");
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 export interface CustomerGroupPriceListProps {
   embedded?: boolean;
@@ -159,10 +139,10 @@ export default function CustomerGroupPriceList({ embedded = false }: CustomerGro
                           {item.location?.name || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {formatDate(item.start_date)}
+                          {formatDateTimeDisplay(item.start_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {formatDate(item.end_date)}
+                          {formatDateTimeDisplay(item.end_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {item.is_active ? "Ya" : "Tidak"}

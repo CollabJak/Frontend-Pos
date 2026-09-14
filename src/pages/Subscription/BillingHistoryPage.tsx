@@ -12,6 +12,7 @@ import { CalendarIcon, CreditCardIcon } from "../../icons";
 import UploadProofModal from "../../components/subscription/UploadProofModal";
 import InvoiceDetailModal from "../../components/subscription/InvoiceDetailModal";
 import { Modal } from "../../components/ui/modal";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -63,7 +64,7 @@ export default function BillingHistoryPage() {
                         <div className="space-y-4">
                             <div className="p-4 rounded-2xl bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
                                 <h3 className="text-white dark:text-brand-400 font-bold text-lg">{currentSub.subscription_plan?.name}</h3>
-                                <p className="text-sm text-white">Aktif hingga {new Date(currentSub.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                <p className="text-sm text-white">Aktif hingga {formatDateDisplay(currentSub.end_date)}</p>
                             </div>
 
                             <div className="flex items-center justify-between text-sm">
@@ -95,9 +96,7 @@ export default function BillingHistoryPage() {
                             <div>
                                 <p className="text-xs text-gray-500 uppercase tracking-wider">Tagihan Berikutnya</p>
                                 <p className="text-lg font-bold text-gray-800 dark:text-white">
-                                    {currentSub?.next_billing_date
-                                        ? new Date(currentSub.next_billing_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-                                        : '-'}
+                                    {formatDateDisplay(currentSub?.next_billing_date)}
                                 </p>
                             </div>
                         </div>
@@ -182,7 +181,7 @@ export default function BillingHistoryPage() {
                                         {item.payment_method || '-'}
                                     </TableCell>
                                     <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                        {new Date(item.created_at).toLocaleDateString('id-ID')}
+                                        {formatDateDisplay(item.created_at)}
                                     </TableCell>
                                     <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                         Rp {Number(item.amount).toLocaleString()}

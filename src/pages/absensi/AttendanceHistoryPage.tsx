@@ -22,6 +22,7 @@ import {
   CalendarDayItem, 
   AttendanceRecord,
 } from "../../types/attendance";
+import { formatDateDisplay, formatClockTime } from "../../utils/formatDate";
 
 const AttendanceHistoryPage: React.FC = () => {
   const { user } = useAuth();
@@ -541,47 +542,14 @@ const checkIsLate = (attendance: any, schedule: any): boolean => {
   return false;
 };
 
-// Helper format time to "HH:mm WIB"
-const formatIndonesianTime = (timeStr?: string | null): string => {
-  if (!timeStr) return "--:--";
-  
-  // ISO timestamp or SQL datetime (e.g., "2026-08-17T07:15:30.000000Z" or "2026-08-17 07:15:30")
-  if (timeStr.includes("T") || timeStr.includes(" ")) {
-    const d = new Date(timeStr);
-    if (!isNaN(d.getTime())) {
-      const hh = String(d.getHours()).padStart(2, '0');
-      const mm = String(d.getMinutes()).padStart(2, '0');
-      return `${hh}:${mm} WIB`;
-    }
-  }
-  
-  // Time string (e.g., "07:15:00" or "07:15")
-  const parts = timeStr.split(":");
-  if (parts.length >= 2) {
-    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')} WIB`;
-  }
-
-  return `${timeStr} WIB`;
-};
-
-// Helper format date to "Senin, 17 Agustus 2026"
-const formatIndonesianDate = (dateStr?: string | null): string => {
-  if (!dateStr) return "";
-  const d = new Date(dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00`);
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  });
-};
+const formatIndonesianTime = (timeStr?: string | null): string =>
+  `${formatClockTime(timeStr)} WIB`;
 
 const DayDetailModal: React.FC<{dayItem: CalendarDayItem; onClose: () => void}> = ({dayItem, onClose}) => {
   const { dateStr, schedule, attendance, status } = dayItem;
   
   const formattedDate = useMemo(() => {
-     return formatIndonesianDate(dateStr);
+     return formatDateDisplay(dateStr);
   }, [dateStr]);
 
   const shiftSnapshot = schedule?.snapshot;

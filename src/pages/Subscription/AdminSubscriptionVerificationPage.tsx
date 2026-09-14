@@ -25,6 +25,7 @@ import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import { useFetchBusiness } from "../../hooks/useBusinesses";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 type SelectedBusinessPayment = {
     businessId: number;
@@ -218,7 +219,7 @@ export default function AdminSubscriptionVerificationPage() {
                                                             {payment.invoice_number}
                                                         </span>
                                                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                                            {new Date(payment.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                            {formatDateDisplay(payment.created_at)}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="px-5 py-4 text-start">

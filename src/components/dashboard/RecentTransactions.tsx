@@ -6,7 +6,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useRecentTransactions } from "../../hooks/useRecentTransactions";
 import { useFetchLocations } from "../../hooks/useLocations";
-import { formatTransactionDate } from "../../utils/formatDate";
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 const RecentTransactions: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -138,7 +138,7 @@ const RecentTransactions: React.FC = () => {
               transactions.map((txn) => (
                 <tr key={txn.id} className="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
                   <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                    {formatTransactionDate(txn.datetime)}
+                    {formatDateTimeDisplay(txn.datetime)}
                   </td>
                   <td className="py-4 text-xs font-medium text-gray-600 dark:text-gray-400 pl-4 whitespace-nowrap">{txn.business_name}</td>
                   <td className="py-4 text-xs font-bold text-brand-600 dark:text-brand-400 pl-4 whitespace-nowrap">{txn.invoice}</td>

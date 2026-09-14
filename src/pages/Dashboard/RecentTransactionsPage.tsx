@@ -5,7 +5,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import Badge from "../../components/ui/badge/Badge";
 import { useRecentTransactions } from "../../hooks/useRecentTransactions";
 import { useFetchLocations } from "../../hooks/useLocations";
-import { formatTransactionDate } from "../../utils/formatDate";
+import { formatDateToYYYYMMDD, formatDateTimeDisplay } from "../../utils/formatDate";
 import { Pagination } from "../../components/tables/Datatable";
 import ComponentCard from "../../components/common/ComponentCard";
 import {
@@ -79,12 +79,7 @@ export default function RecentTransactionsPage() {
   const canCancelTransaction = hasAccess(userRoles, userPermissions, undefined, ["transaction.cancel"]);
   const canExportTransactions = hasAccess(userRoles, userPermissions, undefined, ["transaction.export"]);
 
-  const getToday = () => {
-    const today = new Date();
-    const offset = today.getTimezoneOffset();
-    const localToday = new Date(today.getTime() - offset * 60 * 1000);
-    return localToday.toISOString().split("T")[0];
-  };
+  const getToday = () => formatDateToYYYYMMDD(new Date());
 
   const selectedLocationId = searchParams.get("location_id") ?? "all";
   const fromDate = searchParams.get("from") ?? getToday();
@@ -159,11 +154,7 @@ export default function RecentTransactionsPage() {
   };
 
   const handleDateChange = (selectedDates: Date[]) => {
-    const formatDateLocal = (date: Date) => {
-      const offset = date.getTimezoneOffset();
-      const localDate = new Date(date.getTime() - offset * 60 * 1000);
-      return localDate.toISOString().split("T")[0];
-    };
+    const formatDateLocal = (date: Date) => formatDateToYYYYMMDD(date);
 
     if (selectedDates.length === 2) {
       const from = formatDateLocal(selectedDates[0]);
@@ -354,7 +345,7 @@ export default function RecentTransactionsPage() {
                             </button>
                           </TableCell>
                           <TableCell className="px-5 py-4 text-start whitespace-nowrap text-theme-sm text-gray-600 dark:text-gray-400">
-                            {formatTransactionDate(txn.datetime)}
+                            {formatDateTimeDisplay(txn.datetime)}
                           </TableCell>
                           <TableCell className="px-5 py-4 text-start whitespace-nowrap text-theme-sm text-gray-600 dark:text-gray-400">
                             {txn.business_name}

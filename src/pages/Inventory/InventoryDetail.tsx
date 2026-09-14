@@ -15,6 +15,7 @@ import { Pagination } from "../../components/tables/Datatable";
 import { useInventoryBatches } from "../../hooks/useInventoryBatches";
 import { useInventoryDetail } from "../../hooks/useInventoryDetail";
 import { InventoryBatch, InventoryLocationBalance } from "../../types/types";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 const toNumber = (value: string | number | undefined): number => {
   const parsed = Number(value);
@@ -231,7 +232,7 @@ export default function InventoryDetail() {
                             {formatDecimal(batch.cost)}
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                            {batch.expiry_date ?? "-"}
+                            {formatDateDisplay(batch.expiry_date)}
                           </TableCell>
                         </TableRow>
                       ))}

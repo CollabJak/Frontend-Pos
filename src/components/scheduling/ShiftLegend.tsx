@@ -1,15 +1,11 @@
 import React from "react";
 import { Shift } from "../../types/scheduling";
+import { formatClockTime } from "../../utils/formatDate";
 
 interface ShiftLegendProps {
   shifts?: Shift[];
   isLoading?: boolean;
 }
-
-const formatTime = (time?: string | null) => {
-  if (!time) return "--:--";
-  return time.slice(0, 5);
-};
 
 const ShiftLegend: React.FC<ShiftLegendProps> = ({ shifts = [], isLoading }) => {
   return (
@@ -38,7 +34,7 @@ const ShiftLegend: React.FC<ShiftLegendProps> = ({ shifts = [], isLoading }) => 
                 {shift.name}
               </span>
               <span className="min-w-0 text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {shift.name} ({formatTime(shift.check_in_time)} - {formatTime(shift.check_out_time)})
+                {shift.name} ({formatClockTime(shift.check_in_time)} - {formatClockTime(shift.check_out_time)})
               </span>
             </div>
           ))}

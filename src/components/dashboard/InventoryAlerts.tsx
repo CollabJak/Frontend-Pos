@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertIcon, TimeIcon, BoltIcon } from "../../icons";
 import { useInventoryAlerts } from "../../hooks/useInventoryAlerts";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 const InventoryAlerts: React.FC = () => {
   const { data: alertsResponse, isLoading, isError } = useInventoryAlerts();
@@ -22,7 +23,7 @@ const InventoryAlerts: React.FC = () => {
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
     if (days < 0) return "KADALUARSA";
     if (days === 0) return "KADALUARSA HARI INI";
-    return `KADALUARSA DALAM ${days} HARI (${new Intl.DateTimeFormat("id-ID", { month: "short", day: "numeric" }).format(exp).toUpperCase()})`;
+    return `KADALUARSA DALAM ${days} HARI (${formatDateDisplay(exp)})`;
   };
 
   if (isLoading) {

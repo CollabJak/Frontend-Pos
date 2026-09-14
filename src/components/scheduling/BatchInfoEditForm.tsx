@@ -6,6 +6,7 @@ import { useUpdateBatch } from "../../hooks/scheduling/useScheduleBatches";
 import { batchInfoSchema } from "../../Schemas/scheduling/batchEditSchema";
 import type { SchedulePublishBatch } from "../../types/scheduling";
 import type { ConflictError } from "../../types/apiErrorHelpers";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 interface BatchInfoEditFormProps {
   batch: SchedulePublishBatch;
@@ -116,7 +117,7 @@ export default function BatchInfoEditForm({ batch, onCancel, onSaved }: BatchInf
           <ul className="mt-1 list-inside list-disc">
             {outsideItems.map((item) => (
               <li key={item.schedule_id}>
-                Jadwal #{item.schedule_id} pada {item.schedule_date}
+                Jadwal #{item.schedule_id} pada {formatDateDisplay(item.schedule_date)}
               </li>
             ))}
           </ul>

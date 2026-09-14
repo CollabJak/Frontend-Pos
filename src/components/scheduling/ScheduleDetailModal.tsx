@@ -21,6 +21,7 @@ import {
   useScheduleDetail,
   useUpdateSchedule,
 } from "../../hooks/scheduling/useScheduleDetail";
+import { formatDateDisplay, formatClockTime } from "../../utils/formatDate";
 
 interface ScheduleDetailModalProps {
   isOpen: boolean;
@@ -179,7 +180,7 @@ export default function ScheduleDetailModal({
           <div className="mb-5 pr-12">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
             <p className="mt-1 text-sm text-gray-500">
-              {schedule?.user?.name || `User #${userId}`} - {date}
+              {schedule?.user?.name || `User #${userId}`} - {formatDateDisplay(date)}
             </p>
           </div>
 
@@ -330,7 +331,7 @@ export default function ScheduleDetailModal({
                       <div className="flex items-center justify-between gap-4">
                         <span className="text-gray-500">Waktu</span>
                         <span className="font-medium text-gray-800 dark:text-white/90">
-                          {schedule?.snapshot?.check_in_time || schedule?.shift?.check_in_time || "-"} - {schedule?.snapshot?.check_out_time || schedule?.shift?.check_out_time || "-"}
+                          {formatClockTime(schedule?.snapshot?.check_in_time || schedule?.shift?.check_in_time)} - {formatClockTime(schedule?.snapshot?.check_out_time || schedule?.shift?.check_out_time)}
                         </span>
                       </div>
                     )}

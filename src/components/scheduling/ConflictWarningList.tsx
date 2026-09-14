@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertIcon } from "../../icons";
 import Button from "../ui/button/Button";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 export interface ConflictItem {
   user_id: number;
@@ -60,7 +61,7 @@ const ConflictWarningList: React.FC<ConflictWarningListProps> = ({
                   {getConflictType(conflict).replace(/_/g, " ")}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-500">
-                  {conflict.date}
+                  {formatDateDisplay(conflict.date)}
                 </span>
               </div>
             </div>

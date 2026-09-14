@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
+import { formatDateDisplay } from "../../utils/formatDate";
 import Label from "../form/Label";
 import { Input } from "../form/input/InputField";
 import Select from "../form/Select";
@@ -143,7 +144,7 @@ export default function AddBatchScheduleModal({
       <div className="p-6">
         <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">Tambah Jadwal</h3>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
-          Tambahkan satu atau beberapa jadwal ke batch draft. Periode batch: {batchPeriodStart} s/d {batchPeriodEnd}.
+          Tambahkan satu atau beberapa jadwal ke batch draft. Periode batch: {formatDateDisplay(batchPeriodStart)} s/d {formatDateDisplay(batchPeriodEnd)}.
         </p>
 
         {error && (

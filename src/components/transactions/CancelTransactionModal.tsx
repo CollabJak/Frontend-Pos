@@ -4,6 +4,7 @@ import Button from "../ui/button/Button";
 import Label from "../form/Label";
 import TextArea from "../form/input/TextArea";
 import type { Transaction } from "../../types/dashboard";
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 interface CancelTransactionModalProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ export default function CancelTransactionModal({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">Tanggal:</span>
               <span className="text-gray-900 dark:text-white">
-                {new Date(transaction.datetime).toLocaleString("id-ID")}
+                {formatDateTimeDisplay(transaction.datetime)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
