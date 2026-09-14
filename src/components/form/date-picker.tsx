@@ -18,6 +18,8 @@ type PropsType = {
   placeholder?: string;
   error?: string;
   required?: boolean;
+  minDate?: DateOption;
+  maxDate?: DateOption;
 };
 
 export default function DatePicker({
@@ -30,6 +32,8 @@ export default function DatePicker({
   placeholder,
   error,
   required = false,
+  minDate,
+  maxDate,
 }: PropsType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pickerRef = useRef<flatpickr.Instance | null>(null);
@@ -69,6 +73,8 @@ export default function DatePicker({
           : "border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800"
       }`,
       defaultDate: defaultDate || undefined,
+      minDate: minDate || undefined,
+      maxDate: maxDate || undefined,
       onChange: (selectedDates, dateStr, instance) => {
         if (typeof onChangeRef.current === "function") {
           onChangeRef.current(selectedDates, dateStr, instance);
@@ -92,7 +98,7 @@ export default function DatePicker({
         pickerRef.current = null;
       }
     };
-  }, [id, mode, viewMode, error]);
+  }, [id, mode, viewMode, error, minDate, maxDate]);
 
   useEffect(() => {
     const picker = pickerRef.current;

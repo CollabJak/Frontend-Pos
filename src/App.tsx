@@ -115,7 +115,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster position="bottom-right" reverseOrder={false} containerStyle={{ zIndex: 100001 }} />
       <Router>
         <AuthProvider>
           <ScrollToTop />

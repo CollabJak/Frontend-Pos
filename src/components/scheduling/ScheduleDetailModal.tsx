@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { fetchShiftOptions } from "../../api/options";
@@ -15,7 +14,6 @@ import HolidayBadge from "./HolidayBadge";
 import OverrideModal from "./OverrideModal";
 import type { CalendarCell, HolidayCalendar } from "../../types/scheduling";
 import {
-  useCreateSchedule,
   useDeleteSchedule,
   useScheduleAuditLogs,
   useScheduleDetail,
@@ -28,7 +26,7 @@ interface ScheduleDetailModalProps {
   userId: number;
   date: string;
   locationId?: number;
-  cell?: CalendarCell;
+  cell: CalendarCell;
   holidays?: HolidayCalendar[];
   onClose: () => void;
 }
@@ -71,7 +69,6 @@ export default function ScheduleDetailModal({
   holidays = [],
   onClose,
 }: ScheduleDetailModalProps) {
-  const navigate = useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
   const [showOverride, setShowOverride] = useState(false);
@@ -93,13 +90,12 @@ export default function ScheduleDetailModal({
   const { data: auditLogs = [], isLoading: isLoadingAudit } = useScheduleAuditLogs(
     showAudit ? scheduleId : null
   );
-  const createSchedule = useCreateSchedule();
   const updateSchedule = useUpdateSchedule();
   const deleteSchedule = useDeleteSchedule();
 
   const isDraft = cell?.status === "draft";
   const isPublished = cell?.status === "published";
-  const isSaving = createSchedule.isPending || updateSchedule.isPending;
+  const isSaving = updateSchedule.isPending;
   const isHolidayDate = holidays.length > 0;
 
   useEffect(() => {
@@ -119,10 +115,9 @@ export default function ScheduleDetailModal({
   }, [isOpen, cell, schedule, reset, clearErrors]);
 
   const title = useMemo(() => {
-    if (!cell) return "Tambah Draft Jadwal";
     if (isDraft) return "Detail Draft Jadwal";
     return "Detail Jadwal Published";
-  }, [cell, isDraft]);
+  }, [isDraft]);
 
   const scheduleName = cell?.is_day_off
     ? "Hari Off"
@@ -149,17 +144,7 @@ export default function ScheduleDetailModal({
         { id: scheduleId, data: payload },
         { onSuccess: onClose }
       );
-      return;
     }
-
-    createSchedule.mutate(
-      {
-        user_id: userId,
-        schedule_date: date,
-        ...payload,
-      },
-      { onSuccess: onClose }
-    );
   };
 
   const handleDelete = () => {
@@ -184,7 +169,7 @@ export default function ScheduleDetailModal({
             </p>
           </div>
 
-          {!cell || isDraft ? (
+          {isDraft ? (
             <div className="space-y-5">
               {isHolidayDate && (
                 <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
@@ -298,13 +283,8 @@ export default function ScheduleDetailModal({
                     </Button>
                   </>
                 )}
-                {!cell && (
-                  <Button size="sm" variant="outline" onClick={() => navigate("/scheduling/generate")}>
-                    Generate Batch
-                  </Button>
-                )}
                 <Button size="sm" variant="primary" onClick={handleSubmit(onSubmit)} isLoading={isSaving}>
-                  {scheduleId ? "Simpan Draft" : "Buat Draft"}
+                  Simpan Draft
                 </Button>
               </div>
             </div>

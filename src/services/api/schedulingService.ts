@@ -12,7 +12,7 @@ import {
   RescheduleOverridePayload,
   SwapOverridePayload
 } from "../../types/scheduling";
-import type { CreateSchedulePayload, UpdateSchedulePayload } from "../../types/scheduling";
+import type { UpdateSchedulePayload } from "../../types/scheduling";
 import type {
   UpdateBatchPayload,
   UpdateBatchSchedulePayload,
@@ -144,10 +144,6 @@ const schedulingService = {
   },
   getSchedule: async (id: number) => {
     const response = await apiClient.get<ApiResponse<EmployeeSchedule>>(`/schedules/${id}`);
-    return response.data.data;
-  },
-  createSchedule: async (data: CreateSchedulePayload) => {
-    const response = await apiClient.post<ApiResponse<EmployeeSchedule>>("/schedules", data);
     return response.data.data;
   },
   updateSchedule: async (id: number, data: UpdateSchedulePayload) => {
