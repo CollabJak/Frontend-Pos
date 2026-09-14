@@ -115,7 +115,6 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Above modal (z-99999) and slide-over drawers (z-100000) so error toasts stay visible */}
       <Toaster position="bottom-right" reverseOrder={false} containerStyle={{ zIndex: 100001 }} />
       <Router>
         <AuthProvider>
