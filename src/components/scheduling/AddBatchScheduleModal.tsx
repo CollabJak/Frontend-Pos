@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import { formatDateDisplay } from "../../utils/formatDate";
+import { formatDateDisplay, formatDateToYYYYMMDD } from "../../utils/formatDate";
 import Label from "../form/Label";
 import { Input } from "../form/input/InputField";
 import Select from "../form/Select";
 import Switch from "../form/switch/Switch";
+import DatePicker from "../form/date-picker";
 import { useAddBatchSchedules } from "../../hooks/scheduling/useScheduleBatches";
 import { useShiftOptions } from "../../hooks/scheduling/useShifts";
 import { useUserOptions } from "../../hooks/useUserOptions";
@@ -140,7 +141,7 @@ export default function AddBatchScheduleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-3xl m-4">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl m-4">
       <div className="p-6">
         <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">Tambah Jadwal</h3>
         <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
@@ -170,14 +171,16 @@ export default function AddBatchScheduleModal({
               </div>
 
               <div className="sm:col-span-3">
-                <Label htmlFor={`row-date-${row.key}`}>Tanggal</Label>
-                <Input
+                <DatePicker
                   id={`row-date-${row.key}`}
-                  type="date"
-                  min={batchPeriodStart}
-                  max={batchPeriodEnd}
-                  value={row.schedule_date}
-                  onChange={(e) => updateRow(row.key, { schedule_date: e.target.value })}
+                  label="Tanggal"
+                  placeholder="Pilih tanggal"
+                  defaultDate={row.schedule_date || undefined}
+                  minDate={batchPeriodStart}
+                  maxDate={batchPeriodEnd}
+                  onChange={([date]) =>
+                    updateRow(row.key, { schedule_date: date ? formatDateToYYYYMMDD(date) : "" })
+                  }
                 />
               </div>
 
