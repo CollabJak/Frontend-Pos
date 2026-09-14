@@ -35,6 +35,7 @@ import {
   PieChartIcon,
 } from "../../icons";
 import { storageUrl } from "../../utils/storageUrl";
+import { formatDateDisplay, formatClockTime } from "../../utils/formatDate";
 
 type SelectOption = OptionDto & Record<string, unknown>;
 
@@ -559,7 +560,7 @@ export default function AttendanceReportPage() {
                                 1}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-gray-700 text-theme-sm dark:text-gray-300">
-                              {row.schedule_date}
+                              {formatDateDisplay(row.schedule_date)}
                               {row.is_cross_day && (
                                 <span className="ml-1 text-xs text-gray-400">
                                   (cross-day)
@@ -577,14 +578,14 @@ export default function AttendanceReportPage() {
                             </TableCell>
                             <TableCell className="px-4 py-3 text-center text-gray-600 text-theme-sm dark:text-gray-400">
                               {row.scheduled_check_in && row.scheduled_check_out
-                                ? `${row.scheduled_check_in} - ${row.scheduled_check_out}`
+                                ? `${formatClockTime(row.scheduled_check_in)} - ${formatClockTime(row.scheduled_check_out)}`
                                 : "-"}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-center text-gray-700 text-theme-sm dark:text-gray-300">
-                              {row.check_in_time ?? "-"}
+                              {formatClockTime(row.check_in_time)}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-center text-gray-700 text-theme-sm dark:text-gray-300">
-                              {row.check_out_time ?? "-"}
+                              {formatClockTime(row.check_out_time)}
                             </TableCell>
                             <TableCell className="px-4 py-3 text-center text-theme-sm">
                               <span
@@ -657,7 +658,7 @@ export default function AttendanceReportPage() {
               <div>
                 <span className="text-xs text-gray-500">Tanggal</span>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {selectedRow.schedule_date}
+                  {formatDateDisplay(selectedRow.schedule_date)}
                   {selectedRow.is_cross_day && " (cross-day)"}
                 </p>
               </div>
@@ -685,13 +686,13 @@ export default function AttendanceReportPage() {
               <div>
                 <span className="text-xs text-gray-500">Check-In Aktual</span>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {selectedRow.check_in_time ?? "-"}
+                  {formatClockTime(selectedRow.check_in_time)}
                 </p>
               </div>
               <div>
                 <span className="text-xs text-gray-500">Check-Out Aktual</span>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {selectedRow.check_out_time ?? "-"}
+                  {formatClockTime(selectedRow.check_out_time)}
                 </p>
               </div>
               <div>

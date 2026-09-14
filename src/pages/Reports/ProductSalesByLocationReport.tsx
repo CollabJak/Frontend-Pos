@@ -21,7 +21,7 @@ import {
   useSalesByLocationReport,
 } from "../../hooks/useSalesReport";
 import { SalesReportFilters } from "../../types/reports";
-import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import { formatDateToYYYYMMDD, formatDateDisplay } from "../../utils/formatDate";
 import {
   BoxIcon,
   DollarLineIcon,
@@ -321,7 +321,7 @@ export default function ProductSalesByLocationReport() {
       <div className="space-y-6">
         <ComponentCard
           title="Daftar Rekapitulasi Produk per Lokasi"
-          desc={`Periode: ${activeFilters.start_date} s/d ${activeFilters.end_date}`}
+          desc={`Periode: ${formatDateDisplay(activeFilters.start_date)} s/d ${formatDateDisplay(activeFilters.end_date)}`}
         >
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">

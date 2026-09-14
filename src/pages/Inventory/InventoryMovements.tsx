@@ -19,23 +19,10 @@ import {
 } from "../../components/ui/table";
 import { Pagination } from "../../components/tables/Datatable";
 import { InventoryMovementItem } from "../../types/types";
-import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import { formatDateTimeDisplay, formatDateToYYYYMMDD } from "../../utils/formatDate";
 import { formatDecimal } from "../../utils/formatDecimal";
 
 type SelectOption = OptionDto & Record<string, unknown>;
-
-const formatDateTime = (value?: string): string => {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleString();
-};
 
 const resolveProductName = (row: InventoryMovementItem): string => {
   return row.product_variant?.name ?? row.product_name ?? "Produk tidak diketahui";
@@ -295,7 +282,7 @@ export default function InventoryMovements() {
                     {data?.data.map((movement) => (
                       <TableRow key={movement.id}>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {formatDateTime(movement.created_at)}
+                          {formatDateTimeDisplay(movement.created_at)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {resolveProductName(movement)}

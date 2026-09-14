@@ -11,6 +11,7 @@ import {
   InfoIcon,
 } from "../../icons";
 import { useAuth } from "../../hooks/useAuth";
+import { formatClockTime } from "../../utils/formatDate";
 
 const AttendanceScannerPage: React.FC = () => {
   const navigate = useNavigate();
@@ -245,7 +246,7 @@ const AttendanceScannerPage: React.FC = () => {
                 <div className="text-left">
                   <h3 className="text-xl font-bold text-white">Check In (Masuk)</h3>
                   <p className="text-white/70 text-sm italic font-medium">
-                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_in_time ? `Jam Masuk: ${todayAttendance.check_in_time}` : 'Klik untuk masuk kerja')}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_in_time ? `Jam Masuk: ${formatClockTime(todayAttendance.check_in_time)}` : 'Klik untuk masuk kerja')}
                   </p>
                 </div>
               </div>
@@ -264,7 +265,7 @@ const AttendanceScannerPage: React.FC = () => {
                 <div className="text-left">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Check Out (Keluar)</h3>
                   <p className="text-gray-400 text-sm italic font-medium">
-                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_out_time ? `Jam Keluar: ${todayAttendance.check_out_time}` : 'Klik saat selesai kerja')}
+                    {cooldown > 0 ? `Menunggu (${cooldown}s)...` : (todayAttendance?.check_out_time ? `Jam Keluar: ${formatClockTime(todayAttendance.check_out_time)}` : 'Klik saat selesai kerja')}
                   </p>
                 </div>
               </div>

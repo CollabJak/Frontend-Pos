@@ -37,7 +37,7 @@ import {
 } from "../../Schemas/scheduling/holidayCalendarSchema";
 import { HolidayCalendar, HolidayType } from "../../types/scheduling";
 import { CopyIcon, PlusIcon, TrashBinIcon, PencilIcon } from "../../icons";
-import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import { formatDateToYYYYMMDD, formatDateDisplay } from "../../utils/formatDate";
 
 const createEmptyHolidayRow = (date: string): HolidayCalendarFormValues => ({
   name: "",
@@ -403,7 +403,7 @@ export default function HolidayCalendarPage({ embedded = false }: HolidayCalenda
                           {holiday.name}
                           {holiday.is_recurring && <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded uppercase font-bold">Tahunan</span>}
                         </TableCell>
-                        <TableCell className="px-5 py-4 text-gray-500 text-theme-sm dark:text-gray-400">{holiday.holiday_date}</TableCell>
+                        <TableCell className="px-5 py-4 text-gray-500 text-theme-sm dark:text-gray-400">{formatDateDisplay(holiday.holiday_date)}</TableCell>
                         <TableCell className="px-5 py-4">
                           <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${holiday.type === 'national' ? 'bg-red-100 text-red-700' :
                             holiday.type === 'company' ? 'bg-purple-100 text-purple-700' :

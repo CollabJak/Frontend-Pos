@@ -9,7 +9,7 @@ import TextArea from "../form/input/TextArea";
 import Button from "../ui/button/Button";
 import { Modal } from "../ui/modal";
 import type { CalendarCell, EmployeeSchedule, OverrideType } from "../../types/scheduling";
-import { formatDateToYYYYMMDD } from "../../utils/formatDate";
+import { formatDateToYYYYMMDD, formatDateDisplay } from "../../utils/formatDate";
 import {
   useEmergencyOverride,
   useOvertimeOverride,
@@ -95,7 +95,7 @@ export default function OverrideModal({
   const scheduleId = schedule?.id ?? cell.schedule_id;
   const scheduleTitle = useMemo(() => {
     const shift = cell.is_day_off ? "Libur" : cell.shift_name || "Tanpa shift";
-    return `${shift} - ${date}`;
+    return `${shift} - ${formatDateDisplay(date)}`;
   }, [cell.is_day_off, cell.shift_name, date]);
 
   const isPending =
@@ -332,7 +332,7 @@ export default function OverrideModal({
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-gray-500">Jadwal asal</span>
                   <span className="font-medium text-gray-800 dark:text-white/90">
-                    {cell.shift_name || "Published"} - {date}
+                    {cell.shift_name || "Published"} - {formatDateDisplay(date)}
                   </span>
                 </div>
               </div>

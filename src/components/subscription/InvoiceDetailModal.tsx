@@ -4,6 +4,7 @@ import Badge from "../ui/badge/Badge";
 import Button from "../ui/button/Button";
 import { useFetchBillingHistoryDetail } from "../../hooks/useSubscriptionPlans";
 import { PaymentStatus } from "../../types/subscription";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 interface InvoiceDetailModalProps {
     isOpen: boolean;
@@ -25,16 +26,6 @@ const getStatusColor = (status?: PaymentStatus) => {
 
 const formatCurrency = (value?: string) => {
     return `Rp ${Number(value || 0).toLocaleString("id-ID")}`;
-};
-
-const formatDate = (value?: string | null) => {
-    if (!value) return "-";
-
-    return new Date(value).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    });
 };
 
 const DetailItem: React.FC<{ label: string; value?: string | number | null }> = ({ label, value }) => (
@@ -72,8 +63,8 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ isOpen, onClose
                             <h4 className="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Informasi Invoice</h4>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 <DetailItem label="Nomor Invoice" value={data.invoice_number} />
-                                <DetailItem label="Tanggal Invoice" value={formatDate(data.created_at)} />
-                                <DetailItem label="Tanggal Bayar" value={formatDate(data.paid_at)} />
+                                <DetailItem label="Tanggal Invoice" value={formatDateDisplay(data.created_at)} />
+                                <DetailItem label="Tanggal Bayar" value={formatDateDisplay(data.paid_at)} />
                                 <DetailItem label="Metode Pembayaran" value={data.payment_method} />
                                 <DetailItem label="Subtotal" value={formatCurrency(data.subtotal)} />
                                 {parseFloat(data.tax_amount) > 0 && (

@@ -22,6 +22,7 @@ import { PencilIcon } from "../../icons";
 import { ProductPriceType } from "../../types/types";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../../components/form/input/InputField";
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 const PRICE_TYPE_LABELS: Record<ProductPriceType, string> = {
   sell: "Harga Jual",
@@ -29,27 +30,6 @@ const PRICE_TYPE_LABELS: Record<ProductPriceType, string> = {
   wholesale: "Harga Grosir",
   cost: "Harga Pokok / Modal",
   member: "Harga Member",
-};
-
-const formatDate = (value?: string | null) => {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  const pad = (num: number) => String(num).padStart(2, "0");
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 export interface ProductPriceListProps {
@@ -187,10 +167,10 @@ export default function ProductPriceList({ embedded = false }: ProductPriceListP
                           {productPrice.location?.name || "-"}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {formatDate(productPrice.start_date)}
+                          {formatDateTimeDisplay(productPrice.start_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {formatDate(productPrice.end_date)}
+                          {formatDateTimeDisplay(productPrice.end_date)}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">

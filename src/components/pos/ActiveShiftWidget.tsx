@@ -1,5 +1,6 @@
 import type { PosShift } from "../../types/types";
 import { formatCurrency } from "../../utils/currency";
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 interface ActiveShiftWidgetProps {
   shift: PosShift;
@@ -15,21 +16,7 @@ export default function ActiveShiftWidget({
   onCloseShift,
 }: ActiveShiftWidgetProps) {
 
-  // Format local date time
-  const formatTime = (timeStr: string) => {
-    try {
-      const date = new Date(timeStr);
-      return date.toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }) + " (" + date.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-      }) + ")";
-    } catch {
-      return timeStr;
-    }
-  };
+  const formatTime = (timeStr: string) => formatDateTimeDisplay(timeStr);
 
   return (
     <div className="mb-6 overflow-hidden rounded-3xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">

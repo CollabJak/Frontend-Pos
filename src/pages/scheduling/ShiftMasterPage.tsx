@@ -24,6 +24,7 @@ import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import ShiftFormModal from "../../components/scheduling/ShiftFormModal";
 import { Shift } from "../../types/scheduling";
 import Switch from "../../components/form/switch/Switch";
+import { formatClockTime } from "../../utils/formatDate";
 
 interface ShiftMasterPageProps {
   embedded?: boolean;
@@ -155,7 +156,7 @@ export default function ShiftMasterPage({ embedded = false }: ShiftMasterPagePro
                           </div>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-gray-500 text-theme-sm dark:text-gray-400">
-                          {shift.check_in_time} - {shift.check_out_time}
+                          {formatClockTime(shift.check_in_time)} - {formatClockTime(shift.check_out_time)}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-gray-500 text-theme-sm dark:text-gray-400">
                           {Math.floor(shift.duration_minutes / 60)}j {shift.duration_minutes % 60}m

@@ -1,6 +1,7 @@
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import type { ScheduleAuditLog } from "../../types/scheduling";
+import { formatDateTimeDisplay } from "../../utils/formatDate";
 
 interface AuditLogDrawerProps {
   isOpen: boolean;
@@ -103,7 +104,7 @@ export default function AuditLogDrawer({
                       {formatEvent(log.event)}
                     </p>
                     <p className="mt-1 text-xs text-gray-500">
-                      {log.changed_by?.name || "System"} - {new Date(log.created_at).toLocaleString("id-ID")}
+                      {log.changed_by?.name || "System"} - {formatDateTimeDisplay(log.created_at)}
                     </p>
                   </div>
                   <span className="rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-500 dark:bg-gray-800">

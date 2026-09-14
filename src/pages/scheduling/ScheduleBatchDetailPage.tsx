@@ -27,6 +27,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { hasAccess } from "../../utils/rbac";
 import { schedulingKeys } from "../../hooks/scheduling/queryKeys";
 import type { EmployeeSchedule, ScheduleWarningItem } from "../../types/scheduling";
+import { formatDateDisplay, formatClockTime } from "../../utils/formatDate";
 
 const ScheduleBatchDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -173,7 +174,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
               <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
-                  <span>{batch.period_start} s/d {batch.period_end}</span>
+                  <span>{formatDateDisplay(batch.period_start)} s/d {formatDateDisplay(batch.period_end)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <UserIcon className="w-4 h-4" />
@@ -396,7 +397,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
                           </TableCell>
                         )}
                         <TableCell className="px-5 py-4 text-theme-sm text-gray-800 dark:text-white/90">
-                          {row.schedule_date}
+                          {formatDateDisplay(row.schedule_date)}
                         </TableCell>
                         <TableCell className="px-5 py-4">
                           <div className="flex items-center gap-3">
@@ -422,7 +423,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-theme-sm text-gray-500">
-                          {row.is_day_off ? 'Hari Libur' : `${row.snapshot?.check_in_time || row.shift?.check_in_time} - ${row.snapshot?.check_out_time || row.shift?.check_out_time}`}
+                          {row.is_day_off ? 'Hari Libur' : `${formatClockTime(row.snapshot?.check_in_time || row.shift?.check_in_time)} - ${formatClockTime(row.snapshot?.check_out_time || row.shift?.check_out_time)}`}
                         </TableCell>
                         {canEdit && (
                           <TableCell className="px-4 py-4">
@@ -544,7 +545,7 @@ const ScheduleBatchDetailPage: React.FC = () => {
             title="Hapus jadwal dari batch?"
             description={
               pendingDeleteSchedule
-                ? `Jadwal ${pendingDeleteSchedule.user?.name ?? "karyawan"} pada ${pendingDeleteSchedule.schedule_date} akan dihapus dari batch ini.`
+                ? `Jadwal ${pendingDeleteSchedule.user?.name ?? "karyawan"} pada ${formatDateDisplay(pendingDeleteSchedule.schedule_date)} akan dihapus dari batch ini.`
                 : ""
             }
             confirmText="Hapus"

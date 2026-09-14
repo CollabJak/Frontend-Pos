@@ -21,6 +21,7 @@ import { Input } from "../../components/form/input/InputField";
 import Select from "../../components/form/Select";
 import { hasAccess } from "../../utils/rbac";
 import type { SchedulePublishBatch } from "../../types/scheduling";
+import { formatDateDisplay } from "../../utils/formatDate";
 
 const getStatusColor = (status: string): "success" | "warning" | "light" => {
   switch (status) {
@@ -200,7 +201,7 @@ export default function ScheduleBatchListPage() {
                     {batch.name}
                   </TableCell>
                   <TableCell className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    {batch.period_start} - {batch.period_end}
+                    {formatDateDisplay(batch.period_start)} - {formatDateDisplay(batch.period_end)}
                   </TableCell>
                   <TableCell className="px-5 py-4">
                     <Badge color={getStatusColor(batch.status)}>{batch.status}</Badge>
