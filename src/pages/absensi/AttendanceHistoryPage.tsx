@@ -22,7 +22,9 @@ import {
   CalendarDayItem, 
   AttendanceRecord,
 } from "../../types/attendance";
-import { formatDateDisplay, formatClockTime } from "../../utils/formatDate";
+import { formatDateDisplay, formatClockTime, formatDateToYYYYMMDD } from "../../utils/formatDate";
+
+const todayDateStr = formatDateToYYYYMMDD(new Date());
 
 const AttendanceHistoryPage: React.FC = () => {
   const { user } = useAuth();
@@ -53,6 +55,34 @@ const AttendanceHistoryPage: React.FC = () => {
   const { data: faceEnrollment } = useGetFaceEnrollment();
   const { data: mySchedules } = useGetMySchedules({ month: monthParam });
 
+  // Jadwal bulan BERJALAN (terlepas dari bulan yang dibuka di kalender) untuk kartu shift hari ini
+  const { data: schedulesThisMonth } = useGetMySchedules({ month: todayDateStr.slice(0, 7) });
+  const todaySchedule = useMemo(
+    () => schedulesThisMonth?.find((s) => s.schedule_date === todayDateStr) ?? null,
+    [schedulesThisMonth]
+  );
+
+  // Rentang 2 minggu terakhir (Senin minggu lalu s.d. hari ini) — tidak ikut navigasi bulan kalender
+  const weeklyRange = useMemo(() => {
+    const now = new Date();
+    const distanceToMonday = now.getDay() === 0 ? 6 : now.getDay() - 1;
+    const mondayCurrentWeek = new Date(now);
+    mondayCurrentWeek.setDate(now.getDate() - distanceToMonday);
+    mondayCurrentWeek.setHours(0, 0, 0, 0);
+    const mondayPrevWeek = new Date(mondayCurrentWeek);
+    mondayPrevWeek.setDate(mondayCurrentWeek.getDate() - 7);
+    return {
+      mondayCurrentWeek,
+      mondayPrevWeek,
+      start_date: formatDateToYYYYMMDD(mondayPrevWeek),
+      end_date: todayDateStr,
+    };
+  }, []);
+  const { data: weeklyHistory } = useGetAttendanceHistory({
+    start_date: weeklyRange.start_date,
+    end_date: weeklyRange.end_date,
+  });
+
   const isCheckedIn = !!todayAttendance?.check_in_time;
   const isCheckedOut = !!todayAttendance?.check_out_time;
 
@@ -64,7 +94,7 @@ const AttendanceHistoryPage: React.FC = () => {
   const calendarDays = useMemo<CalendarDayItem[]>(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = todayDateStr;
     
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -127,76 +157,74 @@ const AttendanceHistoryPage: React.FC = () => {
     return days;
   }, [currentDate, historyData, mySchedules, todayAttendance]);
 
+  // Durasi (menit) satu record. BE mengirim ISO UTC asli (timestamptz), jadi new Date()
+  // sudah tepat untuk browser WIB. Shift yang masih berjalan (belum check out) dihitung s.d. sekarang.
+  const recordDurationMinutes = (rec: AttendanceRecord): number | null => {
+    if (!rec.check_in_time) return null;
+
+    if (rec.durasi && rec.durasi.includes("jam")) {
+      const parts = rec.durasi.match(/\d+/g);
+      if (parts && parts.length >= 2) {
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      }
+    }
+
+    const inDate = new Date(rec.check_in_time);
+    if (isNaN(inDate.getTime())) return null;
+
+    if (!rec.check_out_time) {
+      const diffMs = Date.now() - inDate.getTime();
+      return diffMs > 0 ? Math.floor(diffMs / 60000) : 0;
+    }
+
+    const outDate = new Date(rec.check_out_time);
+    if (isNaN(outDate.getTime())) return null;
+    const diffMs = outDate.getTime() - inDate.getTime();
+    return diffMs > 0 ? Math.floor(diffMs / 60000) : 0;
+  };
+
   // 1. Calculate Weekly Working Hours (Current Week Monday-Sunday vs Previous Week)
+  // Sumber data: weeklyHistory (Senin minggu lalu s.d. hari ini), BUKAN historyData yang
+  // ikut bulan yang dibuka di kalender.
   const weeklyStats = useMemo(() => {
-    const now = new Date();
-    const currentDay = now.getDay();
-    // Monday as start of week (ISO 8601)
-    const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
-
-    const mondayCurrentWeek = new Date(now);
-    mondayCurrentWeek.setDate(now.getDate() - distanceToMonday);
-    mondayCurrentWeek.setHours(0, 0, 0, 0);
-
+    const { mondayCurrentWeek, mondayPrevWeek } = weeklyRange;
     const sundayCurrentWeek = new Date(mondayCurrentWeek);
     sundayCurrentWeek.setDate(mondayCurrentWeek.getDate() + 6);
     sundayCurrentWeek.setHours(23, 59, 59, 999);
-
-    const mondayPrevWeek = new Date(mondayCurrentWeek);
-    mondayPrevWeek.setDate(mondayCurrentWeek.getDate() - 7);
-
-    const sundayPrevWeek = new Date(mondayCurrentWeek);
-    sundayPrevWeek.setDate(mondayCurrentWeek.getDate() - 1);
-    sundayPrevWeek.setHours(23, 59, 59, 999);
-
-    // Combine all available attendance records
-    const allRecords: AttendanceRecord[] = [];
-    if (historyData) allRecords.push(...historyData);
-    if (todayAttendance?.check_in_time) {
-      const exists = allRecords.some((r) => r.tanggal === todayAttendance.tanggal);
-      if (!exists) allRecords.push(todayAttendance);
-    }
-    if (mySchedules) {
-      mySchedules.forEach((s) => {
-        if (s.attendance?.check_in_time) {
-          const exists = allRecords.some((r) => r.id === s.attendance?.id || r.tanggal === s.schedule_date);
-          if (!exists) allRecords.push(s.attendance as AttendanceRecord);
-        }
-      });
-    }
+    // Bandingkan minggu berjalan hanya dengan bagian minggu lalu yang setara
+    // (Senin minggu lalu s.d. hari yang sama dengan hari ini) supaya apple-to-apple.
+    const todayIdxInWeek = Math.floor(
+      (new Date(todayDateStr + "T00:00:00").getTime() - mondayCurrentWeek.getTime()) / 86400000
+    );
+    const prevWeekCutoff = new Date(mondayPrevWeek);
+    prevWeekCutoff.setDate(mondayPrevWeek.getDate() + todayIdxInWeek);
+    prevWeekCutoff.setHours(23, 59, 59, 999);
 
     let currentWeekMins = 0;
     let prevWeekMins = 0;
+    const seen = new Set<number | string>();
 
-    allRecords.forEach((rec) => {
+    const records: AttendanceRecord[] = [...(weeklyHistory ?? [])];
+    if (todayAttendance?.check_in_time) {
+      records.push(todayAttendance);
+    }
+
+    records.forEach((rec) => {
       if (!rec.check_in_time) return;
-      const recDate = new Date(rec.tanggal ? (rec.tanggal.includes("T") ? rec.tanggal : `${rec.tanggal}T00:00:00`) : rec.check_in_time);
+      const dateKey = rec.id ?? rec.tanggal;
+      if (seen.has(dateKey)) return;
+      seen.add(dateKey);
+
+      const recDate = new Date(rec.tanggal ? `${rec.tanggal}T00:00:00` : rec.check_in_time);
       if (isNaN(recDate.getTime())) return;
 
-      // Calculate duration
-      let durMins = 0;
-      if (rec.durasi && rec.durasi.includes("jam")) {
-        const parts = rec.durasi.match(/\d+/g);
-        if (parts && parts.length >= 2) {
-          durMins = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-        }
-      }
-      if (durMins === 0 && rec.check_in_time) {
-        const inTime = new Date(rec.check_in_time.includes("T") || rec.check_in_time.includes(" ") ? rec.check_in_time : `${rec.tanggal || '2026-08-17'}T${rec.check_in_time}`);
-        const outTime = rec.check_out_time 
-          ? new Date(rec.check_out_time.includes("T") || rec.check_out_time.includes(" ") ? rec.check_out_time : `${rec.tanggal || '2026-08-17'}T${rec.check_out_time}`)
-          : new Date();
-
-        if (!isNaN(inTime.getTime()) && !isNaN(outTime.getTime())) {
-          const diffMs = outTime.getTime() - inTime.getTime();
-          durMins = diffMs > 0 ? Math.floor(diffMs / 60000) : 0;
-        }
-      }
+      const mins = recordDurationMinutes(rec);
+      if (mins === null || mins <= 0) return;
 
       if (recDate >= mondayCurrentWeek && recDate <= sundayCurrentWeek) {
-        currentWeekMins += durMins;
-      } else if (recDate >= mondayPrevWeek && recDate <= sundayPrevWeek) {
-        prevWeekMins += durMins;
+        currentWeekMins += mins;
+      } else if (recDate >= mondayPrevWeek && recDate <= prevWeekCutoff) {
+        prevWeekMins += mins;
       }
     });
 
@@ -207,24 +235,29 @@ const AttendanceHistoryPage: React.FC = () => {
     return {
       currentHours,
       diffHours: parseFloat(diffHours),
-      formattedDiff: `${parseFloat(diffHours) >= 0 ? '+' : ''}${diffHours}j vs minggu lalu`,
+      formattedDiff: `${parseFloat(diffHours) >= 0 ? '+' : ''}${diffHours}j vs minggu lalu (s.d. hari yang sama)`,
     };
-  }, [historyData, todayAttendance, mySchedules]);
+  }, [weeklyHistory, todayAttendance, weeklyRange]);
 
   // 2. Calculate Punctuality Rate (%) based on completed/past scheduled shifts so far
   const punctualityStats = useMemo(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
-    const scheduledDaysSoFar = calendarDays.filter(
-      (d) => d.day && d.dateStr && d.dateStr <= todayStr && d.schedule && !d.schedule.is_day_off && !d.schedule.is_holiday
-    );
+    // Denominator: shift terjadwal bulan ini yang SUDAH terjadi — hari lewat, plus
+    // hari ini hanya kalau sudah check-in (shift yang belum kejadian tidak menghukum skor).
+    const evaluatedDays = calendarDays.filter((d) => {
+      if (!d.day || !d.dateStr || !d.schedule) return false;
+      if (d.schedule.is_day_off || d.schedule.is_holiday) return false;
+      if (d.dateStr < todayDateStr) return true;
+      if (d.dateStr === todayDateStr) return !!d.attendance?.check_in_time;
+      return false;
+    });
 
-    const totalShifts = scheduledDaysSoFar.length;
+    const totalShifts = evaluatedDays.length;
     if (totalShifts === 0) {
       return { percentage: 100, onTimeCount: 0, totalShifts: 0, hasData: false };
     }
 
-    const onTimeCount = scheduledDaysSoFar.filter(
-      (d) => d.status === 'present' || (d.status === 'active' && d.attendance?.check_in_time && !checkIsLate(d.attendance, d.schedule))
+    const onTimeCount = evaluatedDays.filter(
+      (d) => !!d.attendance?.check_in_time && !checkIsLate(d.attendance, d.schedule)
     ).length;
 
     const percentage = Math.round((onTimeCount / totalShifts) * 100);
@@ -243,7 +276,7 @@ const AttendanceHistoryPage: React.FC = () => {
       {/* Top Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
          <MetricCard 
-           title="JAM KERJA MINGGUAN" 
+           title="JAM KERJA MINGGUAN (MINGGU INI)" 
            value={`${weeklyStats.currentHours}j`} 
            subValue={weeklyStats.formattedDiff}
            subValueColor={weeklyStats.diffHours >= 0 ? "text-success-500" : "text-error-500"}
@@ -254,7 +287,7 @@ const AttendanceHistoryPage: React.FC = () => {
            }
          />
          <MetricCard 
-           title="KETEPATAN WAKTU" 
+           title={`KETEPATAN WAKTU (${monthYearLabel})`} 
            value={punctualityStats.hasData ? `${punctualityStats.percentage}%` : "--"} 
            subValue={
              <div className="w-full space-y-1 mt-1">
@@ -350,8 +383,20 @@ const AttendanceHistoryPage: React.FC = () => {
                  <div className="bg-brand-500 p-3 rounded-xl flex gap-3 shadow-lg shadow-brand-500/20">
                     <CalenderIcon className="size-4 text-white shrink-0 mt-0.5" />
                     <div>
-                       <h4 className="text-xs font-bold text-white">Jadwal Shift</h4>
-                       <p className="text-[10px] text-white/80">Jam Kerja: 09:00 - 18:00 WIB</p>
+                       <h4 className="text-xs font-bold text-white">
+                          {todaySchedule && !todaySchedule.is_day_off && !todaySchedule.is_holiday
+                            ? (todaySchedule.snapshot?.shift_name || "Jadwal Shift")
+                            : "Jadwal Shift"}
+                       </h4>
+                       <p className="text-[10px] text-white/80">
+                         {!todaySchedule
+                           ? "Tidak ada jadwal shift yang dipublikasikan hari ini."
+                           : (todaySchedule.is_day_off || todaySchedule.is_holiday)
+                             ? (todaySchedule.is_holiday ? "Libur Nasional" : "Hari Off") + (todaySchedule.day_off_note ? ` • ${todaySchedule.day_off_note}` : "")
+                             : todaySchedule.snapshot
+                               ? `Jam Kerja: ${formatIndonesianTime(todaySchedule.snapshot.check_in_time)} - ${formatIndonesianTime(todaySchedule.snapshot.check_out_time)}`
+                               : "Detail jam shift tidak tersedia."}
+                       </p>
                     </div>
                  </div>
               </div>
