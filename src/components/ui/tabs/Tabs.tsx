@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { clsx } from "clsx";
+import { AngleLeftIcon, AngleRightIcon } from "../../../icons";
 
 export interface TabItem {
   id: string;
@@ -22,14 +23,50 @@ export const Tabs: React.FC<TabsProps> = ({
   onTabChange,
   className = "",
 }) => {
+  const navRef = useRef<HTMLElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateArrows = useCallback(() => {
+    const el = navRef.current;
+    if (!el) {
+      return;
+    }
+    const max = el.scrollWidth - el.clientWidth;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(el.scrollLeft < max - 2);
+  }, []);
+
+  useEffect(() => {
+    updateArrows();
+    const el = navRef.current;
+    if (!el) {
+      return;
+    }
+    const ro = new ResizeObserver(updateArrows);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateArrows, items]);
+
+  const scrollTabs = (dir: -1 | 1) => {
+    const el = navRef.current;
+    if (!el) {
+      return;
+    }
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+    window.setTimeout(updateArrows, 400);
+  };
+
   return (
     <div
       className={clsx(
-        "rounded-2xl border border-gray-200 bg-white p-1.5 sm:p-2 dark:border-gray-800 dark:bg-gray-900/60 shadow-xs w-full",
+        "relative rounded-2xl border border-gray-200 bg-white p-1.5 sm:p-2 dark:border-gray-800 dark:bg-gray-900/60 shadow-xs w-full",
         className
       )}
     >
       <nav
+        ref={navRef}
+        onScroll={updateArrows}
         className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar scroll-smooth"
         aria-label="Tabs"
       >
@@ -79,6 +116,33 @@ export const Tabs: React.FC<TabsProps> = ({
           );
         })}
       </nav>
+
+      {canScrollLeft && (
+        <>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 rounded-l-2xl bg-gradient-to-r from-white to-transparent dark:from-gray-900" />
+          <button
+            type="button"
+            aria-label="Geser tab ke kiri"
+            onClick={() => scrollTabs(-1)}
+            className="absolute left-1.5 top-1/2 z-10 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/90 text-gray-500 [&_path]:stroke-current shadow-sm ring-1 ring-gray-200/70 backdrop-blur-sm transition-all duration-200 hover:text-brand-500 hover:shadow-md dark:bg-gray-800/90 dark:text-gray-300 dark:ring-gray-700/70"
+          >
+            <AngleLeftIcon className="h-4 w-4" />
+          </button>
+        </>
+      )}
+      {canScrollRight && (
+        <>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 rounded-r-2xl bg-gradient-to-l from-white to-transparent dark:from-gray-900" />
+          <button
+            type="button"
+            aria-label="Geser tab ke kanan"
+            onClick={() => scrollTabs(1)}
+            className="absolute right-1.5 top-1/2 z-10 -translate-y-1/2 grid place-items-center h-8 w-8 rounded-full bg-white/90 text-gray-500 [&_path]:stroke-current shadow-sm ring-1 ring-gray-200/70 backdrop-blur-sm transition-all duration-200 hover:text-brand-500 hover:shadow-md dark:bg-gray-800/90 dark:text-gray-300 dark:ring-gray-700/70"
+          >
+            <AngleRightIcon className="h-4 w-4" />
+          </button>
+        </>
+      )}
     </div>
   );
 };
