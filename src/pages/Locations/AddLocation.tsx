@@ -8,13 +8,13 @@ import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
-import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
-import { fetchLocationOptions, OptionDto } from "../../api/options";
+// import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
+// import { fetchLocationOptions, OptionDto } from "../../api/options";
 import { useCreateLocation } from "../../hooks/useLocations";
 import { ApiErrorResponse, LocationFormData } from "../../types/types";
 import { locationSchema } from "../../Schemas/locationSchema";
 
-type SelectLocationOption = OptionDto & Record<string, unknown>;
+// type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
@@ -29,8 +29,8 @@ export default function AddLocation() {
     register,
     handleSubmit,
     setError,
-    setValue,
-    watch,
+    // setValue,
+    // watch,
     formState: { errors },
   } = useForm<LocationFormData>({
     resolver: zodResolver(locationSchema),
@@ -113,6 +113,7 @@ export default function AddLocation() {
             {errors.type && <p className="text-red-500">{errors.type.message}</p>}
           </div>
 
+          {/*
           <div>
             <Label>Lokasi Induk / Parent (Opsional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
@@ -137,6 +138,7 @@ export default function AddLocation() {
               <p className="text-red-500">{errors.parent_id.message}</p>
             )}
           </div>
+          */}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             <Button

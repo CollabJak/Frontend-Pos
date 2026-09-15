@@ -9,14 +9,14 @@ import ComponentCard from "../../components/common/ComponentCard";
 import Label from "../../components/form/Label";
 import { Input } from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
-import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
+// import AsyncSearchSelect from "../../components/form/AsyncSearchSelect";
+// import { fetchLocationOptions as fetchBaseLocationOptions, OptionDto } from "../../api/options";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
-import { fetchLocationOptions as fetchBaseLocationOptions, OptionDto } from "../../api/options";
 import { useFetchLocation, useUpdateLocation } from "../../hooks/useLocations";
 import { ApiErrorResponse, LocationFormData } from "../../types/types";
 import { locationSchema } from "../../Schemas/locationSchema";
 
-type SelectLocationOption = OptionDto & Record<string, unknown>;
+// type SelectLocationOption = OptionDto & Record<string, unknown>;
 
 const BASE_LOCATION_TYPE_OPTIONS: Array<LocationFormData["type"]> = [
   "store",
@@ -41,21 +41,21 @@ export default function EditLocation() {
     ? [location.type, ...BASE_LOCATION_TYPE_OPTIONS]
     : BASE_LOCATION_TYPE_OPTIONS;
 
-  const fetchLocationOptions = async (params: {
-    limit: number;
-    search?: string;
-    signal?: AbortSignal;
-  }) => {
-    const options = await fetchBaseLocationOptions(params);
-    return options.filter((option) => option.id !== locationId);
-  };
+  // const fetchLocationOptions = async (params: {
+  //   limit: number;
+  //   search?: string;
+  //   signal?: AbortSignal;
+  // }) => {
+  //   const options = await fetchBaseLocationOptions(params);
+  //   return options.filter((option) => option.id !== locationId);
+  // };
 
   const {
     register,
     handleSubmit,
     setError,
     setValue,
-    watch,
+    // watch,
     formState: { errors },
   } = useForm<LocationFormData>({
     resolver: zodResolver(locationSchema),
@@ -180,6 +180,7 @@ export default function EditLocation() {
             {errors.type && <p className="text-red-500">{errors.type.message}</p>}
           </div>
 
+          {/*
           <div>
             <Label>Lokasi Induk / Parent (Opsional)</Label>
             <AsyncSearchSelect<SelectLocationOption>
@@ -205,6 +206,7 @@ export default function EditLocation() {
               <p className="text-red-500">{errors.parent_id.message}</p>
             )}
           </div>
+          */}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             <Button
