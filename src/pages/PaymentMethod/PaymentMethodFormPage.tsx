@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,7 +28,7 @@ const PaymentMethodFormPage: React.FC = () => {
         [hasExistingQrImage]
     );
 
-    const { register, handleSubmit, watch, setValue, setError, clearErrors, formState: { errors } } = useForm<any>({
+    const { register, handleSubmit, watch, setValue, setError, clearErrors, reset, formState: { errors } } = useForm<any>({
         resolver: zodResolver(paymentMethodSchema),
         defaultValues: {
             scope: isAdmin ? 'system' : 'business',
@@ -44,24 +44,50 @@ const PaymentMethodFormPage: React.FC = () => {
     const qrImage = watch('qr_image');
     const isQrImageRequired = selectedType === 'qris' && !hasExistingQrImage;
 
+    const populatedRef = useRef(false);
+
     useEffect(() => {
-        if (initialData) {
-            setValue('scope', initialData.scope);
-            setValue('type', initialData.type);
-            setValue('name', initialData.name);
-            setValue('code', initialData.code || '');
-            setValue('provider_name', initialData.provider_name || '');
-            setValue('account_name', initialData.account_name || '');
-            setValue('account_number', initialData.account_number || '');
-            setValue('description', initialData.description || '');
-            setValue('payment_instructions', initialData.payment_instructions || '');
-            setValue('is_active', initialData.is_active);
-            setValue('is_default', initialData.is_default);
-            setValue('sort_order', initialData.sort_order);
-        }
+        if (!initialData || populatedRef.current) return;
+        populatedRef.current = true;
+        setValue('scope', initialData.scope);
+        setValue('type', initialData.type);
+        setValue('name', initialData.name);
+        setValue('code', initialData.code || '');
+        setValue('provider_name', initialData.provider_name || '');
+        setValue('account_name', initialData.account_name || '');
+        setValue('account_number', initialData.account_number || '');
+        setValue('description', initialData.description || '');
+        setValue('payment_instructions', initialData.payment_instructions || '');
+        setValue('is_active', initialData.is_active);
+        setValue('is_default', initialData.is_default);
+        setValue('sort_order', initialData.sort_order);
     }, [initialData, setValue]);
 
     const [qrPreview, setQrPreview] = useState<string | null>(null);
+    const [showExistingQrPreview, setShowExistingQrPreview] = useState(true);
+    const qrFileInputRef = useRef<HTMLInputElement>(null);
+
+    const onTypeChange = (type: string) => {
+        if (type === selectedType) return;
+        reset({
+            scope: isAdmin ? 'system' : 'business',
+            type,
+            name: '',
+            code: '',
+            provider_name: '',
+            account_name: '',
+            account_number: '',
+            description: '',
+            payment_instructions: '',
+            qr_image: null,
+            is_active: true,
+            is_default: false,
+            sort_order: 0,
+        });
+        setQrPreview(null);
+        setShowExistingQrPreview(false);
+        if (qrFileInputRef.current) qrFileInputRef.current.value = '';
+    };
 
     useEffect(() => {
         if (selectedType !== 'qris') {
@@ -164,7 +190,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                             <button
                                                 key={type}
                                                 type="button"
-                                                onClick={() => setValue('type', type as any, { shouldValidate: true })}
+                                                onClick={() => onTypeChange(type)}
                                                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all border ${selectedType === type
                                                     ? 'bg-brand-500 border-brand-500 text-white shadow-lg'
                                                     : 'border-gray-100 dark:border-white/[0.05] text-gray-500 hover:border-gray-200'
@@ -213,6 +239,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                         <div>
                                             <Label required={isQrImageRequired}>Gambar Kode QR (QRIS)</Label>
                                             <input
+                                                ref={qrFileInputRef}
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={onFileChange}
@@ -221,7 +248,7 @@ const PaymentMethodFormPage: React.FC = () => {
                                             {errors.qr_image && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.qr_image.message as any}</p>
                                             )}
-                                            {(qrPreview || initialData?.qr_image_url) && (
+                                            {(qrPreview || (showExistingQrPreview && initialData?.qr_image_url)) && (
                                                 <div className="mt-4 p-4 border rounded-2xl border-dashed border-gray-200 dark:border-white/[0.1] text-center">
                                                     <img
                                                         src={qrPreview || initialData?.qr_image_url || ''}
