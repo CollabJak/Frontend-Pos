@@ -183,8 +183,22 @@ export default function ProductList({ embedded = false }: ProductListProps) {
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           {product.description || "-"}
                         </TableCell>
-                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                          {product.status}
+                        <TableCell className="px-4 py-3 text-start text-theme-sm">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                              product.status === "active"
+                                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                                : product.status === "discontinued"
+                                  ? "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+                                  : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400"
+                            }`}
+                          >
+                            {product.status === "active"
+                              ? "Aktif"
+                              : product.status === "discontinued"
+                                ? "Discontinued"
+                                : "Nonaktif"}
+                          </span>
                         </TableCell>
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                           <div className="flex items-center gap-3">

@@ -62,6 +62,11 @@ export default function ProductCard({
               {product.tagline}
             </Badge>
           ) : null}
+          {product.status === 'discontinued' && (
+            <Badge color="warning" size="sm" variant="light">
+              Discontinued
+            </Badge>
+          )}
         </div>
       </div>
 

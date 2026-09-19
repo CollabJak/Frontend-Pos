@@ -18,6 +18,7 @@ interface RawPosProduct {
   categoryId?: number | string;
   tagline?: string;
   description?: string;
+  status?: 'active' | 'inactive' | 'discontinued';
 }
 
 const toNumber = (value: unknown): number => {
@@ -80,6 +81,7 @@ const mapProduct = (row: RawPosProduct): PosProduct | null => {
     imageUrl: row.imageUrl ?? row.image_url,
     description: firstText(row.description) || undefined,
     isBestSeller: false, // TODO: Source from backend when best_seller field is added
+    status: row.status ?? 'active',
   };
 };
 

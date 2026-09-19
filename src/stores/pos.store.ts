@@ -23,6 +23,7 @@ export interface PosGridItem {
   imageUrl?: string;
   description?: string;
   isBestSeller?: boolean;
+  status?: 'active' | 'inactive' | 'discontinued';
 }
 
 interface PosStoreState {
@@ -312,6 +313,7 @@ export const usePosStore = create<PosStoreState>()(
             imageUrl: product.imageUrl,
             description: product.description,
             isBestSeller: product.isBestSeller,
+            status: product.status,
           }));
       },
     }),
